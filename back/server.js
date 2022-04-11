@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
-const port = 8080;
+const path = require('path'); 
+const fs = require('fs'); 
+const port = 3008;
 
 /**
  * 设置跨域请求
@@ -20,6 +22,23 @@ app.get('/helloworld', (req, res) => {
   res.send('Hello world!');
 })
 
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
+})
+
+
+// 获取question 1 问题的初步绘制数据
+app.get("/Qone", (req, res, next) => {
+  file_path = './data/q-one-data/tiaozhan1.json'
+  fs.readFile(file_path, 'utf8', function(err, data){
+    if(err){
+      console.log(err)
+    }else{
+      let d = JSON.parse(data)
+      console.log(d);
+      res.send(d)
+      res.end()
+    }
+  })
 })
