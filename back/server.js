@@ -30,13 +30,13 @@ app.listen(port, () => {
 
 // 获取question 1 问题的初步绘制数据
 app.get("/Qone", (req, res, next) => {
-  file_path = './data/q-one-data/tiaozhan1.json'
+  // file_path = './data/q-one-data/tiaozhan1.json'
+  file_path = './data/q-one-data/large.json'
   fs.readFile(file_path, 'utf8', function(err, data){
     if(err){
       console.log(err)
     }else{
       let d = JSON.parse(data)
-      console.log(d);
       res.send(d)
       res.end()
     }
