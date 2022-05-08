@@ -1,8 +1,8 @@
 import * as d3 from "d3";
-import { event } from "d3";
 import { useEffect } from "react";
 import  { forceManyBodyReuse } from 'd3-force-reuse'
 import  { forceManyBodySampled } from 'd3-force-sampled'
+
 
 // 数据请求接口
 import { qone } from "../..//apis/api.js";
@@ -10,7 +10,15 @@ import { qone } from "../..//apis/api.js";
 export default function SubChart2() {
     useEffect(() => {
         qone().then((res) => {
-            drawChart(res);
+            var data = {}
+            data['nodes'] = res['nodes'].map(value => {
+                return {"id": value[0], "name": value[1], "type": value[3], "industry": eval(value[4])}
+            })
+
+            data['links'] = res['links'].map(value => {
+                return {"source": parseInt(value[1]), "target": parseInt(value[2])}
+            })
+            drawChart(data);
         });
     });
 
@@ -27,7 +35,9 @@ export default function SubChart2() {
             .attr("viewBox", [0, 0, width, height]);
         const outer_g = svg.append('g').attr("transform", `translate(0, 0)`);
 
-
+        const xScale = d3.scaleOrdinal()
+                        .domain(['IP', 'Whois_Name', 'Domain', 'Cert'] )
+                        .range([10, 110, 200, 300])
         const simulation = d3
             .forceSimulation(nodes)
             .force("link", d3.forceLink(links)
@@ -36,8 +46,20 @@ export default function SubChart2() {
             )
             // .velocityDecay(0.2)
             // .force("charge", forceManyBodySampled().strength(-50).distanceMin(10))
+            // .force("charge", d3.forceManyBody().strength(-50).distanceMin(10))
             .force("charge", forceManyBodyReuse().strength(-50).distanceMin(10))
-            .force("center", d3.forceCenter(width / 2, height / 2));
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force('x', d3.forceX().x(function(d) {
+                return xScale(d.type);
+              }))
+            .force('y', d3.forceY().y(function(d) {
+                return 0;
+              }))
+            //   .force('collision', d3.forceCollide().radius(function(d) {   // 避免元素相互重叠
+            //     return d.radius;
+            //   }))
+
+              
         let Tooltip = d3.select("body")
             .append("div")
             .attr("class", "tooltip")
@@ -46,12 +68,13 @@ export default function SubChart2() {
 
         const link = outer_g
             .append("g")
-            .attr("stroke", "#999")
-            .attr("stroke-opacity", 0.25)
             .selectAll("line")
             .data(links)
             .join("line")
-            .attr("stroke-width", (d) => Math.sqrt(d.value));
+            .attr("stroke", "#999")
+            .attr("stroke-opacity", 0.75)
+            .attr("stroke-width", 2)
+            // .attr("stroke-width", (d) => Math.sqrt(d.value));
 
         const color_scale = d3.scaleOrdinal(d3.schemeCategory10);
         var r_scale = d3
@@ -60,18 +83,19 @@ export default function SubChart2() {
             .range([5, 50]);
         const node = outer_g
             .append("g")
-            .attr("stroke", "#fff")
-            .attr("stroke-width", 1.5)
             .selectAll("circle")
             .data(nodes)
             .join("circle")
-            .attr("r", (d) => r_scale(d.value))
-            .attr("fill", (d) => color_scale(d.group))
+            .attr("r", (d) => d.industry.length + 5)
+            .attr("fill", (d) => color_scale(d.type))
+            .on('click', d => alert(d))
+            // .attr("r", (d) => r_scale(d.value))
+            // .attr("fill", (d) => color_scale(d.group))
             .call(drag(simulation));
 
         node.on("mouseover", (event, d) => {
                 link.style("stroke-opacity", function (l) {
-                    if (d === l.source) return 1;
+                    if (d === l.source || d == l.target) return 1;
                     else return 0.05;
                 });
 
@@ -92,18 +116,6 @@ export default function SubChart2() {
                     .duration(300)
                     .style("opacity", 0);
             });
-
-        /*svg.append("defs").append("marker")
-        .attr("id", "arrow")
-        .attr("viewBox", "0 -5 10 10")
-        .attr("refX", 20)
-        .attr("refY", 0)
-        .attr("opacity", 0.2)
-        .attr("markerWidth", 8)
-        .attr("markerHeight", 8)
-        .attr("orient", "auto")
-      .append("svg:path")
-        .attr("d", "M0,-5L10,0L0,5");*/
 
         var texts = outer_g
             .selectAll(".texts")
@@ -185,5 +197,6 @@ export default function SubChart2() {
 
         return svg.node();
     }
+
     return <div id="chart"></div>;
 }

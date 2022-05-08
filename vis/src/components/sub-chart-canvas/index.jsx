@@ -90,7 +90,6 @@ export default function SubChart2() {
         }
 
         function dragStarted(event) {
-            console.log(event)
             if (!event.active) {
             simulation.alphaTarget(0.3).restart();
             }
@@ -128,12 +127,48 @@ export default function SubChart2() {
             ctx.strokeStyle = '#999';
             ctx.stroke();
             });
+
+
+            /**
+             * First time
+             * edges
+             * a b c d
+             * 
+             * Update time
+             * edges
+             * a c d e
+             * 
+             * update: a c d
+             * append e
+             * delete b
+             */
+
+
+
+            // declare Circle, Line;
+
+            // declare LinesGroup;
+
+            // const lines = edges.map(({source: {x:x1, y:y1}, targte:{x:x2,y:y2}})=>{
+            //     const line = new Line({
+            //         style:{
+            //             x1,y1,x2,y2
+            //         }
+            //     })
+
+            //     LinesGroup.appendChild(line)
+
+
+            //     return line
+            // })
+
+
             // Draw nodes
             nodes.forEach(function(d, i) {
             ctx.beginPath();
             // Node fill
-            ctx.moveTo(d.x + nodeRadius, d.y);
-            ctx.arc(d.x, d.y,nodeRadius, 0, 2 * Math.PI);
+            ctx.moveTo(d.x + r_scale(d.value), d.y);
+            ctx.arc(d.x, d.y,r_scale(d.value), 0, 2 * Math.PI);
             ctx.fillStyle = color(d);
             ctx.fill();
             // Node outline
@@ -150,15 +185,15 @@ export default function SubChart2() {
               .force("charge", forceManyBodyReuse().strength(-50).distanceMin(10))
               .force("link", d3.forceLink().id(d => d.id));
           }
-        function findNode(nodes, x, y, radius) {
-            const rSq = radius * radius;
+        function findNode(nodes, x, y, nodeRadius) {
+            const rSq = nodeRadius * nodeRadius;
             let i;
             for (i = nodes.length - 1; i >= 0; --i) {
               const node = nodes[i],
                     dx = x - node.x,
                     dy = y - node.y,
                     distSq = (dx * dx) + (dy * dy);
-              if (distSq <= rSq) {
+              if (distSq <= rSq) {    // 点击的位置与点的位置
                   console.log(x, node.x, y, node.y);
                 return node;
               }
@@ -170,12 +205,12 @@ export default function SubChart2() {
         function color(d){
             return scale(d.group);
         }
+        // 鼠标点击时效果
+        canvas.addEventListener('click', (e) => {
+            console.log(e);
+        })
 
 
-
-
-
-        
         // brush事件
         const brush = d3.brush().on("start brush end", brushed);
             svg
