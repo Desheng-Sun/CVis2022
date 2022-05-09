@@ -5,6 +5,7 @@
   "dependencies": {
     "@antv/g": "^5.0.22",
     "@antv/g-canvas": "^1.0.21",
+    "@antv/g-plugin-css-select": "^1.0.19",
     "@antv/g-webgl": "^1.0.25",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^12.1.4",

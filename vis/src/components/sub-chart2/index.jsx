@@ -10,14 +10,15 @@ import { qone } from "../..//apis/api.js";
 export default function SubChart2() {
     useEffect(() => {
         qone().then((res) => {
-            var data = {}
-            data['nodes'] = res['nodes'].map(value => {
-                return {"id": value[0], "name": value[1], "type": value[3], "industry": eval(value[4])}
-            })
+            // var data = {}
+            // data['nodes'] = res['nodes'].map(value => {
+            //     return {"id": value[0], "name": value[1], "type": value[3], "industry": eval(value[4])}
+            // })
 
-            data['links'] = res['links'].map(value => {
-                return {"source": parseInt(value[1]), "target": parseInt(value[2])}
-            })
+            // data['links'] = res['links'].map(value => {
+            //     return {"source": parseInt(value[1]), "target": parseInt(value[2])}
+            // })
+            var data = res
             drawChart(data);
         });
     });
@@ -36,7 +37,7 @@ export default function SubChart2() {
         const outer_g = svg.append('g').attr("transform", `translate(0, 0)`);
 
         const xScale = d3.scaleOrdinal()
-                        .domain(['IP', 'Whois_Name', 'Domain', 'Cert'] )
+                        .domain(['IP', 'Whois_Name', 'Domain', 'Cert'])
                         .range([10, 110, 200, 300])
         const simulation = d3
             .forceSimulation(nodes)
@@ -86,11 +87,11 @@ export default function SubChart2() {
             .selectAll("circle")
             .data(nodes)
             .join("circle")
-            .attr("r", (d) => d.industry.length + 5)
-            .attr("fill", (d) => color_scale(d.type))
+            // .attr("r", (d) => d.industry.length + 5)
+            // .attr("fill", (d) => color_scale(d.type))
             .on('click', d => alert(d))
-            // .attr("r", (d) => r_scale(d.value))
-            // .attr("fill", (d) => color_scale(d.group))
+            .attr("r", (d) => r_scale(d.value))
+            .attr("fill", (d) => color_scale(d.group))
             .call(drag(simulation));
 
         node.on("mouseover", (event, d) => {

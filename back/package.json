@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "arangojs": "^7.7.0",
     "express": "^4.17.3"
   }
 }
