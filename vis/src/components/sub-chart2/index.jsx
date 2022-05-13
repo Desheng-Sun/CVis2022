@@ -1,11 +1,13 @@
 import * as d3 from "d3";
 import { useEffect } from "react";
 import  { forceManyBodyReuse } from 'd3-force-reuse'
-import  { forceManyBodySampled } from 'd3-force-sampled'
-
+import d3ContextMenu from 'd3-context-menu'
+import  forceInABox from 'force-in-a-box'
+import { Checkbox } from 'antd';
 
 // 数据请求接口
 import { qone } from "../..//apis/api.js";
+import './index.css'
 
 export default function SubChart2() {
     useEffect(() => {
@@ -39,26 +41,42 @@ export default function SubChart2() {
         const xScale = d3.scaleOrdinal()
                         .domain(['IP', 'Whois_Name', 'Domain', 'Cert'])
                         .range([10, 110, 200, 300])
+
+        // force-in-a-box算法
+        let groupingForce = forceInABox()
+                .strength(0.1)
+                .groupBy("group")
+                .template('force') // Either treemap or force
+                .links(links)
+                .size([width, height])
         const simulation = d3
             .forceSimulation(nodes)
             .force("link", d3.forceLink(links)
                             .id((d) => d.id)
                             .distance(100)
-            )
-            // .velocityDecay(0.2)
-            // .force("charge", forceManyBodySampled().strength(-50).distanceMin(10))
+            )   
             // .force("charge", d3.forceManyBody().strength(-50).distanceMin(10))
             .force("charge", forceManyBodyReuse().strength(-50).distanceMin(10))
             .force("center", d3.forceCenter(width / 2, height / 2))
-            .force('x', d3.forceX().x(function(d) {
-                return xScale(d.type);
-              }))
-            .force('y', d3.forceY().y(function(d) {
-                return 0;
-              }))
-            //   .force('collision', d3.forceCollide().radius(function(d) {   // 避免元素相互重叠
-            //     return d.radius;
+            .force("x", d3.forceX())   // 圆形
+            .force("y", d3.forceY())
+            // .force('x', d3.forceX().x(function(d) {   // 自定义布局方式
+            //     return xScale(d.type);
             //   }))
+            // .force('y', d3.forceY().y(function(d) {
+            //     return 0;
+            //   }))
+            .force('collision', d3.forceCollide().radius(function(d) {   // 避免元素相互重叠
+                return 10;
+            }))
+        // 判断使用哪种布局方式
+        // if (drawTemplate) {
+        //         simulation.force("group").drawTemplate(gTemplate);
+        //         simulation.restart();
+        //       } else {
+        //         simulation.force("group").deleteTemplate(gTemplate);
+        //         simulation.restart();
+        //       }
 
               
         let Tooltip = d3.select("body")
@@ -66,32 +84,98 @@ export default function SubChart2() {
             .attr("class", "tooltip")
             .style("font-size","12px")
             .style("pointer-events","none");
-
+        const link_color_dict = {"r_cert":"#c3e6a1", "r_subdomain":"#e4657f","r_request_jump":"#a17fda", "r_dns_a":"#ff9f6d", "r_whois_name":"#4caead", "r_whois_email":"#64d9d7", "r_whois_phone":"#0af8f8", "r_cert_chain":"#fffb96", "r_cname":"#87ccff", "r_asn":"#82b461", "r_cidr":"#fde9d3"}
+        const arrow_svg = svg.append("defs")
+        function maker(arrow_color, index, source_index, target_index){
+            arrow_svg.append("marker")
+                .attr("id", "arrow_" + index)
+                .attr("viewBox", "0 -5 10 10")
+                .attr("refX", 30)
+                .attr("refY", 0)
+                .attr("opacity", 0.8)
+                .attr("markerWidth", 3)
+                .attr("markerHeight", 3)
+                .attr("orient", "auto")
+                .append("path")
+                .attr("d", "M0,-5L10,0L0,5")
+                .attr("fill", arrow_color)
+                .attr('source_target', source_index + '_' + target_index)
+                return "url(#" + "arrow_" + index + ")"; 
+        }
+        
         const link = outer_g
             .append("g")
-            .selectAll("line")
+            .selectAll("path")
             .data(links)
-            .join("line")
-            .attr("stroke", "#999")
-            .attr("stroke-opacity", 0.75)
+            .join("path")
+            .attr("stroke", d => link_color_dict[d.relation])
+            .attr("stroke-opacity", 0.35)
+            .attr('fill', 'none')
             .attr("stroke-width", 2)
-            // .attr("stroke-width", (d) => Math.sqrt(d.value));
+            .attr('marker-end', d => maker(link_color_dict[d.relation], d.index, d.source.index, d.target.index))
+            .on('mouseover', function(event, d){
+                d3.select(this).style('stroke-opacity', 1)
+            })
+            .on('mouseout', function(event, d){
+                d3.select(this).style('stroke-opacity', 0.35)
+            })
 
-        const color_scale = d3.scaleOrdinal(d3.schemeCategory10);
+        const node_color_dict = {"Domain":"#ff9f6d", "IP":"#87ccff", "Cert":"#c3e6a1", "Whois_Name":"#4caead", "Whois_Phone":"#0af8f8", "Whois_Email":"#64d9d7", "IP_C":"#fde9d3", "ASN":"#82b461"}
         var r_scale = d3
             .scaleLinear()
             .domain(d3.extent(data.nodes, (d) => d.value))
             .range([5, 50]);
+            const menu = [
+                {
+                    title: 'Remove node',
+                    action: function(d, event) {    // 移除不需要的节点
+                        let invisible_link = []
+                        link.style('stroke-opacity', function(o){
+                            if(o.source === d || o.target === d){
+                                invisible_link.push(o.source.index + '_' + d.index)
+                                invisible_link.push(d.index + '_' + o.target.index)
+                                return 0
+                                // 移除当前这一条边
+                                // d3.select(this).remove()
+                            }
+                            return 0.35
+                        });
+                        node.style('opacity', function (o) { 
+                            if(isConnected(d, o)){
+                                return 0
+                                // 移除当前这一条边
+                                // d3.select(this).remove()
+                            }
+                            return 1
+                        })
+                        var arrows = arrow_svg.selectAll('path')
+                        arrows.attr('opacity', function(o){ 
+                            if(invisible_link.includes(d3.select(this).attr("source_target"))){
+                                return 0
+                                // 移除当前这一条边
+                                // d3.select(this).remove()
+                            }
+                            return 1
+                        })
+                    },
+                    disabled: false, // optional, defaults to false
+                }
+            ];
+
+
         const node = outer_g
             .append("g")
             .selectAll("circle")
             .data(nodes)
             .join("circle")
-            // .attr("r", (d) => d.industry.length + 5)
-            // .attr("fill", (d) => color_scale(d.type))
+            .attr('id', d => d.id)
+            .on("contextmenu", d3ContextMenu(menu)) // attach menu to element
             .on('click', d => alert(d))
-            .attr("r", (d) => r_scale(d.value))
-            .attr("fill", (d) => color_scale(d.group))
+            .attr("r", (d) => 10)
+            .attr("fill", (d) => {
+                if(d.id == 'IP_400c19e584976ff2a35950659d4d148a3d146f1b71692468132b849b0eb8702c') return 'red'
+                else return node_color_dict[d.type]
+            })
             .call(drag(simulation));
 
         node.on("mouseover", (event, d) => {
@@ -105,14 +189,15 @@ export default function SubChart2() {
                     .style('opacity', () => (!isDragging)? 0.97: 0)
                 Tooltip.html(() => {
                     let tooltip_content = '';
-                    tooltip_content = d
+                    tooltip_content = d.type
+                    // console.log(d);
                     return tooltip_content
                 })
                 .style("left", (event.pageX + 15) + "px")
                 .style("top", (event.pageY - 200) + "px");
             })
             .on("mouseout", (d) => {
-                link.style("stroke-opacity", 0.25);
+                link.style("stroke-opacity", 0.35);
                 Tooltip.transition()
                     .duration(300)
                     .style("opacity", 0);
@@ -130,7 +215,7 @@ export default function SubChart2() {
             .attr("dy", "0.35em")
             //.attr("font-size", "34")
             .attr("font-size", (d) => r_scale(d.value))
-            .text((d) => d.name);
+            .text((d) => d.type);
 
         node.append("title").text((d) => d.name);
 
@@ -146,18 +231,28 @@ export default function SubChart2() {
         .style("font-family", "sans-serif")
         .style("font-size", "0.7em")
         .text(function(d) { return d.name; })*/
-
+        function linkArc(d) {
+            let x1 = d.source.x;
+            let y1 = d.source.y;
+            let x2 = d.target.x;
+            let y2 = d.target.y;
+            let dx = x2 - x1;
+            let dy = y2 - y1;
+            let dr = Math.sqrt(dx * dx + dy * dy);
+            return "M" + x1 + "," + y1 + "A" + dr + "," + dr + " 0 0,1 " + x2 + "," + y2;
+          }
         simulation.on("tick", () => {
             link
                 .attr("x1", (d) => d.source.x)
                 .attr("y1", (d) => d.source.y)
                 .attr("x2", (d) => d.target.x)
-                .attr("y2", (d) => d.target.y);
-
+                .attr("y2", (d) => d.target.y)
+                .attr('d', linkArc);
             node.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
             texts.attr("x", (d) => d.x).attr("y", (d) => d.y);
         });
 
+        // 节点拖拽事件
         function drag(simulation) {
             function dragstarted(event, d) {
                 if (!event.active) simulation.alphaTarget(0.3).restart();
@@ -184,20 +279,66 @@ export default function SubChart2() {
                 .on("drag", dragged)
                 .on("end", dragended);
         }
-        // 视图缩放
-        //add zoom capabilities
-        let zoomHandler = d3.zoom().on("zoom", zoomAction);
 
-        //Zoom functions
+        // 判断两点之间是否有关联
+        const linkedByIndex = {};
+        links.forEach(d => {
+            linkedByIndex[`${d.source.index},${d.target.index}`] = 1;
+        });
+
+        function isConnected(a, b) {
+            return linkedByIndex[`${a.index},${b.index}`] || linkedByIndex[`${b.index},${a.index}`] || a.index === b.index;
+        }
+        // 视图缩放
+        let zoomHandler = d3.zoom()
+                            .on("zoom", zoomAction)
+                            .filter(function(event) {
+                                return !event.button && event.type != "dblclick";
+                            })
         function zoomAction(event) {
             outer_g.attr("transform", `translate(${event.transform.x}, ${event.transform.y})` + "scale(" + event.transform.k +")"
             // outer_g.attr("transform", `translate(${width / 2 + event.transform.x}, ${height / 2 + event.transform.y})` + "scale(" + event.transform.k +")"
             );
         }
-        zoomHandler(svg);
+        zoomHandler(svg)
 
         return svg.node();
     }
 
-    return <div id="chart"></div>;
+    var prev_color = ''
+    var prevNodeElement = ''
+    var drawTemplate = false
+    // 监听input框变化
+    function inputChange(event){
+        var ev = window.event||event;
+        //13是键盘上面固定的回车键
+        if (ev.keyCode == 13) {
+            var curNodeId = event.target.value;    // 当前输入框的值
+            var curNodeElement = d3.select('#' + curNodeId) 
+            if(prevNodeElement != ''){
+                prevNodeElement.attr('fill', prev_color)
+            }
+            prev_color = curNodeElement.attr('fill')
+            curNodeElement.attr('fill', 'red')
+            prevNodeElement = curNodeElement
+            console.log(prev_color);
+        }  
+    }
+
+    function onChange(e) {
+        if(e.target.checked){
+            drawTemplate = true
+        }else{
+            drawTemplate = false
+        }
+    }
+    return (
+        <div className="container">
+            <div>
+                <input type="text"  onKeyDown={inputChange} />
+                <Checkbox onChange={onChange}>useGroupInABox</Checkbox>
+            </div>
+            <div id="chart"></div>
+        </div>
+    );
 }

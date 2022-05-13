@@ -57,20 +57,6 @@ export default function SubChart2() {
         simulation.force("link")
             .links(edges);
 
-        // const getNodeFromMouseEvent = event => {
-        //         const x = Math.floor(event.offsetX * window.devicePixelRatio);
-        //         const y = Math.floor(event.offsetY * window.devicePixelRatio);
-            
-        //         const color = idContext.getImageData(x, y, 1, 1).data;
-        //         const index = colorToIndex(color);
-        //         const node = nodes[index];
-        //         return node;
-        //       };
-        // function colorToIndex(index){
-        //     return color => ((color[0] << 16) + (color[1] << 8) + color[2]) - 1;
-        // }
-
-
         function zoomed(event) {
             transform = event.transform;
             simulationUpdate();
