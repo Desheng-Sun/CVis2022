@@ -27,3 +27,8 @@
 	background-color: #4677f8;
 	color: #fefefe;
 }
+
+.cell {
+	fill: none;
+	stroke: grey;
+  }

@@ -1,13 +1,13 @@
 import * as d3 from "d3";
-import { useEffect } from "react";
-import  { forceManyBodyReuse } from 'd3-force-reuse'
-import d3ContextMenu from 'd3-context-menu'
-import  forceInABox from 'force-in-a-box'
-import { Checkbox } from 'antd';
-
+import { useEffect, useState } from "react";
+import  { forceManyBodyReuse } from 'd3-force-reuse';
+import d3ContextMenu from 'd3-context-menu';
+import  forceInABox from 'force-in-a-box';
+import { Checkbox, Select  } from 'antd';
 // 数据请求接口
 import { qone } from "../..//apis/api.js";
-import './index.css'
+import './index.css';
+const { Option } = Select;
 
 export default function SubChart2() {
     useEffect(() => {
@@ -16,7 +16,6 @@ export default function SubChart2() {
             // data['nodes'] = res['nodes'].map(value => {
             //     return {"id": value[0], "name": value[1], "type": value[3], "industry": eval(value[4])}
             // })
-
             // data['links'] = res['links'].map(value => {
             //     return {"source": parseInt(value[1]), "target": parseInt(value[2])}
             // })
@@ -29,56 +28,58 @@ export default function SubChart2() {
         const links = data.links.map((d) => Object.create(d));
         const nodes = data.nodes.map((d) => Object.create(d));
         const width = 1000;
-        const height = 1000;
+        const height = 700;
         var isDragging = false;
         
         const svg = d3
             .select("#chart")
             .append("svg")
-            .attr("viewBox", [0, 0, width, height]);
+            .attr("width", width)
+            .attr("height", height)
+            .attr("viewBox", [0, 0, 2000, 1400]);
         const outer_g = svg.append('g').attr("transform", `translate(0, 0)`);
 
-        const xScale = d3.scaleOrdinal()
-                        .domain(['IP', 'Whois_Name', 'Domain', 'Cert'])
-                        .range([10, 110, 200, 300])
-
+  
         // force-in-a-box算法
-        let groupingForce = forceInABox()
-                .strength(0.1)
-                .groupBy("group")
-                .template('force') // Either treemap or force
-                .links(links)
-                .size([width, height])
-        const simulation = d3
-            .forceSimulation(nodes)
-            .force("link", d3.forceLink(links)
-                            .id((d) => d.id)
-                            .distance(100)
-            )   
-            // .force("charge", d3.forceManyBody().strength(-50).distanceMin(10))
-            .force("charge", forceManyBodyReuse().strength(-50).distanceMin(10))
-            .force("center", d3.forceCenter(width / 2, height / 2))
-            .force("x", d3.forceX())   // 圆形
-            .force("y", d3.forceY())
-            // .force('x', d3.forceX().x(function(d) {   // 自定义布局方式
-            //     return xScale(d.type);
-            //   }))
-            // .force('y', d3.forceY().y(function(d) {
-            //     return 0;
-            //   }))
-            .force('collision', d3.forceCollide().radius(function(d) {   // 避免元素相互重叠
-                return 10;
-            }))
-        // 判断使用哪种布局方式
-        // if (drawTemplate) {
-        //         simulation.force("group").drawTemplate(gTemplate);
-        //         simulation.restart();
-        //       } else {
-        //         simulation.force("group").deleteTemplate(gTemplate);
-        //         simulation.restart();
-        //       }
+        let  groupingForce = forceInABox()
+                .template(template) // Either treemap or force
+                .groupBy("group") // Nodes' attribute to group
+                .strength(0.2) // Strength to foci
+                .links(links) // The graph links. Must be called after setting the grouping attribute (Force template only)
+                .enableGrouping(isInBox)
+                .size([width, height]) // Size of the chart    
+        const simulation = d3.forceSimulation()
+                            .nodes(nodes)
+                            .force("group", groupingForce)
+                            .force("link", d3.forceLink(links)
+                                            .id((d) => d.id)
+                                            .distance(100)
+                                            .strength(groupingForce.getLinkStrength)
+                            )
+                            .force("charge", d3.forceManyBody().strength(-40))
+                            .force("x", isInBox ? null : d3.forceX(width))
+                            .force("y", isInBox ? null : d3.forceY(height))
+                            .force('collision', d3.forceCollide().radius(function(d) {   // 避免元素相互重叠
+                                return 10;
+                            }))
 
-              
+        // 判断使用哪种布局方式
+        // if(isInBox){
+        // }else{
+        // }
+        const gTemplate = svg.append("g").attr("class", "template");
+        if(drawTemplate) {
+            // d3.selectAll("#main_container svg").remove()
+            simulation.force("group").drawTemplate(gTemplate);
+            simulation.restart();
+          } else {
+            if(simulation.force("group") != undefined){
+                simulation.force("group").deleteTemplate(gTemplate);
+                simulation.restart();
+            }
+          }
+
+
         let Tooltip = d3.select("body")
             .append("div")
             .attr("class", "tooltip")
@@ -307,7 +308,9 @@ export default function SubChart2() {
 
     var prev_color = ''
     var prevNodeElement = ''
-    var drawTemplate = false
+    const [isInBox, setIsInBox] = useState(false)
+    const [drawTemplate, setdrawTemplate] = useState(false)
+    const [template, setTemplate] = useState('treemap')
     // 监听input框变化
     function inputChange(event){
         var ev = window.event||event;
@@ -325,18 +328,34 @@ export default function SubChart2() {
         }  
     }
 
-    function onChange(e) {
+    function onChangeInBox(e) {
         if(e.target.checked){
-            drawTemplate = true
+            setIsInBox(true)
         }else{
-            drawTemplate = false
+            setIsInBox(false)
+            setdrawTemplate(false)
         }
     }
+    function onChangeDrawTemplate(e){
+        if(isInBox && e.target.checked){
+            setdrawTemplate(true)
+        }else{
+            setdrawTemplate(false)
+        }
+    }
+    // function handleChange(value){
+    //     setTemplate(value)
+    // }
     return (
-        <div className="container">
+        <div id="main_container">
             <div>
                 <input type="text"  onKeyDown={inputChange} />
-                <Checkbox onChange={onChange}>useGroupInABox</Checkbox>
+                <Checkbox onChange={onChangeInBox}>useGroupInABox</Checkbox>
+                <Checkbox onChange={onChangeDrawTemplate}>Draw the template</Checkbox>
+                {/* <Select defaultValue="treemap" onChange={handleChange}>
+                    <Option value="treemap">treemap</Option>
+                    <Option value="force">force</Option>
+                </Select> */}
             </div>
             <div id="chart"></div>
         </div>
