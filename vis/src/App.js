@@ -18,13 +18,6 @@ import SubChartForceGraph from './components/sub-chart-force-graph'
 
 
 function App() {
-  /**
-   * 前后端通信的一个例子
-   */
-  useEffect(()=>{
-    qone().then((res)=>console.log(res));
-  })
-
   return (
     <div className="App">
       <Routes>
