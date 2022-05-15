@@ -19,13 +19,6 @@ import SkeletonChart from './components/skeleton-chart';
 
 
 function App() {
-  /**
-   * 前后端通信的一个例子
-   */
-  useEffect(()=>{
-    qone().then((res)=>console.log(res));
-  })
-
   return (
     <div className="App">
       <Routes>
