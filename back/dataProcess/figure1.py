@@ -117,9 +117,6 @@ def getIPCertLinksInSkip3(nodes, nodeToNodeInfo):
                 json.dump(nodeToNodeInfo, f, ensure_ascii=False)
             bar()
             
-        
-            
-
 
 if __name__ == '__main__':
     nowPath = "D:/个人相关/可视化大赛/ChinaVIS 2022/ChinaVis2022/"
@@ -165,7 +162,18 @@ if __name__ == '__main__':
     # # 将所有数据进行合并
     # print("将所有数据进行合并----------------------------------------------")
     # mergeNodesNeighbourInfop()
+
+
     with open(nowPath + "nodesToNodesGraph1.json", 'r', encoding='utf-8') as f:
         nodeToNodeInfo = json.load(f)
-    getIPCertLinksInSkip3(allNodes, nodeToNodeInfo)
+        pool = mp.Pool(processes=12)
+        numLen = int(len(nodeToNodeInfo) / 12)
+        for i in range(12):
+            nodeListNum = (i + 1) * numLen
+            if(i == 11):
+                nodeListNum = None
+            pool.apply_async(getIPCertLinksInSkip3, args=(allNodes, nodeToNodeInfo))
+            print(i, i + 1, i * numLen, nodeListNum)
+        pool.close()
+        pool.join()
     
