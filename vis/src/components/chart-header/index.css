@@ -1,0 +1,11 @@
+.chartsheader {
+  width: 100%;
+  height: 8%;
+  background-color: #eee;
+  text-align: left;
+  text-indent: 4px;
+  /* line-height: 2.5; */
+  line-height: 2;
+  font-weight: bold;
+  font-size: 18px;
+}
