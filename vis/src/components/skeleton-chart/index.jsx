@@ -5,85 +5,85 @@ import { useEffect } from 'react'
 export default function SkeletonChart(){
     useEffect(()=>{
         var data = {
-            "nodes": [
-              {"id": "Myriel", "group": 1},
-              {"id": "Napoleon", "group": 1},
-              {"id": "Mlle.Baptistine", "group": 1},
-              {"id": "Mme.Magloire", "group": 1},
-              {"id": "CountessdeLo", "group": 1},
-              {"id": "Geborand", "group": 1},
-              {"id": "Champtercier", "group": 1},
-              {"id": "Cravatte", "group": 1},
-              {"id": "Count", "group": 1},
-              {"id": "OldMan", "group": 1},
-              {"id": "Labarre", "group": 2},
-              {"id": "Valjean", "group": 2},
-              {"id": "Marguerite", "group": 3},
-              {"id": "Mme.deR", "group": 2},
-              {"id": "Isabeau", "group": 2},
-              {"id": "Gervais", "group": 2},
-              {"id": "Tholomyes", "group": 3},
-              {"id": "Listolier", "group": 3},
-              {"id": "Fameuil", "group": 3},
-              {"id": "Blacheville", "group": 3},
-              {"id": "Favourite", "group": 3},
-              {"id": "Dahlia", "group": 3},
-              {"id": "Zephine", "group": 3},
-              {"id": "Fantine", "group": 3},
-              {"id": "Mme.Thenardier", "group": 4},
-              {"id": "Thenardier", "group": 4},
-              {"id": "Cosette", "group": 5},
-              {"id": "Javert", "group": 4},
-              {"id": "Fauchelevent", "group": 0},
-              {"id": "Bamatabois", "group": 2},
-              {"id": "Perpetue", "group": 3},
-              {"id": "Simplice", "group": 2},
-              {"id": "Scaufflaire", "group": 2},
-              {"id": "Woman1", "group": 2},
-              {"id": "Judge", "group": 2},
-              {"id": "Champmathieu", "group": 2},
-              {"id": "Brevet", "group": 2},
-              {"id": "Chenildieu", "group": 2},
-              {"id": "Cochepaille", "group": 2},
-              {"id": "Pontmercy", "group": 4},
-              {"id": "Boulatruelle", "group": 6},
-              {"id": "Eponine", "group": 4},
-              {"id": "Anzelma", "group": 4},
-              {"id": "Woman2", "group": 5},
-              {"id": "MotherInnocent", "group": 0},
-              {"id": "Gribier", "group": 0},
-              {"id": "Jondrette", "group": 7},
-              {"id": "Mme.Burgon", "group": 7},
-              {"id": "Gavroche", "group": 8},
-              {"id": "Gillenormand", "group": 5},
-              {"id": "Magnon", "group": 5},
-              {"id": "Mlle.Gillenormand", "group": 5},
-              {"id": "Mme.Pontmercy", "group": 5},
-              {"id": "Mlle.Vaubois", "group": 5},
-              {"id": "Lt.Gillenormand", "group": 5},
-              {"id": "Marius", "group": 8},
-              {"id": "BaronessT", "group": 5},
-              {"id": "Mabeuf", "group": 8},
-              {"id": "Enjolras", "group": 8},
-              {"id": "Combeferre", "group": 8},
-              {"id": "Prouvaire", "group": 8},
-              {"id": "Feuilly", "group": 8},
-              {"id": "Courfeyrac", "group": 8},
-              {"id": "Bahorel", "group": 8},
-              {"id": "Bossuet", "group": 8},
-              {"id": "Joly", "group": 8},
-              {"id": "Grantaire", "group": 8},
-              {"id": "MotherPlutarch", "group": 9},
-              {"id": "Gueulemer", "group": 4},
-              {"id": "Babet", "group": 4},
-              {"id": "Claquesous", "group": 4},
-              {"id": "Montparnasse", "group": 4},
-              {"id": "Toussaint", "group": 5},
-              {"id": "Child1", "group": 10},
-              {"id": "Child2", "group": 10},
-              {"id": "Brujon", "group": 4},
-              {"id": "Mme.Hucheloup", "group": 8}
-            ],
+          "nodes": [
+            {"id": "Myriel", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 1},
+            {"id": "Napoleon", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 1},
+            {"id": "Mlle.Baptistine", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 1},
+            {"id": "Mme.Magloire", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 1},
+            {"id": "CountessdeLo", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 1},
+            {"id": "Geborand", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 1},
+            {"id": "Champtercier", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 1},
+            {"id": "Cravatte", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 1},
+            {"id": "Count", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 1},
+            {"id": "OldMan", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 1},
+            {"id": "Labarre", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 2},
+            {"id": "Valjean", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 2},
+            {"id": "Marguerite", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 3},
+            {"id": "Mme.deR", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 2},
+            {"id": "Isabeau", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 2},
+            {"id": "Gervais", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 2},
+            {"id": "Tholomyes", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 3},
+            {"id": "Listolier", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 3},
+            {"id": "Fameuil", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 3},
+            {"id": "Blacheville", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 3},
+            {"id": "Favourite", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 3},
+            {"id": "Dahlia", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 3},
+            {"id": "Zephine", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 3},
+            {"id": "Fantine", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 3},
+            {"id": "Mme.Thenardier", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 4},
+            {"id": "Thenardier", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 4},
+            {"id": "Cosette", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 5},
+            {"id": "Javert", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 4},
+            {"id": "Fauchelevent", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 0},
+            {"id": "Bamatabois", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 2},
+            {"id": "Perpetue", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 3},
+            {"id": "Simplice", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 2},
+            {"id": "Scaufflaire", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 2},
+            {"id": "Woman1", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 2},
+            {"id": "Judge", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 2},
+            {"id": "Champmathieu", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 2},
+            {"id": "Brevet", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 2},
+            {"id": "Chenildieu", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 2},
+            {"id": "Cochepaille", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 2},
+            {"id": "Pontmercy", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 4},
+            {"id": "Boulatruelle", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 6},
+            {"id": "Eponine", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 4},
+            {"id": "Anzelma", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 4},
+            {"id": "Woman2", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 5},
+            {"id": "MotherInnocent", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 0},
+            {"id": "Gribier", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 0},
+            {"id": "Jondrette", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 7},
+            {"id": "Mme.Burgon", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 7},
+            {"id": "Gavroche", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 8},
+            {"id": "Gillenormand", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 5},
+            {"id": "Magnon", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 5},
+            {"id": "Mlle.Gillenormand", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 5},
+            {"id": "Mme.Pontmercy", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 5},
+            {"id": "Mlle.Vaubois", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 5},
+            {"id": "Lt.Gillenormand", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 5},
+            {"id": "Marius", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 8},
+            {"id": "BaronessT", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 5},
+            {"id": "Mabeuf", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 8},
+            {"id": "Enjolras", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 8},
+            {"id": "Combeferre", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 8},
+            {"id": "Prouvaire", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 8},
+            {"id": "Feuilly", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 8},
+            {"id": "Courfeyrac", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 8},
+            {"id": "Bahorel", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 8},
+            {"id": "Bossuet", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 8},
+            {"id": "Joly", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 8},
+            {"id": "Grantaire", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 8},
+            {"id": "MotherPlutarch", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 9},
+            {"id": "Gueulemer", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 4},
+            {"id": "Babet", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 4},
+            {"id": "Claquesous", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 4},
+            {"id": "Montparnasse", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 4},
+            {"id": "Toussaint", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 5},
+            {"id": "Child1", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 10},
+            {"id": "Child2", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 10},
+            {"id": "Brujon", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 4},
+            {"id": "Mme.Hucheloup", "industry": [{"industry": 'AB', "number": 2}, {"industry": 'AE', "number": 8}, {"industry": 'BCD', "number": 1}], "group": 8}
+          ],
             "links": [
               {"source": "Napoleon", "target": "Myriel", "value": 1},
               {"source": "Mlle.Baptistine", "target": "Myriel", "value": 8},
@@ -354,69 +354,114 @@ export default function SkeletonChart(){
                         .append('svg')                    
                         .attr("width", width)
                         .attr("height", height)
-                        .attr("viewBox", [0, 0, 2000, 1400]);
+                        .attr("viewBox", [0, 0, width, height]);
         var displayGroupOnHover = false, 
-            groupColorNames = [],
             scaleFactor = 1.2,  // 值为1表示紧连边缘的点
             margin = scaleFactor,
+            nodeRadius = 10,
             onHover = undefined,
             onClick = undefined,
             onLeave = undefined,
-            groupX = [], // in development
-            groupY = [], // in development
             chargeStrength = undefined,
-            linkStrength = undefined
+            linkStrength = undefined,
+            industryType = ['A', 'B', 'C', 'D', 'E'],   // 一共有9种产业
+            combinationOrder = ['AB', 'AE', 'BCD']   // 按字母对所有产业组合进行排序
+        const wrapper = svg.append('g').attr('transform', `translate(0, 0)`);
+
+
 
         // create groups, links and nodes
-        const groups = svg.append('g').attr('class', 'groups');
+        const groups = wrapper.append('g').attr('class', 'groups');
 
-        const link = svg.append('g')
+        const link = wrapper.append('g')
             .attr('class', 'links')
             .selectAll('line')
             .data(links)
             .join('line')
-            .attr('stroke-width', 2)
-            .attr('stroke', '#858585')
+            .attr('stroke-width', 1)
+            .attr('stroke', '#ccc')
         const nodeColor = d3.scaleOrdinal(d3.schemeCategory10)
-        const node = svg.append('g')
-          .attr('class', 'nodes')
-          .selectAll('circle')
+        const nodeG = wrapper.append('g')
+          .attr('class', 'nodeG')
+          .selectAll('g')
           .data(nodes)
-          .join('circle')
-          .attr('r', 5)
-          .attr('fill', d => nodeColor(d.group))
+          .join('g')
+          .attr('fill', 'white')
           .call(d3.drag()
                 .on('start', dragstarted)
                 .on('drag', dragged)
                 .on('end', dragended));
-        node.append('title').text(function(d) { return d.id; });
-
+        nodeG.append('title').text(function(d) { return d.id; });
+        nodeG.append('circle').attr('r', 2).attr('fill', 'white').attr('cx', 0).attr('cy', 0)
         if (typeof onHover === "function") {
-          node.on("mouseover", onHover);
+          nodeG.on("mouseover", onHover);
         }
-
         if (typeof onLeave === "function") {
-          node.on("mouseout", onLeave);
+          nodeG.on("mouseout", onLeave);
+        }
+        if (typeof onClick === "function") {
+          nodeG.on("click", onClick);
+        }
+        function onHover(){
+          console.log(this);
         }
 
-        if (typeof onClick === "function") {
-          node.on("click", onClick);
+        // 绘制每个节点的内部图
+        const industryColor = {
+          '0': "#c3e6a1",
+          '1': "#e4657f",
+          '2': "#a17fda",
+          '3': "#ff9f6d",
+          '4': "#4caead",
+          '5': "#64d9d7",
+          '6': "#82b461",
+          '7': "#fffb96",
+          '8': "#87ccff"
+        };
+        const arc = d3.arc()
+                      .innerRadius((i, j) => 1 + 2*j )
+                      .outerRadius((i, j) => 1 + 2*(j+1))
+                      .startAngle(i => (2 * Math.PI/combinationOrder.length) * i - 2)
+                      .endAngle(i => (2 * Math.PI/combinationOrder.length) * (i+1) - 2)
+                      .cornerRadius(60)
+                      .padAngle(0.5)
+
+        for(let i=0; i<combinationOrder.length; i++){
+          let currInduYIndex = [], first_flag = true
+          for(var j = 0; j<industryType.length; j++){
+            nodeG.append('path')
+              .attr('d', arc(i, j))
+              .attr('stroke', 'none')
+              .attr('fill', d => { 
+                if(first_flag){
+                  for(let indus in d.industry){
+                    if(combinationOrder.indexOf(d.industry[indus]['industry']) == i){  // 当前产业与当前弧对应的产业一致
+                      let currIndu = d.industry[indus]['industry']   // 当前产业集合，然后获取当前产业集合包含的子产业对应的径向索引
+                      currInduYIndex = currIndu.split('').map( value => industryType.indexOf(value))
+                      break
+                    }
+                  }
+                }
+                first_flag = false
+                if(currInduYIndex.length != 0 && currInduYIndex.indexOf(j) != -1){ 
+                  return industryColor[j]
+                }
+                return 'white'
+            })
+          }
         }
 
         // 定义simulation
         const simulation = d3.forceSimulation().nodes(nodes)
+                            .force("charge", d3.forceManyBody().strength(-50))
         if (linkStrength && typeof linkStrength === "number") {
           simulation.force('link', d3.forceLink().links(links).id(d => d.id).strength(linkStrength));
         } else {
+          // simulation.force('link', d3.forceLink().links(links).id(d => d.id));
           simulation.force('link', d3.forceLink().links(links).id(d => d.id).strength(d => d.source.group == d.target.group ? 0.6: 0.1));
         }
-
-        if (chargeStrength && typeof chargeStrength === "number") {
-          simulation.force('charge', d3.forceManyBody().strength(chargeStrength))
-        } else {
-          simulation.force('charge', d3.forceManyBody())
-        }
-        simulation.force('center', d3.forceCenter(width / 2, height / 2));
+        simulation.force('center', d3.forceCenter(width / 2, height / 2))
+                  .force('collision', d3.forceCollide().radius(19))
         simulation.on('tick', tick);
         function tick() {
           link
@@ -424,11 +469,8 @@ export default function SkeletonChart(){
               .attr('y1', d => d.source.y)
               .attr('x2', d => d.target.x)
               .attr('y2', d => d.target.y);
-          node
-              .attr('cx', d => d.x)
-              .attr('cy', d => d.y);
-
-          updateGroups(paths, groupIds, node, margin);
+          nodeG.attr('transform', d => 'translate(' + d.x + ',' + d.y + ')')
+          updateGroups(paths, groupIds, nodeG, margin);
         }
 
          // 选择group中的节点，检索该节点的位置并返回特定点的convex hull（最少为3个点，否则返回null）
@@ -437,7 +479,6 @@ export default function SkeletonChart(){
               groupId: groupId,
               count: nodes.filter(n => +n.group == groupId).length
           }))
-          .filter(group => group.count > 2)
           .map(group => group.groupId);
 
         const paths = groups
@@ -448,13 +489,25 @@ export default function SkeletonChart(){
           .append('path')
           .attr('stroke', d => nodeColor(d))
           .attr('fill', d => nodeColor(d))
-          .attr('opacity', 0);
+          .attr('opacity', 0.2)
+          // .on('mouseover', (event, d) => {
+          //   d3.select(this).transition()
+          //   .duration(2000)
+          //   .attr('opacity', 0.8);
+          //   console.log(this);
+          // })
+          // .on('mouseout', (event, d) => {
+          //   d3.select(this).transition()
+          //   .duration(2000)
+          //   .attr('opacity', 0.2);
+          // })
 
-        if (!displayGroupOnHover) {
+        
+        if (displayGroupOnHover) {
           paths
             .transition()
             .duration(2000)
-            .attr('opacity', 0.2);
+            .attr('opacity', 0.8);
         }
 
         // 对group添加交互
@@ -463,8 +516,7 @@ export default function SkeletonChart(){
             .on('start', group_dragstarted)
             .on('drag', group_dragged)
             .on('end', group_dragended)
-            );
-
+            )
         //拖拽节点
         function dragstarted(evt, d) {
           if (!evt.active) simulation.alphaTarget(0.3).restart();
@@ -487,7 +539,7 @@ export default function SkeletonChart(){
           d3.select(this).select('path').style('stroke-width', 3);
         }
         function group_dragged(event, groupId) {
-          node
+          nodeG
             .filter(function(d) { return d.group == groupId; })
             .each(function(d) {
               d.x += event.dx;
@@ -499,12 +551,29 @@ export default function SkeletonChart(){
           d3.select(this).select('path').style('stroke-width', 1);
         }
 
-        // 生成group表示，检索group中的节点的位置，返回特定点的convex hull，至少有三个点，否则返回null
+        // // 生成group表示，检索group中的节点的位置，返回特定点的convex hull，至少有三个点，否则返回null
         function polygonGenerator(groupId, node) {
-          var node_coords = node
+          var node_coords = nodeG
             .filter(d => d.group == groupId)
             .data()
             .map(d => [d.x, d.y]); 
+          // 处理点数小于3的组
+          if(node_coords.length == 2){
+            let point_x1 = node_coords[0][0], point_y1 = node_coords[0][1]
+            let point_x2 = node_coords[1][0], point_y2 = node_coords[1][1]
+            node_coords = []
+            node_coords.push([point_x1, point_y1 + nodeRadius])
+            node_coords.push([point_x1, point_y1 - nodeRadius])
+            node_coords.push([point_x2, point_y2 + nodeRadius])
+            node_coords.push([point_x2, point_y2 - nodeRadius])
+          }else if(node_coords.length == 1){
+            let point_x = node_coords[0][0], point_y = node_coords[0][1]
+            node_coords = []
+            node_coords.push([point_x - nodeRadius, point_y + nodeRadius])
+            node_coords.push([point_x + nodeRadius, point_y + nodeRadius])
+            node_coords.push([point_x + nodeRadius, point_y - nodeRadius])
+            node_coords.push([point_x - nodeRadius, point_y - nodeRadius])
+          }
           return d3.polygonHull(node_coords);
         };
         function updateGroups(paths, groupIds, node, margin) {
@@ -512,20 +581,40 @@ export default function SkeletonChart(){
               .x(d => d[0])
               .y(d => d[1])
               .curve(d3['curveCardinalClosed'])
+
           groupIds.forEach(groupId => {
             let centroid = [];
             let path = paths.filter(d => d == groupId)
               .attr('transform', 'scale(1) translate(0,0)')
               .attr('d', d => {
-                const polygon = polygonGenerator(d, node);          
-                centroid = d3.polygonCentroid(polygon);
-                // 适当缩放形状：移动g元素到质心点，translate g围绕中心的所有路径
-                return valueline(polygon.map(point => [point[0] - centroid[0], point[1] - centroid[1]]));
+                const polygon = polygonGenerator(d, node);  
+                  centroid = d3.polygonCentroid(polygon);
+                  // 适当缩放形状：移动g元素到质心点，translate g围绕中心的所有路径
+                  return valueline(polygon.map(point => [point[0] - centroid[0], point[1] - centroid[1]]));
+                
               });
             d3.select(path.node().parentNode)
               .attr('transform', 'translate('  + centroid[0] + ',' + (centroid[1]) + ') scale(' + margin + ')');
           });
         }
+
+    // 视图缩放
+    let zoomHandler = d3
+      .zoom()
+      .on("zoom", zoomAction)
+      .filter(function (event) {
+        return !event.button && event.type != "dblclick";
+      });
+    function zoomAction(event) {
+      wrapper.attr(
+        "transform",
+        `translate(${event.transform.x}, ${event.transform.y})` +
+          "scale(" +
+          event.transform.k +
+          ")"
+        );
+    }
+    zoomHandler(svg);
     }
 
     return <div id="skeleton-chart"></div>

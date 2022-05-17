@@ -13,7 +13,7 @@ import SubChart2 from './components/sub-chart2';
 import SubChartCanvas from './components/sub-chart-canvas';
 import SubChartForceGraph from './components/sub-chart-force-graph';
 import SkeletonChart from './components/skeleton-chart';
-
+import ICClueChart from './components/ic-clue-chart';
 // import SubChart from './components/sub-chart';
 // 引入问题一的自定义组件
 
@@ -27,6 +27,7 @@ function App() {
         <Route key="subchartcanvas" path="/subchartcanvas" element={<SubChartCanvas />} />
         <Route key="subchartforcegraph"  path="/subchartforcegraph" element={<SubChartForceGraph />} />
         <Route key='skeletonchart' path="/skeletonchart" element={<SkeletonChart/>} />
+        <Route key='iccluechart' path="/iccluechart" element={<ICClueChart/> } />
       </Routes> 
     </div>
   );
