@@ -1,44 +1,77 @@
-import { Descriptions, Table } from "antd";
+import { Tag, Table } from "antd";
+
+import "antd/dist/antd.css";
 
 export default function InfoList() {
-  const columns = [
+  // 需要请求的数据示例
+  const infoListData = [
     {
-      title: "#",
-      dataIndex: "sindex",
-      key: "sindex",
-      sorter: (a, b) => a.sindex - b.sindex,
-    },
-    {
-      title: "True Label",
-      dataIndex: "truelabel",
-      key: "truelabel",
-      sorter: (a, b) => a.truelabel - b.truelabel,
-    },
-    {
-      title: "PAA Label",
-      dataIndex: "paalabel",
-      key: "paalabel",
-      sorter: (a, b) => a.paalabel - b.paalabel,
-    },
-    {
-      title: "SEAnet Label",
-      key: "sealabel",
-      dataIndex: "sealabel",
-      sorter: (a, b) => a.sealabel - b.sealabel,
-    },
-    {
-      title: "TSNet Label",
-      dataIndex: "tsealabel",
-      key: "tsealabel",
-      sorter: (a, b) => a.tsealabel - b.tsealabel,
-    },
-    {
-      title: "Hit Rate",
-      dataIndex: "hitrate",
-      key: "hitrate",
-      sorter: (a, b) => a.hitrate.slice(0, 1) - b.hitrate.slice(0, 1),
+      numnode: 382,
+      numlink: 678,
+      groupscope: "中",
+      industrytype: ["A", "A,B", "A,C"],
+      grouptype: "复合型",
     },
   ];
 
-  return <div id="infolist" style={{ width: "100%", height: "92%" }}></div>;
+  const colorList = [
+    "#f9b4ae",
+    "#b3cde3",
+    "#ccebc5",
+    "#decbe4",
+    "#fbd9a6",
+    "#feffcc",
+    "#e5d8bd",
+    "#fcdaec",
+    "#f2f2f2",
+  ];
+
+  const columns = [
+    {
+      title: "节点数量",
+      dataIndex: "numnode",
+      key: "numnode",
+    },
+    {
+      title: "边数量",
+      dataIndex: "numlink",
+      key: "numlink",
+    },
+    {
+      title: "团伙规模",
+      dataIndex: "groupscope",
+      key: "groupscope",
+    },
+    {
+      title: "产业类型",
+      dataIndex: "industrytype",
+      key: "industrytype",
+      render: (tags) => (
+        <>
+          {tags.map((tag, index) => (
+            <Tag color={colorList[index]} key={tag}>
+              {tag.split(",")}
+            </Tag>
+          ))}
+        </>
+      ),
+    },
+    {
+      title: "团伙类型",
+      dataIndex: "grouptype",
+      key: "grouptype",
+    },
+  ];
+
+  return (
+    <div id="infolist" style={{ width: "100%", height: "100%" }}>
+      <Table
+        dataSource={infoListData}
+        columns={columns}
+        rowKey="numnode"
+        size="small"
+        pagination={false}
+      ></Table>
+    </div>
+  );
 }
