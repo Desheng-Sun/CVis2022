@@ -9,6 +9,7 @@ import { helloworld, qone } from "./apis/api.js";
 
 // 引入自定义组件
 import Layout from "./components/layout";
+import InfoList from "./components/info-list";
 import MainView from "./components/main-view";
 import SubChart2 from "./components/sub-chart2";
 import SubChartCanvas from "./components/sub-chart-canvas";
@@ -39,6 +40,7 @@ function App() {
           path="/skeletonchart"
           element={<SkeletonChart />}
         />
+        <Route key="infolist" path="/infolist" element={<InfoList />} />
       </Routes>
     </div>
   );

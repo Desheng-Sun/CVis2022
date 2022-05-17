@@ -125,7 +125,7 @@
 /* 分析团伙板块 */
 #infotable {
   width: 100%;
-  flex: 3;
+  flex: 4;
   background-color: azure;
   padding-bottom: 4px;
 }
@@ -148,7 +148,7 @@
 
 #conclusion {
   width: 100%;
-  flex: 3;
+  flex: 2;
   background-color: royalblue;
   padding-top: 4px;
 }

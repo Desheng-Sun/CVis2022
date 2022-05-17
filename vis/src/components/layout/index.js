@@ -1,5 +1,8 @@
 import "./index.css";
 
+import ChartHeader from "../chart-header";
+import InfoList from "../info-list";
+
 export default function Layout() {
   return (
     <div id="layout">
@@ -27,7 +30,11 @@ export default function Layout() {
         </div>
       </div>
       <div id="analyzegroup">
-        <div id="infotable">列表展示确定团伙的信息</div>
+        <div id="infotable">
+          <ChartHeader chartName={"团伙基本信息"} />
+          <InfoList />
+          {/* 列表展示确定团伙的信息 */}
+        </div>
         <div id="statistic">
           组合视图（关系图+柱状图）展示团伙内节点/边的数量与类型
         </div>
