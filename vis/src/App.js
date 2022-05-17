@@ -9,7 +9,8 @@ import { helloworld, qone } from "./apis/api.js";
 
 // 引入自定义组件
 import Layout from "./components/layout";
-import InfoList from "./components/info-list";
+import InfoList from "./components/info-list"; // 分析团伙板块 - 展示团伙基本信息的列表
+import CountsBar from "./components/counts-bar"; // 分析团伙板块 - 展示团伙内节点与边类型及对应数量的列表
 import MainView from "./components/main-view";
 import SubChart2 from "./components/sub-chart2";
 import SubChartCanvas from "./components/sub-chart-canvas";
@@ -41,6 +42,7 @@ function App() {
           element={<SkeletonChart />}
         />
         <Route key="infolist" path="/infolist" element={<InfoList />} />
+        <Route key="countsbar" path="/countsbar" element={<CountsBar />} />
       </Routes>
     </div>
   );

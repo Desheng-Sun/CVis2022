@@ -2,8 +2,21 @@ import "./index.css";
 
 import ChartHeader from "../chart-header";
 import InfoList from "../info-list";
+import CountsBar from "../counts-bar";
+import { useEffect, useState } from "react";
 
 export default function Layout() {
+  const [countsBarWidth, setCountsBarWidth] = useState(0);
+  const [countsBarHeight, setCountsBarHeight] = useState(0);
+
+  useEffect(() => {
+    setCountsBarWidth(
+      document.getElementById("statistic").getBoundingClientRect().width
+    );
+    setCountsBarHeight(
+      document.getElementById("statistic").getBoundingClientRect().height
+    );
+  }, []);
   return (
     <div id="layout">
       <div id="identifygroup">
@@ -35,9 +48,13 @@ export default function Layout() {
           <InfoList />
           {/* 列表展示确定团伙的信息 */}
         </div>
-        <div id="statistic">
-          组合视图（关系图+柱状图）展示团伙内节点/边的数量与类型
+        <div id="container-statistic">
+          <div id="relations">关系图</div>
+          <div id="statistic">
+            <CountsBar w={countsBarWidth} h={countsBarHeight} />
+          </div>
         </div>
+
         <div id="assetandpath">核心资产与关键链路展示</div>
         <div id="conclusion">文字模板，描述团伙基本信息与主要运作机制</div>
       </div>
