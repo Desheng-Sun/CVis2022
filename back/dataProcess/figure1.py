@@ -95,12 +95,12 @@ def getIPCertLinksInSkip3(coreList, nowPath, nodes, nodeToNodeInfo, nodeCsvW):
     # with alive_bar(len(nodes)) as bar:
     for i in nodes:        
         allNodes1 = []
-        allNodes2 = []
+        # allNodes2 = []
         # allNodes3 = []
         for j in nodeToNodeInfo[str(i)]:
             allNodes1.append(j[1])
-            for k in nodeToNodeInfo[str(j[1])]:
-                allNodes2.append(k[1])
+            # for k in nodeToNodeInfo[str(j[1])]:
+            #     allNodes2.append(k[1])
                 # for l in nodeToNodeInfo[str(k[1])]:
                 #     allNodes3.append(l[1])
         allLinks = {
@@ -138,6 +138,9 @@ def getIPCertLinksInSkip3(coreList, nowPath, nodes, nodeToNodeInfo, nodeCsvW):
                 if(k[1] == int(i)):
                     continue
                 nowNodesInfo = list(nodeCsvW[int(k[1]) - 1])
+                isInFirst = False
+                if(int(k[1]) in allNodes1):
+                    isInFirst = True
                 allLinks["Children"][-1]["Children"].append({
                     "id": nowNodesInfo[1],
                     "WhoisName": k[5],
@@ -147,32 +150,29 @@ def getIPCertLinksInSkip3(coreList, nowPath, nodes, nodeToNodeInfo, nodeCsvW):
                     "dirtyDomain": k[4],
                     "numId": str(nowNodesInfo[0]),
                     "name": nowNodesInfo[2],
+                    "isInFirst": isInFirst,
                     "Children": []
                 })
-                # 如果第二层数据链接到的节点在第二层或者第三层则跳过
-                
-                # 如果第一层数据链接到的节点在第一层已经存在，则继续
-                if(int(k[1]) in allNodes1):
-                    continue
-                # if(k[1] in allNodes1 or k[1] in allNodes2):
-                #     continue
-                # 第三层数据
-                for l in nodeToNodeInfo[str(k[1])]:
-                    # 如果第三层数据和第一层相等，则跳过
-                    if(l[1] == j[1]):
-                        continue
-                    nowNodesInfo = list(nodeCsvW[int(l[1]) - 1])
-                    allLinks["Children"][-1]["Children"][-1]["Children"].append({
-                        "id": nowNodesInfo[1],
-                        "WhoisName": l[5],
-                        "WhoisEmail": l[6],
-                        "WhoisPhone": l[7],
-                        "pureDomain": l[3] - l[4],
-                        "dirtyDomain": l[4],
-                        "numId": str(nowNodesInfo[0]),
-                        "name": nowNodesInfo[2],
-                        "Children": []
-                    })
+
+                # # if(k[1] in allNodes1 or k[1] in allNodes2):
+                # #     continue
+                # # 第三层数据
+                # for l in nodeToNodeInfo[str(k[1])]:
+                #     # 如果第三层数据和第一层相等，则跳过
+                #     if(l[1] == j[1]):
+                #         continue
+                #     nowNodesInfo = list(nodeCsvW[int(l[1]) - 1])
+                #     allLinks["Children"][-1]["Children"][-1]["Children"].append({
+                #         "id": nowNodesInfo[1],
+                #         "WhoisName": l[5],
+                #         "WhoisEmail": l[6],
+                #         "WhoisPhone": l[7],
+                #         "pureDomain": l[3] - l[4],
+                #         "dirtyDomain": l[4],
+                #         "numId": str(nowNodesInfo[0]),
+                #         "name": nowNodesInfo[2],
+                #         "Children": []
+                #     })
 
         # for j in allLinks["0"]:
         #     for k in allLinks["0"][j]:
@@ -260,18 +260,14 @@ if __name__ == '__main__':
         nodeToNodeInfo = json.load(f)
         # getIPCertLinksInSkip3(i, nowPath, allNodes[0 : 2], nodeToNodeInfo, nodeCsvW)
         pool = mp.Pool(processes=12)
-        useNode = []
-        for i in allNodes:
-            if(os.path.exists(nowPath + "IpCertInSkip3/" + str(i) + ".json")):
-                useNode.append(i)
             
-        numLen = int(len(useNode) / 12)
+        numLen = int(len(allNodes) / 12)
         for i in range(12):
             nodeListNum = (i + 1) * numLen
-            if(i == 11):
+            if(i == 5):
                 nodeListNum = None
             pool.apply_async(getIPCertLinksInSkip3, args=(
-                i, nowPath, useNode[i * numLen: nodeListNum], nodeToNodeInfo, nodeCsvW))
+                i, nowPath, allNodes[i * numLen: nodeListNum], nodeToNodeInfo, nodeCsvW))
             print(i, i + 1, i * numLen, nodeListNum)
         pool.close()
         pool.join()
