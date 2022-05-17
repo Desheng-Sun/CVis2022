@@ -170,7 +170,7 @@ def screenNode(typeName, nowPath, coreList, nowNodes):
 
 
 if __name__ == '__main__':
-    nowPath = "D:/个人相关/可视化大赛/ChinaVIS 2022/"
+    nowPath = "./data/"
     # 打开所有的节点
     nodeCsvW = pd.read_csv(
         nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumId.csv", header=0)

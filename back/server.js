@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
-const path = require('path'); 
-const fs = require('fs'); 
+const path = require('path');
+const fs = require('fs');
 const Database = require('arangojs').Database
 const username = 'root'
 const password = '123456'
@@ -10,7 +10,7 @@ const port = 3008;
 /**
  * 设置跨域请求
  */
- app.all("*", function (req, res, next) {
+app.all("*", function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   res.header("Access-Control-Allow-Methods", "PUT, POST, GET, DELETE, OPTIONS");
@@ -35,10 +35,10 @@ app.listen(port, () => {
 app.get("/Qone", (req, res, next) => {
   file_path = './data/q-one-data/tiaozhan1.json'
   // file_path = './data/q-one-data/large.json'
-  fs.readFile(file_path, 'utf8', function(err, data){
-    if(err){
+  fs.readFile(file_path, 'utf8', function (err, data) {
+    if (err) {
       console.log(err)
-    }else{
+    } else {
       let d = JSON.parse(data)
       res.send(d)
       res.end()
@@ -63,4 +63,54 @@ app.get("/db", (req, res, next) => {
   //   }
   // })
   // res.send(status)
+})
+
+// 获取每个Ip/Cert的Industry信息
+app.get("/ICIndustry", (req, res) => {
+  let filedata = path.join(__dirname, 'data/nodeIndustryInfo1.json')
+  fs.readFile(filedata, 'utf-8', function (err, data) {
+    if (err) {
+      console.error(err);
+    } else {
+      let jsonData = JSON.parse(data);
+      res.send(jsonData)
+      res.end()
+    }
+  })
+})
+
+// 获取每个Ip/Cert的链路信息
+app.get("/ICLinks", (req, res) => {
+  let filedata = path.join(__dirname, 'data/nodesToNodesGraph1.json')
+  fs.readFile(filedata, 'utf-8', function (err, data) {
+    if (err) {
+      console.error(err);
+    } else {
+      let jsonData = JSON.parse(data);
+      links = []
+      for (i in jsonData) {
+        for (j in i) {
+          if (j[1] > j[0]) {
+            links.push([j[0], j[1]])
+          }
+        }
+      }
+      res.send(links)
+      res.end()
+    }
+  })
+})
+
+// 获取冰柱图所需要的数据
+app.get("/question1", (req, res) => {
+  let filedata = path.join(__dirname, 'data/IpCertInSkip3/' + str(req.query.numId) + ".json")
+  fs.readFile(filedata, 'utf-8', function (err, data) {
+    if (err) {
+      console.error(err);
+    } else {
+      let jsonData = JSON.parse(data);
+      res.send(jsonData)
+      res.end()
+    }
+  })
 })

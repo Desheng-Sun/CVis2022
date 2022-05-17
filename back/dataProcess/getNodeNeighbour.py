@@ -67,7 +67,7 @@ def mergeNodesNeighbourInfop():
 
 
 if __name__ == '__main__':
-    nowPath = "D:/个人相关/可视化大赛/ChinaVIS 2022/"
+    nowPath = "./data/"
     with open(nowPath + "LinksByIP/IpScreen.json", 'r', encoding='utf-8') as f:
         print("查找每一个Ip到Nodes的节点信息--------------------------------------")
         IpScreen = json.load(f)
