@@ -147,7 +147,7 @@ def changeLinkId(i, nodeList, linkList):
 
 
 if __name__ == '__main__':
-    nowPath = "D:/个人相关/可视化大赛/ChinaVIS 2022/"
+    nowPath = "./data/"
     # addNodeId()
     # 打开所有的节点
     nodeCsvW = pd.read_csv(

@@ -87,39 +87,61 @@ def mergeNodesNeighbourInfop():
         json.dump(nodeToNodeInfo, f, ensure_ascii=False)
 
 
-def getIPCertLinksInSkip3(nodes, nodeToNodeInfo):
-    with alive_bar(len(nodes)) as bar:
-        for i in nodes:
-            allNodes = []
-            allLinks = {
-                "0" : {},
-                "1" : {},
-                "2" : {},
-            }
-            allLinks["0"] = {str(i) : nodeToNodeInfo[str(i)]}
-            allNodes.append(str(i))
-            for j in allLinks["0"]:
-                for k in allLinks["0"][j]:
-                    if(str(k[1]) not in allNodes):
-                        allLinks["1"].update({
-                            str(k[1]): nodeToNodeInfo[str(k[1])]
-                        })
-                        allNodes.append(str(k[1]))
+def getIPCertLinksInSkip3(coreList, nowPath, nodes, nodeToNodeInfo, nodeCsvW):
+    
+    print("第", coreList, "个线程开始执行了----------------",
+          time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
+    # with alive_bar(len(nodes)) as bar:
+    for i in nodes:
+        allNodes = []
+        allLinks = {
+            "0" : {},
+            "1" : {},
+            "2" : {},
+        }
+        allLinks["0"] = {str(i) : nodeToNodeInfo[str(i)]}
+        allNodes.append(str(i))
+        for j in allLinks["0"]:
+            for k in allLinks["0"][j]:
+                if(str(k[1]) not in allNodes):
+                    nownodeToNodeInfo = []
+                    for l in nodeToNodeInfo[str(k[1])]:
+                        if(l[1] == int(j)):
+                            continue
+                        nownodeToNodeInfo.append(l)
+                    allLinks["1"].update({
+                        str(k[1]): nownodeToNodeInfo
+                    })
+                    allNodes.append(str(k[1]))
 
-            for j in allLinks["1"]:
-                for k in allLinks["1"][j]:
-                    if(str(k[1]) not in allNodes):
-                        allLinks["2"].update({
-                            str(k[1]): nodeToNodeInfo[str(k[1])]
-                        })
-                        allNodes.append(str(k[1]))
-            with open(nowPath + "IpCertInSkip3/" + str(i) + ".json", 'w', encoding='utf-8') as f:
-                json.dump(nodeToNodeInfo, f, ensure_ascii=False)
-            bar()
+        for j in allLinks["1"]:
+            for k in allLinks["1"][j]:
+                if(str(k[1]) not in allNodes):
+                    nownodeToNodeInfo = []
+                    for l in nodeToNodeInfo[str(k[1])]:
+                        if(l[1] == int(j)):
+                            continue
+                        nownodeToNodeInfo.append(l)
+                    allLinks["2"].update({
+                        str(k[1]): nownodeToNodeInfo
+                    })
+                    allNodes.append(str(k[1]))
+        nodesInfo = {}
+        for j in allLinks["1"]:
+            for k in allLinks["1"][j]:
+                if(str(k[1]) not in allNodes):
+                    allNodes.append(str(k[1]))
+        for j in allNodes:
+            nodesInfo[j] = list(nodeCsvW[int(j) - 1])
+        # bar()
+        with open(nowPath + "IpCertInSkip3/" + str(i) + ".json", 'w', encoding='utf-8') as f:
+            json.dump([allLinks,nodesInfo], f, ensure_ascii=False)
+    print("第", coreList, "个线程执行完成了----------------",
+        time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
             
 
 if __name__ == '__main__':
-    nowPath = "D:/个人相关/可视化大赛/ChinaVIS 2022/ChinaVis2022/"
+    nowPath = "./data/"
     IpScreen = []
     allNodes = []
     certScreen = []
@@ -135,7 +157,10 @@ if __name__ == '__main__':
         allNodes.append(i[0])
     for i in certScreen:
         allNodes.append(i[0])
-
+        
+    nodeCsvW = pd.read_csv(
+        nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumId.csv", header=0)
+    nodeCsvW = nodeCsvW.values
     # pool = mp.Pool(processes=12)
     # numLen = int(len(IpScreen) / 12)
     # for i in range(12):
@@ -166,13 +191,14 @@ if __name__ == '__main__':
 
     with open(nowPath + "nodesToNodesGraph1.json", 'r', encoding='utf-8') as f:
         nodeToNodeInfo = json.load(f)
+        # getIPCertLinksInSkip3(i, nowPath, allNodes[0 : 2], nodeToNodeInfo, nodeCsvW)
         pool = mp.Pool(processes=12)
         numLen = int(len(nodeToNodeInfo) / 12)
         for i in range(12):
             nodeListNum = (i + 1) * numLen
             if(i == 11):
                 nodeListNum = None
-            pool.apply_async(getIPCertLinksInSkip3, args=(allNodes, nodeToNodeInfo))
+            pool.apply_async(getIPCertLinksInSkip3, args=(i, nowPath, allNodes[i * numLen: nodeListNum], nodeToNodeInfo, nodeCsvW))
             print(i, i + 1, i * numLen, nodeListNum)
         pool.close()
         pool.join()

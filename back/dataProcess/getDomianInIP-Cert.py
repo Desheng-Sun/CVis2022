@@ -23,7 +23,7 @@ def getDomainInIp_Cert(nowNode,nodeType,nodeCsv, nowPath):
 
 
 if __name__ == '__main__':
-    nowPath = "D:/个人相关/可视化大赛/ChinaVIS 2022/ChinaVis2022/"
+    nowPath = "./data/"
     # 打开所有的节点
     nodeCsvW = open(
         nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumId.csv", "r",encoding="utf-8")
