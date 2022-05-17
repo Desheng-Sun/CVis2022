@@ -87,13 +87,6 @@
   background-color: yellowgreen;
 }
 
-#compareic {
-  width: 100%;
-  flex: 6;
-  background-color: gold;
-  padding-top: 4px;
-}
-
 #controlmainmap {
   width: 100%;
   flex: 1;
@@ -107,6 +100,26 @@
   background-color: silver;
   padding-top: 4px;
   padding-bottom: 4px;
+}
+
+#container-filter {
+  width: 100%;
+  flex: 6;
+  display: flex;
+}
+
+#deleterelation {
+  height: 100%;
+  flex: 1;
+  background-color: gold;
+  padding-top: 4px;
+}
+
+#existingdomain {
+  height: 100%;
+  flex: 1;
+  background-color: aqua;
+  padding-top: 4px;
 }
 
 /* 分析团伙板块 */

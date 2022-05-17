@@ -20,7 +20,10 @@ export default function Layout() {
             <div id="controlmainmap">主图的控制台</div>
             <div id="mainmap">主图</div>
           </div>
-          <div id="compareic">帮助用户进一步确定主图的筛选视图</div>
+          <div id="container-filter">
+            <div id="deleterelation">差异视图 删IP/Cert节点</div>
+            <div id="existingdomain">展示当前子图中domain情况</div>
+          </div>
         </div>
       </div>
       <div id="analyzegroup">
