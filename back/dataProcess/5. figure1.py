@@ -23,7 +23,8 @@ def getNodesNeighbourInfop(coreList, nowPath, typeName, nodes, allNodes):
         
         nodeLinksJ = open(nowPath + nodePath + str(i[0]) +
                           ".json", "w", encoding="utf-8")
-        json.load(nodeLinks, nodeLinksJ, ensure_ascii=False)
+        json.dump(nodeLinks, nodeLinksJ, ensure_ascii=False)
+        nodeLinksJ.close()
         nodesToNodesInfo = []
         for j in nodeLinks:
             if(not j["end"][0] in allNodes):
