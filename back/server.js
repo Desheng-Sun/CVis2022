@@ -143,7 +143,7 @@ app.get("/db", (req, res, next) => {
 // 获取冰柱图所需要的数据
 app.get("/icClueData", (req, res) => {
   let filename = '3'
-  let filedata = path.join(__dirname, 'data/IpCertInSkip3/' + filename + ".json")
+  let filedata = path.join(__dirname, 'data/ic-clue-data/' + filename + ".json")
   fs.readFile(filedata, 'utf-8', function (err, data) {
     if (err) {
       console.error(err);

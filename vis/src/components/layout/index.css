@@ -3,6 +3,7 @@
   width: 100vw;
   background-color: #fff;
   display: flex;
+  overflow: hidden;
 }
 
 /* 两栏 发现团伙 分析团伙 */
@@ -66,7 +67,7 @@
 #filteric {
   width: 100%;
   flex: 12;
-  background-color: brown;
+  background-color: white;
   padding-top: 4px;
   padding-bottom: 4px;
 }
