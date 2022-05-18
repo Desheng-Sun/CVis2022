@@ -1,4 +1,5 @@
 import json
+import os
 from alive_progress import alive_bar
 import multiprocessing as mp
 import pandas as pd
@@ -139,7 +140,8 @@ def getAllLinksByNodes(coreList, nowPath, typeName, nodes, nodeCsvW):
 
 
 if __name__ == '__main__':
-    nowPath = "./data/"
+    nowPath = os.path.abspath(os.path.dirname(
+        os.path.dirname(__file__))) + "/data/"
     # 打开所有的节点
     nodeCsvW = pd.read_csv(
         nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumId.csv", header=0)
@@ -149,34 +151,36 @@ if __name__ == '__main__':
     print("获取筛选后的所有Ip节点与其他节点的路径----------------------------------------------")
     with open(nowPath + "LinksByIP/IpScreen.json", 'r', encoding='utf-8') as f:
         IpScreen = json.load(f)
-        print(len(IpScreen))
-        pool = mp.Pool(processes=12)
-        num = 0
-        for i in range(12):
-            num += i + 1
-            nodeListNum = (num) * 268
-            if(nodeListNum > len(IpScreen)):
-                nodeListNum = None
-            pool.apply_async(getAllLinksByNodes, args=(
-                i, nowPath, "IP", IpScreen[(num - i - 1) * 268: nodeListNum], nodeCsvW))
-            print(num - i - 1, num, (num - i - 1) * 268, nodeListNum)
-        pool.close()
-        pool.join()
+        getAllLinksByNodes(
+                0, nowPath, "IP", IpScreen[0: 1], nodeCsvW)
+    #     print(len(IpScreen))
+    #     pool = mp.Pool(processes=12)
+    #     num = 0
+    #     for i in range(12):
+    #         num += i + 1
+    #         nodeListNum = (num) * 268
+    #         if(nodeListNum > len(IpScreen)):
+    #             nodeListNum = None
+    #         pool.apply_async(getAllLinksByNodes, args=(
+    #             i, nowPath, "IP", IpScreen[(num - i - 1) * 268: nodeListNum], nodeCsvW))
+    #         print(num - i - 1, num, (num - i - 1) * 268, nodeListNum)
+    #     pool.close()
+    #     pool.join()
 
-    # 获取筛选后的所有Cert节点与其他节点的路径
-    print("获取筛选后的所有Cert节点与其他节点的路径----------------------------------------------")
-    with open(nowPath + "LinksByCert/certScreen.json", 'r', encoding='utf-8') as f:
-        certScreen = json.load(f)
-        print(len(certScreen))
-        pool = mp.Pool(processes=12)
-        num = 0
-        for i in range(12):
-            num += i + 1
-            nodeListNum = (num) * 215
-            if(nodeListNum > len(certScreen)):
-                nodeListNum = None
-            pool.apply_async(getAllLinksByNodes, args=(
-                i, nowPath, "Cert", certScreen[(num - i - 1) * 215: nodeListNum], nodeCsvW))
-            print(num - i - 1, num,(num - i - 1) * 215, nodeListNum)
-        pool.close()
-        pool.join()
+    # # 获取筛选后的所有Cert节点与其他节点的路径
+    # print("获取筛选后的所有Cert节点与其他节点的路径----------------------------------------------")
+    # with open(nowPath + "LinksByCert/certScreen.json", 'r', encoding='utf-8') as f:
+    #     certScreen = json.load(f)
+    #     print(len(certScreen))
+    #     pool = mp.Pool(processes=12)
+    #     num = 0
+    #     for i in range(12):
+    #         num += i + 1
+    #         nodeListNum = (num) * 215
+    #         if(nodeListNum > len(certScreen)):
+    #             nodeListNum = None
+    #         pool.apply_async(getAllLinksByNodes, args=(
+    #             i, nowPath, "Cert", certScreen[(num - i - 1) * 215: nodeListNum], nodeCsvW))
+    #         print(num - i - 1, num,(num - i - 1) * 215, nodeListNum)
+    #     pool.close()
+    #     pool.join()
