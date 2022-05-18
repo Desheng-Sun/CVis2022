@@ -3,20 +3,33 @@ import "./index.css";
 import ChartHeader from "../chart-header";
 import InfoList from "../info-list";
 import CountsBar from "../counts-bar";
+import DifChart from "../dif-chart";
 import { useEffect, useState } from "react";
 
 export default function Layout() {
   const [countsBarWidth, setCountsBarWidth] = useState(0);
   const [countsBarHeight, setCountsBarHeight] = useState(0);
+  const [difChartWidth, setDifChartWidth] = useState(0);
+  const [difChartHeight, setDifChartHeight] = useState(0);
 
   useEffect(() => {
+    // console.log(countsBarWidth);
     setCountsBarWidth(
       document.getElementById("statistic").getBoundingClientRect().width
     );
     setCountsBarHeight(
       document.getElementById("statistic").getBoundingClientRect().height
     );
-  }, []);
+    setDifChartWidth(
+      document.getElementById("deleterelation").getBoundingClientRect().width
+    );
+    setDifChartHeight(
+      document.getElementById("deleterelation").getBoundingClientRect().height
+    );
+    // console.log(countsBarWidth);
+
+
+  });
   return (
     <div id="layout">
       <div id="identifygroup">
@@ -37,7 +50,11 @@ export default function Layout() {
             <div id="mainmap">主图</div>
           </div>
           <div id="container-filter">
-            <div id="deleterelation">差异视图 删IP/Cert节点</div>
+            <div id="deleterelation">
+              <ChartHeader chartName={"差异视图"} />
+              <DifChart w={difChartWidth} h = {difChartHeight}/>
+              {/* 差异视图 删IP/Cert节点 */}
+            </div>
             <div id="existingdomain">展示当前子图中domain情况</div>
           </div>
         </div>

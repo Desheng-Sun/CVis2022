@@ -87,23 +87,63 @@ app.get("/ICLinks", (req, res) => {
       console.error(err);
     } else {
       let jsonData = JSON.parse(data);
-      links = []
-      for (i in jsonData) {
-        for (j in i) {
-          if (j[1] > j[0]) {
-            links.push([j[0], j[1]])
-          }
-        }
-      }
-      res.send(links)
+      res.send(jsonData)
       res.end()
     }
   })
 })
 
+
+app.get("/db", (req, res, next) => {
+  // 图2的数据处理过程
+  let nodes = []
+  let nodesInfo = [] 
+  let ICIndustry = []
+  let ICLinks = []
+  for(let i in nodes){
+    nodesInfo.push({
+      "numId": i,
+      "ICIndustry": ICIndustry[str(i)]
+    })
+  }
+  for(let i in ICLinks){
+    for(let j in i){
+      if(nodes.includes(j[1]) && j[1] > j[0]){
+        ICLinks.push({
+          "source": j[1],
+          "target": j[2]
+        })
+      }
+    }
+  }
+  
+  // 图3的数据处理过程.
+  for(let i in nodes){
+    nodesInfo.push({
+      "numId": i,
+      "ICIndustry": ICIndustry[str(i)]
+    })
+  }
+  let filedata = path.join(__dirname, 'data/nodesToNodesGraph1.json"/')
+  fs.readFile(filedata, 'utf-8', function (err, data) {
+    if (err) {
+      console.error(err);
+    } else {
+      let jsonData = JSON.parse(data);
+      for(let i in jsonData[str(nodes[0])]){
+        if(i[1] == nodes[1]){
+          industryInMiddle = i[-1]
+        }
+      }
+    }
+  })
+})
+
+
 // 获取冰柱图所需要的数据
-app.get("/question1", (req, res) => {
-  let filedata = path.join(__dirname, 'data/IpCertInSkip3/' + str(req.query.numId) + ".json")
+app.get("/icClueData", (req, res) => {
+  let filename = '3'
+  let filedata = path.join(__dirname, 'data/IpCertInSkip3/' + filename + ".json")
   fs.readFile(filedata, 'utf-8', function (err, data) {
     if (err) {
       console.error(err);
