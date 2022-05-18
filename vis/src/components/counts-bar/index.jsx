@@ -44,7 +44,6 @@ export default function CountsBar({ w, h }) {
 
   // 随系统缩放修改画布大小
   useEffect(() => {
-    console.log(w);
     setSvgWidth(w);
   }, [w]);
   useEffect(() => {

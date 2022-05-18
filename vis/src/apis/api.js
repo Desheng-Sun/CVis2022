@@ -7,3 +7,7 @@ export function helloworld() {
 export function qone(){
   return get("/Qone")
 }
+
+export function icclue(){
+  return get('/icClueData')
+}
