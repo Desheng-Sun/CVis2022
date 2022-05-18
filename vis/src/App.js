@@ -16,6 +16,7 @@ import SubChart2 from "./components/sub-chart2";
 import SubChartCanvas from "./components/sub-chart-canvas";
 import SubChartForceGraph from "./components/sub-chart-force-graph";
 import SkeletonChart from "./components/skeleton-chart";
+import DifChart from "./components/dif-chart";
 
 // import SubChart from './components/sub-chart';
 // 引入问题一的自定义组件
@@ -43,6 +44,7 @@ function App() {
         />
         <Route key="infolist" path="/infolist" element={<InfoList />} />
         <Route key="countsbar" path="/countsbar" element={<CountsBar />} />
+        <Route key="difchart" path="/difchart" element={<DifChart />} />
       </Routes>
     </div>
   );
