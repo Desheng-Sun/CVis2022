@@ -105,3 +105,10 @@ dist
 
 # TernJS port file
 .tern-port
+
+/back/data
+back/data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset
+back/data/LinksByCertScreen
+back/data/LinksByCert
+back/data/LinksByIPScreen
+back/data/LinksByIP
