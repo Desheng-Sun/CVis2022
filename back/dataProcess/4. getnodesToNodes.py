@@ -19,6 +19,18 @@ def getNodesNeighbourInfop(coreList, nowPath, typeName, nodes):
         nodesToNodesInfo = []
         for j in nodeLinks:
             nodesToNodesInfo.append([j["begin"][0], j["end"][0], j["nodeNum"], j["domainNum"], j["industryNum"]])
+        
+            # 补全每个文件中的内容
+            nowNodeFile = "LinksByIPScreen/"
+            if(j["end"][3] == "Cert"):
+                nowNodeFile = "LinksByCertScreen/"
+            with open(nowPath + nowNodeFile + str( j["end"][0]) + ".json", "r", encoding="utf-8") as f:
+                nowNodeInfo = json.load(f)
+                nowNodeInfo.append(j) 
+                with open(nowPath + nowNodeFile + str( j["end"][0]) + ".json", "w", encoding="utf-8") as f2:
+                    json.dump(nowNodeInfo, f2, ensure_ascii=False)
+
+
         allLinksToNodes.append({
             "numId": i[0],
             "linksToNodesInfo":nodesToNodesInfo
@@ -28,6 +40,7 @@ def getNodesNeighbourInfop(coreList, nowPath, typeName, nodes):
 
     print(typeName, " : 第", coreList, "个线程执行完成了----------------",
           time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
+
 
 def mergeNodesNeighbourInfop():
     nodeToNodeInfo = []
@@ -75,31 +88,31 @@ if __name__ == '__main__':
         pool = mp.Pool(processes=12)
         numLen = int(len(IpScreen) / 12)
         # getNodesNeighbourInfop(3, nowPath, "IP", IpScreen[3 * numLen: 4 * numLen])
-        # for i in range(12):         
-        #     nodeListNum = (i + 1) * numLen
-        #     if(i == 11):
-        #         nodeListNum = None
-        #     pool.apply_async(getNodesNeighbourInfop, args=(
-        #         i, nowPath, "IP", IpScreen[i * numLen: nodeListNum]))
-        #     print(i, i + 1, i * numLen, nodeListNum)
-        # pool.close()
-        # pool.join()
+        for i in range(12):         
+            nodeListNum = (i + 1) * numLen
+            if(i == 11):
+                nodeListNum = None
+            pool.apply_async(getNodesNeighbourInfop, args=(
+                i, nowPath, "IP", IpScreen[i * numLen: nodeListNum]))
+            print(i, i + 1, i * numLen, nodeListNum)
+        pool.close()
+        pool.join()
 
-    # with open(nowPath + "LinksByCert/certScreen.json", 'r', encoding='utf-8') as f:
-    #     print("查找每一个Cert到Nodes的节点信息--------------------------------------")
-    #     certScreen = json.load(f)
-    #     print(len(certScreen))
-    #     pool = mp.Pool(processes=12)
-    #     numLen = int(len(certScreen) / 12)
-    #     for i in range(12):
-    #         nodeListNum = (i + 1) * numLen
-    #         if(i == 11):
-    #             nodeListNum = None
-    #         pool.apply_async(getNodesNeighbourInfop, args=(
-    #             i, nowPath, "Cert", certScreen[i * numLen: nodeListNum]))
-    #         print(i, i + 1, i * numLen, nodeListNum)
-    #     pool.close()
-    #     pool.join()
-    #  # 将所有数据进行合并
+    with open(nowPath + "LinksByCert/certScreen.json", 'r', encoding='utf-8') as f:
+        print("查找每一个Cert到Nodes的节点信息--------------------------------------")
+        certScreen = json.load(f)
+        print(len(certScreen))
+        pool = mp.Pool(processes=12)
+        numLen = int(len(certScreen) / 12)
+        for i in range(12):
+            nodeListNum = (i + 1) * numLen
+            if(i == 11):
+                nodeListNum = None
+            pool.apply_async(getNodesNeighbourInfop, args=(
+                i, nowPath, "Cert", certScreen[i * numLen: nodeListNum]))
+            print(i, i + 1, i * numLen, nodeListNum)
+        pool.close()
+        pool.join()
+     # 将所有数据进行合并
     print("将所有数据进行合并----------------------------------------------")
     mergeNodesNeighbourInfop()

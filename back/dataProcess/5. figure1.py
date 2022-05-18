@@ -19,6 +19,11 @@ def getNodesNeighbourInfop(coreList, nowPath, typeName, nodes, allNodes):
         nodeLinksJ = open(nowPath + nodePath + str(i[0]) +
                           ".json", "r", encoding="utf-8")
         nodeLinks = json.load(nodeLinksJ)
+        nodeLinks.sort(key = lambda x: x["end"][0])
+        
+        nodeLinksJ = open(nowPath + nodePath + str(i[0]) +
+                          ".json", "w", encoding="utf-8")
+        json.load(nodeLinks, nodeLinksJ, ensure_ascii=False)
         nodesToNodesInfo = []
         for j in nodeLinks:
             if(not j["end"][0] in allNodes):
@@ -75,14 +80,6 @@ def mergeNodesNeighbourInfop():
         nodeToNodeInfo.update(nowCert)
     nodeToNodeInfo = sorted(nodeToNodeInfo.items(), key=lambda d: int(d[0]))
     nodeToNodeInfo = dict(nodeToNodeInfo)
-    with alive_bar(len(nodeToNodeInfo)) as bar:
-        for i in nodeToNodeInfo:
-            for j in nodeToNodeInfo[i]:
-                if(j[0] < j[1]):
-                    nowLinksInfo = [j[1], j[0]]
-                    nowLinksInfo.extend(j[2:])
-                    nodeToNodeInfo[str(j[1])].append(nowLinksInfo)
-            bar()
 
     with open(nowPath + "nodesToNodesGraph1.json", 'w', encoding='utf-8') as f:
         json.dump(nodeToNodeInfo, f, ensure_ascii=False)
@@ -129,7 +126,7 @@ def getIPCertLinksInSkip3(coreList, nowPath, nodes, nodeToNodeInfo, nodeCsvW):
             nowNodesInfo = list(nodeCsvW[int(j[1]) - 1])
             allLinks["Children"].append({
                 "id": nowNodesInfo[1],
-                "nodesNum": j[3] - 2,
+                "nodesNum": j[2] - 2,
                 "WhoisName": j[5],
                 "WhoisEmail": j[6],
                 "WhoisPhone": j[7],
@@ -155,7 +152,7 @@ def getIPCertLinksInSkip3(coreList, nowPath, nodes, nodeToNodeInfo, nodeCsvW):
                     isInFirst = True
                 allLinks["Children"][-1]["Children"].append({
                     "id": nowNodesInfo[1],
-                    "nodesNum": k[3] - 2,
+                    "nodesNum": k[2] - 2,
                     "WhoisName": k[5],
                     "WhoisEmail": k[6],
                     "WhoisPhone": k[7],
@@ -254,32 +251,34 @@ if __name__ == '__main__':
     nodeCsvW = pd.read_csv(
         nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumId.csv", header=0)
     nodeCsvW = nodeCsvW.values
-    # pool = mp.Pool(processes=12)
-    # numLen = int(len(IpScreen) / 12)
-    # for i in range(12):
-    #     nodeListNum = (i + 1) * numLen
-    #     if(i == 11):
-    #         nodeListNum = None
-    #     pool.apply_async(getNodesNeighbourInfop, args=(
-    #         i, nowPath, "IP", IpScreen[i * numLen: nodeListNum], allNodes))
-    #     print(i, i + 1, i * numLen, nodeListNum)
-    # pool.close()
-    # pool.join()
+    pool = mp.Pool(processes=12)
+    numLen = int(len(IpScreen) / 12)
+    # getNodesNeighbourInfop(
+    #         0, nowPath, "IP", IpScreen[0: 1], allNodes)
+    for i in range(12):
+        nodeListNum = (i + 1) * numLen
+        if(i == 11):
+            nodeListNum = None
+        pool.apply_async(getNodesNeighbourInfop, args=(
+            i, nowPath, "IP", IpScreen[i * numLen: nodeListNum], allNodes))
+        print(i, i + 1, i * numLen, nodeListNum)
+    pool.close()
+    pool.join()
 
-    # pool = mp.Pool(processes=12)
-    # numLen = int(len(certScreen) / 12)
-    # for i in range(12):
-    #     nodeListNum = (i + 1) * numLen
-    #     if(i == 11):
-    #         nodeListNum = None
-    #     pool.apply_async(getNodesNeighbourInfop, args=(
-    #         i, nowPath, "Cert", certScreen[i * numLen: nodeListNum], allNodes))
-    #     print(i, i + 1, i * numLen, nodeListNum)
-    # pool.close()
-    # pool.join()
-    # # 将所有数据进行合并
-    # print("将所有数据进行合并----------------------------------------------")
-    # mergeNodesNeighbourInfop()
+    pool = mp.Pool(processes=12)
+    numLen = int(len(certScreen) / 12)
+    for i in range(12):
+        nodeListNum = (i + 1) * numLen
+        if(i == 11):
+            nodeListNum = None
+        pool.apply_async(getNodesNeighbourInfop, args=(
+            i, nowPath, "Cert", certScreen[i * numLen: nodeListNum], allNodes))
+        print(i, i + 1, i * numLen, nodeListNum)
+    pool.close()
+    pool.join()
+    # 将所有数据进行合并
+    print("将所有数据进行合并----------------------------------------------")
+    mergeNodesNeighbourInfop()
 
     with open(nowPath + "nodesToNodesGraph1.json", 'r', encoding='utf-8') as f:
         nodeToNodeInfo = json.load(f)
