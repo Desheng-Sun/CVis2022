@@ -8,7 +8,7 @@
 /* 两栏 发现团伙 分析团伙 */
 #identifygroup {
   height: 100%;
-  flex: 3;
+  flex: 4;
   background-color: antiquewhite;
   display: flex;
   padding-right: 4px;

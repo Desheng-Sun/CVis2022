@@ -24,7 +24,7 @@ export default function CountsBar({ w, h }) {
     { name: "whoisName", value: 6 },
     { name: "whoisEmail", value: 4 },
     { name: "whoisPhone", value: 7 },
-    { name: "domainAsCnameTarget", value: 23 },
+    { name: "domainAsCnameTarget", value: 200 },
     { name: "domainAsJumpTarget", value: 12 },
     { name: "domainAsSubTarget", value: 21 },
     { name: "domainAsSource", value: 8 },
@@ -53,7 +53,6 @@ export default function CountsBar({ w, h }) {
 
   useEffect(() => {
     // 初始化画布
-
     const dimensions = {
       width: svgWidth,
       height: svgHeight,
@@ -141,7 +140,7 @@ export default function CountsBar({ w, h }) {
       .data(nodesList)
       .join("text")
       .attr("class", "nodecountstext")
-      .attr("x", (d, i) => xScale(i) + xScale.bandwidth() * 0.4)
+      .attr("x", (d, i) => xScale(i))
       .attr("y", (d, i) =>
         Math.max(
           boundedHeight / 2 -
@@ -153,7 +152,7 @@ export default function CountsBar({ w, h }) {
       )
       .text((d) => d.value)
       .style("font-family", "sans-serif")
-      .style("font-size", "10px");
+      .style("font-size", "12px");
 
     bounds
       .append("g")
@@ -161,7 +160,7 @@ export default function CountsBar({ w, h }) {
       .data(linksList)
       .join("text")
       .attr("class", "linkcountstext")
-      .attr("x", (d, i) => xScale(i) + xScale.bandwidth() * 0.4)
+      .attr("x", (d, i) => xScale(i))
       .attr("y", (d, i) =>
         Math.max(
           boundedHeight - yScaleForLink(d.value) - dimensions.margin.bottom + 8,
@@ -172,7 +171,7 @@ export default function CountsBar({ w, h }) {
         if (i !== 8) return d.value;
       })
       .style("font-family", "sans-serif")
-      .style("font-size", "10px");
+      .style("font-size", "12px");
 
     // 标识节点与边的总数信息
     svg
@@ -185,7 +184,7 @@ export default function CountsBar({ w, h }) {
       .attr("y", boundedHeight / 2.2)
       .text(`节点: ${sumOfNode}`)
       .style("font-family", "sans-serif")
-      .style("font-size", "12px");
+      .style("font-size", "14px");
 
     svg
       .append("g")
@@ -197,8 +196,8 @@ export default function CountsBar({ w, h }) {
       .attr("y", boundedHeight)
       .text(`边: ${sumOfLink}`)
       .style("font-family", "sans-serif")
-      .style("font-size", "12px");
-  }, [linksList, nodesList]);
+      .style("font-size", "14px");
+  }, [svgWidth, svgHeight, linksList, nodesList]);
 
   return <div id="countsbar" style={{ width: "100%", height: "100%" }}></div>;
 }
