@@ -284,8 +284,8 @@ export default Kapsule({
                return currNumId == cur
            })
            .selectAll('rect')
-           .attr('stroke', '#e81123')
-          // .attr('opacity', 1)
+          //  .attr('stroke', '#e81123')
+          .attr('opacity', 1)
       })
       .on('mouseout', function(){ 
         state.tooltip.style('display', 'none'); 

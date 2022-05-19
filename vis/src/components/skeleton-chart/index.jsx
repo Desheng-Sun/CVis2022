@@ -8,19 +8,21 @@ import './index.css'
 const d3Lasso = lasso
 
 export default function SkeletonChart({w, h}){
-  const [svgWidth, setSvgWidth] = useState(1000);
-  const [svgHeight, setSvgHeight] = useState(700);
+  const [svgWidth, setSvgWidth] = useState(w);
+  const [svgHeight, setSvgHeight] = useState(h); 
   const [data, setData] = useState({});
   const [dataParam, setDataParam] = useState("");
   const [selectedNode, setSelectedNode] = useState([]);
+  const [test, setTest] = useState(0)
+
 
   // 随系统缩放修改画布大小
-//   useEffect(() => {
-//     setSvgWidth(w);
-//   }, [w]);
-//   useEffect(() => {
-//     setSvgHeight(h);
-//   }, [h]);
+  useEffect(() => {
+    setSvgWidth(w);
+  }, [w]);
+  useEffect(() => {
+    setSvgHeight(h);
+  }, [h]);
 
   // 请求数据
   useEffect(() => {
@@ -984,6 +986,7 @@ export default function SkeletonChart({w, h}){
     drawChart();
   }, [data]);
 
+
   // 绘制结构图
   function drawChart() {
     if (JSON.stringify(data) === "{}") return;
@@ -1020,6 +1023,11 @@ export default function SkeletonChart({w, h}){
                     .classed("selected",false)
                     .attr('fill', 'white')
                     .attr('opacity', 0.2)
+
+                // 获取被取消数据对应的numId
+                let numId = nodes.filter(d => d.group == groupId).map(d => d.id)[0]
+                // 从选择的数据中删掉被取消的元素
+                setSelectedNode(selectedNode => selectedNode.filter(d => d != numId))
             }
         }
     ];
@@ -1347,10 +1355,6 @@ export default function SkeletonChart({w, h}){
         };
 
         var lasso_end = function() {
-
-            // lasso.items()
-            //     .classed("not_possible",false)
-            //     .classed("possible",false);
             lasso.selectedItems()
                 .selectAll('path')
                 .classed('selected', 'selected')
@@ -1370,7 +1374,10 @@ export default function SkeletonChart({w, h}){
 
             // 获取选中的数据对应的numId
             var groupIdArr = lasso.selectedItems()._groups[0].map(d => d.__data__)
-            var numIdArr = nodes.filter(d => groupIdArr.includes(d.group)).map(d => d.id) 
+            if(groupIdArr.length != 0){
+              let numIdArr = nodes.filter(d => groupIdArr.includes(d.group)).map(d => d.id)
+              setSelectedNode(selectedNode => Array.from(new Set([...selectedNode,  ...numIdArr])))
+            }
         };
         
         const lasso = d3Lasso()
@@ -1383,9 +1390,6 @@ export default function SkeletonChart({w, h}){
                 .on("end",lasso_end); 
 
         svg.call(lasso);
-
-
-
       }
 
   return (
