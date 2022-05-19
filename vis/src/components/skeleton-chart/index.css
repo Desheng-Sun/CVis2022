@@ -22,9 +22,11 @@
 }
 
 .possible {
-    fill:#EC888C;
+    fill:#fe2236;
+    opacity: 0.5;
 }
 
 .selected {
-  fill: steelblue;
+  fill: #bcd981;
+  opacity: 0.5;
 }

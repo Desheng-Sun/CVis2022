@@ -2,23 +2,25 @@ import * as d3 from 'd3'
 import { useEffect } from 'react'
 import { useState } from 'react';
 import lasso from './d3-lasso';
+import d3ContextMenu from "d3-context-menu";
 import './index.css'
 
 const d3Lasso = lasso
 
 export default function SkeletonChart({w, h}){
-  const [svgWidth, setSvgWidth] = useState(w);
-  const [svgHeight, setSvgHeight] = useState(h);
+  const [svgWidth, setSvgWidth] = useState(1000);
+  const [svgHeight, setSvgHeight] = useState(700);
   const [data, setData] = useState({});
   const [dataParam, setDataParam] = useState("");
+  const [selectedNode, setSelectedNode] = useState([]);
 
   // 随系统缩放修改画布大小
-  useEffect(() => {
-    setSvgWidth(w);
-  }, [w]);
-  useEffect(() => {
-    setSvgHeight(h);
-  }, [h]);
+//   useEffect(() => {
+//     setSvgWidth(w);
+//   }, [w]);
+//   useEffect(() => {
+//     setSvgHeight(h);
+//   }, [h]);
 
   // 请求数据
   useEffect(() => {
@@ -1009,7 +1011,18 @@ export default function SkeletonChart({w, h}){
 
     // create groups, links and nodes
     const groups = wrapper.append("g").attr("class", "groups");
-
+    // 节点的右键事件
+    const menu = [
+        {
+            title: "取消选择",
+            action: function (groupId, event) {
+                d3.select(this)
+                    .classed("selected",false)
+                    .attr('fill', 'white')
+                    .attr('opacity', 0.2)
+            }
+        }
+    ];
     const link = wrapper
       .append("g")
       .attr("class", "links")
@@ -1043,7 +1056,10 @@ export default function SkeletonChart({w, h}){
       .attr("fill", "white")
       .attr("cx", 0)
       .attr("cy", 0)
-      .attr("fill", (d, index) => innerCirlceColor[index % 2]);
+      .attr("fill", (d, index) => innerCirlceColor[index % 2])
+      
+
+
     if (typeof onHover === "function") {
       nodeG.on("mouseover", onHover);
     }
@@ -1106,7 +1122,8 @@ export default function SkeletonChart({w, h}){
               return industryColor[j];
             }
             return "white";
-          });
+          })
+          
       }
     }
 
@@ -1164,10 +1181,11 @@ export default function SkeletonChart({w, h}){
       .attr("class", "path_placeholder")
       .attr('groupId', d => d)
       .append("path")
-      .attr("stroke", (d) => nodeColor(d))
+      .attr("stroke", 'grey')
       .attr("fill", 'white')
     //   .attr("fill", (d) => nodeColor(d))
-      .attr("opacity", 0.2);
+      .attr("opacity", 0.2)
+      .on("contextmenu", d3ContextMenu(menu))
     // .on('mouseover', (event, d) => {
     //   d3.select(this).transition()
     //   .duration(2000)
@@ -1291,7 +1309,7 @@ export default function SkeletonChart({w, h}){
         });
         }
 
-        // 视图缩放
+        // 视图缩放：缩放了就不会有选择
         // let zoomHandler = d3
         //   .zoom()
         //   .on("zoom", zoomAction)
@@ -1320,8 +1338,9 @@ export default function SkeletonChart({w, h}){
         var lasso_draw = function() {
             lasso.possibleItems()
                 .selectAll('path')
-                .attr("fill",'#fe2236')
+                .attr('fill', '#fe2236')
                 .attr("opacity", 0.5);
+
             // lasso.notPossibleItems()
             //     .classed("not_possible",true)
             //     .classed("possible",false);
@@ -1334,12 +1353,20 @@ export default function SkeletonChart({w, h}){
             //     .classed("possible",false);
             lasso.selectedItems()
                 .selectAll('path')
-                .attr('fill', '#bcd981')
-                .attr("opacity", 0.5);
-            lasso.notSelectedItems()
-                .selectAll('path')
-                .attr('fill', 'none')
-                .attr("opacity", 0.5);
+                .classed('selected', 'selected')
+
+            // 保留多次选择的结果
+            d3.selectAll('.path_placeholder path')
+                .filter(function(d){
+                    return d3.select(this).attr('class') != 'selected'
+                })
+                .attr('fill', 'white')
+                .attr('opacity', 0.2)
+            
+            // lasso.notSelectedItems()
+            //     .selectAll('path')
+            //     .attr('fill', 'none')
+            //     .attr("opacity", 0.5);
 
             // 获取选中的数据对应的numId
             var groupIdArr = lasso.selectedItems()._groups[0].map(d => d.__data__)
@@ -1356,6 +1383,8 @@ export default function SkeletonChart({w, h}){
                 .on("end",lasso_end); 
 
         svg.call(lasso);
+
+
 
       }
 
