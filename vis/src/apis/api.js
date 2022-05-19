@@ -1,13 +1,17 @@
-import {get, post} from './http.js';
+import { get, post } from "./http.js";
 
 export function helloworld() {
-  return get("/helloworld")
+  return get("/helloworld");
 }
 
-export function qone(){
-  return get("/Qone")
+export function qone() {
+  return get("/Qone");
 }
 
-export function icclue(){
-  return get('/icClueData')
+export function icclue() {
+  return get("/icClueData");
+}
+
+export function getBulletChartData() {
+  return get("/getBulletChartData");
 }

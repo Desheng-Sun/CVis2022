@@ -11,6 +11,7 @@ import { helloworld, qone } from "./apis/api.js";
 import Layout from "./components/layout";
 import InfoList from "./components/info-list"; // 分析团伙板块 - 展示团伙基本信息的列表
 import CountsBar from "./components/counts-bar"; // 分析团伙板块 - 展示团伙内节点与边类型及对应数量的列表
+import BulletChart from "./components/bullet-chart"; // 分析团伙板块 - 展示
 import ArcDiagram from "./components/arc-diagram"; // 分析团伙板块 - 展示每种边的连线与数量
 import MainView from "./components/main-view";
 import SubChart2 from "./components/sub-chart2";
@@ -46,6 +47,11 @@ function App() {
         />
         <Route key="infolist" path="/infolist" element={<InfoList />} />
         <Route key="countsbar" path="/countsbar" element={<CountsBar />} />
+        <Route
+          key="bulletchart"
+          path="/bulletchart"
+          element={<BulletChart />}
+        />
         <Route key="arcdiagram" path="/arcdiagram" element={<ArcDiagram />} />
         <Route
           key="iccluechart"
