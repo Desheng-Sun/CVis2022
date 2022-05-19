@@ -7,18 +7,18 @@ import './index.css'
 const d3Lasso = lasso
 
 export default function SkeletonChart({w, h}){
-  const [svgWidth, setSvgWidth] = useState(1000);
-  const [svgHeight, setSvgHeight] = useState(700);
+  const [svgWidth, setSvgWidth] = useState(w);
+  const [svgHeight, setSvgHeight] = useState(h);
   const [data, setData] = useState({});
   const [dataParam, setDataParam] = useState("");
 
   // 随系统缩放修改画布大小
-//   useEffect(() => {
-//     setSvgWidth(w);
-//   }, [w]);
-//   useEffect(() => {
-//     setSvgHeight(h);
-//   }, [h]);
+  useEffect(() => {
+    setSvgWidth(w);
+  }, [w]);
+  useEffect(() => {
+    setSvgHeight(h);
+  }, [h]);
 
   // 请求数据
   useEffect(() => {
@@ -1340,7 +1340,7 @@ export default function SkeletonChart({w, h}){
                 .selectAll('path')
                 .attr('fill', 'none')
                 .attr("opacity", 0.5);
-                
+
             // 获取选中的数据对应的numId
             var groupIdArr = lasso.selectedItems()._groups[0].map(d => d.__data__)
             var numIdArr = nodes.filter(d => groupIdArr.includes(d.group)).map(d => d.id) 
