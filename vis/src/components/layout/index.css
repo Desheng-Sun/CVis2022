@@ -3,12 +3,13 @@
   width: 100vw;
   background-color: #fff;
   display: flex;
+  overflow: hidden;
 }
 
 /* 两栏 发现团伙 分析团伙 */
 #identifygroup {
   height: 100%;
-  flex: 3;
+  flex: 4;
   background-color: antiquewhite;
   display: flex;
   padding-right: 4px;
@@ -66,7 +67,7 @@
 #filteric {
   width: 100%;
   flex: 12;
-  background-color: brown;
+  background-color: white;
   padding-top: 4px;
   padding-bottom: 4px;
 }
@@ -74,7 +75,7 @@
 #nodelinkic {
   width: 100%;
   flex: 6;
-  background-color: darkblue;
+  background-color: rgb(192, 192, 194);
   padding-top: 4px;
 }
 
@@ -111,7 +112,7 @@
 #deleterelation {
   height: 100%;
   flex: 1;
-  background-color: gold;
+  background-color: rgb(215, 214, 209);
   padding-top: 4px;
 }
 
