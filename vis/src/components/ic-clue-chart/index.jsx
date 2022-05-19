@@ -9,19 +9,25 @@ import "./index.css";
 import { icclue } from "../../apis/api.js";
 
 export default function ICClueChart({ w, h }) {
-  const [svgWidth, setSvgWidth] = useState(0);
-  const [svgHeight, setSvgHeight] = useState(0);
+  const [svgWidth, setSvgWidth] = useState(800);
+  const [svgHeight, setSvgHeight] = useState(500);
   const [data, setData] = useState({});
   const [dataParam, setDataParam] = useState("");
+  const [selectedIclcleNode, setSelectedIclcleNode] = useState([]);
+
+  useEffect(() => {
+    console.log(selectedIclcleNode);
+  }, [selectedIclcleNode])
+  
 
   // 随系统缩放修改画布大小
-  useEffect(() => {
-    console.log(svgWidth);
-    setSvgWidth(w);
-  }, [w]);
-  useEffect(() => {
-    setSvgHeight(h);
-  }, [h]);
+  // useEffect(() => {
+  //   console.log(svgWidth);
+  //   setSvgWidth(w);
+  // }, [w]);
+  // useEffect(() => {
+  //   setSvgHeight(h);
+  // }, [h]);
 
   // 请求数据
   useEffect(() => {
@@ -35,13 +41,10 @@ export default function ICClueChart({ w, h }) {
   }, [data]);
 
   function drawICClueChart() {
-    console.log(svgWidth);
-    // if(JSON.stringify(data) === '{}' || JSON.stringify(svgWidth) === '{}' || JSON.stringify(svgHeight) === '{}') return
     if (JSON.stringify(data) === "{}") return;
-    if (JSON.stringify(svgWidth) === "{}" || JSON.stringify(svgHeight) === "{}")
-      return;
+    if (JSON.stringify(svgWidth) === "{}" || JSON.stringify(svgHeight) === "{}") return;
 
-    Icicle()
+    var icicleChart = Icicle()
       .orientation("lr")
       .width(svgWidth)
       .height(svgHeight)
@@ -55,6 +58,9 @@ export default function ICClueChart({ w, h }) {
                   dirtyDomain: <i>${node.data.dirtyDomain}</i>
                 `;
       })(document.getElementById("icclue-chart"));
+
+    
+    // setInterval(function(){ console.log((icicleChart.getSelectedIcicleNode())); }, 3000);
   }
   return <div id="icclue-chart" style={{ width: "100%", height: "96%" }}></div>;
 }

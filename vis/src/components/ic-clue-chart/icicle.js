@@ -8,15 +8,17 @@ import Kapsule from 'kapsule';
 import * as d3 from 'd3';
 import tinycolor from 'tinycolor2';
 import accessorFn from 'accessor-fn';
-import { notification } from 'antd';
-
+import d3ContextMenu from "d3-context-menu";
+import './index.css'
 
 
 const LABELS_WIDTH_OPACITY_SCALE = scaleLinear().domain([4, 8]).clamp(true); // px per char
 const LABELS_HEIGHT_OPACITY_SCALE = scaleLinear().domain([15, 40]).clamp(true); // available height in px
 
+var selectedIclcleNode = []
+
 export default Kapsule({
-  props: {
+  props:{ 
     width: { default: window.innerWidth, onChange(_, state) { state.needsReparse = true }},
     height: { default: window.innerHeight, onChange(_, state) { state.needsReparse = true }},
     orientation: {
@@ -102,6 +104,9 @@ export default Kapsule({
         }
         state.layoutData = hierData.descendants().filter(d => d.y0 >= 0);
       }
+    },
+    getSelectedIcicleNode: function(){
+      return selectedIclcleNode
     }
   },
   stateInit: () => ({
@@ -113,9 +118,11 @@ export default Kapsule({
       .style('padding-top', state.divTop + 'px')
       .style('padding-left', state.divLeft + 'px')
 
-    state.svg = el.append('svg');
+    
+    state.titleSvg = el.append('svg').attr('class', 'icicleTitleSvg')
+    state.svg = el.append('svg').attr('class', 'icicleSvg')
     state.canvas = state.svg.append('g')
-
+    
     // tooltips
     state.tooltip = el.append('div')
       .attr('class', 'chart-tooltip icicle-tooltip');
@@ -160,6 +167,22 @@ export default Kapsule({
       .style('width', state.width + 'px')
       .style('height', state.height + 'px');
 
+     var titleG = state.titleSvg
+                  .style('width', state.width + 'px')
+                  .style('height', 20 + 'px')
+                  .append('g')
+                  .attr('class', 'icicleTitleG')
+                  .attr('transform', 'translate(0, 10)')
+    titleG.selectAll('text')
+      .data(['起点', '第一跳', '第二跳'])
+      .join('text')
+      .text(d => d)
+      .attr('x', (d, i) => `${(state.width - 20)/6*(i*2+1)}`)
+      .style('font-size', '12px')
+      .style('font-weight', 'bolder')
+      .style('line-height', 1)
+      .attr("text-align","center")
+
     const horiz = state.orientation === 'lr' || state.orientation === 'rl';
 
     state.zoom
@@ -196,6 +219,9 @@ export default Kapsule({
         ${x0(d) + (x1(d) - x0(d)) * (horiz ? 0 : 0.5)},
         ${y0(d) + (y1(d) - y0(d)) * (horiz ? 0.5 : 0)}
       )`);
+
+      
+    
     let color = d3.scaleOrdinal(d3.schemeCategory10)
             // 颜色映射分别的数量
     var pureDomainLinearColor = d3.scaleLinear()  
@@ -207,7 +233,6 @@ export default Kapsule({
     const pureDomainColorCompute = d3.interpolate(d3.rgb(255, 255, 255), d3.rgb(101, 164, 135));  
     const dirtyDomainColorCompute = d3.interpolate(d3.rgb(255, 255, 255), d3.rgb(0, 0, 0));
     let newCellG = newCell.append('g')
-    let dblclickFlag = false;   //判断是否点击了双击
     for(let i = 0; i<3; i++){
       newCellG.append('rect')
       .attr('id', d => `rect-${d.id}_${i}`)
@@ -226,24 +251,12 @@ export default Kapsule({
         if(i === 1) return dirtyDomainColorCompute(dirtyDomainLinearColor(d.data.dirtyDomain));   // 映射不纯净的Domain
         return pureDomainColorCompute(pureDomainLinearColor(d.data.pureDomain))   // 映射纯净的Domian
       })
-      // .attr('opacity', 0.5)
       .attr('width', d =>{
-        return  horiz ? `${(x1(d) - x0(d)) - 1}`/3 : 0
+        return  i === 2 ? `${(x1(d) - x0(d)) - 1}`/3-2 : `${(x1(d) - x0(d)) - 1}`/3
       })
       .attr('height', d => horiz ? `${(y1(d) - y0(d)) }` : 0)
+      .attr('focusable', 'true')
       .on("dblclick", function(event, d){
-        // if(!dblclickFlag){
-        //   let currNumId = d.data.numId
-        //   newCellG.filter(function(event, d){
-        //         let cur = d3.select(this).select('rect').attr('numId');
-        //           return currNumId != cur
-        //         })
-        //         .selectAll('rect')
-        //         .attr('opacity', 0)
-        // }
-        // else{
-        //   newCellG.selectAll('rect').attr('opacity', 1)
-        // }
       })
       .on('click', (ev, d) => {
         newCellG.selectAll('rect').attr('opacity', 1)
@@ -279,6 +292,7 @@ export default Kapsule({
         `);
            // 显示与当前点相同的其他位置上的点
            let currNumId = d.data.numId
+           newCellG.selectAll('rect').attr('opacity', 0.5)
            newCellG.filter(function(event, d){
              let cur = d3.select(this).select('rect').attr('numId');
                return currNumId == cur
@@ -290,15 +304,25 @@ export default Kapsule({
       .on('mouseout', function(){ 
         state.tooltip.style('display', 'none'); 
         newCellG.selectAll('rect')
-                .attr('stroke', 'none')
-                // .attr('opacity', 0.5)
+                // .attr('stroke', 'none')
+                .attr('opacity', 1)
+      })
+      .on("contextmenu", function(event, d){
+          event.preventDefault()   // 阻止浏览器默认事件
+          if(!event.ctrlKey){       // 按下Ctrl键, 取消选中
+            let currNumId = d.data.numId   // 当前选中节点的numId
+            selectedIclcleNode.push(currNumId)
+            console.log(selectedIclcleNode);
+          }else{
+            
+          }
       })
   
     }
     newCellG.filter(d => d.children === undefined && d.data.isInFirst)
             .append('circle')
             .attr('cx', d => ((x1(d) - x0(d) - 1)) + 10)
-            .attr('cy', d => (y1(d) - y0(d))/3)
+            .attr('cy', d => (y1(d) - y0(d))/3 + 20)
             .attr('r', 2)
             .attr('fill', 'red')
             .attr('numId', d => d.data.numId)
@@ -321,25 +345,20 @@ export default Kapsule({
 
               // 显示对应的条
               let currNumId = d.data.numId
+              newCellG.selectAll('rect').attr('opacity', 0.5)
               newCellG.filter(function(event, d){
                 let cur = d3.select(this).select('rect').attr('numId');
                   return currNumId == cur
               })
               .selectAll('rect')
-              .attr('stroke', '#e81123')
+              .attr('opacity', 1)
+              // .attr('stroke', '#e81123')
       })
       .on('mouseout', function(event, d){
-        newCellG.selectAll('rect').attr('stroke', 'none')
+        newCellG.selectAll('rect').attr('stroke', 'none').attr('opacity', 1)
       })
 
-    // newCellG.append('clipPath')
-    //   .attr('id', d => `clip-${d.id}`)
-    //   .append('use')
-    //   .attr('xlink:href', d => `#rect-${d.id}`);
-
     newCellG.append('g')
-      // .attr('clip-path', d => `url(#clip-${d.id})`)
-      // .append('g')
         .attr('class', 'label-container')
         .attr('transform', d => `translate(
           ${state.orientation === 'lr' ? 4 : state.orientation === 'rl' ? x1(d) - x0(d) - 4 : 0},
@@ -347,7 +366,6 @@ export default Kapsule({
         )`)
         .append('text')
           .attr('class', 'path-label')
-          // .attr('textLength', '6em')
 
 
     // Entering + Updating
@@ -407,10 +425,7 @@ export default Kapsule({
               return horiz ? t => `scale(1, ${1 / kTr(t)})` : t => `scale(${1 / kTr(t)}, 1)`;
             })
         }
-
-   
     
-
     function getNodeStack(d) {
       const stack = [];
       let curNode = d;
