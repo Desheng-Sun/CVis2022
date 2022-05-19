@@ -11,15 +11,16 @@ import { helloworld, qone } from "./apis/api.js";
 import Layout from "./components/layout";
 import InfoList from "./components/info-list"; // 分析团伙板块 - 展示团伙基本信息的列表
 import CountsBar from "./components/counts-bar"; // 分析团伙板块 - 展示团伙内节点与边类型及对应数量的列表
+import ArcDiagram from "./components/arc-diagram"; // 分析团伙板块 - 展示每种边的连线与数量
 import MainView from "./components/main-view";
 import SubChart2 from "./components/sub-chart2";
 import SubChartCanvas from "./components/sub-chart-canvas";
 import SubChartForceGraph from "./components/sub-chart-force-graph";
 import SkeletonChart from "./components/skeleton-chart";
-import ICClueChart from './components/ic-clue-chart'
+import ICClueChart from "./components/ic-clue-chart";
 import DifChart from "./components/dif-chart";
 
-// import SubChart from './components/sub-chart';
+// import SubChart from './components/sub-chart';n
 // 引入问题一的自定义组件
 
 function App() {
@@ -45,7 +46,12 @@ function App() {
         />
         <Route key="infolist" path="/infolist" element={<InfoList />} />
         <Route key="countsbar" path="/countsbar" element={<CountsBar />} />
-        <Route key="iccluechart" path="/iccluechart" element={<ICClueChart />} />
+        <Route key="arcdiagram" path="/arcdiagram" element={<ArcDiagram />} />
+        <Route
+          key="iccluechart"
+          path="/iccluechart"
+          element={<ICClueChart />}
+        />
         <Route key="difchart" path="/difchart" element={<DifChart />} />
       </Routes>
     </div>
