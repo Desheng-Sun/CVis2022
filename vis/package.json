@@ -16,6 +16,7 @@
     "d3-context-menu": "^2.1.0",
     "d3-force-reuse": "^1.0.1",
     "d3-force-sampled": "^1.0.1",
+    "d3-zoomable": "^1.2.1",
     "force-graph": "^1.42.9",
     "force-in-a-box": "^1.0.1",
     "install": "^0.13.0",
