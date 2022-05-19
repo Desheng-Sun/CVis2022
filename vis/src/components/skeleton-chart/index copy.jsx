@@ -1,10 +1,7 @@
 import * as d3 from 'd3'
 import { useEffect } from 'react'
 import { useState } from 'react';
-import lasso from './d3-lasso';
-import './index.css'
 
-const d3Lasso = lasso
 
 export default function SkeletonChart(w, h){
     const [svgWidth, setSvgWidth] = useState(1000);
@@ -640,44 +637,30 @@ export default function SkeletonChart(w, h){
         // }
         // zoomHandler(svg);
 
-        // ----------------   LASSO STUFF . ----------------
-        var lasso_start = function() {
-            lasso.items()
-                .attr("opacity",1) 
-                .classed("not_possible",true)
-                .classed("selected",false);
-        };
 
-        var lasso_draw = function() {
-            lasso.possibleItems()
-                .classed("not_possible",false)
-                .classed("possible",true);
-            lasso.notPossibleItems()
-                .classed("not_possible",true)
-                .classed("possible",false);
-        };
+        // brush
+        // const brush = d3.brush()
+        //     .on("start brush end", brushed);
+        //       function brushed({selection}) {
+        //         let value = [];
+        //         if (selection) {
+        //         //   const [[x0, y0], [x1, y1]] = selection;
+        //         //   value = node
+        //         //   .style("stroke", "gray")
+        //         //   .filter(d => x0 <= (d.x) && (d.x) < x1 && y0 <= (d.y) && (d.y) < y1)
+        //         //   .attr("fill", "red")
+        //         //   .data();
+        //         } 
+        //         else {
 
-        var lasso_end = function() {
-            lasso.items()
-                .classed("not_possible",false)
-                .classed("possible",false);
-            lasso.selectedItems()
-                .classed("selected",true)
-                .attr("opacity",1);
-            lasso.notSelectedItems()
-                .attr("r",0.2);
-        };
-        
-        const lasso = d3Lasso()
-                .closePathDistance(305) 
-                .closePathSelect(true) 
-                .targetArea(svg)
-                .items(d3.selectAll('circle')) 
-                .on("start",lasso_start) 
-                .on("draw",lasso_draw) 
-                .on("end",lasso_end); 
+        //         }
+        //       }
+        // wrapper.call(brush);
 
-        svg.call(lasso);
+        // Add brushing
+        svg
+        .call( d3.brush()                     // Add the brush feature using the d3.brush function
+        )
 
       }
 

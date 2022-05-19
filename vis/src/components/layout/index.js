@@ -59,7 +59,7 @@ export default function Layout() {
           </div>
           <div id="nodelinkic">
             <ChartHeader chartName={"IP <——> Cert"} />
-            <SkeletonChart w={icClueChartWidth} h={icClueChartHeight} />
+            {/* <SkeletonChart w={icClueChartWidth} h={icClueChartHeight} /> */}
           </div>
         </div>
         <div id="iright">
