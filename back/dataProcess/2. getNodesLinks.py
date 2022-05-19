@@ -156,7 +156,7 @@ def screenNode(nowPath, coreList, nowNodes):
         for j in ipJson["nodes"]:
             if(j[-2] == "Domain"):
                 nodeDomain += 1
-                if(not j[-1] == "[]"):
+                if(not j[-1] == ""):
                     industryNum += 1
         nodeInfo.append([i, ipCert, ipIp, nodeDomain, industryNum])
     with open(nowPath + nodePath + "ICLinksInfo" + str(coreList) + ".json", 'w', encoding='utf-8') as f:
@@ -168,7 +168,7 @@ if __name__ == '__main__':
         os.path.dirname(__file__))) + "/data/"
     # 打开所有的节点
     nodeCsvW = pd.read_csv(
-        nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumId.csv", header=0)
+        nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv", header=0)
     linkCsvW = open(
         nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/nodeLinksJson.json", 'r', encoding='utf-8')
     linksAll = json.load(linkCsvW)
@@ -203,6 +203,7 @@ if __name__ == '__main__':
         allIC.append(i[0])
     for i in certNode:
         allIC.append(i[0])
+    allIC.sort()
     print("获取每个IC节点连接IC节点数量和其对应链路的黑灰产业的Domain数量--------------------------")
     pool = mp.Pool(processes=12)
     for i in range(12):
