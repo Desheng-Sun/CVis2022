@@ -32,27 +32,25 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
 
+const nodeInfoJ = fs.readFileSync(path.join(__dirname, 'data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv'), 'utf8')
+const nodeNumIdInfo = json.parse(nodeInfoJ)
+
+let ICIndustryP = path.join(__dirname, 'data/nodeIndustryInfo2.json')
+let ICIndustryJ = fs.readFileSync(ICIndustryP, 'utf8')
+const ICIndustry = JSON.parse(ICIndustryJ)
 
 
 
 // 获取视图的初始数据：node信息
 app.get("/initial", (req, res, next) => {
-  let filedata = path.join(__dirname, 'data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumId.json')
-  fs.readFile(filedata, 'utf8', function (err, data) {
-    if (err) {
-      console.log(err)
-    } else {
-      let d = JSON.parse(data)
-      res.send(d)
-      res.end()
-    }
-  })
+  res.send(nodeNumIdInfo)
+  res.end()
 })
 
 // 获取冰柱图需要的数据
-app.get("searchInfo", (req, res, next) =>{
+app.get("ic-clue-data", (req, res, next) => {
   const spawn = require('child_process').spawn;
-  spawn('python',[path.join(__dirname, 'dataProcess/figure1.py'), req.query.numId, req.query.type])
+  spawn('python', [path.join(__dirname, 'dataProcess/figure1.py'), req.query.numId, req.query.type])
   let filedata = path.join(__dirname, 'data/ic-clue-data/' + str(req.query.numId) + ".json")
   fs.readFile(filedata, 'utf8', function (err, data) {
     if (err) {
@@ -65,125 +63,47 @@ app.get("searchInfo", (req, res, next) =>{
   })
 })
 
-
-
-// 获取question 1 问题的初步绘制数据
-app.get("/Qone", (req, res, next) => {
-  file_path = "./data/q-one-data/tiaozhan1.json";
-  // file_path = './data/q-one-data/large.json'
-  fs.readFile(file_path, "utf8", function (err, data) {
-    if (err) {
-      console.log(err);
-    } else {
-      let d = JSON.parse(data);
-      res.send(d);
-      res.end();
-    }
-  });
-});
-
-// 获取question 1 问题的初步绘制数据
-app.get("/db", (req, res, next) => {
-  // const db = new Database()
-  // db.useBasicAuth(username, password);
-  // const myDb = db.database('CVis')
-  // db.useDatabase('CVis')   // 引用CVis数据库，默认使用_system数据库
-  // // 社区检测
-  // const handle = pregel.start('labelpropagation', 'test_graph', {maxGSS: 100, resultField: "community"})
-  // status = pregel.status(handle);
-  // console.log(status)
-  // fs.writeFile('./data/test.txt', status, function(err){
-  //   if(err){
-  //     console.log(err);
-  //   }
-  // })
-  // res.send(status)
-});
-
-// 获取每个Ip/Cert的Industry信息
-app.get("/ICIndustry", (req, res) => {
-  let filedata = path.join(__dirname, "data/nodeIndustryInfo2.json");
-  fs.readFile(filedata, "utf-8", function (err, data) {
-    if (err) {
-      console.error(err);
-    } else {
-      let jsonData = JSON.parse(data);
-      res.send(jsonData);
-      res.end();
-    }
-  });
-});
-
-// 获取每个Ip/Cert的链路信息
-app.get("/ICLinks", (req, res) => {
+// IC连接图所需要的数据
+app.get("skeleton-chart", (req, res, next) => {
   let filedata = path.join(__dirname, "data/nodesToNodesGraph1.json");
   fs.readFile(filedata, "utf-8", function (err, data) {
     if (err) {
-      console.error(err);
+      console.log(err)
     } else {
-      let jsonData = JSON.parse(data);
-      res.send(jsonData);
-      res.end();
-    }
-  });
-});
-
-app.get("/db", (req, res, next) => {
-  // 图2的数据处理过程
-  let nodes = []; // 参数为NumId，不要别的信息
-  let ICIndustry = []; // 读取文件获取的数据
-  let nodesInfo = [];
-  let ICLinks = [];
-  for (let i in nodes) {
-    ICIndustryNow = [];
-    for (let j in ICIndustry[str(i)]) {
-      ICIndustryNow.push({
-        industry: j[0],
-        number: j[1],
-      });
-    }
-    nodesInfo.push({
-      numId: i,
-      ICIndustry: ICIndustryNow,
-    });
-  }
-  for (let i in ICLinks) {
-    for (let j in i) {
-      if (nodes.includes(j[1]) && j[1] > j[0]) {
-        ICLinks.push({
-          source: j[1],
-          target: j[2],
-        });
-      }
-    }
-  }
-
-  res.send({
-    nodes: nodesInfo,
-    links: ICLinks,
-  });
-  res.end();
-
-  // 图3的数据处理过程.
-  for (let i in nodes) {
-    nodesInfo.push({
-      numId: i,
-      ICIndustry: ICIndustry[str(i)],
-    });
-  }
-  let filedata = path.join(__dirname, 'data/nodesToNodesGraph1.json"/');
-  fs.readFile(filedata, "utf-8", function (err, data) {
-    if (err) {
-      console.error(err);
-    } else {
-      let jsonData = JSON.parse(data);
-      for (let i in jsonData[str(nodes[0])]) {
-        if (i[1] == nodes[1]) {
-          industryInMiddle = i[-1];
+      let ICLinks = JSON.parse(data)
+      nodesInfo = []
+      linksInfo = []
+      for (let i in req.query.Nodes) {
+        nowNodeInfo = nodeNumIdInfo[i - 1]
+        for (let j in ICIndustry[str(i)]) {
+          nodesInfo.push({
+            "numId": i,
+            "id": nowNodeInfo[1],
+            "ICIndustry": {
+              "industry": j[0],
+              "number": j[1]
+            }
+          })
         }
+        for (let j in ICLinks[str(i)]) {
+          for (let k in j) {
+            if (nodes.includes(k[1]) && k[1] > k[0]) {
+              linksInfo.push({
+                "source": k[1],
+                "target": k[2]
+              })
+            }
+          }
+        }
+        let jsonData = JSON.parse(data);
+        res.send(jsonData);
+        res.end();
       }
     }
   });
+})
+
+app.get("/getBulletChartData", (req, res, next) => {
 
   // 周艺璇画的图的相关数据
   let communityInfo = {}; //传的参数，社区的节点和链接信息
@@ -291,9 +211,42 @@ app.get("/db", (req, res, next) => {
     { name: "ipc", value: ipc.size },
     { name: "asn", value: asn.size },
   ];
-  res.send([linksList, nodesList]);
-  res.end();
-});
+  res.send([linksList, nodesList])
+  res.end()
+
+})
+
+app.get("/infoList", (req, res, next) => {
+  let numnode = 0
+  let numlink = 0
+  let groupscope = ""
+  let industrytype = {}
+  let grouptype = "单一型"
+  numnode = req.query.nodes.length()
+  numlink = req.query.links.length()
+  if (numnode < 300) {
+    groupscope = "小"
+  }
+  else if (numnode < 800) {
+    groupscope = "中"
+  }
+  else {
+    groupscope = "大"
+  }
+  for (let i in req.query.nodes) {
+    industrytype.add(i[-1])
+  }
+  if (industrytype.length > 1) {
+    grouptype = "复合型"
+  }
+  res.send({
+    numnode: numnode,
+    numlink: numlink,
+    groupscope: groupscope,
+    industrytype: industrytype,
+    grouptype: grouptype
+  })
+})
 
 // 获取冰柱图所需要的数据
 app.get("/icClueData", (req, res) => {
