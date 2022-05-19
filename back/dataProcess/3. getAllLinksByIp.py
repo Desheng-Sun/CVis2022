@@ -6,11 +6,8 @@ import pandas as pd
 import time
 
 # 根据某一个IP获取整个链路
-def getAllLinksByIp(nowPath, typeName, numId, nodeCsvW):
-    if(typeName == "IP"):
-        nodePath = "LinksByIP/"
-    else:
-        nodePath = "LinksByCert/"
+def getAllLinksByIp(nowPath, numId, nodeCsvW, ICScreen):
+    nodePath = "ICLinks/"
     nodeLinksJ = open(nowPath + nodePath + str(numId) +
                       ".json", "r", encoding="utf-8")
     nodeLinks = json.load(nodeLinksJ)
@@ -36,38 +33,33 @@ def getAllLinksByIp(nowPath, typeName, numId, nodeCsvW):
 
     # 获取节点到目标节点的所有路径
     for i in nodeLinks["certEnd"]:
-        if(int(i[0][0]) > numId):
+        if(int(i[0][0]) > numId and int(i[0][0]) in ICScreen):
             ipToIpAndCertLinks.append(getLinksToTarget(numId, "Cert", i[0], nowPath,
                                                        nodeAllLinks, nodeLinks, nodeCsvW))
     for i in nodeLinks["ipEnd"]:
-        if(int(i[0][0]) > numId):
+        if(int(i[0][0]) > numId and int(i[0][0]) in ICScreen):
             ipToIpAndCertLinks.append(getLinksToTarget(numId, "IP", i[0], nowPath,
                                                        nodeAllLinks, nodeLinks, nodeCsvW))
 
-    if(typeName == "IP"):
-        nodeSavePath = "LinksByIPScreen/"
-    else:
-        nodeSavePath = "LinksByCertScreen/"
-    with open(nowPath + nodeSavePath + str(numId) + ".json", "w", encoding="utf-8") as f:
+    with open(nowPath + "ICScreenLinks/" + str(numId) + ".json", "w", encoding="utf-8") as f:
         json.dump(ipToIpAndCertLinks, f, ensure_ascii=False)
 
 
 def getLinksToTarget(numId, typeName, i, nowPath, nodeAllLinks, nodeLinks, nodeCsvW):
     if(typeName == "IP"):
-        nodePath = "LinksByIP/"
         linksList = 0
     else:
-        nodePath = "LinksByCert/"
         linksList = 1
+    
     linksToTarget = []
     nodesToTarget = []
     # 获取最终链接到该Target节点的所有Links和相关Nodes
     for j in nodeAllLinks[linksList]:
-        if(j[2] == str(i[0])):
+        if(j[2] == i[0]):
             linksToTarget.append(j)
-            nodesToTarget.append(str(j[1]))
+            nodesToTarget.append(j[1])
 
- 
+    nodePath = "ICLinks/"
     # 获取该Target节点的相关links
     TargetLinksJ = open(nowPath + nodePath +
                         str(i[0]) + ".json", "r", encoding="utf-8")
@@ -75,9 +67,9 @@ def getLinksToTarget(numId, typeName, i, nowPath, nodeAllLinks, nodeLinks, nodeC
 
     # 获取Target节点链接当前节点的所有nodes和Links
     for j in TargetLinks:
-        if(j[2] == str(numId)):
+        if(j[2] == numId):
             linksToTarget.append([j[0],j[1],j[2],3,True])
-            nodesToTarget.append(str(j[1]))
+            nodesToTarget.append(j[1])
     TargetLinksJ.close()
 
     nodeInMiddle = []
@@ -95,15 +87,15 @@ def getLinksToTarget(numId, typeName, i, nowPath, nodeAllLinks, nodeLinks, nodeC
                 linksInMiddle.append(j)
         elif(j[3] == 1):
             if(j[1] in nodeInMiddle and j[2] in nodesToTarget):
-                nodesToTarget.append(str(j[1]))
+                nodesToTarget.append(j[1])
                 linksInMiddle.append(j)
             elif(j[1] in nodesToTarget and j[2] in nodeInMiddle):
-                nodesToTarget.append(str(j[2]))
+                nodesToTarget.append(j[2])
                 linksInMiddle.append(j)
     for j in nodeAllLinks[-2]:
         if(j[1] in nodesToTarget):
             linksToTarget.append(j)
-            nodesToTarget.append(str(j[2]))
+            nodesToTarget.append(j[2])
 
     # 统计当前Links和Nodes的数量及类型
     nodeToTargetInfo = [nodeLinks["beginNode"], i]
@@ -129,15 +121,34 @@ def getLinksToTarget(numId, typeName, i, nowPath, nodeAllLinks, nodeLinks, nodeC
     }
 
 
-def getAllLinksByNodes(coreList, nowPath, typeName, nodes, nodeCsvW):
-    print(typeName, " : 第", coreList, "个线程开始执行了----------------",
+def getAllLinksByNodes(coreList, nowPath, nodes, nodeCsvW, ICScreen):
+    print("第", coreList, "个线程开始执行了----------------",
           time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
     for i in nodes:
-        getAllLinksByIp(nowPath, typeName, i[0], nodeCsvW)
-    print(typeName, " : 第", coreList, "个线程执行完成了----------------",
+        getAllLinksByIp(nowPath, i, nodeCsvW, ICScreen)
+    print("第", coreList, "个线程执行完成了----------------",
           time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
 
 
+def getICScreenLinks(nowPath, ICScreen):
+    with alive_bar(len(ICScreen)) as bar:
+        for i in ICScreen:
+            ICScreenLinksJ = open(nowPath + "ICScreenLinks/" + str(i) + ".json", "r", encoding="utf-8")
+            ICScreenLinks = json.load(ICScreenLinksJ)
+            ICScreenLinks.sort(key = lambda x:x["end"][0])
+            ICScreenLinksJ = open(nowPath + "ICScreenLinks/" + str(i) + ".json", "w", encoding="utf-8")
+            json.dump(ICScreenLinks, ICScreenLinksJ, ensure_ascii=False)
+            ICScreenLinksJ.close()
+            for j in ICScreenLinks:
+                if(j["end"][0] < j["begin"][0]):
+                    continue
+                nextICScreenLinksJ = open(nowPath + "ICScreenLinks/" + str(j["end"][0]) + ".json", "r", encoding="utf-8")
+                nextICScreenLinks = json.load(nextICScreenLinksJ)
+                nextICScreenLinks.append(j)
+                nextICScreenLinksJ = open(nowPath + "ICScreenLinks/" + str(j["end"][0]) + ".json", "w", encoding="utf-8")
+                json.dump(nextICScreenLinks, nextICScreenLinksJ, ensure_ascii=False)
+                nextICScreenLinksJ.close()
+        bar()
 
 if __name__ == '__main__':
     nowPath = os.path.abspath(os.path.dirname(
@@ -147,40 +158,35 @@ if __name__ == '__main__':
         nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumId.csv", header=0)
     nodeCsvW = nodeCsvW.values
 
-    # 获取筛选后的所有Ip节点与其他节点的路径
-    print("获取筛选后的所有Ip节点与其他节点的路径----------------------------------------------")
-    with open(nowPath + "LinksByIP/IpScreen.json", 'r', encoding='utf-8') as f:
-        IpScreen = json.load(f)
-        getAllLinksByNodes(
-                0, nowPath, "IP", IpScreen[0: 1], nodeCsvW)
-    #     print(len(IpScreen))
-    #     pool = mp.Pool(processes=12)
-    #     num = 0
-    #     for i in range(12):
-    #         num += i + 1
-    #         nodeListNum = (num) * 268
-    #         if(nodeListNum > len(IpScreen)):
-    #             nodeListNum = None
-    #         pool.apply_async(getAllLinksByNodes, args=(
-    #             i, nowPath, "IP", IpScreen[(num - i - 1) * 268: nodeListNum], nodeCsvW))
-    #         print(num - i - 1, num, (num - i - 1) * 268, nodeListNum)
-    #     pool.close()
-    #     pool.join()
+    ICScreenJ = open(nowPath + "ICScreen.json", "r", encoding="utf-8")
+    ICScreen = json.load(ICScreenJ) 
 
-    # # 获取筛选后的所有Cert节点与其他节点的路径
-    # print("获取筛选后的所有Cert节点与其他节点的路径----------------------------------------------")
-    # with open(nowPath + "LinksByCert/certScreen.json", 'r', encoding='utf-8') as f:
-    #     certScreen = json.load(f)
-    #     print(len(certScreen))
-    #     pool = mp.Pool(processes=12)
-    #     num = 0
-    #     for i in range(12):
-    #         num += i + 1
-    #         nodeListNum = (num) * 215
-    #         if(nodeListNum > len(certScreen)):
-    #             nodeListNum = None
-    #         pool.apply_async(getAllLinksByNodes, args=(
-    #             i, nowPath, "Cert", certScreen[(num - i - 1) * 215: nodeListNum], nodeCsvW))
-    #         print(num - i - 1, num,(num - i - 1) * 215, nodeListNum)
-    #     pool.close()
-    #     pool.join()
+    # 获取筛选后的所有Ip节点与其他节点的路径
+    print("获取筛选后的所有IC节点与其他节点的路径----------------------------------------------")
+    print(len(ICScreen[0]))
+    print(len(ICScreen[1]))
+    print(len(ICScreen[2]))
+    useNode = []
+    for i in ICScreen[0]:
+        if(not os.path.exists(nowPath + "ICScreenLinks/" + str(i) + ".json")):
+            useNode.append(i)
+    pool = mp.Pool(processes=12)
+    num = 0
+    numLen = int(len(useNode) / 4)
+    for i in range(4):
+        # num += i + 1
+        # nodeListNum = (num) * numLen
+
+        nodeListNum = (i + 1) * numLen
+        if(i == 3):
+            nodeListNum = None
+        # pool.apply_async(getAllLinksByNodes, args=(
+        #     i, nowPath, useNode[(num - i - 1) * numLen: nodeListNum], nodeCsvW, ICScreen[0]))
+        pool.apply_async(getAllLinksByNodes, args=(
+            i, nowPath, useNode[i * numLen: nodeListNum], nodeCsvW, ICScreen[0]))
+        print(i, i + 1, i * numLen, nodeListNum)
+    pool.close()
+    pool.join()
+    
+    getICScreenLinks(nowPath, ICScreen)
+

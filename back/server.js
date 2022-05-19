@@ -31,6 +31,41 @@ app.listen(port, () => {
 })
 
 
+
+
+
+// 获取视图的初始数据：node信息
+app.get("/initial", (req, res, next) => {
+  let filedata = path.join(__dirname, 'data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumId.json')
+  fs.readFile(filedata, 'utf8', function (err, data) {
+    if (err) {
+      console.log(err)
+    } else {
+      let d = JSON.parse(data)
+      res.send(d)
+      res.end()
+    }
+  })
+})
+
+// 获取冰柱图需要的数据
+app.get("searchInfo", (req, res, next) =>{
+  const spawn = require('child_process').spawn;
+  spawn('python',[path.join(__dirname, 'dataProcess/figure1.py'), req.query.numId, req.query.type])
+  let filedata = path.join(__dirname, 'data/ic-clue-data/' + str(req.query.numId) + ".json")
+  fs.readFile(filedata, 'utf8', function (err, data) {
+    if (err) {
+      console.log(err)
+    } else {
+      let d = JSON.parse(data)
+      res.send(d)
+      res.end()
+    }
+  })
+})
+
+
+
 // 获取question 1 问题的初步绘制数据
 app.get("/Qone", (req, res, next) => {
   file_path = './data/q-one-data/tiaozhan1.json'
