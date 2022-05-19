@@ -150,7 +150,7 @@ def changeLinkId(i, nodeList, linkList):
 if __name__ == '__main__':
     nowPath = os.path.abspath(os.path.dirname(
         os.path.dirname(__file__))) + "/data/"
-    # addNodeId()
+    addNodeId()
     # 打开所有的节点
     nodeCsvW = pd.read_csv(
         nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumId.csv", header=0)

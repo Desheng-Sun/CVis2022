@@ -1,20 +1,24 @@
-import * as d3 from "d3";
-import { useEffect } from "react";
-import { useState } from "react";
+import * as d3 from 'd3'
+import { useEffect } from 'react'
+import { useState } from 'react';
+import lasso from './d3-lasso';
+import './index.css'
 
-export default function SkeletonChart({ w, h }) {
-  const [svgWidth, setSvgWidth] = useState(w);
-  const [svgHeight, setSvgHeight] = useState(h);
+const d3Lasso = lasso
+
+export default function SkeletonChart({w, h}){
+  const [svgWidth, setSvgWidth] = useState(1000);
+  const [svgHeight, setSvgHeight] = useState(700);
   const [data, setData] = useState({});
   const [dataParam, setDataParam] = useState("");
 
   // 随系统缩放修改画布大小
-  useEffect(() => {
-    setSvgWidth(w);
-  }, [w]);
-  useEffect(() => {
-    setSvgHeight(h);
-  }, [h]);
+//   useEffect(() => {
+//     setSvgWidth(w);
+//   }, [w]);
+//   useEffect(() => {
+//     setSvgHeight(h);
+//   }, [h]);
 
   // 请求数据
   useEffect(() => {
@@ -982,7 +986,8 @@ export default function SkeletonChart({ w, h }) {
   function drawChart() {
     if (JSON.stringify(data) === "{}") return;
     const links = data.links.map((d) => Object.create(d));
-    const nodes = data.nodes.map((d) => Object.create(d));
+    const nodes = data.nodes.map((d, i) => Object.create({...d, 'group': i}));  // 将每一个点单独看成一个group，被选中的group添加背景颜色
+    // const nodes = data.nodes.map((d, i) => Object.create(d));
     const svg = d3
       .select("#skeleton-chart")
       .append("svg")
@@ -1141,7 +1146,7 @@ export default function SkeletonChart({ w, h }) {
         .attr("x2", (d) => d.target.x)
         .attr("y2", (d) => d.target.y);
       nodeG.attr("transform", (d) => "translate(" + d.x + "," + d.y + ")");
-      updateGroups(paths, groupIds, nodeG, margin);
+      updateGroups(groupPath, groupIds, nodeG, margin);
     }
 
     // 选择group中的节点，检索该节点的位置并返回特定点的convex hull（最少为3个点，否则返回null）
@@ -1152,14 +1157,16 @@ export default function SkeletonChart({ w, h }) {
       }))
       .map((group) => group.groupId);
 
-    const paths = groups
+    const groupPath = groups
       .selectAll(".path_placeholder")
       .data(groupIds, (d) => +d)
       .join("g")
       .attr("class", "path_placeholder")
+      .attr('groupId', d => d)
       .append("path")
       .attr("stroke", (d) => nodeColor(d))
-      .attr("fill", (d) => nodeColor(d))
+      .attr("fill", 'white')
+    //   .attr("fill", (d) => nodeColor(d))
       .attr("opacity", 0.2);
     // .on('mouseover', (event, d) => {
     //   d3.select(this).transition()
@@ -1174,137 +1181,183 @@ export default function SkeletonChart({ w, h }) {
     // })
 
     if (displayGroupOnHover) {
-      paths.transition().duration(2000).attr("opacity", 0.8);
+        groupPath.transition().duration(2000).attr("opacity", 0.8);
     }
 
-    // 对group添加交互
-    groups
-      .selectAll(".path_placeholder")
-      .call(
-        d3
-          .drag()
-          .on("start", group_dragstarted)
-          .on("drag", group_dragged)
-          .on("end", group_dragended)
-      );
-    //拖拽节点
-    function dragstarted(evt, d) {
-      if (!evt.active) simulation.alphaTarget(0.3).restart();
-      d.fx = d.x;
-      d.fy = d.y;
-    }
-    function dragged(evt, d) {
-      d.fx = evt.x;
-      d.fy = evt.y;
-    }
-    function dragended(evt, d) {
-      if (!evt.active) simulation.alphaTarget(0);
-      d.fx = null;
-      d.fy = null;
-    }
+        // 对group添加交互
+        // groups.selectAll('.path_placeholder')
+        //   .call(d3.drag()
+        //     .on('start', group_dragstarted)
+        //     .on('drag', group_dragged)
+        //     .on('end', group_dragended)
+        //   )
+        //拖拽节点
+        function dragstarted(evt, d) {
+          if (!evt.active) simulation.alphaTarget(0.3).restart();
+          d.fx = d.x;
+          d.fy = d.y;
+        }
+        function dragged(evt, d) {
+          d.fx = evt.x;
+          d.fy = evt.y;
+        }
+        function dragended(evt, d) {
+          if (!evt.active) simulation.alphaTarget(0);
+          d.fx = null;
+          d.fy = null;
+        }
 
-    // 拖拽group
-    function group_dragstarted(event, groupId) {
-      if (!event.active) simulation.alphaTarget(0.3).restart();
-      d3.select(this).select("path").style("stroke-width", 3);
-    }
-    function group_dragged(event, groupId) {
-      nodeG
-        .filter(function (d) {
-          return d.group == groupId;
-        })
-        .each(function (d) {
-          d.x += event.dx;
-          d.y += event.dy;
-        });
-    }
-    function group_dragended(event, groupId) {
-      if (!event.active) simulation.alphaTarget(0.3).restart();
-      d3.select(this).select("path").style("stroke-width", 1);
-    }
+        // 拖拽group
+        function group_dragstarted(event, groupId) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d3.select(this).select("path").style("stroke-width", 3);
+        }
+        function group_dragged(event, groupId) {
+        nodeG
+            .filter(function (d) {
+            return d.group == groupId;
+            })
+            .each(function (d) {
+            d.x += event.dx;
+            d.y += event.dy;
+            });
+        }
+        function group_dragended(event, groupId) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        d3.select(this).select("path").style("stroke-width", 1);
+        }
 
-    // // 生成group表示，检索group中的节点的位置，返回特定点的convex hull，至少有三个点，否则返回null
-    function polygonGenerator(groupId, node) {
-      var node_coords = nodeG
-        .filter((d) => d.group == groupId)
-        .data()
-        .map((d) => [d.x, d.y]);
-      // 处理点数小于3的组
-      if (node_coords.length == 2) {
-        let point_x1 = node_coords[0][0],
-          point_y1 = node_coords[0][1];
-        let point_x2 = node_coords[1][0],
-          point_y2 = node_coords[1][1];
-        node_coords = [];
-        node_coords.push([point_x1, point_y1 + nodeRadius]);
-        node_coords.push([point_x1, point_y1 - nodeRadius]);
-        node_coords.push([point_x2, point_y2 + nodeRadius]);
-        node_coords.push([point_x2, point_y2 - nodeRadius]);
-      } else if (node_coords.length == 1) {
-        let point_x = node_coords[0][0],
-          point_y = node_coords[0][1];
-        node_coords = [];
-        node_coords.push([point_x - nodeRadius, point_y + nodeRadius]);
-        node_coords.push([point_x + nodeRadius, point_y + nodeRadius]);
-        node_coords.push([point_x + nodeRadius, point_y - nodeRadius]);
-        node_coords.push([point_x - nodeRadius, point_y - nodeRadius]);
-      }
-      return d3.polygonHull(node_coords);
-    }
-    function updateGroups(paths, groupIds, node, margin) {
-      const valueline = d3
-        .line()
-        .x((d) => d[0])
-        .y((d) => d[1])
-        .curve(d3["curveCardinalClosed"]);
+        // // 生成group表示，检索group中的节点的位置，返回特定点的convex hull，至少有三个点，否则返回null
+        function polygonGenerator(groupId, node) {
+        var node_coords = nodeG
+            .filter((d) => d.group == groupId)
+            .data()
+            .map((d) => [d.x, d.y]);
+        // 处理点数小于3的组
+        if (node_coords.length == 2) {
+            let point_x1 = node_coords[0][0],
+            point_y1 = node_coords[0][1];
+            let point_x2 = node_coords[1][0],
+            point_y2 = node_coords[1][1];
+            node_coords = [];
+            node_coords.push([point_x1, point_y1 + nodeRadius]);
+            node_coords.push([point_x1, point_y1 - nodeRadius]);
+            node_coords.push([point_x2, point_y2 + nodeRadius]);
+            node_coords.push([point_x2, point_y2 - nodeRadius]);
+        } else if (node_coords.length == 1) {
+            let point_x = node_coords[0][0],
+            point_y = node_coords[0][1];
+            node_coords = [];
+            node_coords.push([point_x - nodeRadius, point_y + nodeRadius]);
+            node_coords.push([point_x + nodeRadius, point_y + nodeRadius]);
+            node_coords.push([point_x + nodeRadius, point_y - nodeRadius]);
+            node_coords.push([point_x - nodeRadius, point_y - nodeRadius]);
+        }
+        return d3.polygonHull(node_coords);
+        }
+        function updateGroups(groupPath, groupIds, node, margin) {
+        const valueline = d3
+            .line()
+            .x((d) => d[0])
+            .y((d) => d[1])
+            .curve(d3["curveCardinalClosed"]);
 
-      groupIds.forEach((groupId) => {
-        let centroid = [];
-        let path = paths
-          .filter((d) => d == groupId)
-          .attr("transform", "scale(1) translate(0,0)")
-          .attr("d", (d) => {
-            const polygon = polygonGenerator(d, node);
-            centroid = d3.polygonCentroid(polygon);
-            // 适当缩放形状：移动g元素到质心点，translate g围绕中心的所有路径
-            return valueline(
-              polygon.map((point) => [
-                point[0] - centroid[0],
-                point[1] - centroid[1],
-              ])
+        groupIds.forEach((groupId) => {
+            let centroid = [];
+            let path = groupPath
+            .filter((d) => d == groupId)
+            .attr("transform", "scale(1) translate(0,0)")
+            .attr("d", (d) => {
+                const polygon = polygonGenerator(d, node);
+                centroid = d3.polygonCentroid(polygon);
+                // 适当缩放形状：移动g元素到质心点，translate g围绕中心的所有路径
+                return valueline(
+                polygon.map((point) => [
+                    point[0] - centroid[0],
+                    point[1] - centroid[1],
+                ])
+                );
+            });
+            d3.select(path.node().parentNode).attr(
+            "transform",
+            "translate(" +
+                centroid[0] +
+                "," +
+                centroid[1] +
+                ") scale(" +
+                margin +
+                ")"
             );
-          });
-        d3.select(path.node().parentNode).attr(
-          "transform",
-          "translate(" +
-            centroid[0] +
-            "," +
-            centroid[1] +
-            ") scale(" +
-            margin +
-            ")"
-        );
-      });
-    }
+        });
+        }
 
-    // 视图缩放
-    let zoomHandler = d3
-      .zoom()
-      .on("zoom", zoomAction)
-      .filter(function (event) {
-        return !event.button && event.type != "dblclick";
-      });
-    function zoomAction(event) {
-      wrapper.attr(
-        "transform",
-        `translate(${event.transform.x}, ${event.transform.y})` +
-          "scale(" +
-          event.transform.k +
-          ")"
-      );
-    }
-    zoomHandler(svg);
-  }
+        // 视图缩放
+        // let zoomHandler = d3
+        //   .zoom()
+        //   .on("zoom", zoomAction)
+        //   .filter(function (event) {
+        //     return !event.button && event.type != "dblclick";
+        //   });
+        // function zoomAction(event) {
+        //   wrapper.attr(
+        //     "transform",
+        //     `translate(${event.transform.x}, ${event.transform.y})` +
+        //       "scale(" +
+        //       event.transform.k +
+        //       ")"
+        //     );
+        // }
+        // zoomHandler(svg);
+
+        // ----------------   LASSO STUFF . ----------------
+        var lasso_start = function() {
+            // 可以选择在框选之前删除所有的样式
+            // lasso.items()
+            //     .classed("not_possible",true)
+            //     .classed("selected",false);
+        };
+
+        var lasso_draw = function() {
+            lasso.possibleItems()
+                .selectAll('path')
+                .attr("fill",'#fe2236')
+                .attr("opacity", 0.5);
+            // lasso.notPossibleItems()
+            //     .classed("not_possible",true)
+            //     .classed("possible",false);
+        };
+
+        var lasso_end = function() {
+
+            // lasso.items()
+            //     .classed("not_possible",false)
+            //     .classed("possible",false);
+            lasso.selectedItems()
+                .selectAll('path')
+                .attr('fill', '#bcd981')
+                .attr("opacity", 0.5);
+            lasso.notSelectedItems()
+                .selectAll('path')
+                .attr('fill', 'none')
+                .attr("opacity", 0.5);
+                
+            // 获取选中的数据对应的numId
+            var groupIdArr = lasso.selectedItems()._groups[0].map(d => d.__data__)
+            var numIdArr = nodes.filter(d => groupIdArr.includes(d.group)).map(d => d.id) 
+        };
+        
+        const lasso = d3Lasso()
+                .closePathDistance(305) 
+                .closePathSelect(true) 
+                .targetArea(svg)
+                .items(d3.selectAll('.path_placeholder')) 
+                .on("start",lasso_start) 
+                .on("draw",lasso_draw) 
+                .on("end",lasso_end); 
+
+        svg.call(lasso);
+
+      }
 
   return (
     <div id="skeleton-chart" style={{ width: "100%", height: "100%" }}></div>
