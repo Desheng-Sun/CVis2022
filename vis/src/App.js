@@ -20,7 +20,7 @@ import SkeletonChart from "./components/skeleton-chart";
 import ICClueChart from "./components/ic-clue-chart";
 import DifChart from "./components/dif-chart";
 
-// import SubChart from './components/sub-chart';
+// import SubChart from './components/sub-chart';n
 // 引入问题一的自定义组件
 
 function App() {

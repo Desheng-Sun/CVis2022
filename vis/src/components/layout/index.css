@@ -75,7 +75,7 @@
 #nodelinkic {
   width: 100%;
   flex: 6;
-  background-color: darkblue;
+  background-color: rgb(192, 192, 194);
   padding-top: 4px;
 }
 
@@ -112,7 +112,7 @@
 #deleterelation {
   height: 100%;
   flex: 1;
-  background-color: gold;
+  background-color: rgb(215, 214, 209);
   padding-top: 4px;
 }
 

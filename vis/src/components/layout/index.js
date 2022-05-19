@@ -38,10 +38,10 @@ export default function Layout() {
       document.getElementById("filteric").getBoundingClientRect().height
     );
     setSkeletonChartWidth(
-      document.getElementById("nodelinkic").getBoundingClientRect().width
+      document.getElementById("skeleton-chart").getBoundingClientRect().width
     );
     setSkeletonChartHeight(
-      document.getElementById("nodelinkic").getBoundingClientRect().height
+      document.getElementById("skeleton-chart").getBoundingClientRect().height
     );
   });
   return (
@@ -59,7 +59,7 @@ export default function Layout() {
           </div>
           <div id="nodelinkic">
             <ChartHeader chartName={"IP <——> Cert"} />
-            <SkeletonChart w={icClueChartWidth} h={icClueChartHeight} />
+            <SkeletonChart w={skeletonChartWidth} h={skeletonChartHeight} />
           </div>
         </div>
         <div id="iright">
@@ -70,7 +70,7 @@ export default function Layout() {
           <div id="container-filter">
             <div id="deleterelation">
               <ChartHeader chartName={"差异视图"} />
-              <DifChart w={difChartWidth} h = {difChartHeight}/>
+              <DifChart w={difChartWidth} h={difChartHeight} />
               {/* 差异视图 删IP/Cert节点 */}
             </div>
             <div id="existingdomain">展示当前子图中domain情况</div>
