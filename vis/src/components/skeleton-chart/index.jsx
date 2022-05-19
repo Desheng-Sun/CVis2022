@@ -3,6 +3,8 @@ import { useEffect } from 'react'
 import { useState } from 'react';
 import lasso from './d3-lasso';
 import d3ContextMenu from "d3-context-menu";
+import PubSub from "pubsub-js"
+
 import './index.css'
 
 const d3Lasso = lasso;
@@ -13,7 +15,7 @@ export default function SkeletonChart({w, h}){
   const [data, setData] = useState({});
   const [dataParam, setDataParam] = useState("");
   const [selectedNode, setSelectedNode] = useState([]);
-  const [test, setTest] = useState(0)
+  const [currIc, setCurrIc] = useState('');   // 当前已选择的ic
 
 
   // 随系统缩放修改画布大小
@@ -983,9 +985,16 @@ export default function SkeletonChart({w, h}){
   }, []);
 
   useEffect(() => {
+    // console.log(currIc);
+  }, [currIc]);
+
+  useEffect(() => {
     drawChart();
   }, [svgWidth, svgHeight, data]);
 
+  PubSub.subscribe("icicleSelect",(msg,ic)=>{
+    setCurrIc(ic)
+  })
 
   // 绘制结构图
   function drawChart() {

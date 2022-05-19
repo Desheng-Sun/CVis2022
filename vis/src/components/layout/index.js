@@ -18,6 +18,8 @@ export default function Layout() {
   const [skeletonChartWidth, setSkeletonChartWidth] = useState(0);
   const [skeletonChartHeight, setSkeletonChartHeight] = useState(0);
 
+  const [curIC, setCurrIC] = useState(""); // 当前选中的IP/Cert
+
   useEffect(() => {
     setCountsBarWidth(
       document.getElementById("statistic").getBoundingClientRect().width

@@ -3,31 +3,34 @@ import { partition } from "d3";
 import { useState } from "react";
 import { useEffect } from "react";
 import Icicle from "./icicle.js";
+import PubSub from 'pubsub-js'
 import "./index.css";
 
 // 数据请求
 import { icclue } from "../../apis/api.js";
 
-export default function ICClueChart({ w, h }) {
-  const [svgWidth, setSvgWidth] = useState(800);
-  const [svgHeight, setSvgHeight] = useState(500);
+export default function ICClueChart({ w, h}) {
+  const [svgWidth, setSvgWidth] = useState(w);
+  const [svgHeight, setSvgHeight] = useState(h);
   const [data, setData] = useState({});
   const [dataParam, setDataParam] = useState("");
-  const [selectedIclcleNode, setSelectedIclcleNode] = useState([]);
+  const [selectedIclcleNode, setSelectedIclcleNode] = useState([])
+
 
   useEffect(() => {
-    console.log(selectedIclcleNode);
+    // console.log(selectedIclcleNode);
+    PubSub.publish('icicleSelect',selectedIclcleNode)
   }, [selectedIclcleNode])
   
 
   // 随系统缩放修改画布大小
-  // useEffect(() => {
-  //   console.log(svgWidth);
-  //   setSvgWidth(w);
-  // }, [w]);
-  // useEffect(() => {
-  //   setSvgHeight(h);
-  // }, [h]);
+  useEffect(() => {
+    console.log(svgWidth);
+    setSvgWidth(w);
+  }, [w]);
+  useEffect(() => {
+    setSvgHeight(h);
+  }, [h]);
 
   // 请求数据
   useEffect(() => {
@@ -59,8 +62,14 @@ export default function ICClueChart({ w, h }) {
                 `;
       })(document.getElementById("icclue-chart"));
 
-    
-    // setInterval(function(){ console.log((icicleChart.getSelectedIcicleNode())); }, 3000);
+    let prevSelected = []  // 这里获取数据的更新有问题
+    setInterval(function(){ 
+      let curSelected = icicleChart.getSelectedIcicleNode()  // 获取被选中的节点
+      if(prevSelected.sort().toString() != curSelected.sort().toString()){ // 有变化的节点
+        prevSelected = curSelected;
+        setSelectedIclcleNode(prevSelected)
+      }
+    }, 1000);
   }
   return <div id="icclue-chart" style={{ width: "100%", height: "96%" }}></div>;
 }

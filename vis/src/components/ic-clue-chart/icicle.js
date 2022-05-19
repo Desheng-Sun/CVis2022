@@ -105,7 +105,7 @@ export default Kapsule({
         state.layoutData = hierData.descendants().filter(d => d.y0 >= 0);
       }
     },
-    getSelectedIcicleNode: function(){
+    getSelectedIcicleNode: function(){  //返回被选中的节点
       return selectedIclcleNode
     }
   },
@@ -299,6 +299,7 @@ export default Kapsule({
            })
            .selectAll('rect')
           //  .attr('stroke', '#e81123')
+          //  .attr('fill', 'yellow')
           .attr('opacity', 1)
       })
       .on('mouseout', function(){ 
@@ -309,12 +310,24 @@ export default Kapsule({
       })
       .on("contextmenu", function(event, d){
           event.preventDefault()   // 阻止浏览器默认事件
-          if(!event.ctrlKey){       // 按下Ctrl键, 取消选中
-            let currNumId = d.data.numId   // 当前选中节点的numId
-            selectedIclcleNode.push(currNumId)
-            console.log(selectedIclcleNode);
-          }else{
-            
+          let currNumId = d.data.numId   // 当前选中节点的numId
+          if(!event.ctrlKey){       // 不按Ctrl键选中
+            if(!selectedIclcleNode.includes(currNumId)) selectedIclcleNode.push(currNumId)
+            newCellG.filter(function(event, d){
+              let cur = d3.select(this).select('rect').attr('numId');
+                return currNumId == cur
+            })
+            .selectAll('rect')
+            .classed('selectedIclcle', true)
+          }else{                        // 按下Ctrl键选中
+            let temp = selectedIclcleNode.filter(d => d !=currNumId)  // 过滤掉被删除的节点
+            selectedIclcleNode = [...temp]
+            newCellG.filter(function(event, d){
+              let cur = d3.select(this).select('rect').attr('numId');
+                return currNumId == cur
+            })
+            .selectAll('rect')
+            .classed('selectedIclcle', false)
           }
       })
   

@@ -21,6 +21,7 @@
     "force-graph": "^1.42.9",
     "force-in-a-box": "^1.0.1",
     "install": "^0.13.0",
+    "pubsub-js": "^1.9.4",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.3.0",

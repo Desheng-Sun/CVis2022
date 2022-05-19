@@ -46,3 +46,7 @@
     text-align: center;
     margin-bottom: 5px;
   }
+
+  .icicleSvg .selectedIclcle{
+    fill:#404041
+  }
