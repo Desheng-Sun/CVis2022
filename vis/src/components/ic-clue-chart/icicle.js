@@ -8,6 +8,9 @@ import Kapsule from 'kapsule';
 import * as d3 from 'd3';
 import tinycolor from 'tinycolor2';
 import accessorFn from 'accessor-fn';
+import { notification } from 'antd';
+
+
 
 const LABELS_WIDTH_OPACITY_SCALE = scaleLinear().domain([4, 8]).clamp(true); // px per char
 const LABELS_HEIGHT_OPACITY_SCALE = scaleLinear().domain([15, 40]).clamp(true); // available height in px
@@ -23,7 +26,7 @@ export default Kapsule({
     data: { onChange: function() { this._parseData(); } },
     children: { default: 'children', onChange(_, state) { state.needsReparse = true }},
     sort: { onChange(_, state) { state.needsReparse = true }},
-    label: { default: d => d.name },
+    label: { default: d => d.id.slice(0,9) + '...' },
     size: {
       default: 'value',
       onChange: function(_, state) { this.zoomReset(); state.needsReparse = true; }
@@ -39,7 +42,8 @@ export default Kapsule({
     onClick: { triggerUpdate: false },
     onHover: { triggerUpdate: false },
     transitionDuration: { default: 800, triggerUpdate: false },
-    color_arr: ['', '', '']
+    divTop: { default: 10, triggerUpdate: false },
+    divLeft: { default: 0, triggerUpdate: false },
   },
   methods: {
     zoomBy: function(state, k) {
@@ -72,7 +76,7 @@ export default Kapsule({
         }
 
         const horiz = state.orientation === 'lr' || state.orientation === 'rl';
-        const size = [state.width, state.height];
+        const size = [state.width -20, state.height];
         horiz && size.reverse();
 
         d3Partition()
@@ -81,7 +85,7 @@ export default Kapsule({
           .size(size)(hierData);
 
         hierData.descendants().forEach((d, i) => {
-          // d.id = i; // Mark each node with a unique ID
+          d.id = i; // Mark each node with a unique ID
           d.data.__dataNode = d; // Dual-link data nodes
         });
 
@@ -105,10 +109,12 @@ export default Kapsule({
   }),
   init: function(domNode, state) {
     const el = d3Select(domNode)
-      .append('div').attr('class', 'icicle-viz');
+      .append('div').attr('class', 'icicle-viz')
+      .style('padding-top', state.divTop + 'px')
+      .style('padding-left', state.divLeft + 'px')
 
     state.svg = el.append('svg');
-    state.canvas = state.svg.append('g');
+    state.canvas = state.svg.append('g')
 
     // tooltips
     state.tooltip = el.append('div')
@@ -142,7 +148,7 @@ export default Kapsule({
 
     state.svg
       .on('click', () => (state.onClick || this.zoomReset)(null)) // By default reset zoom when clicking on canvas
-      .on('mouseover', () => state.onHover && state.onHover(null));
+      .on('mouseover', () => state.onHover && state.onHover(null))
   },
   update: function(state) {
     if (state.needsReparse) {
@@ -166,15 +172,7 @@ export default Kapsule({
     const zoomTr = state.zoom.current();
 
     const cell = state.canvas.selectAll('.node')
-      .data(
-        state.layoutData
-        //   .filter(d => // Show only segments in scene that are wider than the threshold
-        //     d.x1 >= -zoomTr[horiz ? 'y' : 'x'] / zoomTr.k
-        //     && d.x0 <= (horiz ? state.height - zoomTr.y : state.width - zoomTr.x) / zoomTr.k
-        //     && (d.x1 - d.x0) >= state.minSegmentWidth / zoomTr.k
-        // ),
-        ,d => d.id
-    );
+                .data(state.layoutData, d => d.id);
 
     const nameOf = accessorFn(state.label);
     const colorOf = accessorFn(state.color);
@@ -199,35 +197,73 @@ export default Kapsule({
         ${y0(d) + (y1(d) - y0(d)) * (horiz ? 0.5 : 0)}
       )`);
     let color = d3.scaleOrdinal(d3.schemeCategory10)
+            // 颜色映射分别的数量
+    var pureDomainLinearColor = d3.scaleLinear()  
+                                .domain([0, state.data['pureDomainNum']])  
+                                .range([0, 1]);
+    var dirtyDomainLinearColor = d3.scaleLinear()  
+                                .domain([0,state.data['dirtyDomainNum']])  
+                                .range([0,1]);
+    const pureDomainColorCompute = d3.interpolate(d3.rgb(255, 255, 255), d3.rgb(101, 164, 135));  
+    const dirtyDomainColorCompute = d3.interpolate(d3.rgb(255, 255, 255), d3.rgb(0, 0, 0));
     let newCellG = newCell.append('g')
+    let dblclickFlag = false;   //判断是否点击了双击
     for(let i = 0; i<3; i++){
       newCellG.append('rect')
       .attr('id', d => `rect-${d.id}_${i}`)
       .attr('x', d => {
-        if(i === 0) return 0
-        if(i === 1) return `${(x1(d) - x0(d)) - 1}`/3
-        return `${(x1(d) - x0(d)) - 1}`/3*2
+        let tx;
+        if(i === 0) tx = 0
+        else if(i === 1) tx = `${(x1(d) - x0(d)) - 1}`/3
+        else tx = `${(x1(d) - x0(d)) - 1}`/3*2
+        return tx
       })
+      .attr("numId", d => d.data.numId)
       .attr("fill", d => {
-        if (!d.depth) return "#ccc";
-        while (d.depth > 1) d = d.parent;
-        return color(d.data.name);
+        if (!d.depth) return "#cf9007";
+        if(i === 0 && d.data.WhoisPhone == 0 && d.data.WhoisName == 0 && d.data.WhoisEmail == 0) return '#78d4e3'   // 没有whois信息
+        else if(i === 0 && (d.data.WhoisPhone != 0 || d.data.WhoisName != 0 || d.data.WhoisEmail != 0)) return '#c9667b'   // 有whois信息
+        if(i === 1) return dirtyDomainColorCompute(dirtyDomainLinearColor(d.data.dirtyDomain));   // 映射不纯净的Domain
+        return pureDomainColorCompute(pureDomainLinearColor(d.data.pureDomain))   // 映射纯净的Domian
       })
-      // .attr('width', d =>`${(x1(d) - x0(d)) - 1}`/3)
-      // .attr('height', d =>`${(y1(d) - y0(d)) - 1}`)
+      // .attr('opacity', 0.5)
       .attr('width', d =>{
         return  horiz ? `${(x1(d) - x0(d)) - 1}`/3 : 0
       })
       .attr('height', d => horiz ? `${(y1(d) - y0(d)) }` : 0)
-      // .attr('height', d => horiz ? 0 : `${(y1(d) - y0(d)) - 1}`)
-      .on('click', (ev, d) => {
-        ev.stopPropagation();
-        (state.onClick || this.zoomToNode)(d.data);
+      .on("dblclick", function(event, d){
+        // if(!dblclickFlag){
+        //   let currNumId = d.data.numId
+        //   newCellG.filter(function(event, d){
+        //         let cur = d3.select(this).select('rect').attr('numId');
+        //           return currNumId != cur
+        //         })
+        //         .selectAll('rect')
+        //         .attr('opacity', 0)
+        // }
+        // else{
+        //   newCellG.selectAll('rect').attr('opacity', 1)
+        // }
       })
-      .on('mouseover', (ev, d) => {
+      .on('click', (ev, d) => {
+        newCellG.selectAll('rect').attr('opacity', 1)
+        ev.stopPropagation();
+        (state.onClick || this.zoomToNode)(d.data);     
+      })
+      // .on('click', function(ev, d){
+      //   newCellG.selectAll('rect').attr('opacity', 1)
+      //   // 高亮同一个点
+      //   // let currNumId = d.data.numId
+      //   // newCellG.filter(function(event, d){
+      //   //       let cur = d3.select(this).select('rect').attr('numId');
+      //   //         return currNumId != cur
+      //   //       })
+      //   //       .selectAll('rect')
+      //   //       .attr('opacity', 0)
+      // })
+      .on('mouseover', function(ev, d){
         ev.stopPropagation();
         state.onHover && state.onHover(d.data);
-
         state.tooltip.style('display', state.showTooltip(d.data, d) ? 'inline' : 'none');
         state.tooltip.html(`
           <div class="tooltip-title">
@@ -241,27 +277,78 @@ export default Kapsule({
           </div>
           ${state.tooltipContent(d.data, d)}
         `);
+           // 显示与当前点相同的其他位置上的点
+           let currNumId = d.data.numId
+           newCellG.filter(function(event, d){
+             let cur = d3.select(this).select('rect').attr('numId');
+               return currNumId == cur
+           })
+           .selectAll('rect')
+           .attr('stroke', '#e81123')
+          // .attr('opacity', 1)
       })
-      .on('mouseout', () => { state.tooltip.style('display', 'none'); });
-
-      
+      .on('mouseout', function(){ 
+        state.tooltip.style('display', 'none'); 
+        newCellG.selectAll('rect')
+                .attr('stroke', 'none')
+                // .attr('opacity', 0.5)
+      })
+  
     }
+    newCellG.filter(d => d.children === undefined && d.data.isInFirst)
+            .append('circle')
+            .attr('cx', d => ((x1(d) - x0(d) - 1)) + 10)
+            .attr('cy', d => (y1(d) - y0(d))/3)
+            .attr('r', 2)
+            .attr('fill', 'red')
+            .attr('numId', d => d.data.numId)
+            .attr('class', 'circle-label')
+            .on('mouseover', function(event, d){
+              // 显示出提示框
+              state.tooltip.style('display', state.showTooltip(d.data, d) ? 'inline' : 'none');
+              state.tooltip.html(`
+                <div class="tooltip-title">
+                  ${state.tooltipTitle
+                    ? state.tooltipTitle(d.data, d)
+                    : getNodeStack(d)
+                      .slice(state.excludeRoot ? 1 : 0)
+                      .map(d => nameOf(d.data))
+                      .join(' &rarr; ')
+                  }
+                </div>
+                ${state.tooltipContent(d.data, d)}
+              `)
 
-    newCell.append('clipPath')
-      .attr('id', d => `clip-${d.id}`)
-      .append('use')
-      .attr('xlink:href', d => `#rect-${d.id}`);
+              // 显示对应的条
+              let currNumId = d.data.numId
+              newCellG.filter(function(event, d){
+                let cur = d3.select(this).select('rect').attr('numId');
+                  return currNumId == cur
+              })
+              .selectAll('rect')
+              .attr('stroke', '#e81123')
+      })
+      .on('mouseout', function(event, d){
+        newCellG.selectAll('rect').attr('stroke', 'none')
+      })
 
-    newCell.append('g')
-      .attr('clip-path', d => `url(#clip-${d.id})`)
-      .append('g')
+    // newCellG.append('clipPath')
+    //   .attr('id', d => `clip-${d.id}`)
+    //   .append('use')
+    //   .attr('xlink:href', d => `#rect-${d.id}`);
+
+    newCellG.append('g')
+      // .attr('clip-path', d => `url(#clip-${d.id})`)
+      // .append('g')
         .attr('class', 'label-container')
         .attr('transform', d => `translate(
           ${state.orientation === 'lr' ? 4 : state.orientation === 'rl' ? x1(d) - x0(d) - 4 : 0},
-          ${horiz ? 0 : (y1(d) - y0(d)) / 2}
+          ${(y1(d) - y0(d)) / 2}
         )`)
         .append('text')
-          .attr('class', 'path-label');
+          .attr('class', 'path-label')
+          // .attr('textLength', '6em')
+
 
     // Entering + Updating
     const allCells = cell.merge(newCell);
@@ -280,7 +367,7 @@ export default Kapsule({
       // .style('fill', d => colorOf(d.data, d.parent));
 
     allCells.select('g.label-container')
-      .style('display', state.showLabels ? null : 'none')
+      // .style('display', state.showLabels ? null : 'none')
       .transition(transition)
         .attr('transform', d => `translate(
           ${state.orientation === 'lr' ? 4 : state.orientation === 'rl' ? x1(d) - x0(d) - 4 : (x1(d) - x0(d)) / 2},
@@ -291,6 +378,7 @@ export default Kapsule({
       // Update previous scale
       const prevK = state.prevK || 1;
       state.prevK = zoomTr.k;
+
 
       allCells.select('text.path-label')
         .classed('light', d => !tinycolor(colorOf(d.data, d.parent)).isLight())
@@ -303,10 +391,25 @@ export default Kapsule({
           )
            // Scale labels inversely proportional
           .attrTween('transform', function () {
+
             const kTr = d3Interpolate(prevK, zoomTr.k);
+
             return horiz ? t => `scale(1, ${1 / kTr(t)})` : t => `scale(${1 / kTr(t)}, 1)`;
-          });
-    }
+          })
+        
+        
+        // 保持点的尺寸 
+        allCells.select('circle.circle-label')
+          .transition(transition)
+            .style('opacity', 1)
+            .attrTween('transform', function () {
+              const kTr = d3Interpolate(prevK, zoomTr.k);
+              return horiz ? t => `scale(1, ${1 / kTr(t)})` : t => `scale(${1 / kTr(t)}, 1)`;
+            })
+        }
+
+   
+    
 
     function getNodeStack(d) {
       const stack = [];

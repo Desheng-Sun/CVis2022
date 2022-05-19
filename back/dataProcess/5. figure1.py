@@ -19,6 +19,12 @@ def getNodesNeighbourInfop(coreList, nowPath, typeName, nodes, allNodes):
         nodeLinksJ = open(nowPath + nodePath + str(i[0]) +
                           ".json", "r", encoding="utf-8")
         nodeLinks = json.load(nodeLinksJ)
+        nodeLinks.sort(key = lambda x: x["end"][0])
+        
+        nodeLinksJ = open(nowPath + nodePath + str(i[0]) +
+                          ".json", "w", encoding="utf-8")
+        json.dump(nodeLinks, nodeLinksJ, ensure_ascii=False)
+        nodeLinksJ.close()
         nodesToNodesInfo = []
         for j in nodeLinks:
             if(not j["end"][0] in allNodes):
@@ -75,14 +81,6 @@ def mergeNodesNeighbourInfop():
         nodeToNodeInfo.update(nowCert)
     nodeToNodeInfo = sorted(nodeToNodeInfo.items(), key=lambda d: int(d[0]))
     nodeToNodeInfo = dict(nodeToNodeInfo)
-    with alive_bar(len(nodeToNodeInfo)) as bar:
-        for i in nodeToNodeInfo:
-            for j in nodeToNodeInfo[i]:
-                if(j[0] < j[1]):
-                    nowLinksInfo = [j[1], j[0]]
-                    nowLinksInfo.extend(j[2:])
-                    nodeToNodeInfo[str(j[1])].append(nowLinksInfo)
-            bar()
 
     with open(nowPath + "nodesToNodesGraph1.json", 'w', encoding='utf-8') as f:
         json.dump(nodeToNodeInfo, f, ensure_ascii=False)
@@ -92,8 +90,13 @@ def getIPCertLinksInSkip3(coreList, nowPath, nodes, nodeToNodeInfo, nodeCsvW):
 
     print("第", coreList, "个线程开始执行了----------------",
           time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
+    WhoisName = 0
+    WhoisPhone = 0
+    WhoisEmail = 0
+    pureDomain = 0
+    dirtyDomain = 0
     # with alive_bar(len(nodes)) as bar:
-    for i in nodes:        
+    for i in nodes:
         allNodes1 = []
         # allNodes2 = []
         # allNodes3 = []
@@ -101,14 +104,15 @@ def getIPCertLinksInSkip3(coreList, nowPath, nodes, nodeToNodeInfo, nodeCsvW):
             allNodes1.append(j[1])
             # for k in nodeToNodeInfo[str(j[1])]:
             #     allNodes2.append(k[1])
-                # for l in nodeToNodeInfo[str(k[1])]:
-                #     allNodes3.append(l[1])
+            # for l in nodeToNodeInfo[str(k[1])]:
+            #     allNodes3.append(l[1])
         allLinks = {
         }
         nowNodesInfo = list(nodeCsvW[int(i) - 1])
         # 第0层数据
         allLinks = {
             "id": nowNodesInfo[1],
+            "nodesNum": 0,
             "WhoisName": 0,
             "WhoisPhone": 0,
             "WhoisEmail": 0,
@@ -118,11 +122,12 @@ def getIPCertLinksInSkip3(coreList, nowPath, nodes, nodeToNodeInfo, nodeCsvW):
             "name": nowNodesInfo[2],
             "Children": []
         }
-        #针对第0层数据的链路添加第一层数据
+        # 针对第0层数据的链路添加第一层数据
         for j in nodeToNodeInfo[str(i)]:
             nowNodesInfo = list(nodeCsvW[int(j[1]) - 1])
             allLinks["Children"].append({
                 "id": nowNodesInfo[1],
+                "nodesNum": j[2] - 2,
                 "WhoisName": j[5],
                 "WhoisEmail": j[6],
                 "WhoisPhone": j[7],
@@ -132,9 +137,14 @@ def getIPCertLinksInSkip3(coreList, nowPath, nodes, nodeToNodeInfo, nodeCsvW):
                 "name": nowNodesInfo[2],
                 "Children": []
             })
+            WhoisName = max(WhoisName, j[5])
+            WhoisPhone = max(WhoisPhone, j[6])
+            WhoisEmail = max(WhoisEmail, j[7])
+            pureDomain = max(pureDomain, j[3] - j[4])
+            dirtyDomain = max(dirtyDomain, j[4])
             # 第二层数据
             for k in nodeToNodeInfo[str(j[1])]:
-                #如果第二层数据和第0层数据相等，则跳过A-B-A
+                # 如果第二层数据和第0层数据相等，则跳过A-B-A
                 if(k[1] == int(i)):
                     continue
                 nowNodesInfo = list(nodeCsvW[int(k[1]) - 1])
@@ -143,6 +153,7 @@ def getIPCertLinksInSkip3(coreList, nowPath, nodes, nodeToNodeInfo, nodeCsvW):
                     isInFirst = True
                 allLinks["Children"][-1]["Children"].append({
                     "id": nowNodesInfo[1],
+                    "nodesNum": k[2] - 2,
                     "WhoisName": k[5],
                     "WhoisEmail": k[6],
                     "WhoisPhone": k[7],
@@ -153,26 +164,37 @@ def getIPCertLinksInSkip3(coreList, nowPath, nodes, nodeToNodeInfo, nodeCsvW):
                     "isInFirst": isInFirst,
                     "Children": []
                 })
-
-                # # if(k[1] in allNodes1 or k[1] in allNodes2):
-                # #     continue
-                # # 第三层数据
-                # for l in nodeToNodeInfo[str(k[1])]:
-                #     # 如果第三层数据和第一层相等，则跳过
-                #     if(l[1] == j[1]):
-                #         continue
-                #     nowNodesInfo = list(nodeCsvW[int(l[1]) - 1])
-                #     allLinks["Children"][-1]["Children"][-1]["Children"].append({
-                #         "id": nowNodesInfo[1],
-                #         "WhoisName": l[5],
-                #         "WhoisEmail": l[6],
-                #         "WhoisPhone": l[7],
-                #         "pureDomain": l[3] - l[4],
-                #         "dirtyDomain": l[4],
-                #         "numId": str(nowNodesInfo[0]),
-                #         "name": nowNodesInfo[2],
-                #         "Children": []
-                #     })
+                WhoisName = max(WhoisName, k[5])
+                WhoisPhone = max(WhoisPhone, k[6])
+                WhoisEmail = max(WhoisEmail, k[7])
+                pureDomain = max(pureDomain, k[3] - k[4])
+                dirtyDomain = max(dirtyDomain, k[4])
+        allLinks.update({
+            "WhoisNameNum" :WhoisName,
+            "WhoisPhoneNum" :WhoisPhone,
+            "WhoisEmailNum" :WhoisEmail,
+            "pureDomainNum" :pureDomain,
+            "dirtyDomainNum" :dirtyDomain
+        })
+            # # if(k[1] in allNodes1 or k[1] in allNodes2):
+            # #     continue
+            # # 第三层数据
+            # for l in nodeToNodeInfo[str(k[1])]:
+            #     # 如果第三层数据和第一层相等，则跳过
+            #     if(l[1] == j[1]):
+            #         continue
+            #     nowNodesInfo = list(nodeCsvW[int(l[1]) - 1])
+            #     allLinks["Children"][-1]["Children"][-1]["Children"].append({
+            #         "id": nowNodesInfo[1],
+            #         "WhoisName": l[5],
+            #         "WhoisEmail": l[6],
+            #         "WhoisPhone": l[7],
+            #         "pureDomain": l[3] - l[4],
+            #         "dirtyDomain": l[4],
+            #         "numId": str(nowNodesInfo[0]),
+            #         "name": nowNodesInfo[2],
+            #         "Children": []
+            #     })
 
         # for j in allLinks["0"]:
         #     for k in allLinks["0"][j]:
@@ -208,11 +230,12 @@ def getIPCertLinksInSkip3(coreList, nowPath, nodes, nodeToNodeInfo, nodeCsvW):
 
 
 if __name__ == '__main__':
-    nowPath = os.path.abspath(os.path.dirname(os.path.dirname(__file__))) + "/data/"
+    nowPath = os.path.abspath(os.path.dirname(
+        os.path.dirname(__file__))) + "/data/"
     IpScreen = []
     allNodes = []
     certScreen = []
-    
+
     with open(nowPath + "LinksByIP/IpScreen.json", 'r', encoding='utf-8') as f:
         print("查找每一个Ip到Nodes的节点信息--------------------------------------")
         IpScreen = json.load(f)
@@ -229,38 +252,40 @@ if __name__ == '__main__':
     nodeCsvW = pd.read_csv(
         nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumId.csv", header=0)
     nodeCsvW = nodeCsvW.values
-    # pool = mp.Pool(processes=12)
-    # numLen = int(len(IpScreen) / 12)
-    # for i in range(12):
-    #     nodeListNum = (i + 1) * numLen
-    #     if(i == 11):
-    #         nodeListNum = None
-    #     pool.apply_async(getNodesNeighbourInfop, args=(
-    #         i, nowPath, "IP", IpScreen[i * numLen: nodeListNum], allNodes))
-    #     print(i, i + 1, i * numLen, nodeListNum)
-    # pool.close()
-    # pool.join()
+    pool = mp.Pool(processes=12)
+    numLen = int(len(IpScreen) / 12)
+    # getNodesNeighbourInfop(
+    #         0, nowPath, "IP", IpScreen[0: 1], allNodes)
+    for i in range(12):
+        nodeListNum = (i + 1) * numLen
+        if(i == 11):
+            nodeListNum = None
+        pool.apply_async(getNodesNeighbourInfop, args=(
+            i, nowPath, "IP", IpScreen[i * numLen: nodeListNum], allNodes))
+        print(i, i + 1, i * numLen, nodeListNum)
+    pool.close()
+    pool.join()
 
-    # pool = mp.Pool(processes=12)
-    # numLen = int(len(certScreen) / 12)
-    # for i in range(12):
-    #     nodeListNum = (i + 1) * numLen
-    #     if(i == 11):
-    #         nodeListNum = None
-    #     pool.apply_async(getNodesNeighbourInfop, args=(
-    #         i, nowPath, "Cert", certScreen[i * numLen: nodeListNum], allNodes))
-    #     print(i, i + 1, i * numLen, nodeListNum)
-    # pool.close()
-    # pool.join()
-    # # 将所有数据进行合并
-    # print("将所有数据进行合并----------------------------------------------")
-    # mergeNodesNeighbourInfop()
+    pool = mp.Pool(processes=12)
+    numLen = int(len(certScreen) / 12)
+    for i in range(12):
+        nodeListNum = (i + 1) * numLen
+        if(i == 11):
+            nodeListNum = None
+        pool.apply_async(getNodesNeighbourInfop, args=(
+            i, nowPath, "Cert", certScreen[i * numLen: nodeListNum], allNodes))
+        print(i, i + 1, i * numLen, nodeListNum)
+    pool.close()
+    pool.join()
+    # 将所有数据进行合并
+    print("将所有数据进行合并----------------------------------------------")
+    mergeNodesNeighbourInfop()
 
     with open(nowPath + "nodesToNodesGraph1.json", 'r', encoding='utf-8') as f:
         nodeToNodeInfo = json.load(f)
         # getIPCertLinksInSkip3(i, nowPath, allNodes[0 : 2], nodeToNodeInfo, nodeCsvW)
         pool = mp.Pool(processes=12)
-            
+
         numLen = int(len(allNodes) / 12)
         for i in range(12):
             nodeListNum = (i + 1) * numLen

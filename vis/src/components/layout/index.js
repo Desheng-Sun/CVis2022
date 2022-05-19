@@ -4,6 +4,8 @@ import ChartHeader from "../chart-header";
 import InfoList from "../info-list";
 import CountsBar from "../counts-bar";
 import DifChart from "../dif-chart";
+import ICClueChart from "../ic-clue-chart";
+import SkeletonChart from "../skeleton-chart";
 import { useEffect, useState } from "react";
 
 export default function Layout() {
@@ -11,9 +13,12 @@ export default function Layout() {
   const [countsBarHeight, setCountsBarHeight] = useState(0);
   const [difChartWidth, setDifChartWidth] = useState(0);
   const [difChartHeight, setDifChartHeight] = useState(0);
+  const [icClueChartWidth, setIcClueChartWidth] = useState(0);
+  const [icClueChartHeight, setIcClueChartHeight] = useState(0);
+  const [skeletonChartWidth, setSkeletonChartWidth] = useState(0);
+  const [skeletonChartHeight, setSkeletonChartHeight] = useState(0);
 
   useEffect(() => {
-    // console.log(countsBarWidth);
     setCountsBarWidth(
       document.getElementById("statistic").getBoundingClientRect().width
     );
@@ -26,9 +31,18 @@ export default function Layout() {
     setDifChartHeight(
       document.getElementById("deleterelation").getBoundingClientRect().height
     );
-    // console.log(countsBarWidth);
-
-
+    setIcClueChartWidth(
+      document.getElementById("filteric").getBoundingClientRect().width
+    );
+    setIcClueChartHeight(
+      document.getElementById("filteric").getBoundingClientRect().height
+    );
+    setSkeletonChartWidth(
+      document.getElementById("nodelinkic").getBoundingClientRect().width
+    );
+    setSkeletonChartHeight(
+      document.getElementById("nodelinkic").getBoundingClientRect().height
+    );
   });
   return (
     <div id="layout">
@@ -39,9 +53,13 @@ export default function Layout() {
             输入/搜索框 用户有IP/Cert类型的线索
             或根据其他节点查找到对应的IP/Cert类型的线索
           </div>
-          <div id="filteric">冰柱图 展示当前线索三条内的IP/Cert跳转关系</div>
+          <div id="filteric">
+            <ChartHeader chartName={"冰柱图"} />
+            <ICClueChart w={icClueChartWidth} h={icClueChartHeight} />
+          </div>
           <div id="nodelinkic">
-            节点连接图 展示用户选择的多个IP/Cert的网络图
+            <ChartHeader chartName={"IP <——> Cert"} />
+            <SkeletonChart w={icClueChartWidth} h={icClueChartHeight} />
           </div>
         </div>
         <div id="iright">

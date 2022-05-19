@@ -12,19 +12,23 @@ def getNodeIndustry(nowNode, linksAll, nodeCsvW):
             ipIndustry = []
             for j in linksAll[i[0] - 1]:
                 if(not nodeCsvW[j[1] - 1][-1] =="[]"):
-                    nowIndustry = nodeCsvW[j[1] - 1][-1]
-                    ipIndustry.append(nowIndustry)
+                    nowIndustry = ast.literal_eval(nodeCsvW[j[1] - 1][-1])
+                    nowIndustry.sort()
+                    strnowIndustry = ""
+                    for k in nowIndustry:
+                        strnowIndustry += k
+                    ipIndustry.append(strnowIndustry)
                     # nowIndustryList = ast.literal_eval(nowIndustry)
                     # ipIndustry.extend(nowIndustryList)
             ipIndustrySet = list(set(ipIndustry))
             ipIndustrySet.sort()
             ipIndustryNum = []
             for j in ipIndustrySet:
-                ipIndustryNum.append(ipIndustry.count(j))
+                ipIndustryNum.append([j, ipIndustry.count(j)])
             bar()
             if(len(ipIndustrySet) == 0):
                 continue
-            ipIndustryJson[str(i[0])] = [ipIndustrySet, ipIndustryNum]
+            ipIndustryJson[str(i[0])] = ipIndustryNum
 
         with open(nowPath + "nodeIndustryInfo1.json", "w", encoding= "utf-8") as f:
             json.dump(ipIndustryJson,f,ensure_ascii=False)

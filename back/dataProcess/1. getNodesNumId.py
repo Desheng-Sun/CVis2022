@@ -4,6 +4,7 @@ import json
 from math import fabs
 from operator import truediv
 from os import link
+import os
 from re import T, X
 import sys
 from alive_progress import alive_bar
@@ -147,7 +148,8 @@ def changeLinkId(i, nodeList, linkList):
 
 
 if __name__ == '__main__':
-    nowPath = "./data/"
+    nowPath = os.path.abspath(os.path.dirname(
+        os.path.dirname(__file__))) + "/data/"
     # addNodeId()
     # 打开所有的节点
     nodeCsvW = pd.read_csv(
