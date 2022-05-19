@@ -2,21 +2,20 @@ import json
 import os
 from alive_progress import alive_bar
 import multiprocessing as mp
+import numpy as np
 import pandas as pd
 
 # 获取每一个目标节点关联的Cert节点和IP节点
 def getNodesWithCretAndIp(coreList, typeName, nowPath, nodeCsvW, linksAll, nowNodes):
     if(typeName == "IP"):
         startLinksType = "r_dns_a"
-        nodePath = "LinksByIP/"
-        numList = 35000
     else:
         startLinksType = "r_cert"
-        nodePath = "LinksByCert/"
-        numList = 22000
+    nodePath = "ICLinks/"
+    numList = int(len(nowNodes) / 6)
     # 每35000个IP节点为一组，进行循环
     nodeListNum = (coreList + 1) * numList
-    if((coreList + 1) * numList > len(nowNodes)):
+    if(coreList == 5):
         nodeListNum = None
     for i in nowNodes[coreList * numList: nodeListNum]:
         # 获取所有的node节点的NumId
@@ -126,7 +125,8 @@ def getLinksByLinkType(linkList, indexNum, nodeListId):
             if(listLinkTemp[1] in nodeListId or listLinkTemp[2] in nodeListId):
                 continue
             if(listLinkTemp[0] == "r_asn" or listLinkTemp[0] == "r_cidr" or listLinkTemp[0] == "r_cert_chain"):
-                continue
+                nowLinksById.append(
+                    [listLinkTemp[0], listLinkTemp[1], listLinkTemp[2], -1, True])
             elif(listLinkTemp[0] == "r_cert" or listLinkTemp[0] == "r_dns_a" or listLinkTemp[0] == "r_cname" or listLinkTemp[0] == "r_whois_name" or listLinkTemp[0] == "r_whois_email" or listLinkTemp[0] == "r_whois_phone"):
                 nowLinksById.append(
                     [listLinkTemp[0], listLinkTemp[1], listLinkTemp[2], indexNum - 1, True])
@@ -137,23 +137,16 @@ def getLinksByLinkType(linkList, indexNum, nodeListId):
 
 
 # 筛选所有IP节点，将关联其他IP和Cert节点的IP筛选出来
-def screenNode(typeName, nowPath, coreList, nowNodes):
-    if(typeName == "IP"):
-        nodePath = "LinksByIP/"
-        fileName = "IpInfo"
-        numList = 35000
-    
-    else:
-        nodePath = "LinksByCert/"
-        fileName = "certInfo"
-        numList = 22000
+def screenNode(nowPath, coreList, nowNodes):
+    numList = int(len(nowNodes) / 12)
+    nodePath = "ICLinks/"
     nodeListNum = (coreList + 1) * numList
-    if((coreList + 1) * numList > len(nowNodes)):
+    if(coreList == 11):
         nodeListNum = None
     nodeInfo = []
     for i in nowNodes[coreList * numList: nodeListNum]:
         f = open(nowPath + nodePath +
-                 str(i[0]) + ".json", 'r', encoding='utf-8')
+                 str(i) + ".json", 'r', encoding='utf-8')
         ipJson = json.load(f)
         nodeDomain = 0
         industryNum = 0
@@ -165,8 +158,8 @@ def screenNode(typeName, nowPath, coreList, nowNodes):
                 nodeDomain += 1
                 if(not j[-1] == "[]"):
                     industryNum += 1
-        nodeInfo.append([i[0], ipCert, ipIp, nodeDomain, industryNum])
-    with open(nowPath + nodePath + fileName + str(coreList) + ".json", 'w', encoding='utf-8') as f:
+        nodeInfo.append([i, ipCert, ipIp, nodeDomain, industryNum])
+    with open(nowPath + nodePath + "ICLinksInfo" + str(coreList) + ".json", 'w', encoding='utf-8') as f:
         json.dump(nodeInfo, f, ensure_ascii=False)
 
 
@@ -183,85 +176,71 @@ if __name__ == '__main__':
     ipNode = nodeCsvW[nodeCsvW["type"] == "IP"].values
     certNode = nodeCsvW[nodeCsvW["type"] == "Cert"].values
     nodeCsvW = nodeCsvW.values
-    # # 获取每个IP节点连接的IP和Cert节点
-    # print("获取每个IP节点连接的IP和Cert节点---------------------------------------------")
-    # pool = mp.Pool(processes=6)
-    # for i in range(6):
-    #     pool.apply_async(getNodesWithCretAndIp, args=(
-    #         i, "IP", nowPath, nodeCsvW, linksAll, ipNode))
-    #     print(i)
-    # pool.close()
-    # pool.join()
+    
+    # 获取每个IP节点连接的IP和Cert节点
+    print("获取每个IP节点连接的IP和Cert节点---------------------------------------------")
+    pool = mp.Pool(processes=6)
+    for i in range(6):
+        pool.apply_async(getNodesWithCretAndIp, args=(
+            i, "IP", nowPath, nodeCsvW, linksAll, ipNode))
+        print(i)
+    pool.close()
+    pool.join()
 
-    # # 获取每个IP节点连接的IP节点和Cert节点数量和其对应链路的黑灰产业的Domain数量
-    # print("获取每个IP节点连接的IP节点和Cert节点数量和其对应链路的黑灰产业的Domain数量-----------------")
-    # pool = mp.Pool(processes=6)
-    # for i in range(6):
-    #     pool.apply_async(screenNode, args=("IP", nowPath, i, ipNode))
-    #     print(i)
-    # pool.close()
-    # pool.join()
+    # 获取每个Cert节点连接的IP和Cert节点
+    print("获取每个Cert节点连接的IP和Cert节点---------------------------------------------")
+    pool = mp.Pool(processes=6)
+    for i in range(6):
+        pool.apply_async(getNodesWithCretAndIp, args=(
+            i, "Cert", nowPath,  nodeCsvW, linksAll, certNode))
+        print(i)
+    pool.close()
+    pool.join()
+
+    # 获取每个Cert节点连接的IP节点和Cert节点数量和其对应链路的黑灰产业的Domain数量
+    allIC = []
+    for i in ipNode:
+        allIC.append(i[0])
+    for i in certNode:
+        allIC.append(i[0])
+    print("获取每个IC节点连接IC节点数量和其对应链路的黑灰产业的Domain数量--------------------------")
+    pool = mp.Pool(processes=12)
+    for i in range(12):
+        pool.apply_async(screenNode, args=(nowPath, i, allIC))
+        print(i)
+    pool.close()
+    pool.join()
+
 
     # 获取筛选后的所有Ip节点
-    print("获取筛选后的所有Ip节点----------------------------------------------")
+    print("获取筛选后的所有IC节点----------------------------------------------")
     AllIp = []
     IpInCert = []
-    for i in range(6):
-        nowIpJ = open(nowPath + "LinksByIP/IpInfo" +
+    IpAlone = []
+    IpPure = []
+    for i in range(12):
+        nowIpJ = open(nowPath + "ICLinks/ICLinksInfo" +
                       str(i) + ".json", "r", encoding='utf-8')
         nowIp = json.load(nowIpJ)
         for i in nowIp:
             AllIp.append(list(i))
             if((i[1] > 0 or i[2] > 0) and i[4] > 0):
-                IpInCert.append(list(i))
-    with open(nowPath + "LinksByIP/IpInfo.json", 'w', encoding='utf-8') as f:
-        json.dump(AllIp, f, ensure_ascii=False)
-    with open(nowPath + "LinksByIP/IpScreen.json", 'w', encoding='utf-8') as f:
-        json.dump(IpInCert, f, ensure_ascii=False)
-    with open(nowPath + "LinksByIP/IpInfo.json", 'r', encoding='utf-8') as f:
-        AllIp = json.load(f)
-        AllIp.sort(reverse = True, key=lambda x: x[-1])
-        f2 = open(nowPath + "LinksByIP/IpInfoSort.json", 'w', encoding='utf-8')
-        json.dump(AllIp, f2, ensure_ascii= False)
-
-
-    # # 获取每个Cert节点连接的IP和Cert节点
-    # print("获取每个Cert节点连接的IP和Cert节点---------------------------------------------")
-    # pool = mp.Pool(processes=6)
-    # for i in range(6):
-    #     pool.apply_async(getNodesWithCretAndIp, args=(
-    #         i, "Cert", nowPath,  nodeCsvW, linksAll, certNode))
-    #     print(i)
-    # pool.close()
-    # pool.join()
-
-    # # 获取每个Cert节点连接的IP节点和Cert节点数量和其对应链路的黑灰产业的Domain数量
-    # print("获取每个Cert节点连接的IP节点和Cert节点数量和其对应链路的黑灰产业的Domain数量--------------------------")
-    # pool = mp.Pool(processes=6)
-    # for i in range(6):
-    #     pool.apply_async(screenNode, args=("Cert", nowPath, i, certNode))
-    #     print(i)
-    # pool.close()
-    # pool.join()
-
-    # 获取筛选后的所有Cert节点
-    print("获取筛选后的所有Cert节点----------------------------------------------")
-    AllIp = []
-    IpInCert = []
-    for i in range(6):
-        nowIpJ = open(nowPath + "LinksByCert/certInfo" +
-                      str(i) + ".json", "r", encoding='utf-8')
-        nowIp = json.load(nowIpJ)
-        for i in nowIp:
-            AllIp.append(list(i))
-            if((i[1] > 0 or i[2] > 0) and i[4] > 0):
-                IpInCert.append(list(i))
-    with open(nowPath + "LinksByCert/certInfo.json", 'w', encoding='utf-8') as f:
-        json.dump(AllIp, f, ensure_ascii=False)
-    with open(nowPath + "LinksByCert/certScreen.json", 'w', encoding='utf-8') as f:
-        json.dump(IpInCert, f, ensure_ascii=False)
-    with open(nowPath + "LinksByCert/certInfo.json", 'r', encoding='utf-8') as f:
-        AllCert = json.load(f)
-        AllCert.sort(reverse = True, key=lambda x: x[-1])
-        f2 = open(nowPath + "LinksByCert/certInfoSort.json", 'w', encoding='utf-8')
-        json.dump(AllCert, f2, ensure_ascii= False)
+                IpInCert.append(i[0])
+            elif(i[1] == 0 and i[2] == 0):
+                IpAlone.append(i[0])
+            elif((i[1] > 0 or i[2] > 0) and i[4] == 0):
+                IpPure.append(i[0])
+    IpInCert.sort()
+    IpAlone.sort()
+    IpPure.sort()
+    with open(nowPath + "ICScreen.json", 'w', encoding='utf-8') as f:
+        json.dump([IpInCert, IpAlone, IpPure], f, ensure_ascii=False)
+    # with open(nowPath + "LinksByCert/certInfo.json", 'w', encoding='utf-8') as f:
+    #     json.dump(AllIp, f, ensure_ascii=False)
+    # with open(nowPath + "LinksByCert/certScreen.json", 'w', encoding='utf-8') as f:
+    #     json.dump(IpInCert, f, ensure_ascii=False)
+    # with open(nowPath + "LinksByCert/certInfo.json", 'r', encoding='utf-8') as f:
+    #     AllCert = json.load(f)
+    #     AllCert.sort(reverse = True, key=lambda x: x[-1])
+    #     f2 = open(nowPath + "LinksByCert/certInfoSort.json", 'w', encoding='utf-8')
+    #     json.dump(AllCert, f2, ensure_ascii= False)

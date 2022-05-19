@@ -86,7 +86,7 @@ export default function Layout() {
         <div id="container-statistic">
           <div id="relations">关系图</div>
           <div id="statistic">
-            <CountsBar w={countsBarWidth} h={countsBarHeight} />
+            {/* <CountsBar w={countsBarWidth} h={countsBarHeight} /> */}
           </div>
         </div>
 

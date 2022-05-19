@@ -113,6 +113,6 @@ if __name__ == '__main__':
             print(i, i + 1, i * numLen, nodeListNum)
         pool.close()
         pool.join()
-     # 将所有数据进行合并
+    # 将所有数据进行合并
     print("将所有数据进行合并----------------------------------------------")
     mergeNodesNeighbourInfop()

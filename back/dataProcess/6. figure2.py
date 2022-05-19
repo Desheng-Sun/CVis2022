@@ -45,7 +45,7 @@ if __name__ == '__main__':
     linkCsvW.close()
     ipNode = nodeCsvW[nodeCsvW["type"] == "IP"].values
     certNode = nodeCsvW[nodeCsvW["type"] == "Cert"].values
-    nodeCsvW = nodeCsvW.values
+    nodeCsvW = nodeCsvW.valuesA
 
     filterNode = []
     for i in ipNode:
