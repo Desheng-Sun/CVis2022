@@ -13,6 +13,7 @@ export default function SearchBar() {
     const [setContentValue, setSelectContent] = useState(undefined);
     const changeTitle = (value) => {
         setSelectTitle(value);
+        setSelectContent(undefined)
         if (value!=undefined) selectContent = arr[selectTitle.indexOf(value)]
     };
     const searchTitle = (value) => {
