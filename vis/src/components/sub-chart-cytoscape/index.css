@@ -1,0 +1,9 @@
+#chart{
+    /* position: absolute; */
+    text-align: start;
+}
+
+
+.__________cytoscape_container canvas{
+    position: relative;
+}

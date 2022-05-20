@@ -40,6 +40,20 @@ app.listen(port, () => {
 // const ICIndustry = JSON.parse(ICIndustryJ)
 
 
+// 获取主视图所需要的数据
+app.get("/getMainChartData", (req, res, next) => {
+  let node = 'tiaozhan1'
+  let filedata = path.join(__dirname, 'data/main-chart-data/' + node + ".json")
+  fs.readFile(filedata, 'utf8', function (err, data) {
+    if (err) {
+      console.log(err)
+    } else {
+      let d = JSON.parse(data)
+      res.send(d)
+      res.end()
+    }
+  })
+})
 
 // 获取视图的初始数据：node信息
 app.get("/initial", (req, res, next) => {
@@ -249,12 +263,9 @@ app.get("/infoList", (req, res, next) => {
 })
 
 // 获取冰柱图所需要的数据
-app.get("/icClueData", (req, res) => {
+app.get("/getIcClueData", (req, res) => {
   let filename = "3";
-  let filedata = path.join(
-    __dirname,
-    "data/ic-clue-data/" + filename + ".json"
-  );
+  let filedata = path.join(__dirname, "data/ic-clue-data/" + filename + ".json");
   fs.readFile(filedata, "utf-8", function (err, data) {
     if (err) {
       console.error(err);

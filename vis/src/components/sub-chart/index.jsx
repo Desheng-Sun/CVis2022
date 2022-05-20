@@ -5,11 +5,11 @@ import { event } from "d3";
 import { useEffect } from "react";
 
 // 数据请求接口
-import { qone } from "../..//apis/api.js";
+import { getMainChartData } from "../..//apis/api.js";
 
 export default function SubChart() {
   useEffect(() => {
-    qone().then((res) => {
+    getMainChartData().then((res) => {
       drawChart(res);
     });
   });
