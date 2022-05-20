@@ -6,27 +6,31 @@ import CountsBar from "../counts-bar";
 import DifChart from "../dif-chart";
 import ICClueChart from "../ic-clue-chart";
 import SkeletonChart from "../skeleton-chart";
+import SearchBar from "../search-bar";
+import CombineTable from "../combine-table";
 import { useEffect, useState } from "react";
 
 export default function Layout() {
-  const [countsBarWidth, setCountsBarWidth] = useState(0);
-  const [countsBarHeight, setCountsBarHeight] = useState(0);
+  // const [countsBarWidth, setCountsBarWidth] = useState(0);
+  // const [countsBarHeight, setCountsBarHeight] = useState(0);
   const [difChartWidth, setDifChartWidth] = useState(0);
   const [difChartHeight, setDifChartHeight] = useState(0);
   const [icClueChartWidth, setIcClueChartWidth] = useState(0);
   const [icClueChartHeight, setIcClueChartHeight] = useState(0);
   const [skeletonChartWidth, setSkeletonChartWidth] = useState(0);
   const [skeletonChartHeight, setSkeletonChartHeight] = useState(0);
+  const [combineTableWidth, setCombineTableWidth] = useState(0);
+  const [combineTableHeight, setCombineTableHeight] = useState(0);
 
   const [curIC, setCurrIC] = useState(""); // 当前选中的IP/Cert
 
   useEffect(() => {
-    setCountsBarWidth(
-      document.getElementById("statistic").getBoundingClientRect().width
-    );
-    setCountsBarHeight(
-      document.getElementById("statistic").getBoundingClientRect().height
-    );
+    // setCountsBarWidth(
+    //   document.getElementById("statistic").getBoundingClientRect().width
+    // );
+    // setCountsBarHeight(
+    //   document.getElementById("statistic").getBoundingClientRect().height
+    // );
     setDifChartWidth(
       document.getElementById("deleterelation").getBoundingClientRect().width
     );
@@ -45,15 +49,23 @@ export default function Layout() {
     setSkeletonChartHeight(
       document.getElementById("skeleton-chart").getBoundingClientRect().height
     );
+    setCombineTableWidth(
+      document.getElementById("sta-node").getBoundingClientRect().width
+    );
+    setCombineTableHeight(
+      document.getElementById("sta-node").getBoundingClientRect().height
+    );
   });
+
   return (
     <div id="layout">
       <div id="identifygroup">
         <div id="ileft">
           <div id="titlebar">Black & Gary Instrudy Network Mining</div>
           <div id="searchbar">
-            输入/搜索框 用户有IP/Cert类型的线索
-            或根据其他节点查找到对应的IP/Cert类型的线索
+            <SearchBar />
+            {/* 输入/搜索框 用户有IP/Cert类型的线索
+            或根据其他节点查找到对应的IP/Cert类型的线索 */}
           </div>
           <div id="filteric">
             <ChartHeader chartName={"冰柱图"} />
@@ -86,9 +98,20 @@ export default function Layout() {
           {/* 列表展示确定团伙的信息 */}
         </div>
         <div id="container-statistic">
-          <div id="relations">关系图</div>
-          <div id="statistic">
-            {/* <CountsBar w={countsBarWidth} h={countsBarHeight} /> */}
+          <ChartHeader chartName={"节点与边信息"} />
+          <div id="sta-node">
+            <CombineTable
+              w={combineTableWidth}
+              h={combineTableHeight}
+              b="node"
+            />
+          </div>
+          <div id="sta-link">
+            <CombineTable
+              w={combineTableWidth}
+              h={combineTableHeight}
+              b="link"
+            />
           </div>
         </div>
 
