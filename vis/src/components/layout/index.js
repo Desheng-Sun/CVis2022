@@ -6,6 +6,7 @@ import CountsBar from "../counts-bar";
 import DifChart from "../dif-chart";
 import ICClueChart from "../ic-clue-chart";
 import SkeletonChart from "../skeleton-chart";
+import SearchBar from "../search-bar"
 import { useEffect, useState } from "react";
 
 export default function Layout() {
@@ -52,8 +53,9 @@ export default function Layout() {
         <div id="ileft">
           <div id="titlebar">Black & Gary Instrudy Network Mining</div>
           <div id="searchbar">
-            输入/搜索框 用户有IP/Cert类型的线索
-            或根据其他节点查找到对应的IP/Cert类型的线索
+            <SearchBar />
+            {/* 输入/搜索框 用户有IP/Cert类型的线索
+            或根据其他节点查找到对应的IP/Cert类型的线索 */}
           </div>
           <div id="filteric">
             <ChartHeader chartName={"冰柱图"} />
