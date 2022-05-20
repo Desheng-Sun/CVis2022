@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ant-design/icons": "^4.7.0",
     "@antv/g": "^5.0.22",
     "@antv/g-canvas": "^1.0.21",
     "@antv/g-plugin-css-select": "^1.0.19",

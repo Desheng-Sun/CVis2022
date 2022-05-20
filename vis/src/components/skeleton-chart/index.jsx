@@ -6,6 +6,7 @@ import d3ContextMenu from "d3-context-menu";
 import PubSub from "pubsub-js"
 
 import './index.css'
+import { icclue } from '../../apis/api';
 
 const d3Lasso = lasso;
 
@@ -984,8 +985,9 @@ export default function SkeletonChart({w, h}){
     setData(dt);
   }, []);
 
+  // 监听选择的节点的变化
   useEffect(() => {
-    // console.log(currIc);
+    console.log('currIc', currIc);
   }, [currIc]);
 
   useEffect(() => {

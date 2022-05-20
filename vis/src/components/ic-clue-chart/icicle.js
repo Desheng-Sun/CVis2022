@@ -8,7 +8,6 @@ import Kapsule from 'kapsule';
 import * as d3 from 'd3';
 import tinycolor from 'tinycolor2';
 import accessorFn from 'accessor-fn';
-import d3ContextMenu from "d3-context-menu";
 import './index.css'
 
 
@@ -44,7 +43,7 @@ export default Kapsule({
     onClick: { triggerUpdate: false },
     onHover: { triggerUpdate: false },
     transitionDuration: { default: 800, triggerUpdate: false },
-    divTop: { default: 10, triggerUpdate: false },
+    divTop: { default: 0, triggerUpdate: false },
     divLeft: { default: 0, triggerUpdate: false },
   },
   methods: {
@@ -119,7 +118,7 @@ export default Kapsule({
       .style('padding-left', state.divLeft + 'px')
 
     
-    state.titleSvg = el.append('svg').attr('class', 'icicleTitleSvg')
+    // state.titleSvg = el.append('svg').attr('class', 'icicleTitleSvg')
     state.svg = el.append('svg').attr('class', 'icicleSvg')
     state.canvas = state.svg.append('g')
     
@@ -167,21 +166,21 @@ export default Kapsule({
       .style('width', state.width + 'px')
       .style('height', state.height + 'px');
 
-     var titleG = state.titleSvg
-                  .style('width', state.width + 'px')
-                  .style('height', 20 + 'px')
-                  .append('g')
-                  .attr('class', 'icicleTitleG')
-                  .attr('transform', 'translate(0, 10)')
-    titleG.selectAll('text')
-      .data(['起点', '第一跳', '第二跳'])
-      .join('text')
-      .text(d => d)
-      .attr('x', (d, i) => `${(state.width - 20)/6*(i*2+1)}`)
-      .style('font-size', '12px')
-      .style('font-weight', 'bolder')
-      .style('line-height', 1)
-      .attr("text-align","center")
+    //  var titleG = state.titleSvg
+    //               .style('width', state.width + 'px')
+    //               .style('height', 20 + 'px')
+    //               .append('g')
+    //               .attr('class', 'icicleTitleG')
+    //               .attr('transform', 'translate(0, 10)')
+    // titleG.selectAll('text')
+    //   .data(['起点', '第一跳', '第二跳'])
+    //   .join('text')
+    //   .text(d => d)
+    //   .attr('x', (d, i) => `${(state.width - 20)/6*(i*2+1)}`)
+    //   .style('font-size', '12px')
+    //   .style('font-weight', 'bolder')
+    //   .style('line-height', 1)
+    //   .attr("text-align","center")
 
     const horiz = state.orientation === 'lr' || state.orientation === 'rl';
 
