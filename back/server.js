@@ -50,6 +50,13 @@ let ICIndustryP = path.join(__dirname, 'data/nodeIndustryInfo2.json')
 let ICIndustryJ = fs.readFileSync(ICIndustryP, 'utf8')
 const ICIndustry = JSON.parse(ICIndustryJ)
 
+// const nodeInfoJ = fs.readFileSync(path.join(__dirname, 'data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv'), 'utf8')
+// const nodeNumIdInfo = json.parse(nodeInfoJ)
+
+// let ICIndustryP = path.join(__dirname, 'data/nodeIndustryInfo2.json')
+// let ICIndustryJ = fs.readFileSync(ICIndustryP, 'utf8')
+// const ICIndustry = JSON.parse(ICIndustryJ)
+
 
 
 // 获取视图的初始数据：node信息R

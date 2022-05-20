@@ -21,6 +21,7 @@ import SkeletonChart from "./components/skeleton-chart";
 import ICClueChart from "./components/ic-clue-chart";
 import DifChart from "./components/dif-chart";
 import DataProcessChecker from "./components/dataProcessChecker/dataProcessChecker";
+import SearchBar from "./components/search-bar";
 
 // import SubChart from './components/sub-chart';n
 // 引入问题一的自定义组件
@@ -61,6 +62,7 @@ function App() {
         />
         <Route key="difchart" path="/difchart" element={<DifChart />} />
         <Route key="checker" path="/checker" element={<DataProcessChecker />} />
+        <Route key="searchbar" path="/searchbar" element={<SearchBar />} />
       </Routes>
     </div>
   );
