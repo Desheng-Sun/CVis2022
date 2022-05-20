@@ -3,8 +3,22 @@ import "./index.css";
 import { table } from "@observablehq/inputs";
 import { useEffect, useState } from "react";
 import { html } from "htl";
-export default function DetailList() {
+
+export default function DetailList({ w, h, divname }) {
+  console.log(divname);
   const [data, setData] = useState([]);
+
+  const [svgWidth, setSvgWidth] = useState(w);
+  const [svgHeight, setSvgHeight] = useState(h);
+
+  // 随系统缩放修改画布大小
+  useEffect(() => {
+    setSvgWidth(w);
+  }, [w]);
+  useEffect(() => {
+    setSvgHeight(h);
+  }, [h]);
+
   useEffect(() => {
     let data = [
       {
@@ -373,8 +387,8 @@ export default function DetailList() {
   }, []);
   useEffect(() => {
     const dimensions = {
-      width: 2000,
-      height: 200,
+      width: svgWidth,
+      height: svgHeight,
       margin: { top: 20, right: 20, bottom: 20, left: 20 },
     };
     const boundedWidth =
@@ -382,9 +396,10 @@ export default function DetailList() {
     const boundedHeight =
       dimensions.height - dimensions.margin.top - dimensions.margin.bottom;
 
-    d3.selectAll("div#detail-list g").remove();
+    // d3.selectAll("div#detail-list g").remove();
+    d3.selectAll(`div#${divname} g`).remove();
     const g = d3
-      .select("#detail-list")
+      .select(`#${divname}`)
       .append("g")
       .attr("width", boundedWidth)
       .attr("height", boundedHeight)
@@ -413,23 +428,25 @@ export default function DetailList() {
           r_cidr: sparkbar(d3.max(data, (d) => d.r_cidr)),
           r_asn: sparkbar(d3.max(data, (d) => d.r_asn)),
         },
-        width: {
-          r_cert_chain: 120,
-          r_cert: 120,
-          r_whois_name: 120,
-          r_whois_phone: 120,
-          r_whois_email: 120,
-          r_cname: 120,
-          r_request_jump: 120,
-          r_subdomain: 120,
-          r_dns_a: 120,
-          r_cidr: 120,
-          r_asn: 120,
-        },
-        layout: "fixed",
+        // width: {
+        //   r_cert_chain: 120,
+        //   r_cert: 120,
+        //   r_whois_name: 120,
+        //   r_whois_phone: 120,
+        //   r_whois_email: 120,
+        //   r_cname: 120,
+        //   r_request_jump: 120,
+        //   r_subdomain: 120,
+        //   r_dns_a: 120,
+        //   r_cidr: 120,
+        //   r_asn: 120,
+        // },
+        // layout: "fixed",
+        maxWidth: svgWidth,
+        maxHeight: svgHeight,
       })
     );
-  });
+  }, [data, svgWidth, svgHeight]);
 
   function sparkbar(max) {
     let colorScale = d3.scaleSequential([0, max], d3.interpolateBlues);
@@ -448,5 +465,6 @@ export default function DetailList() {
     </div>`;
   }
 
-  return <div id="detail-list" style={{ width: 2000, height: 200 }}></div>;
+  // return <div style={{ width: "100%", height: "100%" }}></div>;
+  return <></>;
 }

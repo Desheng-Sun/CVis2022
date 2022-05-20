@@ -22,6 +22,7 @@ import SkeletonChart from "./components/skeleton-chart";
 import ICClueChart from "./components/ic-clue-chart";
 import DifChart from "./components/dif-chart";
 import SearchBar from "./components/search-bar";
+import CombineTable from "./components/combine-table";
 
 // import SubChart from './components/sub-chart';n
 // 引入问题一的自定义组件
@@ -63,6 +64,11 @@ function App() {
         <Route key="difchart" path="/difchart" element={<DifChart />} />
         <Route key="detaillist" path="/detaillist" element={<DetailList />} />
         <Route key="searchbar" path="/searchbar" element={<SearchBar />} />
+        <Route
+          key="combinetable"
+          path="/combinetable"
+          element={<CombineTable />}
+        />
       </Routes>
     </div>
   );

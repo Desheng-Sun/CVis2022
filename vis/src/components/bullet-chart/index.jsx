@@ -5,9 +5,23 @@ import * as d3 from "d3";
 import { getBulletChartData } from "../../apis/api";
 import { useEffect, useState } from "react";
 
-export default function BulletChart() {
+export default function BulletChart({ w, h, divname }) {
   const [data, setData] = useState({});
   const [dataRange, setDataRange] = useState({ minNum: 0, maxNum: 0 });
+
+  const [svgWidth, setSvgWidth] = useState(w);
+  const [svgHeight, setSvgHeight] = useState(h);
+  const [divName, setDivName] = useState(divname);
+
+  // 随系统缩放修改画布大小
+  useEffect(() => {
+    setSvgWidth(w);
+    // console.log(w);
+  }, [w]);
+  useEffect(() => {
+    setSvgHeight(h);
+  }, [h]);
+
   useEffect(() => {
     getBulletChartData().then((res) => {
       // 计算数据中measures和markers共同的最大、最小值 用于画图比例尺映射
@@ -27,9 +41,9 @@ export default function BulletChart() {
 
   useEffect(() => {
     const dimensions = {
-      width: 300,
-      height: 600,
-      margin: { top: 20, right: 20, bottom: 50, left: 20 },
+      width: svgWidth,
+      height: svgHeight,
+      margin: { top: 10, right: 5, bottom: 20, left: 5 },
     };
     const boundedWidth =
       dimensions.width - dimensions.margin.left - dimensions.margin.right;
@@ -42,10 +56,11 @@ export default function BulletChart() {
       .height(boundedHeight)
       .width((boundedWidth / data.length) * 0.9);
 
-    d3.selectAll("div#bullet-chart svg").remove();
+    // d3.selectAll("div#bullet-chart svg").remove();
+    d3.selectAll(`div#${divname} svg`).remove();
 
     const svg = d3
-      .select("#bullet-chart")
+      .select(`#${divname}`)
       .append("svg")
       .attr("width", dimensions.width)
       .attr("height", dimensions.height)
@@ -91,7 +106,8 @@ export default function BulletChart() {
           }) rotate(60)`
       )
       .text((d) => d.title);
-  }, [data, dataRange]);
+  }, [data, dataRange, svgHeight, svgWidth]);
 
-  return <div id="bullet-chart" style={{ width: 900, height: 300 }}></div>;
+  // return <div style={{ width: "100%", height: "100%" }}></div>;
+  return <></>;
 }

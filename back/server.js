@@ -158,7 +158,7 @@ app.get("skeleton-chart", (req, res, next) => {
   });
 });
 
-app.get("/getBulletChartData", (req, res, next) => {
+app.get("/getBulletChartDataSds", (req, res, next) => {
   // 周艺璇画的图的相关数据
   let communityInfo = {}; //传的参数，社区的节点和链接信息
   let r_cert_chain = 0;
@@ -173,18 +173,18 @@ app.get("/getBulletChartData", (req, res, next) => {
   let r_dns_a = 0;
   let r_cidr = 0;
   let r_asn = 0;
-  certAsTarget = {};
-  certAsSource = {};
-  whoisName = {};
-  whoisEmail = {};
-  whoisPhone = {};
-  domainAsCnameTarget = {};
-  domainAsJumpTarget = {};
-  domainAsSubTarget = {};
-  domainAsSource = {};
-  ip = {};
-  ipc = {};
-  asn = {};
+  let certAsTarget = {};
+  let certAsSource = {};
+  let whoisName = {};
+  let whoisEmail = {};
+  let whoisPhone = {};
+  let domainAsCnameTarget = {};
+  let domainAsJumpTarget = {};
+  let domainAsSubTarget = {};
+  let domainAsSource = {};
+  let ip = {};
+  let ipc = {};
+  let asn = {};
   for (let i in communityInfo["links"]) {
     if (i[0] == "r_cert_chain") {
       r_cert_chain += 1;
@@ -328,6 +328,7 @@ app.get("/getBulletChartData", (req, res) => {
       console.error(err);
     } else {
       let jsonData = JSON.parse(data);
+      console.log(jsonData);
       res.send(jsonData);
       res.end();
     }

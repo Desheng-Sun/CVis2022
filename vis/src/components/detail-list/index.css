@@ -1,5 +1,12 @@
-#detail-list {
-  overflow-y: scroll; /*只是y方向*/
+/* #detail-list {
+  overflow: scroll;
+} */
+#combine-table-dl-node {
+  overflow: scroll;
+}
+
+#combine-table-dl-link {
+  overflow: scroll;
 }
 
 thead th {
