@@ -21,6 +21,7 @@ import SubChartForceGraph from "./components/sub-chart-force-graph";
 import SkeletonChart from "./components/skeleton-chart";
 import ICClueChart from "./components/ic-clue-chart";
 import DifChart from "./components/dif-chart";
+import DataProcessChecker from "./components/dataProcessChecker/dataProcessChecker";
 import SearchBar from "./components/search-bar";
 import CombineTable from "./components/combine-table";
 
@@ -63,6 +64,7 @@ function App() {
         />
         <Route key="difchart" path="/difchart" element={<DifChart />} />
         <Route key="detaillist" path="/detaillist" element={<DetailList />} />
+        <Route key="checker" path="/checker" element={<DataProcessChecker />} />
         <Route key="searchbar" path="/searchbar" element={<SearchBar />} />
         <Route
           key="combinetable"

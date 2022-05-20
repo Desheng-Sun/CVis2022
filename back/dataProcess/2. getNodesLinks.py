@@ -5,6 +5,7 @@ import multiprocessing as mp
 import numpy as np
 import pandas as pd
 
+
 # 获取每一个目标节点关联的Cert节点和IP节点
 def getNodesWithCretAndIp(coreList, typeName, nowPath, nodeCsvW, linksAll, nowNodes):
     if(typeName == "IP"):
@@ -33,7 +34,7 @@ def getNodesWithCretAndIp(coreList, typeName, nowPath, nodeCsvW, linksAll, nowNo
             # 针对所有链路中的每一个节点进行查询
             for k in linksByIP:
                 # 当节点循环终止条件为真或已经达到三跳后不在进行循环
-                if(k[-1] == True or k[3] == 0):
+                if(k[-1] == True or k[3] <= 0):
                     k[-1] = True
                     continue
                 # 当前节点为连接IP的节点（只有初始IP节点才会进入循环），只循环其source节点
@@ -64,6 +65,7 @@ def getNodesWithCretAndIp(coreList, typeName, nowPath, nodeCsvW, linksAll, nowNo
         nodeList = []
         nodeListId = []
         ipList = []
+
         # 获取所有的IP、Cert节点
         for j in linksByIP:
             nodeListId.append(int(j[1]) - 1)
@@ -81,6 +83,7 @@ def getNodesWithCretAndIp(coreList, typeName, nowPath, nodeCsvW, linksAll, nowNo
         nodeListId = list(set(nodeListId))
         for j in nodeListId:
             nodeList.append(list(nodeCsvW[j]))
+
 
         # 获取所有的Cert节点信息
         setCertList = set(certList)
@@ -125,8 +128,7 @@ def getLinksByLinkType(linkList, indexNum, nodeListId):
             if(listLinkTemp[1] in nodeListId or listLinkTemp[2] in nodeListId):
                 continue
             if(listLinkTemp[0] == "r_asn" or listLinkTemp[0] == "r_cidr" or listLinkTemp[0] == "r_cert_chain"):
-                nowLinksById.append(
-                    [listLinkTemp[0], listLinkTemp[1], listLinkTemp[2], -1, True])
+                continue
             elif(listLinkTemp[0] == "r_cert" or listLinkTemp[0] == "r_dns_a" or listLinkTemp[0] == "r_cname" or listLinkTemp[0] == "r_whois_name" or listLinkTemp[0] == "r_whois_email" or listLinkTemp[0] == "r_whois_phone"):
                 nowLinksById.append(
                     [listLinkTemp[0], listLinkTemp[1], listLinkTemp[2], indexNum - 1, True])
@@ -156,7 +158,7 @@ def screenNode(nowPath, coreList, nowNodes):
         for j in ipJson["nodes"]:
             if(j[-2] == "Domain"):
                 nodeDomain += 1
-                if(not j[-1] == ""):
+                if(not j[-1] == "  "):
                     industryNum += 1
         nodeInfo.append([i, ipCert, ipIp, nodeDomain, industryNum])
     with open(nowPath + nodePath + "ICLinksInfo" + str(coreList) + ".json", 'w', encoding='utf-8') as f:
@@ -176,26 +178,26 @@ if __name__ == '__main__':
     ipNode = nodeCsvW[nodeCsvW["type"] == "IP"].values
     certNode = nodeCsvW[nodeCsvW["type"] == "Cert"].values
     nodeCsvW = nodeCsvW.values
-    
-    # 获取每个IP节点连接的IP和Cert节点
-    print("获取每个IP节点连接的IP和Cert节点---------------------------------------------")
-    pool = mp.Pool(processes=6)
-    for i in range(6):
-        pool.apply_async(getNodesWithCretAndIp, args=(
-            i, "IP", nowPath, nodeCsvW, linksAll, ipNode))
-        print(i)
-    pool.close()
-    pool.join()
 
-    # 获取每个Cert节点连接的IP和Cert节点
-    print("获取每个Cert节点连接的IP和Cert节点---------------------------------------------")
-    pool = mp.Pool(processes=6)
-    for i in range(6):
-        pool.apply_async(getNodesWithCretAndIp, args=(
-            i, "Cert", nowPath,  nodeCsvW, linksAll, certNode))
-        print(i)
-    pool.close()
-    pool.join()
+    # # 获取每个IP节点连接的IP和Cert节点
+    # print("获取每个IP节点连接的IP和Cert节点---------------------------------------------")
+    # pool = mp.Pool(processes=6)
+    # for i in range(6):
+    #     pool.apply_async(getNodesWithCretAndIp, args=(
+    #         i, "IP", nowPath, nodeCsvW, linksAll, ipNode))
+    #     print(i)
+    # pool.close()
+    # pool.join()
+
+    # # 获取每个Cert节点连接的IP和Cert节点
+    # print("获取每个Cert节点连接的IP和Cert节点---------------------------------------------")
+    # pool = mp.Pool(processes=6)
+    # for i in range(6):
+    #     pool.apply_async(getNodesWithCretAndIp, args=(
+    #         i, "Cert", nowPath,  nodeCsvW, linksAll, certNode))
+    #     print(i)
+    # pool.close()
+    # pool.join()
 
     # 获取每个Cert节点连接的IP节点和Cert节点数量和其对应链路的黑灰产业的Domain数量
     allIC = []
@@ -211,7 +213,6 @@ if __name__ == '__main__':
         print(i)
     pool.close()
     pool.join()
-
 
     # 获取筛选后的所有Ip节点
     print("获取筛选后的所有IC节点----------------------------------------------")
@@ -234,6 +235,9 @@ if __name__ == '__main__':
     IpInCert.sort()
     IpAlone.sort()
     IpPure.sort()
+    print(len(IpInCert))
+    print(len(IpAlone))
+    print(len(IpPure))
     with open(nowPath + "ICScreen.json", 'w', encoding='utf-8') as f:
         json.dump([IpInCert, IpAlone, IpPure], f, ensure_ascii=False)
     # with open(nowPath + "LinksByCert/certInfo.json", 'w', encoding='utf-8') as f:
