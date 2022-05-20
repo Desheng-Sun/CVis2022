@@ -46,3 +46,28 @@
     text-align: center;
     margin-bottom: 5px;
   }
+
+  .icicleSvg .selectedIclcle{
+    fill:#404041
+  }
+
+  #icclue-control{
+    display: flex;
+
+  }
+
+  #icclue-control #icclue-title {
+    flex: 4;
+    height: 100%;
+  }
+
+  #icclue-control #control {
+    flex: 1;
+    height: 100%;
+  }
+
+  #icclue-chart .ant-btn-sm{
+    width: auto;
+    height:20px;
+    font-size: 12px;
+  }
