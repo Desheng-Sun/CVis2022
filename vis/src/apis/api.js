@@ -15,3 +15,8 @@ export function icclue() {
 export function getBulletChartData() {
   return get("/getBulletChartData");
 }
+
+export function getDetailListData() {
+  // TODO
+  return get("/getDetailListData");
+}

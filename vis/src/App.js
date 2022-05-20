@@ -13,6 +13,7 @@ import InfoList from "./components/info-list"; // 分析团伙板块 - 展示团
 import CountsBar from "./components/counts-bar"; // 分析团伙板块 - 展示团伙内节点与边类型及对应数量的列表
 import BulletChart from "./components/bullet-chart"; // 分析团伙板块 - 展示
 import ArcDiagram from "./components/arc-diagram"; // 分析团伙板块 - 展示每种边的连线与数量
+import DetailList from "./components/detail-list"; // 分析团伙板块 - 表格展示单条边和点的信息
 import MainView from "./components/main-view";
 import SubChart2 from "./components/sub-chart2";
 import SubChartCanvas from "./components/sub-chart-canvas";
@@ -59,6 +60,7 @@ function App() {
           element={<ICClueChart />}
         />
         <Route key="difchart" path="/difchart" element={<DifChart />} />
+        <Route key="detaillist" path="/detaillist" element={<DetailList />} />
       </Routes>
     </div>
   );

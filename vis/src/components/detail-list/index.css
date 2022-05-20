@@ -1,0 +1,14 @@
+#detail-list {
+  overflow-y: scroll; /*只是y方向*/
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+}
+
+td,
+th {
+  border-bottom: solid 1px #eee;
+}
