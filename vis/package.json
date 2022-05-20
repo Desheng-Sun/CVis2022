@@ -17,6 +17,7 @@
     "cytoscape": "^3.2.0",
     "cytoscape-cola": "^2.5.1",
     "cytoscape-euler": "^1.2.2",
+    "cytoscape-navigator": "^2.0.1",
     "d3": "^7.4.3",
     "d3-context-menu": "^2.1.0",
     "d3-force-reuse": "^1.0.1",

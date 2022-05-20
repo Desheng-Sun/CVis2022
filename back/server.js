@@ -39,22 +39,22 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
 
-let nodeInfoJ = fs.readFileSync(
-  path.join(
-    __dirname,
-    "data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv"
-  ),
-  "utf8"
-);
-nodeInfoJ = nodeInfoJ.split("\n");
-let nodeNumIdInfo = [];
-for (let i of nodeInfoJ) {
-  nodeNumIdInfo.push(i.split(","));
-}
-nodeNumIdInfo = nodeNumIdInfo.splice(1);
-let ICIndustryP = path.join(__dirname, "data/nodeIndustryInfo2.json");
-let ICIndustryJ = fs.readFileSync(ICIndustryP, "utf8");
-const ICIndustry = JSON.parse(ICIndustryJ);
+// let nodeInfoJ = fs.readFileSync(
+//   path.join(
+//     __dirname,
+//     "data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv"
+//   ),
+//   "utf8"
+// );
+// nodeInfoJ = nodeInfoJ.split("\n");
+// let nodeNumIdInfo = [];
+// for (let i of nodeInfoJ) {
+//   nodeNumIdInfo.push(i.split(","));
+// }
+// nodeNumIdInfo = nodeNumIdInfo.splice(1);
+// let ICIndustryP = path.join(__dirname, "data/nodeIndustryInfo2.json");
+// let ICIndustryJ = fs.readFileSync(ICIndustryP, "utf8");
+// const ICIndustry = JSON.parse(ICIndustryJ);
 
 // const nodeInfoJ = fs.readFileSync(path.join(__dirname, 'data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv'), 'utf8')
 // const nodeNumIdInfo = json.parse(nodeInfoJ)
