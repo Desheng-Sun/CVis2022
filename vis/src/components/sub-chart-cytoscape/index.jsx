@@ -17,6 +17,47 @@ const { Option } = Select;
 const { Search } = Input;
 
 var cy, layoutOption, styles, layout;
+var layoutOptionDict={
+  'euler':{
+    name: "euler",
+    fit: true, // whether to fit to viewport
+    animate: true, // whether to transition the node positions
+    avoidOverlap: true,
+    springLength: 5,
+    mass: 5,
+    animateFilter: function (node, i) {
+      return true;
+    }, // 决定是否节点的位置应该被渲染
+    concentric: function (node) {
+      // returns numeric value for each node, placing higher nodes in levels towards the centre
+      return node.degree();
+    },
+  },
+  'concentric':{
+    name: "concentric",
+    // fit: true, // whether to fit to viewport
+    animate: true, // whether to transition the node positions
+    avoidOverlap: true,
+    minNodeSpace:1,
+    concentric: function(node){ return node.degree()},
+    levelWidth: function( nodes ){ // the variation of concentric values in each level
+      return nodes.maxDegree() / 5;
+    },
+    spacingFactor: 0.2,
+    animationDuration: 2000, // duration of animation in ms if enabled
+    // width: 200,
+    // height: 200
+    // boundingBox:{x1:0, x2:0, w:500, h:500}
+  },
+  'dagre':{
+    name: "concentric",
+    fit: true, // whether to fit to viewport
+    animate: true, // whether to transition the node positions
+    avoidOverlap: true,
+  }
+}
+
+
 export default function SubChartCytoscape({ w, h }) {
   const [svgWidth, setSvgWidth] = useState(w);
   const [svgHeight, setSvgHeight] = useState(h);
@@ -25,8 +66,9 @@ export default function SubChartCytoscape({ w, h }) {
   const [filterFlag, setFilterFlag] = useState(false);
   const [edgeLength, setEdgeLength] = useState(5);
   const [nodeDistance, setNodeDistance] = useState(5);
+  const [distanceFlag, setDistanceFlag] = useState(false);
+  const [chartLayout, setChartLayout] = useState("concentric");
   const [layoutFlag, setLayoutFlag] = useState(false);
-  const [chartLayout, setChartLayout] = useState("euler");
   const [data, setData] = useState({ nodes: [], edges: [] });
   const [dataParam, setDataParam] = useState("");
 
@@ -78,18 +120,26 @@ export default function SubChartCytoscape({ w, h }) {
 
   // 监听布局是否变化
   useEffect(() => {
-    console.log(chartLayout);
+    if(layoutFlag){
+      layoutOption = layoutOptionDict[chartLayout]
+      layout.stop();
+      layout = cy.layout(layoutOption);
+      layout.run();
+    }
+    setLayoutFlag(false)
   }, [chartLayout]);
+
+
   // 监听节点和边之间的距离是否变化
   useEffect(() => {
-    if (layoutFlag && nodeDistance && edgeLength) {
+    if (distanceFlag && nodeDistance && edgeLength) {
       layout.stop();
       layoutOption.mass = 20 - nodeDistance;
       layoutOption.springLength = edgeLength * 20;
       layout = cy.layout(layoutOption);
       layout.run();
     }
-    setLayoutFlag(true);
+    setDistanceFlag(true);
   }, [nodeDistance, edgeLength]);
 
   function drawChart() {
@@ -126,22 +176,23 @@ export default function SubChartCytoscape({ w, h }) {
         },
         style: styles,
       });
+      layoutOption = layoutOptionDict[chartLayout]
 
-      layoutOption = {
-        name: "euler",
-        fit: true, // whether to fit to viewport
-        animate: true, // whether to transition the node positions
-        avoidOverlap: true,
-        springLength: edgeLength,
-        mass: nodeDistance,
-        animateFilter: function (node, i) {
-          return true;
-        }, // 决定是否节点的位置应该被渲染
-        concentric: function (node) {
-          // returns numeric value for each node, placing higher nodes in levels towards the centre
-          return node.degree();
-        },
-      };
+      // layoutOption = {
+      //   name: "euler",
+      //   fit: true, // whether to fit to viewport
+      //   animate: true, // whether to transition the node positions
+      //   avoidOverlap: true,
+      //   springLength: edgeLength,
+      //   mass: nodeDistance,
+      //   animateFilter: function (node, i) {
+      //     return true;
+      //   }, // 决定是否节点的位置应该被渲染
+      //   concentric: function (node) {
+      //     // returns numeric value for each node, placing higher nodes in levels towards the centre
+      //     return node.degree();
+      //   },
+      // };
 
       var defaults = {
         container: false, // html dom element
@@ -355,6 +406,7 @@ export default function SubChartCytoscape({ w, h }) {
   }
 
   function onChangeLayout(value) {
+    setLayoutFlag(true)
     setChartLayout(value);
   }
 
