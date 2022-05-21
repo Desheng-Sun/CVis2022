@@ -108,11 +108,11 @@ export default function SubChartCytoscape({w, h}) {
       let newStyleArr = {
         selector: 'node',
         style: {
-          width: function(ele){ return ele.degree(); },  // 根据节点的度数设置
-          height: function(ele){ return ele.degree(); }
+          width: function(ele){ return ele.degree()<15 ? 15 : ele.degree(); },  // 根据节点的度数设置
+          height: function(ele){ return ele.degree()<15 ? 15 : ele.degree(); }
         }
       }
-      // styles.push(newStyleArr)
+      styles.push(newStyleArr)
       cy = cytoscape({
         container: document.getElementById('main-chart'),
         elements: {

@@ -29,20 +29,20 @@
   {
     "selector": "node[type=\"Domain\"]",
     "style": {
-      "background-color": "#e58308"
+      "background-color": "#2978b4"
       
     }
   },
   {
     "selector": "node[type=\"IP\"]",
     "style": {
-      "background-color": "#458994"
+      "background-color": "#33a02c"
     }
   },
   {
     "selector": "node[type=\"Cert\"]",
     "style": {
-      "background-color": "#823835",
+      "background-color": "#ff756a",
       "shape": "rectangle",
       "width": 10,
       "height": 10
@@ -51,97 +51,97 @@
   {
     "selector": "node[type=\"Whois_Name\"]",
     "style": {
-      "background-color": "#83af9b"
+      "background-color": "#f67f02"
     }
   },
   {
     "selector": "node[type=\"Whois_Phone\"]",
     "style": {
-      "background-color": "#f4d000"
+      "background-color": "#f67f02"
     }
   },
   {
     "selector": "node[type=\"Whois_Email\"]",
     "style": {
-      "background-color": "#8a977b"
+      "background-color": "#f67f02"
     }
   },
   {
     "selector": "node[type=\"IP_C\"]",
     "style": {
-      "background-color": "#aaa"
+      "background-color": "#7fc97f"
     }
   },
   {
     "selector": "node[type=\"ASN\"]",
     "style": {
-      "background-color": "#aaa"
+      "background-color": "#f9bf6f"
     }
   },
   {
     "selector": "edge[relation=\"r_cert\"]",
     "style": {
-      "line-color": "#fe4365"
+      "line-color": "#ff756a"
     }
   },
   {
     "selector": "edge[relation=\"r_subdomain\"]",
     "style": {
-      "line-color": "#fc9d9a"
+      "line-color": "#2978b4"
     }
   },
   {
     "selector": "edge[relation=\"r_request_jump\"]",
     "style": {
-      "line-color": "#f9cdad"
+      "line-color": "#1e38a1"
     }
   },
   {
     "selector": "edge[relation=\"r_dns_a\"]",
     "style": {
-      "line-color": "#c8c8a9"
+      "line-color": "#33a02c"
     }
   },
   {
     "selector": "edge[relation=\"r_whois_name\"]",
     "style": {
-      "line-color": "#83af9b"
+      "line-color": "#f67f02"
     }
   },
   {
     "selector": "edge[relation=\"r_whois_email\"]",
     "style": {
-      "line-color": "#8a977b"
+      "line-color": "#f67f02"
     }
   },
   {
     "selector": "edge[relation=\"r_whois_phone\"]",
     "style": {
-      "line-color": "#f4d000"
+      "line-color": "#f67f02"
     }
   },
   {
     "selector": "edge[relation=\"r_cname\"]",
     "style": {
-      "line-color": "#e58308"
+      "line-color": "#a6cee3"
     }
   },
   {
     "selector": "edge[relation=\"r_asn\"]",
     "style": {
-      "line-color": "#dc5712"
+      "line-color": "#f9bf6f"
     }
   },
   {
     "selector": "edge[relation=\"r_cidr\"]",
     "style": {
-      "line-color": "#458994"
+      "line-color": "#7fc97f"
     }
   },
   {
     "selector": "edge[relation=\"r_cert_chain\"]",
     "style": {
-      "line-color": "#823835"
+      "line-color": "#f9b4ae"
     }
   },
   {
