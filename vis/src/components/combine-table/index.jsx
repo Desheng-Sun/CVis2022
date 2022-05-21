@@ -7,7 +7,7 @@ export default function CombineTable({ w, h, b }) {
   const [bcHeight, setBcHeight] = useState(0);
   const [dlWidth, setDlWidth] = useState(0);
   const [dlHeight, setDlHeight] = useState(0);
-  const [belong, setBelong] = useState("");
+  // const [belong, setBelong] = useState("");
   useEffect(() => {
     setBcWidth(
       document.getElementById("combine-table-bc-" + b).getBoundingClientRect()
@@ -25,7 +25,7 @@ export default function CombineTable({ w, h, b }) {
       document.getElementById("combine-table-dl-" + b).getBoundingClientRect()
         .height
     );
-    setBelong(b);
+    // setBelong(b);
   }, [w, h, b]);
 
   return (
