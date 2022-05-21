@@ -60,24 +60,24 @@ const ICIndustry = JSON.parse(ICIndustryJ);
 
 // 获取主视图所需要的数据
 app.get("/getMainChartData", (req, res, next) => {
-  let node = 'tiaozhan1'
-  let filedata = path.join(__dirname, 'data/main-chart-data/' + node + ".json")
-  fs.readFile(filedata, 'utf8', function (err, data) {
+  let node = "tiaozhan1";
+  let filedata = path.join(__dirname, "data/main-chart-data/" + node + ".json");
+  fs.readFile(filedata, "utf8", function (err, data) {
     if (err) {
-      console.log(err)
+      console.log(err);
     } else {
-      let d = JSON.parse(data)
-      res.send(d)
-      res.end()
+      let d = JSON.parse(data);
+      res.send(d);
+      res.end();
     }
-  })
-})
+  });
+});
 
 // 获取视图的初始数据：node信息
 app.get("/initial", (req, res, next) => {
-  res.send(nodeNumIdInfo)
-  res.end()
-})
+  res.send(nodeNumIdInfo);
+  res.end();
+});
 // 获取视图的初始数据：node信息R
 app.get("/initialSds", (req, res, next) => {
   res.send(nodeNumIdInfo);
@@ -367,7 +367,6 @@ app.post("/infoListSds", jsonParser, (req, res, next) => {
     industrytype: Array.from(industrytype),
     grouptype: grouptype,
   };
-  console.log(sendData);
   res.send(sendData);
 
   res.end();
@@ -454,13 +453,15 @@ app.post("/difChartSds", jsonParser, (req, res, next) => {
       res.end();
     }
   });
-})
-
+});
 
 // 获取冰柱图所需要的数据
 app.get("/getIcClueDataSds", (req, res) => {
   let filename = "3";
-  let filedata = path.join(__dirname, "data/ic-clue-data/" + filename + ".json");
+  let filedata = path.join(
+    __dirname,
+    "data/ic-clue-data/" + filename + ".json"
+  );
   fs.readFile(filedata, "utf-8", function (err, data) {
     if (err) {
       console.error(err);
@@ -471,7 +472,6 @@ app.get("/getIcClueDataSds", (req, res) => {
     }
   });
 });
-
 
 // 读取BulletChart样例数据
 app.get("/getBulletChartData", (req, res) => {

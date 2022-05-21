@@ -18,17 +18,17 @@ export default function InfoList() {
       groupscope: "大",
       industrytype: [
         "B",
-        "G, B",
-        "C, G, B",
-        "G, A",
-        "I, B",
+        "GB",
+        "CGB",
+        "GA",
+        "IB",
         "A",
-        "A, B",
-        "I, A, B",
-        "C, B",
+        "AB",
+        "IAB",
+        "CB",
         "C",
-        "C, A, B",
-        "G, C",
+        "CAB",
+        "GC",
       ],
       grouptype: "复合型",
     },
@@ -70,7 +70,8 @@ export default function InfoList() {
         <>
           {tags.map((tag, index) => (
             <Tag color={colorList[index]} key={tag}>
-              {tag.split(",")}
+              {/* {tag.split(",")} */}
+              {tag}
             </Tag>
           ))}
         </>
