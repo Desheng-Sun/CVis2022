@@ -47,12 +47,12 @@ export default function Layout() {
     setIcClueChartHeight(
       document.getElementById("icclue-graph").getBoundingClientRect().height
     );
-    setSkeletonChartWidth(
-      document.getElementById("skeleton-chart").getBoundingClientRect().width
-    );
-    setSkeletonChartHeight(
-      document.getElementById("skeleton-chart").getBoundingClientRect().height
-    );
+    // setSkeletonChartWidth(
+    //   document.getElementById("skeleton-chart").getBoundingClientRect().width
+    // );
+    // setSkeletonChartHeight(
+    //   document.getElementById("skeleton-chart").getBoundingClientRect().height
+    // );
     setCombineTableWidth(
       document.getElementById("sta-node").getBoundingClientRect().width
     );
@@ -84,14 +84,14 @@ export default function Layout() {
           </div>
           <div id="nodelinkic">
             <ChartHeader chartName={"IP <——> Cert"} />
-            <SkeletonChart w={skeletonChartWidth} h={skeletonChartHeight} />
+            {/* <SkeletonChart w={skeletonChartWidth} h={skeletonChartHeight} /> */}
           </div>
         </div>
         <div id="iright">
           <div id="container-mainmap">
             {/* <div id="controlmainmap">主图的控制台</div> */}
             <div id="mainmap">
-              {/* <ChartHeader chartName={"主图"} /> */}
+              <ChartHeader chartName={"主图"} />
               <MainChartCytoscape w={mainChartWidth} h={mainChartHeight} />
             </div>
           </div>
