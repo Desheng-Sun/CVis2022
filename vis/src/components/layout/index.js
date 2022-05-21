@@ -47,12 +47,21 @@ export default function Layout() {
     setIcClueChartHeight(
       document.getElementById("icclue-graph").getBoundingClientRect().height
     );
+<<<<<<< HEAD
     setSkeletonChartWidth(
       document.getElementById("skeleton-chart").getBoundingClientRect().width
     );
     setSkeletonChartHeight(
       document.getElementById("skeleton-chart").getBoundingClientRect().height
     );
+=======
+    // setSkeletonChartWidth(
+    //   document.getElementById("skeleton-chart").getBoundingClientRect().width
+    // );
+    // setSkeletonChartHeight(
+    //   document.getElementById("skeleton-chart").getBoundingClientRect().height
+    // );
+>>>>>>> a03228d6bd7e90b1051fdbbed4467eef58d5f0af
     setCombineTableWidth(
       document.getElementById("sta-node").getBoundingClientRect().width
     );
@@ -62,8 +71,8 @@ export default function Layout() {
     setMainChartWidth(
       document.getElementById("mainmap").getBoundingClientRect().width
     );
-    setMainChartHeight(
-      document.getElementById("mainmap").getBoundingClientRect().height
+    setMainChartHeight(968
+      // document.getElementById("mainmap").getBoundingClientRect().height
     );
   });
 
@@ -97,8 +106,7 @@ export default function Layout() {
           <div id="container-filter">
             <div id="deleterelation">
               <ChartHeader chartName={"差异视图"} />
-              {/* <DifChart w={difChartWidth} h={difChartHeight} /> */}
-              {/* 差异视图 删IP/Cert节点 */}
+              <DifChart w={difChartWidth} h={difChartHeight} />
             </div>
             <div id="existingdomain">展示当前子图中domain情况</div>
           </div>
