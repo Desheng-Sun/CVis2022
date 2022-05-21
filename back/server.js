@@ -304,33 +304,125 @@ app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
       !domainAsSubTarget.has(e);
   });
   const linksList = [
-    { name: "r_cert_chain", value: r_cert_chain },
-    { name: "r_cert", value: r_cert },
-    { name: "r_whois_name", value: r_whois_name },
-    { name: "r_whois_phone", value: r_whois_phone },
-    { name: "r_whois_email", value: r_whois_email },
-    { name: "r_cname", value: r_cname },
-    { name: "r_request_jump", value: r_request_jump },
-    { name: "r_subdomain", value: r_subdomain },
-    { name: "none", value: none },
-    { name: "r_dns_a", value: r_dns_a },
-    { name: "r_cidr", value: r_cidr },
-    { name: "r_asn", value: r_asn },
-  ];
+    {
+      "title": "certChain",
+      "maesures": [r_cert_chain],
+      "markes": [7]
+    }, 
+    {
+      "title": "cert",
+      "maesures": [r_cert],
+      "markes": [50]
+    }, 
+    {
+      "title": "WhoisName",
+      "maesures": [r_whois_name],
+      "markes": [5]
+    }, 
+    {
+      "title": "whoisPhone",
+      "maesures": [r_whois_phone],
+      "markes": [3]
+    }, 
+    {
+      "title": "whoisEmail",
+      "maesures": [r_whois_email],
+      "markes": [2]
+    }, 
+    {
+      "title": "cname",
+      "maesures": [r_cname],
+      "markes": [10]
+    }, 
+    {
+      "title": "requestJump",
+      "maesures": [r_request_jump],
+      "markes": [5]
+    }, 
+    {
+      "title": "subdomain",
+      "maesures": [r_subdomain],
+      "markes": [150]
+    }, 
+
+    {
+      "title": "dnsA",
+      "maesures": [r_dns_a],
+      "markes": [150]
+    }, 
+    {
+      "title": "cidr",
+      "maesures": [r_cidr],
+      "markes": [3]
+    },
+    {
+      "title": "asn",
+      "maesures": [r_asn],
+      "markes": [3]
+    },
+  ]
   const nodesList = [
-    { name: "certAsTarget", value: certAsTarget.size },
-    { name: "certAsSource", value: certAsSource.size },
-    { name: "whoisName", value: whoisName.size },
-    { name: "whoisEmail", value: whoisEmail.size },
-    { name: "whoisPhone", value: whoisPhone.size },
-    { name: "domainAsCnameTarget", value: domainAsCnameTarget.size },
-    { name: "domainAsJumpTarget", value: domainAsJumpTarget.size },
-    { name: "domainAsSubTarget", value: domainAsSubTarget.size },
-    { name: "domainAsSource", value: domainAsSource.size },
-    { name: "ip", value: ip.size },
-    { name: "ipc", value: ipc.size },
-    { name: "asn", value: asn.size },
-  ];
+    {
+      "title": "certT",
+      "maesures": [certAsTarget.size],
+      "markes": [3]
+    }, 
+    {
+      "title": "cetrS",
+      "maesures": [certAsSource.size],
+      "markes": [7]
+    }, 
+    {
+      "title": "whoisName",
+      "maesures": [whoisName.size],
+      "markes": [3]
+    }, 
+    {
+      "title": "whoisEmail",
+      "maesures": [whoisEmail.size],
+      "markes": [2]
+    }, 
+    {
+      "title": "whoisPhone",
+      "maesures": [whoisPhone.size],
+      "markes": [2]
+    }, 
+    {
+      "title": "domainCT",
+      "maesures": [domainAsCnameTarget.size],
+      "markes": [10]
+    }, 
+    {
+      "title": "domainJT",
+      "maesures": [domainAsJumpTarget.size],
+      "markes": [2]
+    }, 
+    {
+      "title": "domainST",
+      "maesures": [domainAsSubTarget.size],
+      "markes": [50]
+    }, 
+    {
+      "title": "domainS",
+      "maesures": [domainAsSource.size],
+      "markes": [30]
+    }, 
+    {
+      "title": "IP",
+      "maesures": [ip.size],
+      "markes": [7]
+    }, 
+    {
+      "title": "ipc",
+      "maesures": [ipc.size],
+      "markes": [2]
+    },    
+    {
+      "title": "asn",
+      "maesures": [asn.size],
+      "markes": [3]
+    }, 
+  ]
   res.send([linksList, nodesList]);
   res.end();
 });
