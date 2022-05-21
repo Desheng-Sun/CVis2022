@@ -52,8 +52,16 @@
   }
 
   #icclue-control{
+    width: 100%;
+    flex: 1;
     display: flex;
+  }
 
+
+    #icclue-graph {
+      width: 100%;
+      flex: 24;
+    
   }
 
   #icclue-control #icclue-title {
@@ -70,4 +78,9 @@
     width: auto;
     height:20px;
     font-size: 12px;
+  }
+
+  #icclue-chart{
+    display: flex;
+    flex-direction: column;
   }

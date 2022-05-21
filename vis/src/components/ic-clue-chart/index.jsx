@@ -72,7 +72,7 @@ export default function ICClueChart({ w, h}) {
     icicleChart = Icicle()
       .orientation("lr")
       .width(svgWidth)
-      .height(svgHeight)
+      .height(svgHeight*0.95)
       .data(data)
       .size("pureDomain")
       .tooltipContent((d, node) => {
@@ -95,14 +95,14 @@ export default function ICClueChart({ w, h}) {
   }
 
   return (
-  <div id="icclue-chart" style={{ width: "100%", height: "96%" }}>
-    <div id="icclue-control" style={{ width: "100%", height: "5%" }}>
+  <div id="icclue-chart" style={{ width: "100%", height: "100%" }}>
+    <div id="icclue-control" >
       <div id="icclue-title"></div>
       <div id="control">
         <Button type="primary" size='small' onClick={btnGetSelectedIcicleNode}>提交</Button>
       </div>
     </div>
-    <div id="icclue-graph" style={{ width: "100%", height: "100%" }}></div>
+    <div id="icclue-graph" ></div>
   </div>
   )
 }
