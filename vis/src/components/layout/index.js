@@ -41,10 +41,10 @@ export default function Layout() {
       document.getElementById("deleterelation").getBoundingClientRect().height
     );
     setIcClueChartWidth(
-      document.getElementById("filteric").getBoundingClientRect().width
+      document.getElementById("icclue-graph").getBoundingClientRect().width
     );
     setIcClueChartHeight(
-      document.getElementById("filteric").getBoundingClientRect().height
+      document.getElementById("icclue-graph").getBoundingClientRect().height
     );
     // setSkeletonChartWidth(
     //   document.getElementById("skeleton-chart").getBoundingClientRect().width

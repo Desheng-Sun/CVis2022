@@ -19,9 +19,20 @@ cytoscape.use(euler)
 
 var cy, layoutOption;
 export default function SubChartCytoscape({w, h}) {
+  const [svgWidth, setSvgWidth] = useState(w);
+  const [svgHeight, setSvgHeight] = useState(h);
   const [data, setData] = useState({ nodes: [], edges: [] });
   const [dataParam, setDataParam] = useState("");
 
+
+  // 随系统缩放修改画布大小
+  useEffect(() => {
+    console.log(svgWidth);
+    setSvgWidth(w);
+  }, [w]);
+  useEffect(() => {
+    setSvgHeight(h);
+  }, [h]);
   // 请求数据
   useEffect(() => {
     getMainChartData().then((res) => {
@@ -30,8 +41,8 @@ export default function SubChartCytoscape({w, h}) {
   }, [dataParam]);
 
   useEffect(() => {
-    // drawChart();
-    console.log(h);
+    drawChart();
+    // console.log(h);
   }, [data]);
 
 
@@ -56,7 +67,7 @@ export default function SubChartCytoscape({w, h}) {
       }
       styles.push(newStyleArr)
       cy = cytoscape({
-        container: document.getElementById('chart'),
+        container: document.getElementById('main-chart'),
         elements: {
           nodes: nodes,
           edges: links
@@ -167,9 +178,8 @@ export default function SubChartCytoscape({w, h}) {
 
 
   return (
-    <div id="main-container" style={{ width: w, height: 200, background: "#eee"}}>
-      {/* <div id="navigator"  style={{ width: 100, height: 100, position: 'flex'}}></div> */}
-      <div id="chart" style={{ width: w, height: 200, background: "#eee"}}>
+    <div id="main-container" style={{ width: svgWidth, height: svgHeight, background: "#eee"}}>
+      <div id="main-chart-control"  style={{ width: w, height: h, background: "#eee"}}>
         <Checkbox onChange={onAddNode}>增加元素</Checkbox>
         <Checkbox onChange={onDeleteNode}>删除元素</Checkbox>
         <Checkbox onChange={onFilterNode}>按照元素类型过滤</Checkbox>
@@ -177,6 +187,9 @@ export default function SubChartCytoscape({w, h}) {
         <Checkbox onChange={onExportChart}>导出图像</Checkbox>
         <Checkbox onChange={onCenter}>按节点位置居中</Checkbox>
         <Checkbox onChange={onGetSelected}>获取选中的元素</Checkbox>
+      </div> 
+      <div id="navigator"  style={{ width: 100, height: 100, position: 'flex'}}></div> 
+      <div id="main-chart" style={{ width: svgWidth, height: svgHeight, background: "#eee"}}>
       </div>
     </div>
   );

@@ -16,10 +16,10 @@
 .cytoscape-navigator {
     border: 2px solid #bebebe !important;
     background: white !important;
-    height: 15vh !important;
-    width: 15vw !important;
-    margin-bottom: 50px;
-    margin-right: 50px;
+    height: 10vh !important;
+    width: 10vw !important;
+    margin-bottom: 17%;
+    margin-right: 33%;
   }
   
   /*Add border to View container:*/
@@ -38,3 +38,27 @@
   .cytoscape-navigator.mouseover-view .cytoscape-navigatorView {
     background-color: rgba(18, 65, 145, 0.3);
   }
+
+  #navigator{
+
+    display: contents;
+    /* float: left; */
+  }
+#main-container{
+  display: flex;
+  flex-direction: column;
+  text-align: start;
+}
+#main-chart-control{
+  width: 100%;
+  flex: 1;
+}
+#main-chart-control{
+  width: 100%;
+  flex: 1;
+}
+
+#main-chart{
+  width: 100%;
+  flex: 29;
+}
