@@ -16,7 +16,6 @@ export default function BulletChart({ w, h, divname }) {
   // 随系统缩放修改画布大小
   useEffect(() => {
     setSvgWidth(w);
-    // console.log(w);
   }, [w]);
   useEffect(() => {
     setSvgHeight(h);

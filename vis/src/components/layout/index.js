@@ -8,7 +8,8 @@ import ICClueChart from "../ic-clue-chart";
 import SkeletonChart from "../skeleton-chart";
 import SearchBar from "../search-bar";
 import CombineTable from "../combine-table";
-import MainChartCytoscape from '../sub-chart-cytoscape'
+import MainChartCytoscape from "../sub-chart-cytoscape";
+import ConclusionText from "../conclusion-text";
 import { useEffect, useState } from "react";
 
 export default function Layout() {
@@ -70,7 +71,7 @@ export default function Layout() {
     <div id="layout">
       <div id="identifygroup">
         <div id="ileft">
-          <div id="titlebar">Black & Gary Instrudy Network Mining</div>
+          <div id="titlebar">黑灰产网络资产可视分析系统</div>
           <div id="searchbar">
             <SearchBar />
             {/* 输入/搜索框 用户有IP/Cert类型的线索
@@ -98,7 +99,7 @@ export default function Layout() {
           <div id="container-filter">
             <div id="deleterelation">
               <ChartHeader chartName={"差异视图"} />
-              {/* <DifChart w={difChartWidth} h={difChartHeight} /> */}
+              <DifChart w={difChartWidth} h={difChartHeight} />
               {/* 差异视图 删IP/Cert节点 */}
             </div>
             <div id="existingdomain">展示当前子图中domain情况</div>
@@ -130,7 +131,10 @@ export default function Layout() {
         </div>
 
         <div id="assetandpath">核心资产与关键链路展示</div>
-        <div id="conclusion">文字模板，描述团伙基本信息与主要运作机制</div>
+        <div id="conclusion">
+          <ChartHeader chartName={"团伙分析结果"} />
+          <ConclusionText />
+        </div>
       </div>
     </div>
   );

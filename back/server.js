@@ -277,6 +277,7 @@ app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
   res.end();
 });
 
+
 app.post("/infoList", jsonParser, (req, res, next) => {
   let numnode = 0;
   let numlink = 0;
@@ -394,7 +395,9 @@ app.post("/difChart", jsonParser, (req, res, next) => {
       res.end();
     }
   });
-});
+})
+
+
 // 获取冰柱图所需要的数据
 app.get("/getIcClueData", (req, res) => {
   let filename = "3";
@@ -409,6 +412,7 @@ app.get("/getIcClueData", (req, res) => {
     }
   });
 });
+
 
 // 读取BulletChart样例数据
 app.get("/getBulletChartData", (req, res) => {
