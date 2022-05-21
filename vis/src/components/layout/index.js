@@ -62,10 +62,7 @@ export default function Layout() {
     setMainChartWidth(
       document.getElementById("mainmap").getBoundingClientRect().width
     );
-    setMainChartHeight(
-      968
-      // document.getElementById("mainmap").getBoundingClientRect().height
-    );
+    setMainChartHeight(968);
   });
 
   return (
@@ -89,7 +86,6 @@ export default function Layout() {
         </div>
         <div id="iright">
           <div id="container-mainmap">
-            {/* <div id="controlmainmap">主图的控制台</div> */}
             <div id="mainmap">
               <ChartHeader chartName={"主图"} />
               <MainChartCytoscape w={mainChartWidth} h={mainChartHeight} />
@@ -108,7 +104,6 @@ export default function Layout() {
         <div id="infotable">
           <ChartHeader chartName={"团伙基本信息"} />
           <InfoList />
-          {/* 列表展示确定团伙的信息 */}
         </div>
         <div id="container-statistic">
           <ChartHeader chartName={"节点与边信息"} />

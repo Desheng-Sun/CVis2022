@@ -99,7 +99,7 @@ export default function SubChartCytoscape({ w, h }) {
   // 监听过滤事件
   useEffect(() => {
     if (filterFlag) {
-      console.log("执行过滤", filterType);
+      // console.log("执行过滤", filterType);
       let ele = filterType[0];
       let type = filterType[1];
       let collection;
@@ -127,6 +127,7 @@ export default function SubChartCytoscape({ w, h }) {
       layout.run();
     }
     setLayoutFlag(false)
+    // console.log(chartLayout);
   }, [chartLayout]);
 
 
@@ -213,7 +214,7 @@ export default function SubChartCytoscape({ w, h }) {
       // 节点的点击事件
       cy.on("click", "node", function (e) {
         var node = e.target;
-        console.log("click " + node.id());
+        // console.log("click " + node.id());
       });
 
       // 节点的mouseover事件
@@ -225,7 +226,7 @@ export default function SubChartCytoscape({ w, h }) {
           .addClass("semitransp");
         neigh.addClass("highlight").outgoers().addClass("highlight");
 
-        console.log(e.target);
+        // console.log(e.target);
       });
       cy.on("mouseout", "node", function (e) {
         var neigh = e.target;
@@ -390,7 +391,7 @@ export default function SubChartCytoscape({ w, h }) {
 
   function onGetSelected() {
     let selection = cy.elements(":selected");
-    console.log(selection);
+    // console.log(selection);
   }
 
   // 过滤对应的回车和按钮提交事件

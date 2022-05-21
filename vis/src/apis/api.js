@@ -26,15 +26,15 @@ export function initialSds() {
   return get("/initialSds");
 }
 
-export function icClueDataSds(numId, type) {
-  return post("/ic-clue-dataSds", {
+export function getIcClueDataSds(numId, type) {
+  return post("/getIcClueDataSds", {
     numId: numId,
     type: type,
   });
 }
 
-export function skeletonChartSds(Nodes) {
-  return post("/skeleton-chartSds", {
+export function getSkeletonChartDataSds(Nodes) {
+  return post("/getSkeletonChartDataSds", {
     Nodes: Nodes,
   });
 }
@@ -57,21 +57,21 @@ export function difChartSds(linksInfo) {
   });
 }
 
-export function mainChartSds(links,nodes) {
+export function mainChartSds(links, nodes) {
   return post("/mainChartSds", {
     links: links,
-    nodes: nodes
+    nodes: nodes,
   });
 }
 
 export function getFinalDataSds(nodesLinksInfo) {
   return post("/getFinalDataSds", {
-    nodesLinksInfo:nodesLinksInfo
+    nodesLinksInfo: nodesLinksInfo,
   });
 }
 
 export function detialListSds(nodesLinksInfo) {
   return post("/detialListSds", {
-    nodesLinksInfo:nodesLinksInfo
+    nodesLinksInfo: nodesLinksInfo,
   });
 }
