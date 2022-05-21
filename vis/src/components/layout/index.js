@@ -6,28 +6,34 @@ import CountsBar from "../counts-bar";
 import DifChart from "../dif-chart";
 import ICClueChart from "../ic-clue-chart";
 import SkeletonChart from "../skeleton-chart";
-import SearchBar from "../search-bar"
+import SearchBar from "../search-bar";
+import CombineTable from "../combine-table";
+import MainChartCytoscape from '../sub-chart-cytoscape'
 import { useEffect, useState } from "react";
 
 export default function Layout() {
-  const [countsBarWidth, setCountsBarWidth] = useState(0);
-  const [countsBarHeight, setCountsBarHeight] = useState(0);
+  // const [countsBarWidth, setCountsBarWidth] = useState(0);
+  // const [countsBarHeight, setCountsBarHeight] = useState(0);
   const [difChartWidth, setDifChartWidth] = useState(0);
   const [difChartHeight, setDifChartHeight] = useState(0);
   const [icClueChartWidth, setIcClueChartWidth] = useState(0);
   const [icClueChartHeight, setIcClueChartHeight] = useState(0);
   const [skeletonChartWidth, setSkeletonChartWidth] = useState(0);
   const [skeletonChartHeight, setSkeletonChartHeight] = useState(0);
+  const [combineTableWidth, setCombineTableWidth] = useState(0);
+  const [combineTableHeight, setCombineTableHeight] = useState(0);
+  const [mainChartWidth, setMainChartWidth] = useState(0);
+  const [mainChartHeight, setMainChartHeight] = useState(0);
 
   const [curIC, setCurrIC] = useState(""); // 当前选中的IP/Cert
 
   useEffect(() => {
-    setCountsBarWidth(
-      document.getElementById("statistic").getBoundingClientRect().width
-    );
-    setCountsBarHeight(
-      document.getElementById("statistic").getBoundingClientRect().height
-    );
+    // setCountsBarWidth(
+    //   document.getElementById("statistic").getBoundingClientRect().width
+    // );
+    // setCountsBarHeight(
+    //   document.getElementById("statistic").getBoundingClientRect().height
+    // );
     setDifChartWidth(
       document.getElementById("deleterelation").getBoundingClientRect().width
     );
@@ -35,18 +41,31 @@ export default function Layout() {
       document.getElementById("deleterelation").getBoundingClientRect().height
     );
     setIcClueChartWidth(
-      document.getElementById("filteric").getBoundingClientRect().width
+      document.getElementById("icclue-graph").getBoundingClientRect().width
     );
     setIcClueChartHeight(
-      document.getElementById("filteric").getBoundingClientRect().height
+      document.getElementById("icclue-graph").getBoundingClientRect().height
     );
-    setSkeletonChartWidth(
-      document.getElementById("skeleton-chart").getBoundingClientRect().width
+    // setSkeletonChartWidth(
+    //   document.getElementById("skeleton-chart").getBoundingClientRect().width
+    // );
+    // setSkeletonChartHeight(
+    //   document.getElementById("skeleton-chart").getBoundingClientRect().height
+    // );
+    setCombineTableWidth(
+      document.getElementById("sta-node").getBoundingClientRect().width
     );
-    setSkeletonChartHeight(
-      document.getElementById("skeleton-chart").getBoundingClientRect().height
+    setCombineTableHeight(
+      document.getElementById("sta-node").getBoundingClientRect().height
+    );
+    setMainChartWidth(
+      document.getElementById("mainmap").getBoundingClientRect().width
+    );
+    setMainChartHeight(
+      document.getElementById("mainmap").getBoundingClientRect().height
     );
   });
+
   return (
     <div id="layout">
       <div id="identifygroup">
@@ -63,18 +82,22 @@ export default function Layout() {
           </div>
           <div id="nodelinkic">
             <ChartHeader chartName={"IP <——> Cert"} />
-            <SkeletonChart w={skeletonChartWidth} h={skeletonChartHeight} />
+            {/* <SkeletonChart w={skeletonChartWidth} h={skeletonChartHeight} /> */}
           </div>
         </div>
         <div id="iright">
           <div id="container-mainmap">
-            <div id="controlmainmap">主图的控制台</div>
-            <div id="mainmap">主图</div>
+            {/* <div id="controlmainmap">主图的控制台</div> */}
+            <div id="mainmap">
+              <MainChartCytoscape 
+                w={mainChartWidth}
+                h={mainChartHeight}/>
+            </div>
           </div>
           <div id="container-filter">
             <div id="deleterelation">
               <ChartHeader chartName={"差异视图"} />
-              <DifChart w={difChartWidth} h={difChartHeight} />
+              {/* <DifChart w={difChartWidth} h={difChartHeight} /> */}
               {/* 差异视图 删IP/Cert节点 */}
             </div>
             <div id="existingdomain">展示当前子图中domain情况</div>
@@ -88,9 +111,20 @@ export default function Layout() {
           {/* 列表展示确定团伙的信息 */}
         </div>
         <div id="container-statistic">
-          <div id="relations">关系图</div>
-          <div id="statistic">
-            {/* <CountsBar w={countsBarWidth} h={countsBarHeight} /> */}
+          <ChartHeader chartName={"节点与边信息"} />
+          <div id="sta-node">
+            <CombineTable
+              w={combineTableWidth}
+              h={combineTableHeight}
+              b="node"
+            />
+          </div>
+          <div id="sta-link">
+            <CombineTable
+              w={combineTableWidth}
+              h={combineTableHeight}
+              b="link"
+            />
           </div>
         </div>
 

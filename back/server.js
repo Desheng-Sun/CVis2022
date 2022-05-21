@@ -7,12 +7,12 @@ const username = "root";
 const password = "123456";
 const port = 3008;
 
-const bodyParser = require('body-parser')
-const jsonParser = bodyParser.json()
-const urlencodedParser = bodyParser.urlencoded({ extended: true })
+const bodyParser = require("body-parser");
+const jsonParser = bodyParser.json();
+const urlencodedParser = bodyParser.urlencoded({ extended: true });
 
-app.use(bodyParser.json({ limit: '10mb' }));
-app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
 /**
  * 设置跨域请求
@@ -39,16 +39,22 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
 
-let nodeInfoJ = fs.readFileSync(path.join(__dirname, 'data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv'), 'utf8')
-nodeInfoJ = nodeInfoJ.split("\n")
-let nodeNumIdInfo = []
-for (let i of nodeInfoJ) {
-  nodeNumIdInfo.push(i.split(","))
-}
-nodeNumIdInfo = nodeNumIdInfo.splice(1)
-let ICIndustryP = path.join(__dirname, 'data/nodeIndustryInfo2.json')
-let ICIndustryJ = fs.readFileSync(ICIndustryP, 'utf8')
-const ICIndustry = JSON.parse(ICIndustryJ)
+// let nodeInfoJ = fs.readFileSync(
+//   path.join(
+//     __dirname,
+//     "data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv"
+//   ),
+//   "utf8"
+// );
+// nodeInfoJ = nodeInfoJ.split("\n");
+// let nodeNumIdInfo = [];
+// for (let i of nodeInfoJ) {
+//   nodeNumIdInfo.push(i.split(","));
+// }
+// nodeNumIdInfo = nodeNumIdInfo.splice(1);
+// let ICIndustryP = path.join(__dirname, "data/nodeIndustryInfo2.json");
+// let ICIndustryJ = fs.readFileSync(ICIndustryP, "utf8");
+// const ICIndustry = JSON.parse(ICIndustryJ);
 
 // const nodeInfoJ = fs.readFileSync(path.join(__dirname, 'data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv'), 'utf8')
 // const nodeNumIdInfo = json.parse(nodeInfoJ)
@@ -58,87 +64,107 @@ const ICIndustry = JSON.parse(ICIndustryJ)
 // const ICIndustry = JSON.parse(ICIndustryJ)
 
 
+// 获取主视图所需要的数据
+app.get("/getMainChartData", (req, res, next) => {
+  let node = 'tiaozhan1'
+  let filedata = path.join(__dirname, 'data/main-chart-data/' + node + ".json")
+  fs.readFile(filedata, 'utf8', function (err, data) {
+    if (err) {
+      console.log(err)
+    } else {
+      let d = JSON.parse(data)
+      res.send(d)
+      res.end()
+    }
+  })
+})
 
-// 获取视图的初始数据：node信息R
-app.get("/initialSds", (req, res, next) => {
+// 获取视图的初始数据：node信息
+app.get("/initial", (req, res, next) => {
   res.send(nodeNumIdInfo)
   res.end()
 })
-
+// 获取视图的初始数据：node信息R
+app.get("/initialSds", (req, res, next) => {
+  res.send(nodeNumIdInfo);
+  res.end();
+});
 
 // 获取冰柱图需要的数据
 app.post("/ic-clue-dataSds", jsonParser, (req, res, next) => {
-  const spawn = require('child_process').spawn
-  const pythonProcess = spawn('python', [path.join(__dirname, 'dataProcess/5. figure1.py'), req.body.numId, req.body.type])
-  pythonProcess.on('exit', () => {
-    let filedata = path.join(__dirname, 'data/ic-clue-data/' + req.body.numId + ".json")
-    fs.readFile(filedata, 'utf-8', function (err, data) {
+  const spawn = require("child_process").spawn;
+  const pythonProcess = spawn("python", [
+    path.join(__dirname, "dataProcess/5. figure1.py"),
+    req.body.numId,
+    req.body.type,
+  ]);
+  pythonProcess.on("exit", () => {
+    let filedata = path.join(
+      __dirname,
+      "data/ic-clue-data/" + req.body.numId + ".json"
+    );
+    fs.readFile(filedata, "utf-8", function (err, data) {
       if (err) {
-        console.log(err)
+        console.log(err);
       } else {
-        let d = JSON.parse(data)
-        res.send(d)
-        res.end()
+        let d = JSON.parse(data);
+        res.send(d);
+        res.end();
       }
-    })
+    });
   });
-})
-
+});
 
 // IC连接图所需要的数据
 app.post("/skeleton-chartSds", jsonParser, (req, res, next) => {
   let filedata = path.join(__dirname, "data/nodesToNodesGraph1.json");
   fs.readFile(filedata, "utf-8", function (err, data) {
     if (err) {
-      console.log(err)
+      console.log(err);
     } else {
-      let ICLinks = JSON.parse(data)
-      let nodesInfo = []
-      let linksInfo = []
+      let ICLinks = JSON.parse(data);
+      let nodesInfo = [];
+      let linksInfo = [];
       for (let i of req.body.Nodes) {
-        const nowNodeInfo = nodeNumIdInfo[i - 1]
-        nowICIndustry = []
+        const nowNodeInfo = nodeNumIdInfo[i - 1];
+        nowICIndustry = [];
         for (let j of ICIndustry[i]) {
           nowICIndustry.push({
-            "industry": j[0],
-            "number": j[1]
-          })
+            industry: j[0],
+            number: j[1],
+          });
         }
         nodesInfo.push({
-          "numId": i,
-          "id": nowNodeInfo[1],
-          "name": nowNodeInfo[2],
-          "ICIndustry": nowICIndustry
-        })
+          numId: i,
+          id: nowNodeInfo[1],
+          name: nowNodeInfo[2],
+          ICIndustry: nowICIndustry,
+        });
         for (let j of ICLinks[i]) {
           if (req.body.Nodes.includes(j[1]) && j[1] > j[0]) {
             linksInfo.push({
-              "source": j[0],
-              "target": j[1]
-            })
+              source: j[0],
+              target: j[1],
+            });
           }
         }
       }
-      res.send({ "nodes": nodesInfo, "links": linksInfo });
+      res.send({ nodes: nodesInfo, links: linksInfo });
       res.end();
     }
   });
-})
-
-
+});
 
 // 主图所需要的数据
 app.post("/mainChartSds", jsonParser, (req, res, next) => {
   let filedata = path.join(__dirname, "data/nodesToNodesGraph1.json");
   fs.readFile(filedata, "utf-8", function (err, data) {
     if (err) {
-      console.log(err)
+      console.log(err);
     } else {
-
     }
   });
-})
-
+});
 
 app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
   // 周艺璇画的图的相关数据
@@ -155,18 +181,18 @@ app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
   let r_dns_a = 0;
   let r_cidr = 0;
   let r_asn = 0;
-  certAsTarget = new Set();
-  certAsSource = new Set();
-  whoisName = new Set();
-  whoisEmail = new Set();
-  whoisPhone = new Set();
-  domainAsCnameTarget = new Set();
-  domainAsJumpTarget = new Set();
-  domainAsSubTarget = new Set();
-  domainAsSource = new Set();
-  ip = new Set();
-  ipc = new Set();
-  asn = new Set();
+  let certAsTarget = new Set();
+  let certAsSource = new Set();
+  let whoisName = new Set();
+  let whoisEmail = new Set();
+  let whoisPhone = new Set();
+  let domainAsCnameTarget = new Set();
+  let domainAsJumpTarget = new Set();
+  let domainAsSubTarget = new Set();
+  let domainAsSource = new Set();
+  let ip = new Set();
+  let ipc = new Set();
+  let asn = new Set();
   for (let i of communityInfo["links"]) {
     if (i[0] == "r_cert_chain") {
       r_cert_chain += 1;
@@ -213,14 +239,12 @@ app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
       asn.add(i[2]);
     }
   }
-  domainAsSource = Array.from(domainAsSource)
-  domainAsSource = domainAsSource.filter(
-    (e) => {
-      !domainAsCnameTarget.has(e) &&
-        !domainAsJumpTarget.has(e) &&
-        !domainAsSubTarget.has(e)
-    }
-  );
+  domainAsSource = Array.from(domainAsSource);
+  domainAsSource = domainAsSource.filter((e) => {
+    !domainAsCnameTarget.has(e) &&
+      !domainAsJumpTarget.has(e) &&
+      !domainAsSubTarget.has(e);
+  });
   const linksList = [
     { name: "r_cert_chain", value: r_cert_chain },
     { name: "r_cert", value: r_cert },
@@ -249,36 +273,33 @@ app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
     { name: "ipc", value: ipc.size },
     { name: "asn", value: asn.size },
   ];
-  res.send([linksList, nodesList])
-  res.end()
-
-})
+  res.send([linksList, nodesList]);
+  res.end();
+});
 
 
 app.post("/infoList", jsonParser, (req, res, next) => {
-  let numnode = 0
-  let numlink = 0
-  let groupscope = ""
-  let industrytype = new Set()
-  let grouptype = "单一型"
+  let numnode = 0;
+  let numlink = 0;
+  let groupscope = "";
+  let industrytype = new Set();
+  let grouptype = "单一型";
   let communityInfo = req.body.nodesLinksInfo; //传的参数，社区的节点和链接信息
-  numnode = communityInfo["nodes"].length
-  numlink = communityInfo["links"].length
+  numnode = communityInfo["nodes"].length;
+  numlink = communityInfo["links"].length;
 
   if (numnode < 300) {
-    groupscope = "小"
-  }
-  else if (numnode < 800) {
-    groupscope = "中"
-  }
-  else {
-    groupscope = "大"
+    groupscope = "小";
+  } else if (numnode < 800) {
+    groupscope = "中";
+  } else {
+    groupscope = "大";
   }
   for (let i of communityInfo["nodes"]) {
-    industrytype.add(i[4])
+    industrytype.add(i[4]);
   }
   if (industrytype.size > 1) {
-    grouptype = "复合型"
+    grouptype = "复合型";
   }
 
   sendData = {
@@ -286,82 +307,91 @@ app.post("/infoList", jsonParser, (req, res, next) => {
     numlink: numlink,
     groupscope: groupscope,
     industrytype: Array.from(industrytype),
-    grouptype: grouptype
-  }
-  res.send(sendData)
-  res.end();
-})
+    grouptype: grouptype,
+  };
+  console.log(sendData);
+  res.send(sendData);
 
+  res.end();
+});
 
 app.post("/difChart", jsonParser, (req, res, next) => {
   let filedata = path.join(__dirname, "data/nodesToNodesGraph1.json");
   fs.readFile(filedata, "utf-8", function (err, data) {
     if (err) {
-      console.log(err)
+      console.log(err);
     } else {
-      let ICLinks = JSON.parse(data)
-      let linksInfo = req.body.linksInfo
-      let diffData = []
+      let ICLinks = JSON.parse(data);
+      let linksInfo = req.body.linksInfo;
+      let diffData = [];
       for (let i of linksInfo["links"]) {
-        let difDataNow = {}
+        let difDataNow = {};
         for (let j of linksInfo["nodes"]) {
           if (j["numId"] == i["source"] || j["numId"] == i["target"]) {
-            difDataNow[j["numId"]] = ({
-              "name": j["name"],
-              "numID": j["numId"],
-              "id": j["id"],
-              "value": {}
-            })
+            difDataNow[j["numId"]] = {
+              name: j["name"],
+              numID: j["numId"],
+              id: j["id"],
+              value: {},
+            };
             for (let k of j["ICIndustry"]) {
-              difDataNow[j["numId"]]["value"][k["industry"]] = k["number"]
+              difDataNow[j["numId"]]["value"][k["industry"]] = k["number"];
             }
             if (difDataNow.length == 2) {
-              break
+              break;
             }
           }
         }
         for (let j of ICLinks[i["target"]]) {
           if (j[1] == i["source"]) {
             difDataNow[i["source"].toString() + i["target"]] = {
-              "numId": i["source"].toString() + i["target"],
-              "name": difDataNow[i["target"]]["name"] + " " + difDataNow[i["source"]]["name"],
-              "id": difDataNow[i["target"]]["id"] + " " + difDataNow[i["source"]]["id"],
-              "value": {}
-            }
+              numId: i["source"].toString() + i["target"],
+              name:
+                difDataNow[i["target"]]["name"] +
+                " " +
+                difDataNow[i["source"]]["name"],
+              id:
+                difDataNow[i["target"]]["id"] +
+                " " +
+                difDataNow[i["source"]]["id"],
+              value: {},
+            };
             for (let k of j[j.length - 1]) {
               if (k[0] != "  ") {
-                difDataNow[i["source"].toString() + i["target"]]["value"][k[0]] = k[1]
+                difDataNow[i["source"].toString() + i["target"]]["value"][
+                  k[0]
+                ] = k[1];
                 if (k[0] in difDataNow[i["source"]]["value"]) {
-                  difDataNow[i["source"]]["value"][k[0]] -= k[1]
+                  difDataNow[i["source"]]["value"][k[0]] -= k[1];
                 }
                 if (k[0] in difDataNow[i["target"]]["value"]) {
-                  difDataNow[i["target"]]["value"][k[0]] -= k[1]
+                  difDataNow[i["target"]]["value"][k[0]] -= k[1];
                 }
               }
             }
-            break
+            break;
           }
         }
-        let difDataUseNow = []
+        let difDataUseNow = [];
         for (let key in difDataNow) {
-          j = difDataNow[key]
+          j = difDataNow[key];
           let difDataOneNow = {
-            "name": j["names"],
-            "numId": j["numId"],
-            "id": j["id"],
-            "value": []
-          }
+            name: j["names"],
+            numId: j["numId"],
+            id: j["id"],
+            value: [],
+          };
           for (let k in j["value"]) {
             difDataOneNow["value"].push({
-              "name": k,
-              "value": j["value"][k]
-            })
+              name: k,
+              value: j["value"][k],
+            });
           }
-          difDataUseNow.push(difDataOneNow)
+          difDataUseNow.push(difDataOneNow);
         }
-        diffData.push(difDataUseNow)
+        diffData.push(difDataUseNow);
       }
-      res.send(diffData)
+      res.send(diffData);
       res.end();
     }
   });
@@ -369,12 +399,9 @@ app.post("/difChart", jsonParser, (req, res, next) => {
 
 
 // 获取冰柱图所需要的数据
-app.get("/icClueData", (req, res) => {
+app.get("/getIcClueData", (req, res) => {
   let filename = "3";
-  let filedata = path.join(
-    __dirname,
-    "data/ic-clue-data/" + filename + ".json"
-  );
+  let filedata = path.join(__dirname, "data/ic-clue-data/" + filename + ".json");
   fs.readFile(filedata, "utf-8", function (err, data) {
     if (err) {
       console.error(err);
@@ -398,6 +425,7 @@ app.get("/getBulletChartData", (req, res) => {
       console.error(err);
     } else {
       let jsonData = JSON.parse(data);
+      console.log(jsonData);
       res.send(jsonData);
       res.end();
     }

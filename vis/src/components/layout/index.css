@@ -88,16 +88,16 @@
   background-color: yellowgreen;
 }
 
-#controlmainmap {
+/* #controlmainmap {
   width: 100%;
   flex: 1;
   background-color: wheat;
   padding-bottom: 4px;
-}
+} */
 
 #mainmap {
   width: 100%;
-  flex: 13;
+  flex: 14;
   background-color: silver;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -141,16 +141,16 @@
   flex-direction: column;
 }
 
-#relations {
+#sta-node {
   width: 100%;
-  flex: 3;
-  background-color: darkolivegreen;
+  flex: 1;
+  background-color: white;
 }
 
-#statistic {
+#sta-link {
   width: 100%;
-  flex: 2;
-  background-color: peru;
+  flex: 1;
+  background-color: white;
 }
 
 #assetandpath {

@@ -4,24 +4,24 @@ import { useEffect } from "react";
 // router
 import { Routes, Route } from "react-router-dom";
 
-// 数据请求接口
-import { helloworld, qone } from "./apis/api.js";
-
 // 引入自定义组件
 import Layout from "./components/layout";
 import InfoList from "./components/info-list"; // 分析团伙板块 - 展示团伙基本信息的列表
 import CountsBar from "./components/counts-bar"; // 分析团伙板块 - 展示团伙内节点与边类型及对应数量的列表
 import BulletChart from "./components/bullet-chart"; // 分析团伙板块 - 展示
 import ArcDiagram from "./components/arc-diagram"; // 分析团伙板块 - 展示每种边的连线与数量
+import DetailList from "./components/detail-list"; // 分析团伙板块 - 表格展示单条边和点的信息
 import MainView from "./components/main-view";
-import SubChart2 from "./components/sub-chart2";
+// import SubChart2 from "./components/sub-chart2";
 import SubChartCanvas from "./components/sub-chart-canvas";
 import SubChartForceGraph from "./components/sub-chart-force-graph";
 import SkeletonChart from "./components/skeleton-chart";
 import ICClueChart from "./components/ic-clue-chart";
 import DifChart from "./components/dif-chart";
+import SubChartCytoscape from "./components/sub-chart-cytoscape";
 import DataProcessChecker from "./components/dataProcessChecker/dataProcessChecker";
 import SearchBar from "./components/search-bar";
+import CombineTable from "./components/combine-table";
 
 // import SubChart from './components/sub-chart';n
 // 引入问题一的自定义组件
@@ -31,17 +31,17 @@ function App() {
     <div className="App">
       <Routes>
         <Route key="layout" path="/" element={<Layout />} />
-        <Route key="subchart2" path="/subchart2" element={<SubChart2 />} />
-        <Route
+        {/* <Route key="subchart2" path="/subchart2" element={<SubChart2 />} /> */}
+        {/* <Route
           key="subchartcanvas"
           path="/subchartcanvas"
           element={<SubChartCanvas />}
-        />
-        <Route
+        /> */}
+        {/* <Route
           key="subchartforcegraph"
           path="/subchartforcegraph"
           element={<SubChartForceGraph />}
-        />
+        /> */}
         <Route
           key="skeletonchart"
           path="/skeletonchart"
@@ -61,8 +61,15 @@ function App() {
           element={<ICClueChart />}
         />
         <Route key="difchart" path="/difchart" element={<DifChart />} />
+        <Route key="subchartcytoscape" path="/subchartcytoscape" element={<SubChartCytoscape />} />
+        <Route key="detaillist" path="/detaillist" element={<DetailList />} />
         <Route key="checker" path="/checker" element={<DataProcessChecker />} />
         <Route key="searchbar" path="/searchbar" element={<SearchBar />} />
+        <Route
+          key="combinetable"
+          path="/combinetable"
+          element={<CombineTable />}
+        />
       </Routes>
     </div>
   );

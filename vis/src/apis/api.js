@@ -4,18 +4,22 @@ export function helloworld() {
   return get("/helloworld");
 }
 
-export function qone() {
-  return get("/Qone");
+export function getMainChartData() {
+  return get("/getMainChartData");
 }
 
-export function icclue() {
-  return get("/icClueData");
+export function getIcClueData() {
+  return get("/getIcClueData");
 }
 
 export function getBulletChartData() {
   return get("/getBulletChartData");
 }
 
+export function getDetailListData() {
+  // TODO
+  return get("/getDetailListData");
+}
 
 //孙德晟判断代码是否正确的接口
 export function initialSds() {
@@ -25,30 +29,30 @@ export function initialSds() {
 export function icClueDataSds(numId, type) {
   return post("/ic-clue-dataSds", {
     numId: numId,
-    type: type
+    type: type,
   });
 }
 
 export function skeletonChartSds(Nodes) {
   return post("/skeleton-chartSds", {
-    Nodes: Nodes
+    Nodes: Nodes,
   });
 }
 
 export function getBulletChartDataSds(nodesLinksInfo) {
   return post("/getBulletChartDataSds", {
-    nodesLinksInfo: nodesLinksInfo
+    nodesLinksInfo: nodesLinksInfo,
   });
 }
 
 export function infoList(nodesLinksInfo) {
   return post("/infoList", {
-    nodesLinksInfo: nodesLinksInfo
+    nodesLinksInfo: nodesLinksInfo,
   });
 }
 
 export function difChart(linksInfo) {
   return post("/difChart", {
-    linksInfo: linksInfo
+    linksInfo: linksInfo,
   });
 }

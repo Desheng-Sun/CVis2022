@@ -5,11 +5,31 @@ import "antd/dist/antd.css";
 export default function InfoList() {
   // 需要请求的数据示例
   const infoListData = [
+    // {
+    //   numnode: 382,
+    //   numlink: 678,
+    //   groupscope: "中",
+    //   industrytype: ["A", "A,B", "A,C"],
+    //   grouptype: "复合型",
+    // },
     {
-      numnode: 382,
-      numlink: 678,
-      groupscope: "中",
-      industrytype: ["A", "A,B", "A,C"],
+      numnode: 1729,
+      numlink: 4050,
+      groupscope: "大",
+      industrytype: [
+        "B",
+        "G, B",
+        "C, G, B",
+        "G, A",
+        "I, B",
+        "A",
+        "A, B",
+        "I, A, B",
+        "C, B",
+        "C",
+        "C, A, B",
+        "G, C",
+      ],
       grouptype: "复合型",
     },
   ];

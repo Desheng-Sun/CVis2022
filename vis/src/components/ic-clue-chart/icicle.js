@@ -116,6 +116,7 @@ export default Kapsule({
       .append('div').attr('class', 'icicle-viz')
       .style('padding-top', state.divTop + 'px')
       .style('padding-left', state.divLeft + 'px')
+    // const el = d3Select(domNode).attr("class", "icicle-viz")
 
     
     // state.titleSvg = el.append('svg').attr('class', 'icicleTitleSvg')
