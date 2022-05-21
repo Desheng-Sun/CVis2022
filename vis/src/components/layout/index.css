@@ -88,16 +88,16 @@
   background-color: yellowgreen;
 }
 
-#controlmainmap {
+/* #controlmainmap {
   width: 100%;
   flex: 1;
   background-color: wheat;
   padding-bottom: 4px;
-}
+} */
 
 #mainmap {
   width: 100%;
-  flex: 13;
+  flex: 14;
   background-color: silver;
   padding-top: 4px;
   padding-bottom: 4px;

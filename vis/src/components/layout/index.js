@@ -8,6 +8,7 @@ import ICClueChart from "../ic-clue-chart";
 import SkeletonChart from "../skeleton-chart";
 import SearchBar from "../search-bar";
 import CombineTable from "../combine-table";
+import MainChartCytoscape from '../sub-chart-cytoscape'
 import { useEffect, useState } from "react";
 
 export default function Layout() {
@@ -21,6 +22,8 @@ export default function Layout() {
   const [skeletonChartHeight, setSkeletonChartHeight] = useState(0);
   const [combineTableWidth, setCombineTableWidth] = useState(0);
   const [combineTableHeight, setCombineTableHeight] = useState(0);
+  const [mainChartWidth, setMainChartWidth] = useState(0);
+  const [mainChartHeight, setMainChartHeight] = useState(0);
 
   const [curIC, setCurrIC] = useState(""); // 当前选中的IP/Cert
 
@@ -43,17 +46,23 @@ export default function Layout() {
     setIcClueChartHeight(
       document.getElementById("filteric").getBoundingClientRect().height
     );
-    setSkeletonChartWidth(
-      document.getElementById("skeleton-chart").getBoundingClientRect().width
-    );
-    setSkeletonChartHeight(
-      document.getElementById("skeleton-chart").getBoundingClientRect().height
-    );
+    // setSkeletonChartWidth(
+    //   document.getElementById("skeleton-chart").getBoundingClientRect().width
+    // );
+    // setSkeletonChartHeight(
+    //   document.getElementById("skeleton-chart").getBoundingClientRect().height
+    // );
     setCombineTableWidth(
       document.getElementById("sta-node").getBoundingClientRect().width
     );
     setCombineTableHeight(
       document.getElementById("sta-node").getBoundingClientRect().height
+    );
+    setMainChartWidth(
+      document.getElementById("mainmap").getBoundingClientRect().width
+    );
+    setMainChartHeight(
+      document.getElementById("mainmap").getBoundingClientRect().height
     );
   });
 
@@ -73,18 +82,22 @@ export default function Layout() {
           </div>
           <div id="nodelinkic">
             <ChartHeader chartName={"IP <——> Cert"} />
-            <SkeletonChart w={skeletonChartWidth} h={skeletonChartHeight} />
+            {/* <SkeletonChart w={skeletonChartWidth} h={skeletonChartHeight} /> */}
           </div>
         </div>
         <div id="iright">
           <div id="container-mainmap">
-            <div id="controlmainmap">主图的控制台</div>
-            <div id="mainmap">主图</div>
+            {/* <div id="controlmainmap">主图的控制台</div> */}
+            <div id="mainmap">
+              <MainChartCytoscape 
+                w={mainChartWidth}
+                h={mainChartHeight}/>
+            </div>
           </div>
           <div id="container-filter">
             <div id="deleterelation">
               <ChartHeader chartName={"差异视图"} />
-              <DifChart w={difChartWidth} h={difChartHeight} />
+              {/* <DifChart w={difChartWidth} h={difChartHeight} /> */}
               {/* 差异视图 删IP/Cert节点 */}
             </div>
             <div id="existingdomain">展示当前子图中domain情况</div>
