@@ -61,7 +61,7 @@ export default function ICClueChart({ w, h}) {
       .data(['起点', '第一跳', '第二跳'])
       .join('text')
       .text(d => d)
-      .attr('x', (d, i) => `${(svgWidth - 20)/6*(i*2+1)}`)
+      .attr('x', (d, i) => i === 0 ? `${(svgWidth - 20)/6*(i*5 + 1.3)}` : `${(svgWidth - 20)/6*(i*2+1)}`)
       .style('font-size', '12px')
       .style('font-weight', 'bolder')
       .style('color', 'black')

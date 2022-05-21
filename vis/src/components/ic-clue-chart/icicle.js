@@ -44,7 +44,7 @@ export default Kapsule({
     onHover: { triggerUpdate: false },
     transitionDuration: { default: 800, triggerUpdate: false },
     divTop: { default: 0, triggerUpdate: false },
-    divLeft: { default: 0, triggerUpdate: false },
+    divLeft: { default:-20, triggerUpdate: false },
   },
   methods: {
     zoomBy: function(state, k) {
@@ -115,13 +115,14 @@ export default Kapsule({
     const el = d3Select(domNode)
       .append('div').attr('class', 'icicle-viz')
       .style('padding-top', state.divTop + 'px')
-      .style('padding-left', state.divLeft + 'px')
+      .style('left', state.divLeft + 'px')
     // const el = d3Select(domNode).attr("class", "icicle-viz")
 
     
     // state.titleSvg = el.append('svg').attr('class', 'icicleTitleSvg')
     state.svg = el.append('svg').attr('class', 'icicleSvg')
     state.canvas = state.svg.append('g')
+                        // .attr('transform', 'translate(0, 0)')
     
     // tooltips
     state.tooltip = el.append('div')
@@ -223,22 +224,30 @@ export default Kapsule({
       
     
     let color = d3.scaleOrdinal(d3.schemeCategory10)
-            // 颜色映射分别的数量
+    // 颜色映射分别的数量
     var pureDomainLinearColor = d3.scaleLinear()  
                                 .domain([0, state.data['pureDomainNum']])  
                                 .range([0, 1]);
     var dirtyDomainLinearColor = d3.scaleLinear()  
                                 .domain([0,state.data['dirtyDomainNum']])  
                                 .range([0,1]);
-    const pureDomainColorCompute = d3.interpolate(d3.rgb(255, 255, 255), d3.rgb(101, 164, 135));  
-    const dirtyDomainColorCompute = d3.interpolate(d3.rgb(255, 255, 255), d3.rgb(0, 0, 0));
+    const pureDomainColorCompute = d3.interpolate('#65a48711', '#65a487');  
+    const dirtyDomainColorCompute = d3.interpolate('#00000011', '#000000');
+    // 宽度映射各自的数量
+    var pureDomainLinearColor = d3.scaleLinear()  
+                                .domain([0, state.data['pureDomainNum']])  
+                                .range([0, 1]);
+    var dirtyDomainLinearColor = d3.scaleLinear()  
+                                .domain([0,state.data['dirtyDomainNum']])  
+                                .range([0,1]);
+
     let newCellG = newCell.append('g')
     for(let i = 0; i<3; i++){
       newCellG.append('rect')
       .attr('id', d => `rect-${d.id}_${i}`)
       .attr('x', d => {
         let tx;
-        if(i === 0) tx = 0
+        if(i === 0) tx = 5
         else if(i === 1) tx = `${(x1(d) - x0(d)) - 1}`/3
         else tx = `${(x1(d) - x0(d)) - 1}`/3*2
         return tx
@@ -246,15 +255,48 @@ export default Kapsule({
       .attr("numId", d => d.data.numId)
       .attr("fill", d => {
         if (!d.depth) return "#cf9007";
-        if(i === 0 && d.data.WhoisPhone == 0 && d.data.WhoisName == 0 && d.data.WhoisEmail == 0) return '#78d4e3'   // 没有whois信息
-        else if(i === 0 && (d.data.WhoisPhone != 0 || d.data.WhoisName != 0 || d.data.WhoisEmail != 0)) return '#c9667b'   // 有whois信息
-        if(i === 1) return dirtyDomainColorCompute(dirtyDomainLinearColor(d.data.dirtyDomain));   // 映射不纯净的Domain
+        if(i === 0 && d.data.WhoisPhone == 0 && d.data.WhoisName == 0 && d.data.WhoisEmail == 0) return '#fbbf81'   // 没有whois信息
+        else if(i === 0 && (d.data.WhoisPhone != 0 || d.data.WhoisName != 0 || d.data.WhoisEmail != 0)) return '#f67f02'   // 有whois信息
+        if(i === 2) return dirtyDomainColorCompute(dirtyDomainLinearColor(d.data.dirtyDomain));   // 映射不纯净的Domain
         return pureDomainColorCompute(pureDomainLinearColor(d.data.pureDomain))   // 映射纯净的Domian
+
+
+        // if(i === 1) return dirtyDomainColorCompute(dirtyDomainLinearColor(d.data.dirtyDomain));   // 映射不纯净的Domain
+        // return pureDomainColorCompute(pureDomainLinearColor(d.data.pureDomain))   // 映射纯净的Domian
       })
       .attr('width', d =>{
-        return  i === 2 ? `${(x1(d) - x0(d)) - 1}`/3-2 : `${(x1(d) - x0(d)) - 1}`/3
+        // let singleWidth = (x1(d) - x0(d) - 1)/3;
+        // var linearWidth;
+        // if(i == 1){
+        //   linearWidth = d3.scaleLinear()  
+        //   .domain([0, state.data['DirtyDomainNum']])  
+        //   .range([0, singleWidth])
+        //   if(!d.depth){
+        //     return linearWidth(d.data.pureDomain)
+        //   }
+        //   return linearWidth(d.data.dirtyDomain)
+        // }else if(i == 2){
+        //   linearWidth = d3.scaleLinear()  
+        //   .domain([0, state.data['pureDomainNum']])  
+        //   .range([0, singleWidth]);
+        //   return linearWidth(d.data.pureDomain)
+        // }
+        // return `${(x1(d) - x0(d)) - 1}`/3
+        if(!d.depth){
+          if(i == 0) return 0
+          return `${(x1(d) - x0(d)) - 1}`/3
+        }
+
+        if(i === 0) return `${(x1(d) - x0(d)) - 1}`/3-5
+        if(i === 1) return `${(x1(d) - x0(d)) - 1}`/3
+        if(i === 2) return `${(x1(d) - x0(d)) - 1}`/3
+
+        // return  i === 2 ? `${(x1(d) - x0(d)) - 1}`/3-10 : `${(x1(d) - x0(d)) - 1}`/3   // 不根据数量映射长度
       })
-      .attr('height', d => horiz ? `${(y1(d) - y0(d)) }` : 0)
+      .attr('height', d => {
+
+        return horiz ? `${(y1(d) - y0(d)) - 5} ` : 0
+      })
       .attr('focusable', 'true')
       .on("dblclick", function(event, d){
       })
@@ -392,9 +434,9 @@ export default Kapsule({
     allCells.transition(transition)
       .attr('transform', d => `translate(${x0(d)},${y0(d)})`);
 
-    allCells.select('rect').transition(transition)
-      .attr('width', d => `${x1(d) - x0(d) - (horiz ? 1 : 0)}`/3)
-      .attr('height', d => `${y1(d) - y0(d) - (horiz ? 0 : 1)}`)
+    // allCells.select('rect').transition(transition)
+    //   .attr('width', d => `${x1(d) - x0(d) - (horiz ? 1 : 0)}`/3)
+    //   .attr('height', d => `${y1(d) - y0(d) - (horiz ? 0 : 1)}`)
       // .style('fill', d => colorOf(d.data, d.parent));
 
     allCells.select('g.label-container')
@@ -414,7 +456,10 @@ export default Kapsule({
       allCells.select('text.path-label')
         .classed('light', d => !tinycolor(colorOf(d.data, d.parent)).isLight())
         .style('text-anchor', state.orientation === 'lr' ? 'start' : state.orientation === 'rl' ? 'end' : 'middle')
-        .text(d => nameOf(d.data))
+        .text(d => {
+          if(!d.depth) return 
+          return nameOf(d.data)
+        })
         .transition(transition)
           .style('opacity', d => horiz
             ? LABELS_HEIGHT_OPACITY_SCALE((y1(d) - y0(d)) * zoomTr.k)
