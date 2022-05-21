@@ -3,24 +3,24 @@ import { initialSds,icClueDataSds,skeletonChartSds,getBulletChartDataSds, infoLi
 import { useEffect, useState } from "react";
 
 export default function DataProcessChecker() {
-//   // 请求数据
-//   useEffect(() => {
-//     initialSds().then((res) => {
-//         console.log(res)
-//     });
-//   }, [])  
-//   // 请求数据
-//   useEffect(() => {
-//     icClueDataSds(370,"Domain").then((res) => {
-//         console.log(res)
-//     });
-//   }, [])  
+  // 请求数据
+  useEffect(() => {
+    initialSds().then((res) => {
+        console.log(res)
+    });
+  }, [])  
+  // 请求数据
+  useEffect(() => {
+    icClueDataSds(370,"Domain").then((res) => {
+        console.log(res)
+    });
+  }, [])  
 
-// useEffect(() => {
-//     skeletonChartSds([3,4,101,102,112]).then((res) => {
-//         console.log(res)
-//     });
-//   }, [])
+useEffect(() => {
+    skeletonChartSds([3,4,101,102,112]).then((res) => {
+        console.log(res)
+    });
+  }, [])
   
 let nodesLinksInfo = {
     "nodes": [
@@ -36550,16 +36550,16 @@ let linksInfo =
         }
     ]
 }
-//   useEffect(() => {
-//     getBulletChartDataSds(nodesLinksInfo).then((res) => {
-//         console.log(res)
-//     });
-//   }, [])  
-//   useEffect(() => {
-//     infoList(nodesLinksInfo).then((res) => {
-//         console.log(res)
-//     });
-//   }, [])
+  useEffect(() => {
+    getBulletChartDataSds(nodesLinksInfo).then((res) => {
+        console.log(res)
+    });
+  }, [])  
+  useEffect(() => {
+    infoList(nodesLinksInfo).then((res) => {
+        console.log(res)
+    });
+  }, [])
   useEffect(() => {
     difChart(linksInfo).then((res) => {
         console.log(res)

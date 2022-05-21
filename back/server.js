@@ -254,6 +254,7 @@ app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
 
 })
 
+
 app.post("/infoList", jsonParser, (req, res, next) => {
   let numnode = 0
   let numlink = 0
@@ -287,9 +288,7 @@ app.post("/infoList", jsonParser, (req, res, next) => {
     industrytype: Array.from(industrytype),
     grouptype: grouptype
   }
-  console.log(sendData)
   res.send(sendData)
-
   res.end();
 })
 
@@ -367,6 +366,8 @@ app.post("/difChart", jsonParser, (req, res, next) => {
     }
   });
 })
+
+
 // 获取冰柱图所需要的数据
 app.get("/icClueData", (req, res) => {
   let filename = "3";
@@ -384,6 +385,7 @@ app.get("/icClueData", (req, res) => {
     }
   });
 });
+
 
 // 读取BulletChart样例数据
 app.get("/getBulletChartData", (req, res) => {
