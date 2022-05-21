@@ -49,10 +49,10 @@ export default function ICClueChart({ w, h}) {
   function drawICClueChart() {
     if (JSON.stringify(data) === "{}") return;
     if (JSON.stringify(svgWidth) === "{}" || JSON.stringify(svgHeight) === "{}") return;
-    
+    console.log(svgWidth, svgHeight);
     var titleSvg = d3.select('#icclue-title').append('svg').attr('class', 'icicleTitleSvg')
     var titleG = titleSvg
-      .style('width', svgWidth-30 + 'px')
+      .style('width', svgWidth + 'px')
       .style('height', 20 + 'px')
       .append('g')
       .attr('class', 'icicleTitleG')

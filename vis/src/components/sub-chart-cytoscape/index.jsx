@@ -433,8 +433,9 @@ export default function SubChartCytoscape({ w, h }) {
               onChange={onChangeLayout}
             >
               <Option value="euler">euler</Option>
-              <Option value="cola">cola</Option>
+              <Option value="cise">cise</Option>
               <Option value="dagre">dagre</Option>
+              <Option value="concentric">concentric</Option>
             </Select>
           </div>
           <div
