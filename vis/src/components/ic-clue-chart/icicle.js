@@ -77,7 +77,7 @@ export default Kapsule({
         }
 
         const horiz = state.orientation === 'lr' || state.orientation === 'rl';
-        const size = [state.width -20, state.height];
+        const size = [state.width, state.height];
         horiz && size.reverse();
 
         d3Partition()
@@ -294,8 +294,9 @@ export default Kapsule({
         // return  i === 2 ? `${(x1(d) - x0(d)) - 1}`/3-10 : `${(x1(d) - x0(d)) - 1}`/3   // 不根据数量映射长度
       })
       .attr('height', d => {
-
-        return horiz ? `${(y1(d) - y0(d)) - 5} ` : 0
+        let height = 0
+        height = `${(y1(d) - y0(d)) - 1}` > 0 ? `${(y1(d) - y0(d)) - 1}` : 0
+        return height
       })
       .attr('focusable', 'true')
       .on("dblclick", function(event, d){
