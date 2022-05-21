@@ -19,7 +19,7 @@
     height: 10vh !important;
     width: 10vw !important;
     margin-bottom: 17%;
-    margin-right: 33%;
+    margin-right: 34%;
   }
   
   /*Add border to View container:*/
@@ -40,25 +40,32 @@
   }
 
   #navigator{
-
     display: contents;
-    /* float: left; */
   }
-#main-container{
-  display: flex;
-  flex-direction: column;
-  text-align: start;
-}
-#main-chart-control{
-  width: 100%;
-  flex: 1;
-}
-#main-chart-control{
-  width: 100%;
-  flex: 1;
-}
 
-#main-chart{
-  width: 100%;
-  flex: 29;
-}
+  #main-container{
+    display: flex;
+    flex-direction: column;
+    text-align: start;
+  }
+
+  #main-chart-control{
+    width: 100%;
+    flex: 1;
+    font-weight: bold;
+    font-family: sans-serif;
+    font-size: 15px;
+  }
+
+  #data-maini{
+    
+  }
+  
+  #chart-main{
+
+  }
+
+  #main-chart{
+    width: 100%;
+    flex: 29;
+  }

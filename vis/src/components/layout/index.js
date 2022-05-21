@@ -40,12 +40,12 @@ export default function Layout() {
     setDifChartHeight(
       document.getElementById("deleterelation").getBoundingClientRect().height
     );
-    setIcClueChartWidth(
-      document.getElementById("icclue-graph").getBoundingClientRect().width
-    );
-    setIcClueChartHeight(
-      document.getElementById("icclue-graph").getBoundingClientRect().height
-    );
+    // setIcClueChartWidth(
+    //   document.getElementById("icclue-graph").getBoundingClientRect().width
+    // );
+    // setIcClueChartHeight(
+    //   document.getElementById("icclue-graph").getBoundingClientRect().height
+    // );
     // setSkeletonChartWidth(
     //   document.getElementById("skeleton-chart").getBoundingClientRect().width
     // );
@@ -78,7 +78,7 @@ export default function Layout() {
           </div>
           <div id="filteric">
             <ChartHeader chartName={"冰柱图"} />
-            <ICClueChart w={icClueChartWidth} h={icClueChartHeight} />
+            {/* <ICClueChart w={icClueChartWidth} h={icClueChartHeight} /> */}
           </div>
           <div id="nodelinkic">
             <ChartHeader chartName={"IP <——> Cert"} />
@@ -89,6 +89,7 @@ export default function Layout() {
           <div id="container-mainmap">
             {/* <div id="controlmainmap">主图的控制台</div> */}
             <div id="mainmap">
+            <ChartHeader chartName={"主图"} />
               <MainChartCytoscape 
                 w={mainChartWidth}
                 h={mainChartHeight}/>
