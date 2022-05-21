@@ -345,7 +345,7 @@ export default function SubChartCytoscape({w, h}) {
   return (
     <div id="main-container" style={{ width: svgWidth, height: svgHeight, background: "#eee"}}>
       <div id="main-chart-control" > 
-        <div id="data-mani"  style={{ display: 'flex', flexDirection: "row" , background: "#dacfca", paddingTop: '5px', paddingLeft: '10px', lineHeight:2.2}}>        {/*  控制数据 */}
+        <div id="data-mani"  style={{ display: 'flex', flexDirection: "row" , background: "#dacfca", paddingTop: '5px', paddingLeft: '0px', lineHeight:2.2}}>        {/*  控制数据 */}
           <div id = 'main-data-search'>
             节点搜索：
             <Search 
@@ -365,7 +365,7 @@ export default function SubChartCytoscape({w, h}) {
             <Button type="primary" onClick={onFilter}>Submit</Button>
           </div>
         </div>
-        <div id="chart-mani"  style={{ display: 'flex', flexDirection: "row" , background: "#dacfca", paddingTop: '2px', paddingLeft: '10px', paddingBottom: '5px', lineHeight:2.2, whiteSpace:'pre'}}> 
+        <div id="chart-mani"  style={{ display: 'flex', flexDirection: "row" , background: "#dacfca", paddingTop: '5px', paddingLeft: '0px', paddingBottom: '5px', lineHeight:2.2, whiteSpace:'pre'}}> 
           <div id="main-layout">
             布       局：
             <Select value={chartLayout} style={{ width: 120 }} onChange={onChangeLayout}>

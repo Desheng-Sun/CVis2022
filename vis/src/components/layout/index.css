@@ -60,23 +60,23 @@
   width: 100%;
   flex: 1;
   background-color: thistle;
-  padding-top: 4px;
-  padding-bottom: 4px;
+  /* padding-top: 4px; */
+  /* padding-bottom: 4px; */
 }
 
 #filteric {
   width: 100%;
   flex: 12;
   background-color: white;
-  padding-top: 4px;
-  padding-bottom: 4px;
+  /* padding-top: 4px; */
+  /* padding-bottom: 4px; */
 }
 
 #nodelinkic {
   width: 100%;
   flex: 6;
   background-color: rgb(192, 192, 194);
-  padding-top: 4px;
+  /* padding-top: 4px; */
 }
 
 /* 发现团伙板块 右边栏 */
@@ -99,8 +99,8 @@
   width: 100%;
   flex: 14;
   background-color: silver;
-  padding-top: 4px;
-  padding-bottom: 4px;
+  /* padding-top: 4px; */
+  /* padding-bottom: 4px; */
 }
 
 #container-filter {
@@ -113,14 +113,14 @@
   height: 100%;
   flex: 1;
   background-color: rgb(215, 214, 209);
-  padding-top: 4px;
+  /* padding-top: 4px; */
 }
 
 #existingdomain {
   height: 100%;
   flex: 1;
   background-color: gray;
-  padding-top: 4px;
+  /* padding-top: 4px; */
 }
 
 /* 分析团伙板块 */
@@ -128,15 +128,15 @@
   width: 100%;
   flex: 2;
   background-color: azure;
-  padding-bottom: 4px;
+  /* padding-bottom: 4px; */
 }
 
 #container-statistic {
   width: 100%;
   flex: 7;
   background-color: gray;
-  padding-top: 4px;
-  padding-bottom: 4px;
+  /* padding-top: 4px; */
+  /* padding-bottom: 4px; */
   display: flex;
   flex-direction: column;
 }
@@ -157,13 +157,13 @@
   width: 100%;
   flex: 11;
   background-color: rgb(220, 213, 226);
-  padding-top: 4px;
-  padding-bottom: 4px;
+  /* padding-top: 4px; */
+  /* padding-bottom: 4px; */
 }
 
 #conclusion {
   width: 100%;
   flex: 2;
   background-color: white;
-  padding-top: 4px;
+  /* padding-top: 4px; */
 }

@@ -1004,6 +1004,8 @@ export default function SkeletonChart({w, h}){
     const links = data.links.map((d) => Object.create(d));
     const nodes = data.nodes.map((d, i) => Object.create({ ...d, group: i })); // 将每一个点单独看成一个group，被选中的group添加背景颜色
     // const nodes = data.nodes.map((d, i) => Object.create(d));
+
+    d3.selectAll("div#skeleton-chart svg").remove();
     const svg = d3
       .select("#skeleton-chart")
       .append("svg")

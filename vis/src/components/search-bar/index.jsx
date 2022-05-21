@@ -22,7 +22,6 @@ export default function SearchBar() {
         }
     };
     const changeContent = (value) => {
-        console.log(value)
         setSelectContent(value);
     };
     const searchContent = (value) => {
@@ -41,7 +40,7 @@ export default function SearchBar() {
         setSelectContent(undefined)
     }
     return (
-        <div>
+        <div style={{paddingTop: '15px'}}>
             <Form.Item>
             <Select
                 showArrow
