@@ -62,10 +62,7 @@ export default function Layout() {
     setMainChartWidth(
       document.getElementById("mainmap").getBoundingClientRect().width
     );
-    setMainChartHeight(
-      968
-      // document.getElementById("mainmap").getBoundingClientRect().height
-    );
+    setMainChartHeight(968);
   });
 
   return (
