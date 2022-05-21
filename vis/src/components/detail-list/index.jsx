@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { html } from "htl";
 
 export default function DetailList({ w, h, divname }) {
-  console.log(divname);
   const [data, setData] = useState([]);
 
   const [svgWidth, setSvgWidth] = useState(w);
