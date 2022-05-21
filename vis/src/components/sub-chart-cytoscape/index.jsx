@@ -2,21 +2,29 @@ import { useEffect, useState } from "react";
 import cytoscape from "cytoscape";
 import euler from "cytoscape-euler";
 import navigator from "cytoscape-navigator";
+import coseBilkent from "cytoscape-cose-bilkent";
+import fcose from 'cytoscape-fcose'
 import "cytoscape-navigator/cytoscape.js-navigator.css";
+import contextMenus from 'cytoscape-context-menus';  
 import { Cascader, Select, Input, Slider, Button } from "antd";
-
 import * as d3 from "d3";
 import "./index.css";
+
 
 // 数据请求接口
 import { getMainChartData } from "../..//apis/api.js";
 
 navigator(cytoscape);
+contextMenus(cytoscape);
 cytoscape.use(euler);
+cytoscape.use(coseBilkent);
+cytoscape.use(fcose);
+
+
 const { Option } = Select;
 const { Search } = Input;
 
-var cy, layoutOption, styles, layout;
+var cy, layoutOption, styles, layout, collection;
 var layoutOptionDict={
   'euler':{
     name: "euler",
@@ -54,6 +62,30 @@ var layoutOptionDict={
     fit: true, // whether to fit to viewport
     animate: true, // whether to transition the node positions
     avoidOverlap: true,
+  },
+  'coseBilkent':{   // 这两个很类似，决定保留哪一个
+    name: "cose-bilkent",
+    fit: true,
+    animate: true,
+    randomize: false,
+    avoidOverlap: true,
+    nodeRepulsion: 5000,
+    idealEdgeLength: 50,
+    edgeElasticity: 0.55,
+    nestingFactor: 0.1,
+    gravity: 0.55
+  },
+  'fcose':{
+    name: "fcose",
+    fit: true,
+    quality: "default",
+    animate: true,
+    randomize: true,
+    avoidOverlap: true,
+    nodeRepulsion: 5000,
+    idealEdgeLength: 50,
+    edgeElasticity: 0.55,
+    gravity: 0.55,
   }
 }
 
@@ -67,7 +99,7 @@ export default function SubChartCytoscape({ w, h }) {
   const [edgeLength, setEdgeLength] = useState(5);
   const [nodeDistance, setNodeDistance] = useState(5);
   const [distanceFlag, setDistanceFlag] = useState(false);
-  const [chartLayout, setChartLayout] = useState("concentric");
+  const [chartLayout, setChartLayout] = useState("euler");
   const [layoutFlag, setLayoutFlag] = useState(false);
   const [data, setData] = useState({ nodes: [], edges: [] });
   const [dataParam, setDataParam] = useState("");
@@ -90,9 +122,11 @@ export default function SubChartCytoscape({ w, h }) {
   // 监听搜索事件
   useEffect(() => {
     if (searchNodebyId) {
-      cy.getElementById(searchNodebyId).style({
+      var j = cy.getElementById(searchNodebyId);
+      cy.center(j);                              // 将被搜索元素居中
+      cy.getElementById(searchNodebyId).style({  // 高亮显示被选中节点
         "background-color": "#ffff00",
-      }); // 高亮显示被选中节点
+      }); 
     }
   }, [searchNodebyId]);
 
@@ -125,9 +159,10 @@ export default function SubChartCytoscape({ w, h }) {
       layout.stop();
       layout = cy.layout(layoutOption);
       layout.run();
+      setEdgeLength(5)
+      setNodeDistance(5)
     }
     setLayoutFlag(false)
-    // console.log(chartLayout);
   }, [chartLayout]);
 
 
@@ -135,8 +170,14 @@ export default function SubChartCytoscape({ w, h }) {
   useEffect(() => {
     if (distanceFlag && nodeDistance && edgeLength) {
       layout.stop();
-      layoutOption.mass = 20 - nodeDistance;
-      layoutOption.springLength = edgeLength * 20;
+      if(chartLayout === 'euler'){
+        layoutOption.mass = 20 - nodeDistance;
+        layoutOption.springLength = edgeLength * 20;
+      }else if(chartLayout === 'fcose' || chartLayout === 'coseBilkent'){
+        layoutOption.nodeRepulsion = nodeDistance*1000;
+        layoutOption.idealEdgeLength = edgeLength*10
+      }
+      
       layout = cy.layout(layoutOption);
       layout.run();
     }
@@ -145,10 +186,8 @@ export default function SubChartCytoscape({ w, h }) {
 
   function drawChart() {
     if (data.nodes.length === 0 && data.edges.length === 0) return;
-
     const links = data.edges.map((d) => ({ data: { ...d } }));
     const nodes = data.nodes.map((d) => ({ data: { ...d } }));
-
     // 初始化图
     Promise.all([
       fetch("./json/cy-style.json").then(function (res) {
@@ -179,22 +218,6 @@ export default function SubChartCytoscape({ w, h }) {
       });
       layoutOption = layoutOptionDict[chartLayout]
 
-      // layoutOption = {
-      //   name: "euler",
-      //   fit: true, // whether to fit to viewport
-      //   animate: true, // whether to transition the node positions
-      //   avoidOverlap: true,
-      //   springLength: edgeLength,
-      //   mass: nodeDistance,
-      //   animateFilter: function (node, i) {
-      //     return true;
-      //   }, // 决定是否节点的位置应该被渲染
-      //   concentric: function (node) {
-      //     // returns numeric value for each node, placing higher nodes in levels towards the centre
-      //     return node.degree();
-      //   },
-      // };
-
       var defaults = {
         container: false, // html dom element
         viewLiveFramerate: 0, // set false to update graph pan only on drag end; set 0 to do it instantly; set a number (frames per second) to update not more than N times per second
@@ -205,12 +228,11 @@ export default function SubChartCytoscape({ w, h }) {
         rerenderDelay: 100, // ms to throttle rerender updates to the panzoom for performance
       };
 
-      var nav = cy.navigator(defaults);
-
+      cy.navigator(defaults);
       layout = cy.layout(layoutOption);
       layout.run();
       cy.boxSelectionEnabled(true); // 设置支持框选操作，如果同时启用平移，用户必须按住shift、control、alt或command中的一个来启动框选择
-
+      collection = cy.collection();
       // 节点的点击事件
       cy.on("click", "node", function (e) {
         var node = e.target;
@@ -220,13 +242,12 @@ export default function SubChartCytoscape({ w, h }) {
       // 节点的mouseover事件
       cy.on("mouseover", "node", function (e) {
         var neigh = e.target;
+        collection = collection.union(neigh);
         cy.elements()
           .difference(neigh.outgoers().union(neigh.incomers()))
           .not(neigh)
           .addClass("semitransp");
         neigh.addClass("highlight").outgoers().addClass("highlight");
-
-        // console.log(e.target);
       });
       cy.on("mouseout", "node", function (e) {
         var neigh = e.target;
@@ -237,6 +258,39 @@ export default function SubChartCytoscape({ w, h }) {
           .union(neigh.incomers())
           .removeClass("highlight");
       });
+
+
+      var menuOptions = {
+        evtType: 'cxttap',
+        menuItems: [
+          {
+            id: 'select-self-neigh', // ID of menu item
+            content: '选中节点', // Display content of menu item
+            tooltipText: '选中当前节点和邻居节点', // Tooltip text for menu item
+            selector: 'node', 
+            onClickFunction: function (e) { // 选中当前节点及其邻居节点
+              let n = e.target;
+              let curNodeId = n.id()
+              n.select()
+              cy.getElementById(curNodeId).neighborhood().select()
+            }
+          },
+          {
+            id: 'select-neigh', // ID of menu item
+            content: '选中邻居节点', // Display content of menu item
+            tooltipText: '选中邻居节点', // Tooltip text for menu item
+            selector: 'node', 
+            onClickFunction: function (e) { // 选中当前节点及其邻居节点
+              let n = e.target;
+              let curNodeId = n.id()
+              cy.getElementById(curNodeId).neighborhood().select()
+            }
+          }
+        ],
+        menuItemClasses: [],
+        contextMenuClasses: []
+    };
+    var muneInstance = cy.contextMenus(menuOptions);
     });
   }
 
@@ -401,20 +455,16 @@ export default function SubChartCytoscape({ w, h }) {
   function onFilter() {
     setFilterFlag(true);
   }
-
   function onSearchNode(value) {
     setSearchNodebyId(value);
   }
-
   function onChangeLayout(value) {
     setLayoutFlag(true)
     setChartLayout(value);
   }
-
   function onChangeEdgeLength(value) {
     setEdgeLength(value);
   }
-
   function onChangeNodeDistance(value) {
     setNodeDistance(value);
   }
@@ -424,7 +474,6 @@ export default function SubChartCytoscape({ w, h }) {
         option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1
     );
   }
-
   return (
     <div
       id="main-container"
@@ -486,9 +535,10 @@ export default function SubChartCytoscape({ w, h }) {
               onChange={onChangeLayout}
             >
               <Option value="euler">euler</Option>
-              <Option value="cise">cise</Option>
+              <Option value="coseBilkent">coseBilkent</Option>
               <Option value="dagre">dagre</Option>
               <Option value="concentric">concentric</Option>
+              <Option value="fcose">fcose</Option>
             </Select>
           </div>
           <div
