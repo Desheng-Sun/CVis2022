@@ -47,21 +47,12 @@ export default function Layout() {
     setIcClueChartHeight(
       document.getElementById("icclue-graph").getBoundingClientRect().height
     );
-<<<<<<< HEAD
     setSkeletonChartWidth(
       document.getElementById("skeleton-chart").getBoundingClientRect().width
     );
     setSkeletonChartHeight(
       document.getElementById("skeleton-chart").getBoundingClientRect().height
     );
-=======
-    // setSkeletonChartWidth(
-    //   document.getElementById("skeleton-chart").getBoundingClientRect().width
-    // );
-    // setSkeletonChartHeight(
-    //   document.getElementById("skeleton-chart").getBoundingClientRect().height
-    // );
->>>>>>> a03228d6bd7e90b1051fdbbed4467eef58d5f0af
     setCombineTableWidth(
       document.getElementById("sta-node").getBoundingClientRect().width
     );
@@ -71,7 +62,8 @@ export default function Layout() {
     setMainChartWidth(
       document.getElementById("mainmap").getBoundingClientRect().width
     );
-    setMainChartHeight(968
+    setMainChartHeight(
+      968
       // document.getElementById("mainmap").getBoundingClientRect().height
     );
   });
