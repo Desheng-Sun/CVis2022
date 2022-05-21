@@ -39,22 +39,22 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
 
-let nodeInfoJ = fs.readFileSync(
-  path.join(
-    __dirname,
-    "data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv"
-  ),
-  "utf8"
-);
-nodeInfoJ = nodeInfoJ.split("\n");
-let nodeNumIdInfo = [];
-for (let i of nodeInfoJ) {
-  nodeNumIdInfo.push(i.split(","));
-}
-nodeNumIdInfo = nodeNumIdInfo.splice(1);
-let ICIndustryP = path.join(__dirname, "data/nodeIndustryInfo2.json");
-let ICIndustryJ = fs.readFileSync(ICIndustryP, "utf8");
-const ICIndustry = JSON.parse(ICIndustryJ);
+// let nodeInfoJ = fs.readFileSync(
+//   path.join(
+//     __dirname,
+//     "data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv"
+//   ),
+//   "utf8"
+// );
+// nodeInfoJ = nodeInfoJ.split("\n");
+// let nodeNumIdInfo = [];
+// for (let i of nodeInfoJ) {
+//   nodeNumIdInfo.push(i.split(","));
+// }
+// nodeNumIdInfo = nodeNumIdInfo.splice(1);
+// let ICIndustryP = path.join(__dirname, "data/nodeIndustryInfo2.json");
+// let ICIndustryJ = fs.readFileSync(ICIndustryP, "utf8");
+// const ICIndustry = JSON.parse(ICIndustryJ);
 
 // const nodeInfoJ = fs.readFileSync(path.join(__dirname, 'data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv'), 'utf8')
 // const nodeNumIdInfo = json.parse(nodeInfoJ)
@@ -63,6 +63,27 @@ const ICIndustry = JSON.parse(ICIndustryJ);
 // let ICIndustryJ = fs.readFileSync(ICIndustryP, 'utf8')
 // const ICIndustry = JSON.parse(ICIndustryJ)
 
+
+// 获取主视图所需要的数据
+app.get("/getMainChartData", (req, res, next) => {
+  let node = 'tiaozhan1'
+  let filedata = path.join(__dirname, 'data/main-chart-data/' + node + ".json")
+  fs.readFile(filedata, 'utf8', function (err, data) {
+    if (err) {
+      console.log(err)
+    } else {
+      let d = JSON.parse(data)
+      res.send(d)
+      res.end()
+    }
+  })
+})
+
+// 获取视图的初始数据：node信息
+app.get("/initial", (req, res, next) => {
+  res.send(nodeNumIdInfo)
+  res.end()
+})
 // 获取视图的初始数据：node信息R
 app.get("/initialSds", (req, res, next) => {
   res.send(nodeNumIdInfo);
@@ -375,12 +396,9 @@ app.post("/difChart", jsonParser, (req, res, next) => {
   });
 });
 // 获取冰柱图所需要的数据
-app.get("/icClueData", (req, res) => {
+app.get("/getIcClueData", (req, res) => {
   let filename = "3";
-  let filedata = path.join(
-    __dirname,
-    "data/ic-clue-data/" + filename + ".json"
-  );
+  let filedata = path.join(__dirname, "data/ic-clue-data/" + filename + ".json");
   fs.readFile(filedata, "utf-8", function (err, data) {
     if (err) {
       console.error(err);
