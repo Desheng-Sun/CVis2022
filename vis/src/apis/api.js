@@ -45,14 +45,33 @@ export function getBulletChartDataSds(nodesLinksInfo) {
   });
 }
 
-export function infoList(nodesLinksInfo) {
-  return post("/infoList", {
+export function infoListSds(nodesLinksInfo) {
+  return post("/infoListSds", {
     nodesLinksInfo: nodesLinksInfo,
   });
 }
 
-export function difChart(linksInfo) {
-  return post("/difChart", {
+export function difChartSds(linksInfo) {
+  return post("/difChartSds", {
     linksInfo: linksInfo,
+  });
+}
+
+export function mainChartSds(links,nodes) {
+  return post("/mainChartSds", {
+    links: links,
+    nodes: nodes
+  });
+}
+
+export function getFinalDataSds(nodesLinksInfo) {
+  return post("/getFinalDataSds", {
+    nodesLinksInfo:nodesLinksInfo
+  });
+}
+
+export function detialListSds(nodesLinksInfo) {
+  return post("/detialListSds", {
+    nodesLinksInfo:nodesLinksInfo
   });
 }
