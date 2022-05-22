@@ -517,7 +517,7 @@ app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
     },
     {
       title: "domainS",
-      measures: [domainAsSource.size],
+      measures: [domainAsSource.length],
       markers: [30],
     },
     {

@@ -127,7 +127,7 @@ export default function Layout() {
         <div id="assetandpath">核心资产与关键链路展示</div>
         <div id="conclusion">
           <ChartHeader chartName={"团伙分析结果"} />
-          {/* <ConclusionText /> */}
+          <ConclusionText />
         </div>
       </div>
     </div>

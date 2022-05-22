@@ -133,7 +133,7 @@
 
 #container-statistic {
   width: 100%;
-  flex: 7;
+  flex: 8;
   background-color: gray;
   /* padding-top: 4px; */
   /* padding-bottom: 4px; */
@@ -163,7 +163,7 @@
 
 #assetandpath {
   width: 100%;
-  flex: 11;
+  flex: 10;
   background-color: rgb(220, 213, 226);
   /* padding-top: 4px; */
   /* padding-bottom: 4px; */
