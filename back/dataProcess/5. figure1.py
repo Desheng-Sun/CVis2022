@@ -132,6 +132,7 @@ def getNodesInICLinks(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW, nodeAlone
             WhoisEmail = 0
             pureDomain = 0
             dirtyDomain = 0
+            skipNum = 0
             allNodes1 = []
             for j in nodeToNodeInfo[str(i[0])]:
                 allNodes1.append(j[1])
@@ -174,6 +175,7 @@ def getNodesInICLinks(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW, nodeAlone
                 WhoisEmail = max(WhoisEmail, j[7])
                 pureDomain = max(pureDomain, j[3] - j[4])
                 dirtyDomain = max(dirtyDomain, j[4])
+                skipNum = 1
                 # 第二层数据
                 for k in nodeToNodeInfo[str(j[1])]:
                     # 如果第二层数据和第0层数据相等，则跳过A-B-A
@@ -206,12 +208,14 @@ def getNodesInICLinks(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW, nodeAlone
                     WhoisEmail = max(WhoisEmail, k[7])
                     pureDomain = max(pureDomain, k[3] - k[4])
                     dirtyDomain = max(dirtyDomain, k[4])
+                    skipNum = 2
             nowLinks.update({
                 "WhoisNameNum": WhoisName,
                 "WhoisPhoneNum": WhoisPhone,
                 "WhoisEmailNum": WhoisEmail,
                 "pureDomainNum": pureDomain,
-                "dirtyDomainNum": dirtyDomain
+                "dirtyDomainNum": dirtyDomain,
+                "skipNum": skipNum
             })
             if(len(nowLinks["children"]) == 0):
                 continue
@@ -235,7 +239,8 @@ def getNodesInICLinks(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW, nodeAlone
             "WhoisEmailNum": nowNodeLinkInfo[4],
             "WhoisPhoneNum": nowNodeLinkInfo[5],
             "pureDomainNum": nowNodeLinkInfo[1],
-            "dirtyDomainNum": nowNodeLinkInfo[2]
+            "dirtyDomainNum": nowNodeLinkInfo[2],
+            "skipNum": 0
         }
         allLinks.append(nowLinks)
 
