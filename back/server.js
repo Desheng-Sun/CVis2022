@@ -184,26 +184,135 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
       }
     }
   }
-  console.log(nodesNumId.size);
-  console.log(linksList.size);
+  console.log(nodesNumId.size)
+  console.log(linksList.size)
+  // filedata = path.join(
+  //   __dirname,
+  //   "data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/nodeNeighbor.json"
+  // );
+  // nowData = JSON.parse(fs.readFileSync(filedata, "utf-8"));
+  // for (let i of nodes) {
+  //   let nowNodeNeighbor = nowData[i["numId"]].filter((e) => {
+  //     return !nodesNumId.has(e[0]);
+  //   });
+  //   for (let j of nowNodeNeighbor) { 
+  //     nodesNumId.add(j[0]);
+  //     linksList.add(j[1].toString());
+  //   }
+  // }
+  // let nowNodes = []
+  // let nowLinks = []
+  // for(let i of nodesNumId){
+  //   let nowNodeInfo = nodeNumIdInfo[i - 1]
+  //   nowNodes.push({
+  //     "numId": parseInt(nowNodeInfo[0]),
+  //     "id": nowNodeInfo[1],
+  //     "name": nowNodeInfo[2],
+  //     "type": nowNodeInfo[3],
+  //     "industry": nowNodeInfo[4]
+  //   })
+  // }
+
+
+  // for(let i of linksList){
+  //   i = i.split(",")
+  //   nowLinks.push({
+  //     "relation" : i[0],
+  //     "source": nodeNumIdInfo[parseInt(i[1]) - 1][1],
+  //     "target": nodeNumIdInfo[parseInt(i[2]) - 1][1],
+  //     "linksNumId": [parseInt(i[1]), parseInt(i[2])]
+  //   })
+  // }
+  let nowNodes = []
+  let nowLinks = []
   filedata = path.join(
     __dirname,
     "data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/nodeNeighbor.json"
   );
   nowData = JSON.parse(fs.readFileSync(filedata, "utf-8"));
   for (let i of nodes) {
+    let nowNodeNodeInfo = {};
+    let nowNodeLinksInfo = {};
     let nowNodeNeighbor = nowData[i["numId"]].filter((e) => {
       return !nodesNumId.has(e[0]);
     });
     for (let j of nowNodeNeighbor) {
-      nodesNumId.add(j[0]);
-      linksList.add(j[1].toString());
+      let nowNodeInfo = nodeNumIdInfo[j[0] - 1]
+      if (nowNodeInfo[3] == "Domain") {
+        if(!nowNodeNodeInfo.hasOwnProperty(nowNodeInfo[3])){
+          nowNodeNodeInfo[nowNodeInfo[4]] = {
+            "numId": parseInt(nowNodeInfo[0]),
+            "id": nowNodeInfo[1],
+            "name": nowNodeInfo[2],
+            "type": nowNodeInfo[3],
+            "industry": nowNodeInfo[4],
+            "children": []
+          }
+          nowNodeLinksInfo[nowNodeInfo[4]] = {
+            "relation": j[1][0],
+            "source": nodeNumIdInfo[parseInt(j[1][1]) - 1][1],
+            "target": nodeNumIdInfo[parseInt(j[1][2]) - 1][1],
+            "linksNumId": [parseInt(j[1][1]), parseInt(j[1][2])],
+            "children": [],
+          }
+        }      
+        nowNodeNodeInfo[nowNodeInfo[4]]["children"].push({
+          "numId": parseInt(nowNodeInfo[0]),
+          "id": nowNodeInfo[1],
+          "name": nowNodeInfo[2],
+          "type": nowNodeInfo[3],
+          "industry": nowNodeInfo[4],
+        })
+        nowNodeLinksInfo[nowNodeInfo[4]]["children"].push({
+          "relation": j[1][0],
+          "source": nodeNumIdInfo[parseInt(j[1][1]) - 1][1],
+          "target": nodeNumIdInfo[parseInt(j[1][2]) - 1][1],
+          "linksNumId": [parseInt(j[1][1]), parseInt(j[1][2])]
+        })
+
+      }
+      else{
+        if(!nowNodeNodeInfo.hasOwnProperty(nowNodeInfo[0])){
+          nowNodeNodeInfo[nowNodeInfo[0]] = {
+            "numId": parseInt(nowNodeInfo[0]),
+            "id": nowNodeInfo[1],
+            "name": nowNodeInfo[2],
+            "type": nowNodeInfo[3],
+            "industry": nowNodeInfo[4],
+            "children": []
+          }
+          nowNodeLinksInfo[nowNodeInfo[0]] = {
+            "relation": j[1][0],
+            "source": nodeNumIdInfo[parseInt(j[1][1]) - 1][1],
+            "target": nodeNumIdInfo[parseInt(j[1][2]) - 1][1],
+            "linksNumId": [parseInt(j[1][1]), parseInt(j[1][2])],
+            "children": [],
+          }
+        }  
+        nowNodeNodeInfo[nowNodeInfo[0]]["children"].push({
+          "numId": parseInt(nowNodeInfo[0]),
+          "id": nowNodeInfo[1],
+          "name": nowNodeInfo[2],
+          "type": nowNodeInfo[3],
+          "industry": nowNodeInfo[4],
+        })
+        nowNodeLinksInfo[nowNodeInfo[0]]["children"].push({
+          "relation": j[1][0],
+          "source": nodeNumIdInfo[parseInt(j[1][1]) - 1][1],
+          "target": nodeNumIdInfo[parseInt(j[1][2]) - 1][1],
+          "linksNumId": [parseInt(j[1][1]), parseInt(j[1][2])]
+        })    
+      }
+    }
+    for(let j in nowNodeNodeInfo){
+      nowNodes.push(nowNodeNodeInfo[j])
+    }
+    for(let j in nowNodeLinksInfo){
+      nowLinks.push(nowNodeLinksInfo[j])
     }
   }
-  let nowNodes = [];
-  let nowLinks = [];
-  for (let i of nodesNumId) {
-    let nowNodeInfo = nodeNumIdInfo[i - 1];
+  for(let i of nodesNumId){
+    let nowNodeInfo = nodeNumIdInfo[i - 1]
     nowNodes.push({
       numId: parseInt(nowNodeInfo[0]),
       id: nowNodeInfo[1],
@@ -222,58 +331,12 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
       linksNumId: [parseInt(i[1]), parseInt(i[2])],
     });
   }
-
-  // filedata = path.join(
-  //   __dirname,
-  //   "dataChinaVis Data Challenge 2022-mini challenge 1-Datase/nodeNneighbor.json"
-  // );
-  // nowData = JSON.parse(fs.readFileSync(filedata, "utf-8"));
-  // for (let i of nodes) {
-  //   let nowNodeNodeInfo = {};
-  //   let nowNodeLinksInfo = {};
-  //   let nowNodeNeighbor = nowData[i["numId"]].filter((e) => {
-  //     return !nodesNumId.has(e[0]);
-  //   });
-  //   for (let j of nowNodeNeighbor) {
-  //     let nowNodeInfo = nodeNumIdInfo[j - 1];
-  //     if (nowNodeInfo[2] == "Domain") {
-  //       if (!nowNodeNodeInfo.hasOwnProperty(nowNodeInfo[4])) {
-  //         nowNodeNodeInfo[nowNodeInfo[4]] = {
-  //           numId: nowNodeInfo[0],
-  //           id: nowNodeInfo[1],
-  //           type: nowNodeInfo[2],
-  //           industry: nowNodeInfo[4],
-  //           num: 1,
-  //           children: [],
-  //         };
-  //         nowNodeLinksInfo[nowNodeInfo[4]] = {
-  //           r_relation: "r_dns_a",
-  //           source: nowNodeInfo[0],
-  //           target: j,
-  //           children: [],
-  //         };
-  //       }
-  //       nowNodeNodeInfo[nowNodeInfo[4]]["num"] += 1;
-  //       nowNodeNodeInfo[nowNodeInfo[4]]["children"].push({
-  //         numId: nowNodeInfo[0],
-  //         id: nowNodeInfo[1],
-  //         type: nowNodeInfo[2],
-  //         name: nowNodeInfo[3],
-  //         industry: nowNodeInfo[4],
-  //       });
-  //       nowNodeLinksInfo[nowNodeInfo[4]]["children"].push(j[1].toString);
-  //     } else {
-  //       nodesNumId.add(nowNodeInfo[0]);
-  //       linksList.add(j[1].toString());
-  //     }
-  //   }
-  // }
   let sendData = {
-    nodes: nowNodes,
-    links: nowLinks,
-  };
-  res.send(sendData);
-  res.end();
+    "nodes": nowNodes,
+    "links": nowLinks
+  }
+  res.send(sendData)
+  res.end()
 });
 
 app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
@@ -642,8 +705,30 @@ app.get("/getBulletChartData", (req, res) => {
 });
 
 app.post("/getFinalDataSds", jsonParser, (req, res, next) => {
-  const links = req.body.nodesLinksInfo["links"];
-  const nodes = req.body.nodesLinksInfo["nodes"];
+  const initialLinks = req.body.nodesLinksInfo["links"];
+  const initialNodes = req.body.nodesLinksInfo["nodes"];
+  let links = []
+  let nodes = []
+  for(let i of initialLinks){
+    if(i.hasOwnProperty("children")){
+      for(let j of i["children"]){
+        links.push(j)
+      }
+    }      
+    else{
+      links.push(i)
+    }
+  }
+  for(let i of initialNodes){
+    if(i.hasOwnProperty("children")){
+      for(let j of i["children"]){
+        nodes.push(j)
+      }
+    }      
+    else{
+      nodes.push(i)
+    }
+  }
   let num_all_node = 0;
   num_all_node = nodes.length;
   let node_type = [
@@ -746,8 +831,30 @@ app.post("/getFinalDataSds", jsonParser, (req, res, next) => {
 });
 
 app.post("/getDetialListSds", jsonParser, (req, res, next) => {
-  const links = req.body.nodesLinksInfo["links"];
-  const nodes = req.body.nodesLinksInfo["nodes"];
+  const initialLinks = req.body.nodesLinksInfo["links"];
+  const initialNodes = req.body.nodesLinksInfo["nodes"];
+  let links = []
+  let nodes = []
+  for(let i of initialLinks){
+    if(i.hasOwnProperty("children")){
+      for(let j of i["children"]){
+        links.push(j)
+      }
+    }      
+    else{
+      links.push(i)
+    }
+  }
+  for(let i of initialNodes){
+    if(i.hasOwnProperty("children")){
+      for(let j of i["children"]){
+        nodes.push(j)
+      }
+    }      
+    else{
+      nodes.push(i)
+    }
+  }
   let nodesInfo = {};
   for (let i of nodes) {
     nodesInfo[i["numId"]] = {
