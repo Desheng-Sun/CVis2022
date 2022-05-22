@@ -9,7 +9,6 @@ export default function bullet() {
   var orient = "left", // TODO top & bottom
     reverse = false,
     duration = 0,
-    // ranges = bulletRanges,
     markers = bulletMarkers,
     measures = bulletMeasures,
     width = 30,
@@ -21,12 +20,13 @@ export default function bullet() {
   // For each small multiple…
   function bullet(g) {
     g.each(function (d, i) {
-      // var rangez = ranges.call(this, d, i).slice().sort(d3.descending)
-      var markerz = markers.call(this, d, i).slice().sort(d3.descending),
-        // measurez = measures.call(this, d, i).slice().sort(d3.descending),
-        // var markerz = markers,
-        measurez = measures.call(this, d, i).slice().sort(d3.descending),
-        g = d3.select(this);
+      // var markerz = markers.call(this, d, i).slice().sort(d3.descending),
+      //   measurez = measures.call(this, d, i).slice().sort(d3.descending),
+      //   g = d3.select(this);
+
+      var markerz = markers.call(this, d, i).slice();
+      var measurez = measures.call(this, d, i).slice();
+      var g = d3.select(this);
 
       var x1 = d3
         .scaleLinear()
@@ -63,7 +63,10 @@ export default function bullet() {
           return "measure s" + i;
         })
         .attr("width", width * 0.8)
-        .attr("height", (d, i) => w0(d))
+        .attr("height", (d, i) => {
+          // console.log(d, w0(d));
+          return w0(d);
+        })
         .attr("y", (d, i) => height - w0(d))
         .attr("x", width * 0.1)
         .attr("fill", (d, i) => {

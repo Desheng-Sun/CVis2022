@@ -186,22 +186,128 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
   }
   console.log(nodesNumId.size);
   console.log(linksList.size);
+  // filedata = path.join(
+  //   __dirname,
+  //   "data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/nodeNeighbor.json"
+  // );
+  // nowData = JSON.parse(fs.readFileSync(filedata, "utf-8"));
+  // for (let i of nodes) {
+  //   let nowNodeNeighbor = nowData[i["numId"]].filter((e) => {
+  //     return !nodesNumId.has(e[0]);
+  //   });
+  //   for (let j of nowNodeNeighbor) {
+  //     nodesNumId.add(j[0]);
+  //     linksList.add(j[1].toString());
+  //   }
+  // }
+  // let nowNodes = []
+  // let nowLinks = []
+  // for(let i of nodesNumId){
+  //   let nowNodeInfo = nodeNumIdInfo[i - 1]
+  //   nowNodes.push({
+  //     "numId": parseInt(nowNodeInfo[0]),
+  //     "id": nowNodeInfo[1],
+  //     "name": nowNodeInfo[2],
+  //     "type": nowNodeInfo[3],
+  //     "industry": nowNodeInfo[4]
+  //   })
+  // }
+
+  // for(let i of linksList){
+  //   i = i.split(",")
+  //   nowLinks.push({
+  //     "relation" : i[0],
+  //     "source": nodeNumIdInfo[parseInt(i[1]) - 1][1],
+  //     "target": nodeNumIdInfo[parseInt(i[2]) - 1][1],
+  //     "linksNumId": [parseInt(i[1]), parseInt(i[2])]
+  //   })
+  // }
+  let nowNodes = [];
+  let nowLinks = [];
   filedata = path.join(
     __dirname,
     "data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/nodeNeighbor.json"
   );
   nowData = JSON.parse(fs.readFileSync(filedata, "utf-8"));
   for (let i of nodes) {
+    let nowNodeNodeInfo = {};
+    let nowNodeLinksInfo = {};
     let nowNodeNeighbor = nowData[i["numId"]].filter((e) => {
       return !nodesNumId.has(e[0]);
     });
     for (let j of nowNodeNeighbor) {
-      nodesNumId.add(j[0]);
-      linksList.add(j[1].toString());
+      let nowNodeInfo = nodeNumIdInfo[j[0] - 1];
+      if (nowNodeInfo[3] == "Domain") {
+        if (!nowNodeNodeInfo.hasOwnProperty(nowNodeInfo[3])) {
+          nowNodeNodeInfo[nowNodeInfo[4]] = {
+            numId: parseInt(nowNodeInfo[0]),
+            id: nowNodeInfo[1],
+            name: nowNodeInfo[2],
+            type: nowNodeInfo[3],
+            industry: nowNodeInfo[4],
+            children: [],
+          };
+          nowNodeLinksInfo[nowNodeInfo[4]] = {
+            relation: j[1][0],
+            source: nodeNumIdInfo[parseInt(j[1][1]) - 1][1],
+            target: nodeNumIdInfo[parseInt(j[1][2]) - 1][1],
+            linksNumId: [parseInt(j[1][1]), parseInt(j[1][2])],
+            children: [],
+          };
+        }
+        nowNodeNodeInfo[nowNodeInfo[4]]["children"].push({
+          numId: parseInt(nowNodeInfo[0]),
+          id: nowNodeInfo[1],
+          name: nowNodeInfo[2],
+          type: nowNodeInfo[3],
+          industry: nowNodeInfo[4],
+        });
+        nowNodeLinksInfo[nowNodeInfo[4]]["children"].push({
+          relation: j[1][0],
+          source: nodeNumIdInfo[parseInt(j[1][1]) - 1][1],
+          target: nodeNumIdInfo[parseInt(j[1][2]) - 1][1],
+          linksNumId: [parseInt(j[1][1]), parseInt(j[1][2])],
+        });
+      } else {
+        if (!nowNodeNodeInfo.hasOwnProperty(nowNodeInfo[0])) {
+          nowNodeNodeInfo[nowNodeInfo[0]] = {
+            numId: parseInt(nowNodeInfo[0]),
+            id: nowNodeInfo[1],
+            name: nowNodeInfo[2],
+            type: nowNodeInfo[3],
+            industry: nowNodeInfo[4],
+            children: [],
+          };
+          nowNodeLinksInfo[nowNodeInfo[0]] = {
+            relation: j[1][0],
+            source: nodeNumIdInfo[parseInt(j[1][1]) - 1][1],
+            target: nodeNumIdInfo[parseInt(j[1][2]) - 1][1],
+            linksNumId: [parseInt(j[1][1]), parseInt(j[1][2])],
+            children: [],
+          };
+        }
+        nowNodeNodeInfo[nowNodeInfo[0]]["children"].push({
+          numId: parseInt(nowNodeInfo[0]),
+          id: nowNodeInfo[1],
+          name: nowNodeInfo[2],
+          type: nowNodeInfo[3],
+          industry: nowNodeInfo[4],
+        });
+        nowNodeLinksInfo[nowNodeInfo[0]]["children"].push({
+          relation: j[1][0],
+          source: nodeNumIdInfo[parseInt(j[1][1]) - 1][1],
+          target: nodeNumIdInfo[parseInt(j[1][2]) - 1][1],
+          linksNumId: [parseInt(j[1][1]), parseInt(j[1][2])],
+        });
+      }
+    }
+    for (let j in nowNodeNodeInfo) {
+      nowNodes.push(nowNodeNodeInfo[j]);
+    }
+    for (let j in nowNodeLinksInfo) {
+      nowLinks.push(nowNodeLinksInfo[j]);
     }
   }
-  let nowNodes = [];
-  let nowLinks = [];
   for (let i of nodesNumId) {
     let nowNodeInfo = nodeNumIdInfo[i - 1];
     nowNodes.push({
@@ -222,52 +328,6 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
       linksNumId: [parseInt(i[1]), parseInt(i[2])],
     });
   }
-
-  // filedata = path.join(
-  //   __dirname,
-  //   "dataChinaVis Data Challenge 2022-mini challenge 1-Datase/nodeNneighbor.json"
-  // );
-  // nowData = JSON.parse(fs.readFileSync(filedata, "utf-8"));
-  // for (let i of nodes) {
-  //   let nowNodeNodeInfo = {};
-  //   let nowNodeLinksInfo = {};
-  //   let nowNodeNeighbor = nowData[i["numId"]].filter((e) => {
-  //     return !nodesNumId.has(e[0]);
-  //   });
-  //   for (let j of nowNodeNeighbor) {
-  //     let nowNodeInfo = nodeNumIdInfo[j - 1];
-  //     if (nowNodeInfo[2] == "Domain") {
-  //       if (!nowNodeNodeInfo.hasOwnProperty(nowNodeInfo[4])) {
-  //         nowNodeNodeInfo[nowNodeInfo[4]] = {
-  //           numId: nowNodeInfo[0],
-  //           id: nowNodeInfo[1],
-  //           type: nowNodeInfo[2],
-  //           industry: nowNodeInfo[4],
-  //           num: 1,
-  //           children: [],
-  //         };
-  //         nowNodeLinksInfo[nowNodeInfo[4]] = {
-  //           r_relation: "r_dns_a",
-  //           source: nowNodeInfo[0],
-  //           target: j,
-  //           children: [],
-  //         };
-  //       }
-  //       nowNodeNodeInfo[nowNodeInfo[4]]["num"] += 1;
-  //       nowNodeNodeInfo[nowNodeInfo[4]]["children"].push({
-  //         numId: nowNodeInfo[0],
-  //         id: nowNodeInfo[1],
-  //         type: nowNodeInfo[2],
-  //         name: nowNodeInfo[3],
-  //         industry: nowNodeInfo[4],
-  //       });
-  //       nowNodeLinksInfo[nowNodeInfo[4]]["children"].push(j[1].toString);
-  //     } else {
-  //       nodesNumId.add(nowNodeInfo[0]);
-  //       linksList.add(j[1].toString());
-  //     }
-  //   }
-  // }
   let sendData = {
     nodes: nowNodes,
     links: nowLinks,
@@ -303,46 +363,46 @@ app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
   let ipc = new Set();
   let asn = new Set();
   for (let i of communityInfo["links"]) {
-    if (i[0] == "r_cert_chain") {
+    if (i["relation"] == "r_cert_chain") {
       r_cert_chain += 1;
       certAsSource.add(i[1]);
       certAsTarget.add(i[2]);
-    } else if (i[0] == "r_cert") {
+    } else if (i["relation"] == "r_cert") {
       r_cert += 1;
       domainAsSource.add(i[1]);
-    } else if (i[0] == "r_whois_name") {
+    } else if (i["relation"] == "r_whois_name") {
       r_whois_name += 1;
       domainAsSource.add(i[1]);
       whoisName.add(i[2]);
-    } else if (i[0] == "r_whois_email") {
+    } else if (i["relation"] == "r_whois_email") {
       r_whois_email += 1;
       domainAsSource.add(i[1]);
       whoisEmail.add(i[2]);
-    } else if (i[0] == "r_whois_phone") {
+    } else if (i["relation"] == "r_whois_phone") {
       r_whois_phone += 1;
       domainAsSource.add(i[1]);
       whoisPhone.add(i[2]);
-    } else if (i[0] == "r_cname") {
+    } else if (i["relation"] == "r_cname") {
       r_cname += 1;
       domainAsSource.add(i[1]);
       domainAsCnameTarget.add(i[2]);
-    } else if (i[0] == "r_request_jump") {
+    } else if (i["relation"] == "r_request_jump") {
       r_request_jump += 1;
       domainAsSource.add(i[1]);
       domainAsJumpTarget.add(i[2]);
-    } else if (i[0] == "r_subdomain") {
+    } else if (i["relation"] == "r_subdomain") {
       r_subdomain += 1;
       domainAsSource.add(i[1]);
       domainAsSubTarget.add(i[2]);
-    } else if (i[0] == "r_dns_a") {
+    } else if (i["relation"] == "r_dns_a") {
       r_dns_a += 1;
       domainAsSource.add(i[1]);
       ip.add(i[2]);
-    } else if (i[0] == "r_cidr") {
+    } else if (i["relation"] == "r_cidr") {
       r_cidr += 1;
       ip.add(i[1]);
       ipc.add(i[2]);
-    } else if (i[0] == "r_asn") {
+    } else if (i["relation"] == "r_asn") {
       r_asn += 1;
       ip.add(i[1]);
       asn.add(i[2]);
@@ -356,124 +416,125 @@ app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
       !domainAsSubTarget.has(e)
     );
   });
+
   const linksList = [
     {
       title: "certChain",
-      maesures: [r_cert_chain],
-      markes: [7],
+      measures: [r_cert_chain],
+      markers: [7],
     },
     {
       title: "cert",
-      maesures: [r_cert],
-      markes: [50],
+      measures: [r_cert],
+      markers: [50],
     },
     {
       title: "WhoisName",
-      maesures: [r_whois_name],
-      markes: [5],
+      measures: [r_whois_name],
+      markers: [5],
     },
     {
       title: "whoisPhone",
-      maesures: [r_whois_phone],
-      markes: [3],
+      measures: [r_whois_phone],
+      markers: [3],
     },
     {
       title: "whoisEmail",
-      maesures: [r_whois_email],
-      markes: [2],
+      measures: [r_whois_email],
+      markers: [2],
     },
     {
       title: "cname",
-      maesures: [r_cname],
-      markes: [10],
+      measures: [r_cname],
+      markers: [10],
     },
     {
       title: "requestJump",
-      maesures: [r_request_jump],
-      markes: [5],
+      measures: [r_request_jump],
+      markers: [5],
     },
     {
       title: "subdomain",
-      maesures: [r_subdomain],
-      markes: [150],
+      measures: [r_subdomain],
+      markers: [150],
     },
 
     {
       title: "dnsA",
-      maesures: [r_dns_a],
-      markes: [150],
+      measures: [r_dns_a],
+      markers: [150],
     },
     {
       title: "cidr",
-      maesures: [r_cidr],
-      markes: [3],
+      measures: [r_cidr],
+      markers: [3],
     },
     {
       title: "asn",
-      maesures: [r_asn],
-      markes: [3],
+      measures: [r_asn],
+      markers: [3],
     },
   ];
   const nodesList = [
     {
       title: "certT",
-      maesures: [certAsTarget.size],
-      markes: [3],
+      measures: [certAsTarget.size],
+      markers: [3],
     },
     {
-      title: "cetrS",
-      maesures: [certAsSource.size],
-      markes: [7],
+      title: "certS",
+      measures: [certAsSource.size],
+      markers: [7],
     },
     {
       title: "whoisName",
-      maesures: [whoisName.size],
-      markes: [3],
+      measures: [whoisName.size],
+      markers: [3],
     },
     {
       title: "whoisEmail",
-      maesures: [whoisEmail.size],
-      markes: [2],
+      measures: [whoisEmail.size],
+      markers: [2],
     },
     {
       title: "whoisPhone",
-      maesures: [whoisPhone.size],
-      markes: [2],
+      measures: [whoisPhone.size],
+      markers: [2],
     },
     {
       title: "domainCT",
-      maesures: [domainAsCnameTarget.size],
-      markes: [10],
+      measures: [domainAsCnameTarget.size],
+      markers: [10],
     },
     {
       title: "domainJT",
-      maesures: [domainAsJumpTarget.size],
-      markes: [2],
+      measures: [domainAsJumpTarget.size],
+      markers: [2],
     },
     {
       title: "domainST",
-      maesures: [domainAsSubTarget.size],
-      markes: [50],
+      measures: [domainAsSubTarget.size],
+      markers: [50],
     },
     {
       title: "domainS",
-      maesures: [domainAsSource.size],
-      markes: [30],
+      measures: [domainAsSource.length],
+      markers: [30],
     },
     {
       title: "IP",
-      maesures: [ip.size],
-      markes: [7],
+      measures: [ip.size],
+      markers: [7],
     },
     {
       title: "ipc",
-      maesures: [ipc.size],
-      markes: [2],
+      measures: [ipc.size],
+      markers: [2],
     },
     {
       title: "asn",
-      maesures: [asn.size],
-      markes: [3],
+      measures: [asn.size],
+      markers: [3],
     },
   ];
   res.send([linksList, nodesList]);
@@ -486,9 +547,30 @@ app.post("/getInfoListSds", jsonParser, (req, res, next) => {
   let groupscope = "";
   let industrytype = new Set();
   let grouptype = "单一型";
-  let communityInfo = req.body.nodesLinksInfo; //传的参数，社区的节点和链接信息
-  numnode = communityInfo["nodes"].length;
-  numlink = communityInfo["links"].length;
+  const initialLinks = req.body.nodesLinksInfo["links"];
+  const initialNodes = req.body.nodesLinksInfo["nodes"];
+  let links = [];
+  let nodes = [];
+  for (let i of initialLinks) {
+    if (i.hasOwnProperty("children")) {
+      for (let j of i["children"]) {
+        links.push(j);
+      }
+    } else {
+      links.push(i);
+    }
+  }
+  for (let i of initialNodes) {
+    if (i.hasOwnProperty("children")) {
+      for (let j of i["children"]) {
+        nodes.push(j);
+      }
+    } else {
+      nodes.push(i);
+    }
+  }
+  numnode = nodes.length;
+  numlink = links.length;
 
   if (numnode < 300) {
     groupscope = "小";
@@ -497,8 +579,8 @@ app.post("/getInfoListSds", jsonParser, (req, res, next) => {
   } else {
     groupscope = "大";
   }
-  for (let i of communityInfo["nodes"]) {
-    industrytype.add(i[4]);
+  for (let i of nodes) {
+    industrytype.add(i["industry"]);
   }
   if (industrytype.size > 1) {
     grouptype = "复合型";
@@ -642,8 +724,28 @@ app.get("/getBulletChartData", (req, res) => {
 });
 
 app.post("/getFinalDataSds", jsonParser, (req, res, next) => {
-  const links = req.body.nodesLinksInfo["links"];
-  const nodes = req.body.nodesLinksInfo["nodes"];
+  const initialLinks = req.body.nodesLinksInfo["links"];
+  const initialNodes = req.body.nodesLinksInfo["nodes"];
+  let links = [];
+  let nodes = [];
+  for (let i of initialLinks) {
+    if (i.hasOwnProperty("children")) {
+      for (let j of i["children"]) {
+        links.push(j);
+      }
+    } else {
+      links.push(i);
+    }
+  }
+  for (let i of initialNodes) {
+    if (i.hasOwnProperty("children")) {
+      for (let j of i["children"]) {
+        nodes.push(j);
+      }
+    } else {
+      nodes.push(i);
+    }
+  }
   let num_all_node = 0;
   num_all_node = nodes.length;
   let node_type = [
@@ -746,8 +848,28 @@ app.post("/getFinalDataSds", jsonParser, (req, res, next) => {
 });
 
 app.post("/getDetialListSds", jsonParser, (req, res, next) => {
-  const links = req.body.nodesLinksInfo["links"];
-  const nodes = req.body.nodesLinksInfo["nodes"];
+  const initialLinks = req.body.nodesLinksInfo["links"];
+  const initialNodes = req.body.nodesLinksInfo["nodes"];
+  let links = [];
+  let nodes = [];
+  for (let i of initialLinks) {
+    if (i.hasOwnProperty("children")) {
+      for (let j of i["children"]) {
+        links.push(j);
+      }
+    } else {
+      links.push(i);
+    }
+  }
+  for (let i of initialNodes) {
+    if (i.hasOwnProperty("children")) {
+      for (let j of i["children"]) {
+        nodes.push(j);
+      }
+    } else {
+      nodes.push(i);
+    }
+  }
   let nodesInfo = {};
   for (let i of nodes) {
     nodesInfo[i["numId"]] = {

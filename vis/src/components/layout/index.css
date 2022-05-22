@@ -133,7 +133,7 @@
 
 #container-statistic {
   width: 100%;
-  flex: 7;
+  flex: 8;
   background-color: gray;
   /* padding-top: 4px; */
   /* padding-bottom: 4px; */
@@ -143,19 +143,27 @@
 
 #sta-node {
   width: 100%;
-  flex: 1;
+  flex: 25;
   background-color: white;
+  /* padding-bottom: 2px; */
+}
+
+#divider {
+  width: 100%;
+  flex: 1;
+  background-color: #eee;
 }
 
 #sta-link {
   width: 100%;
-  flex: 1;
+  flex: 25;
   background-color: white;
+  /* padding-top: 2px; */
 }
 
 #assetandpath {
   width: 100%;
-  flex: 11;
+  flex: 10;
   background-color: rgb(220, 213, 226);
   /* padding-top: 4px; */
   /* padding-bottom: 4px; */
