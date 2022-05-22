@@ -175,7 +175,7 @@ def getNodeNneighbor(linksAll, allIC):
                 elif(j[2] != i):
                     nodesneighbor[str(i)].append([j[2], j])
             bar()
-    with open(nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/nodeNneighbor.json", 'w', encoding='utf-8') as f:
+    with open(nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/nodeNeighbor.json", 'w', encoding='utf-8') as f:
          json.dump(nodesneighbor, f, ensure_ascii=False)
 
 

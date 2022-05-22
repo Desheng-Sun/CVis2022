@@ -57,10 +57,9 @@ export function getDifChartSds(linksInfo) {
   });
 }
 
-export function getMainChartSds(links, nodes) {
+export function getMainChartSds(linksInfo) {
   return post("/getMainChartSds", {
-    links: links,
-    nodes: nodes,
+    linksInfo:linksInfo
   });
 }
 
