@@ -16,7 +16,13 @@ export default function SkeletonChart({ w, h }) {
   const [data, setData] = useState({});
   const [dataParam, setDataParam] = useState("");
   const [selectedNode, setSelectedNode] = useState([]);
-  const [currIc, setCurrIc] = useState(""); // 当前已选择的ic
+  const [currIc, setCurrIc] = useState([
+    "5712",
+    "5713",
+    "5719",
+    "5742",
+    "6375",
+  ]); // 当前已选择的ic
 
   // 随系统缩放修改画布大小
   useEffect(() => {
@@ -29,7 +35,7 @@ export default function SkeletonChart({ w, h }) {
   // 请求数据
   // 监听选择的节点的变化
   useEffect(() => {
-    console.log(currIc);
+    // console.log(currIc);
     getSkeletonChartDataSds(currIc).then((res) => {
       setData(res);
     });
