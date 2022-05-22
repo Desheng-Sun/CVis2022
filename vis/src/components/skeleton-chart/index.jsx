@@ -31,7 +31,7 @@ export default function SkeletonChart({ w, h }) {
   useEffect(() => {
     // console.log(currIc);
     getSkeletonChartDataSds(currIc).then((res) => {
-      console.log(res);
+      // console.log(res);
       setData(res);
     });
   }, [currIc]);

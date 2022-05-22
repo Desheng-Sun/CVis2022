@@ -51,6 +51,7 @@ export default function ICClueChart({ w, h }) {
     if (JSON.stringify(data) === "{}") return;
     if (JSON.stringify(svgWidth) === "{}" || JSON.stringify(svgHeight) === "{}")
       return;
+    d3.selectAll('#icclue-chart svg').remove()
     var titleSvg = d3
       .select("#icclue-title")
       .append("svg")
