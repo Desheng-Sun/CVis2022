@@ -686,7 +686,7 @@ export default function SubChartCytoscape({ w, h }) {
   return (
     <div
       id="main-container"
-      style={{ width: svgWidth, height: svgHeight, background: "#eee" }}
+      style={{ width: svgWidth, height: svgHeight, background: "#fff" }}
     >
       <div id="main-chart-control">
         <div
