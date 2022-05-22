@@ -39,6 +39,16 @@
     background-color: rgba(18, 65, 145, 0.3);
   }
 
+  .cy-context-menus-cxt-menu button{
+    width: 100px !important;
+    border: grey;
+    background: rgba(0, 0,0, 0.3);
+    color: white;
+  }
+  .cy-context-menus-cxt-menu button:hover{
+    background: rgba(0, 0, 0, 0.7);
+  }
+
   #navigator{
     display: contents;
   }

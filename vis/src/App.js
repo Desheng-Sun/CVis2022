@@ -22,6 +22,7 @@ import SubChartCytoscape from "./components/sub-chart-cytoscape";
 import DataProcessChecker from "./components/dataProcessChecker/dataProcessChecker";
 import SearchBar from "./components/search-bar";
 import CombineTable from "./components/combine-table";
+import IndustryStackChart from "./components/industry-stack-chart";
 
 // import SubChart from './components/sub-chart';n
 // 引入问题一的自定义组件
@@ -69,6 +70,11 @@ function App() {
           key="combinetable"
           path="/combinetable"
           element={<CombineTable />}
+        />
+        <Route
+          key="industrystackchart"
+          path="/industrystackchart"
+          element={<IndustryStackChart />}
         />
       </Routes>
     </div>
