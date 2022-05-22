@@ -363,46 +363,46 @@ app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
   let ipc = new Set();
   let asn = new Set();
   for (let i of communityInfo["links"]) {
-    if (i[0] == "r_cert_chain") {
+    if (i["relation"] == "r_cert_chain") {
       r_cert_chain += 1;
       certAsSource.add(i[1]);
       certAsTarget.add(i[2]);
-    } else if (i[0] == "r_cert") {
+    } else if (i["relation"] == "r_cert") {
       r_cert += 1;
       domainAsSource.add(i[1]);
-    } else if (i[0] == "r_whois_name") {
+    } else if (i["relation"] == "r_whois_name") {
       r_whois_name += 1;
       domainAsSource.add(i[1]);
       whoisName.add(i[2]);
-    } else if (i[0] == "r_whois_email") {
+    } else if (i["relation"] == "r_whois_email") {
       r_whois_email += 1;
       domainAsSource.add(i[1]);
       whoisEmail.add(i[2]);
-    } else if (i[0] == "r_whois_phone") {
+    } else if (i["relation"] == "r_whois_phone") {
       r_whois_phone += 1;
       domainAsSource.add(i[1]);
       whoisPhone.add(i[2]);
-    } else if (i[0] == "r_cname") {
+    } else if (i["relation"] == "r_cname") {
       r_cname += 1;
       domainAsSource.add(i[1]);
       domainAsCnameTarget.add(i[2]);
-    } else if (i[0] == "r_request_jump") {
+    } else if (i["relation"] == "r_request_jump") {
       r_request_jump += 1;
       domainAsSource.add(i[1]);
       domainAsJumpTarget.add(i[2]);
-    } else if (i[0] == "r_subdomain") {
+    } else if (i["relation"] == "r_subdomain") {
       r_subdomain += 1;
       domainAsSource.add(i[1]);
       domainAsSubTarget.add(i[2]);
-    } else if (i[0] == "r_dns_a") {
+    } else if (i["relation"] == "r_dns_a") {
       r_dns_a += 1;
       domainAsSource.add(i[1]);
       ip.add(i[2]);
-    } else if (i[0] == "r_cidr") {
+    } else if (i["relation"] == "r_cidr") {
       r_cidr += 1;
       ip.add(i[1]);
       ipc.add(i[2]);
-    } else if (i[0] == "r_asn") {
+    } else if (i["relation"] == "r_asn") {
       r_asn += 1;
       ip.add(i[1]);
       asn.add(i[2]);
