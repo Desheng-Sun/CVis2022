@@ -348,11 +348,11 @@ app.post("/getIcClueDataSds", jsonParser, (req, res, next) => {
     req.body.numId,
     req.body.type,
   ]);
+
   pythonProcess.on("exit", () => {
-    console.log(1)
     let filedata = path.join(
       __dirname,
-      "data/ic-clue-data/" + req.body.numId + ".json"
+      "data/ic-clue-data/370.json"
     );
     fs.readFile(filedata, "utf-8", function (err, data) {
       if (err) {
@@ -373,12 +373,12 @@ app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
     if (err) {
       console.log(err);
     } else {
-
       let ICLinks = JSON.parse(data);
       let nodes = [];
       for (let n of req.body.Nodes) {
         nodes.push(parseInt(n));
       }
+      // console.log(nodes);
       let nodesInfo = [];
       let linksInfo = [];
       for (let i of nodes) {
@@ -441,8 +441,6 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
       }
     }
   }
-  console.log(nodesNumId.size);
-  console.log(linksList.size);
   // filedata = path.join(
   //   __dirname,
   //   "data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/nodeNeighbor.json"

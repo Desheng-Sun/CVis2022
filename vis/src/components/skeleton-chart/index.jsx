@@ -16,13 +16,7 @@ export default function SkeletonChart({ w, h }) {
   const [data, setData] = useState({});
   const [dataParam, setDataParam] = useState("");
   const [selectedNode, setSelectedNode] = useState([]);
-  const [currIc, setCurrIc] = useState([
-    "5712",
-    "5713",
-    "5719",
-    "5742",
-    "6375",
-  ]); // 当前已选择的ic
+  const [currIc, setCurrIc] = useState(["3", "4", "101", "112"]); // 当前已选择的ic
 
   // 随系统缩放修改画布大小
   useEffect(() => {
@@ -37,13 +31,14 @@ export default function SkeletonChart({ w, h }) {
   useEffect(() => {
     // console.log(currIc);
     getSkeletonChartDataSds(currIc).then((res) => {
+      console.log(res);
       setData(res);
     });
   }, [currIc]);
 
   useEffect(() => {
     drawChart();
-  }, [svgWidth, svgHeight, data]);
+  }, [data]);
 
   PubSub.subscribe("icicleSelect", (msg, ic) => {
     setCurrIc(ic);
@@ -51,19 +46,21 @@ export default function SkeletonChart({ w, h }) {
 
   // 绘制结构图
   function drawChart() {
-    var combinationOrderSet = new Set()
+    var combinationOrderSet = new Set();
     if (JSON.stringify(data) === "{}") return;
     const links = data.links.map((d) => Object.create(d));
     const nodes = data.nodes.map((d, i) => {
-      for(let item in d.industry){
-        combinationOrderSet.add(d.industry[item]['industry'])
+      for (let item in d.industry) {
+        combinationOrderSet.add(d.industry[item]["industry"]);
       }
-      return Object.create({ ...d, group: i })
+      return Object.create({ ...d, group: i });
     }); // 将每一个点单独看成一个group，被选中的group添加背景颜色
     // const nodes = data.nodes.map((d, i) => Object.create(d));
-    let combinationOrder = [...combinationOrderSet].sort()   // 包含的所有产业类型组合
-    let industryType = [...new Set([...combinationOrder.toString().replaceAll(',', '')])].sort()  // 包含的所有产业类型
-    
+    let combinationOrder = [...combinationOrderSet].sort(); // 包含的所有产业类型组合
+    let industryType = [
+      ...new Set([...combinationOrder.toString().replaceAll(",", "")]),
+    ].sort(); // 包含的所有产业类型
+
     d3.selectAll("div#skeleton-chart svg").remove();
     const svg = d3
       .select("#skeleton-chart")
@@ -79,8 +76,8 @@ export default function SkeletonChart({ w, h }) {
       onClick = undefined,
       onLeave = undefined,
       chargeStrength = undefined,
-      linkStrength = undefined
-      // combinationOrder = ["AB", "AE", "BCD"]; // 按字母对所有产业组合进行排序
+      linkStrength = undefined;
+    // combinationOrder = ["AB", "AE", "BCD"]; // 按字母对所有产业组合进行排序
     const wrapper = svg.append("g").attr("transform", `translate(0, 0)`);
 
     // create groups, links and nodes
