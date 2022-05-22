@@ -94,7 +94,6 @@ app.post("/getIcClueDataSds", jsonParser, (req, res, next) => {
     req.body.type,
   ]);
   pythonProcess.on("exit", () => {
-    console.log(1)
     let filedata = path.join(
       __dirname,
       "data/ic-clue-data/" + req.body.numId + ".json"
@@ -142,8 +141,6 @@ app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
           ICIndustry: nowICIndustry,
         });
         for (let j of ICLinks[i]) {
-
-          console.log(j)
           if (nodes.includes(j[1]) && j[1] > j[0]) {
             linksInfo.push({
               source: nodeNumIdInfo[j[0] - 1][1],
@@ -188,8 +185,6 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
       }
     }
   }
-  console.log(nodesNumId.size);
-  console.log(linksList.size);
   // filedata = path.join(
   //   __dirname,
   //   "data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/nodeNeighbor.json"

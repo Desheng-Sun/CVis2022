@@ -17,11 +17,7 @@ export default function SkeletonChart({ w, h }) {
   const [dataParam, setDataParam] = useState("");
   const [selectedNode, setSelectedNode] = useState([]);
   const [currIc, setCurrIc] = useState([
-    "5712",
-    "5713",
-    "5719",
-    "5742",
-    "6375",
+    "3","4","101","112",
   ]); // 当前已选择的ic
 
   // 随系统缩放修改画布大小
