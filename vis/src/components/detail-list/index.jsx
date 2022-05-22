@@ -4,7 +4,7 @@ import { table } from "@observablehq/inputs";
 import { useEffect, useState } from "react";
 import { html } from "htl";
 
-import { detialListSds } from "../../apis/api.js";
+import { getDetialListSds } from "../../apis/api.js";
 
 export default function DetailList({ w, h, divname }) {
   const [data, setData] = useState([]);
@@ -284,8 +284,8 @@ export default function DetailList({ w, h, divname }) {
   }, [h]);
 
   useEffect(() => {
-    detialListSds(nodesLinksInfo).then((res) => {
-      console.log(res);
+    getDetialListSds(nodesLinksInfo).then((res) => {
+      // console.log(res);
       return setData(res);
     });
   }, []);

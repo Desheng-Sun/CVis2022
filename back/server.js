@@ -116,10 +116,10 @@ app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
       console.log(err);
     } else {
       let ICLinks = JSON.parse(data);
-      let nodes = req.body.Nodes
-      nodes = nodes.map(e => {
-        return parseInt(e)
-      })
+      let nodes = [];
+      for (let n of req.body.Nodes) {
+        nodes.push(parseInt(n));
+      }
       let nodesInfo = [];
       let linksInfo = [];
       for (let i of nodes) {

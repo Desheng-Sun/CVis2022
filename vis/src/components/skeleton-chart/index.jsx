@@ -29,8 +29,8 @@ export default function SkeletonChart({ w, h }) {
   // 请求数据
   // 监听选择的节点的变化
   useEffect(() => {
+    console.log(currIc);
     getSkeletonChartDataSds(currIc).then((res) => {
-      console.log(res);
       setData(res);
     });
   }, [currIc]);
@@ -45,14 +45,14 @@ export default function SkeletonChart({ w, h }) {
 
   // 绘制结构图
   function drawChart() {
-    var combinationOrderArr = new Set()
+    var combinationOrderSet = new Set();
     if (JSON.stringify(data) === "{}") return;
     const links = data.links.map((d) => Object.create(d));
     const nodes = data.nodes.map((d, i) => {
-      for(let item in d.industry){
-        combinationOrderSet.add(d.industry[item]['industry'])
+      for (let item in d.industry) {
+        combinationOrderSet.add(d.industry[item]["industry"]);
       }
-      return Object.create({ ...d, group: i })
+      return Object.create({ ...d, group: i });
     }); // 将每一个点单独看成一个group，被选中的group添加背景颜色
     // const nodes = data.nodes.map((d, i) => Object.create(d));
 
