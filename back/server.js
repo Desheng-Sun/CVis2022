@@ -416,6 +416,7 @@ app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
       !domainAsSubTarget.has(e)
     );
   });
+
   const linksList = [
     {
       title: "certChain",
@@ -517,7 +518,7 @@ app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
     },
     {
       title: "domainS",
-      measures: [domainAsSource.size],
+      measures: [domainAsSource.length],
       markers: [30],
     },
     {
@@ -546,9 +547,30 @@ app.post("/getInfoListSds", jsonParser, (req, res, next) => {
   let groupscope = "";
   let industrytype = new Set();
   let grouptype = "单一型";
-  let communityInfo = req.body.nodesLinksInfo; //传的参数，社区的节点和链接信息
-  numnode = communityInfo["nodes"].length;
-  numlink = communityInfo["links"].length;
+  const initialLinks = req.body.nodesLinksInfo["links"];
+  const initialNodes = req.body.nodesLinksInfo["nodes"];
+  let links = [];
+  let nodes = [];
+  for (let i of initialLinks) {
+    if (i.hasOwnProperty("children")) {
+      for (let j of i["children"]) {
+        links.push(j);
+      }
+    } else {
+      links.push(i);
+    }
+  }
+  for (let i of initialNodes) {
+    if (i.hasOwnProperty("children")) {
+      for (let j of i["children"]) {
+        nodes.push(j);
+      }
+    } else {
+      nodes.push(i);
+    }
+  }
+  numnode = nodes.length;
+  numlink = links.length;
 
   if (numnode < 300) {
     groupscope = "小";
@@ -557,7 +579,7 @@ app.post("/getInfoListSds", jsonParser, (req, res, next) => {
   } else {
     groupscope = "大";
   }
-  for (let i of communityInfo["nodes"]) {
+  for (let i of nodes) {
     industrytype.add(i[4]);
   }
   if (industrytype.size > 1) {
