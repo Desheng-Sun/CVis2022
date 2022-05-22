@@ -17,7 +17,7 @@ import * as d3 from "d3";
 import "./index.css";
 
 // 数据请求接口
-import { getMainChartData } from "../..//apis/api.js";
+import { getMainChartData, getMainChartSds } from "../..//apis/api.js";
 // import './cytoscape.min.js'
 
 // import { undoRedo } from './cytoscape-undo-redo.js'
@@ -64,8 +64,8 @@ var layoutOptionDict = {
       // the variation of concentric values in each level
       return nodes.maxDegree() / 5;
     },
-    spacingFactor: 0.2,
-    animationDuration: 2000, // duration of animation in ms if enabled
+    spacingFactor: 1,
+    animationDuration: 1000, // duration of animation in ms if enabled
     // width: 200,
     // height: 200
     // boundingBox:{x1:0, x2:0, w:500, h:500}
@@ -103,6 +103,139 @@ var layoutOptionDict = {
   },
 };
 
+let linksInfo = {
+  nodes: [
+    {
+      numId: 3,
+      id: "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
+      name: "5.180.xxx.xxx",
+      ICIndustry: [
+        {
+          industry: "ABCE",
+          number: 26,
+        },
+        {
+          industry: "ABCEG",
+          number: 1,
+        },
+        {
+          industry: "B",
+          number: 11,
+        },
+        {
+          industry: "BC",
+          number: 3,
+        },
+      ],
+    },
+    {
+      numId: 4,
+      id: "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
+      name: "9ace6aae20",
+      ICIndustry: [
+        {
+          industry: "ABCE",
+          number: 87,
+        },
+      ],
+    },
+    {
+      numId: 101,
+      id: "Cert_9032204fc475b809ea02a4ffc7e682660892d9e9d23b7b1777d0b4f0e9a0a656",
+      name: "9032204fc4",
+      ICIndustry: [
+        {
+          industry: "ABCE",
+          number: 16,
+        },
+        {
+          industry: "ABCEG",
+          number: 1,
+        },
+      ],
+    },
+    {
+      numId: 102,
+      id: "IP_e000e83fd5fc8045d04b96af43f55ceb1005ec6e728aba4b066eaa1b47b11789",
+      name: "164.155.xxx.xxx",
+      ICIndustry: [
+        {
+          industry: "A",
+          number: 1,
+        },
+        {
+          industry: "ABCE",
+          number: 2,
+        },
+        {
+          industry: "B",
+          number: 105,
+        },
+      ],
+    },
+    {
+      numId: 112,
+      id: "IP_cdcb3771d72a01e7845b212e74d1ca1b0e8384b79bad1da2f73c93959da5b3d2",
+      name: "172.255.xxx.xxx",
+      ICIndustry: [
+        {
+          industry: "ABCE",
+          number: 1,
+        },
+        {
+          industry: "B",
+          number: 18,
+        },
+        {
+          industry: "BC",
+          number: 1,
+        },
+        {
+          industry: "BG",
+          number: 1,
+        },
+      ],
+    },
+  ],
+  links: [
+    {
+      source:
+        "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
+      target:
+        "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
+      linksNumId: [3, 4],
+    },
+    {
+      source:
+        "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
+      target:
+        "Cert_9032204fc475b809ea02a4ffc7e682660892d9e9d23b7b1777d0b4f0e9a0a656",
+      linksNumId: [3, 101],
+    },
+    {
+      source:
+        "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
+      target:
+        "IP_e000e83fd5fc8045d04b96af43f55ceb1005ec6e728aba4b066eaa1b47b11789",
+      linksNumId: [3, 102],
+    },
+    {
+      source:
+        "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
+      target:
+        "IP_e000e83fd5fc8045d04b96af43f55ceb1005ec6e728aba4b066eaa1b47b11789",
+      linksNumId: [4, 102],
+    },
+    {
+      source:
+        "Cert_9032204fc475b809ea02a4ffc7e682660892d9e9d23b7b1777d0b4f0e9a0a656",
+      target:
+        "IP_cdcb3771d72a01e7845b212e74d1ca1b0e8384b79bad1da2f73c93959da5b3d2",
+      linksNumId: [101, 112],
+    },
+  ],
+};
+
 export default function SubChartCytoscape({ w, h }) {
   const [svgWidth, setSvgWidth] = useState(w);
   const [svgHeight, setSvgHeight] = useState(h);
@@ -130,7 +263,7 @@ export default function SubChartCytoscape({ w, h }) {
 
   // 请求数据并初始化图形
   useEffect(() => {
-    getMainChartData().then((res) => {
+    getMainChartSds(linksInfo).then((res) => {
       setData(res);
     });
   }, [dataParam]);
@@ -160,7 +293,6 @@ export default function SubChartCytoscape({ w, h }) {
         ur.do("remove", collection.connectedNodes());
       }
       ur.do("remove", collection);
-
     }
     setFilterFlag(false);
   }, [filterFlag]);
@@ -193,6 +325,9 @@ export default function SubChartCytoscape({ w, h }) {
       } else if (chartLayout === "fcose" || chartLayout === "coseBilkent") {
         layoutOption.nodeRepulsion = nodeDistance * 1000;
         layoutOption.idealEdgeLength = edgeLength * 10;
+      } else if (chartLayout === "concentric") {
+        layoutOption.spacingFactor = 1; // 分辨率
+        layoutOption.minNodeSpacing = nodeDistance;
       }
 
       layout = cy.layout(layoutOption);
@@ -226,7 +361,7 @@ export default function SubChartCytoscape({ w, h }) {
 
   function drawChart() {
     if (data.nodes.length === 0 && data.edges.length === 0) return;
-    const links = data.edges.map((d) => ({ data: { ...d } }));
+    const links = data.links.map((d) => ({ data: { ...d } }));
     const nodes = data.nodes.map((d) => ({ data: { ...d } }));
     // 初始化图
     Promise.all([
@@ -286,11 +421,11 @@ export default function SubChartCytoscape({ w, h }) {
 
       // 键盘控制事件
       document.addEventListener("keydown", function (e) {
-        if(e.which === 46) {   // 按删除键
+        if (e.which === 46) {
+          // 按删除键
           var selecteds = cy.$(":selected");
-          if (selecteds.length > 0)
-              ur.do("remove", selecteds);
-      }
+          if (selecteds.length > 0) ur.do("remove", selecteds);
+        }
         if (e.ctrlKey && e.target.nodeName === "BODY")
           if (e.which === 90) ur.undo();
           else if (e.which === 89) ur.redo();
