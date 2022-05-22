@@ -54,6 +54,9 @@ for (let i of nodeInfoJ) {
   nodeNumIdInfo.push(i.split(","));
 }
 nodeNumIdInfo = nodeNumIdInfo.splice(1);
+let ICIndustryP = path.join(__dirname, "data/nodeIndustryInfo2.json");
+let ICIndustryJ = fs.readFileSync(ICIndustryP, "utf8");
+const ICIndustry = JSON.parse(ICIndustryJ);
 
 // 获取主视图所需要的数据
 app.get("/getMainChartData", (req, res, next) => {
@@ -91,6 +94,7 @@ app.post("/getIcClueDataSds", jsonParser, (req, res, next) => {
     req.body.type,
   ]);
   pythonProcess.on("exit", () => {
+    console.log(1)
     let filedata = path.join(
       __dirname,
       "data/ic-clue-data/" + req.body.numId + ".json"
@@ -114,9 +118,7 @@ app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
     if (err) {
       console.log(err);
     } else {
-      let ICIndustryP = path.join(__dirname, "data/nodeIndustryInfo2.json");
-      let ICIndustryJ = fs.readFileSync(ICIndustryP, "utf8");
-      const ICIndustry = JSON.parse(ICIndustryJ);
+
       let ICLinks = JSON.parse(data);
       let nodes = [];
       for (let n of req.body.Nodes) {
@@ -140,7 +142,9 @@ app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
           ICIndustry: nowICIndustry,
         });
         for (let j of ICLinks[i]) {
-          if (req.body.Nodes.includes(j[1]) && j[1] > j[0]) {
+
+          console.log(j)
+          if (nodes.includes(j[1]) && j[1] > j[0]) {
             linksInfo.push({
               source: nodeNumIdInfo[j[0] - 1][1],
               target: nodeNumIdInfo[j[1] - 1][1],
@@ -582,6 +586,10 @@ app.post("/getInfoListSds", jsonParser, (req, res, next) => {
   for (let i of nodes) {
     industrytype.add(i["industry"]);
   }
+
+  if (industrytype.has(" \r")) {
+    industrytype.delete(" \r");
+  }
   if (industrytype.size > 1) {
     grouptype = "复合型";
   }
@@ -683,24 +691,6 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
         diffData.push(difDataUseNow);
       }
       res.send(diffData);
-      res.end();
-    }
-  });
-});
-
-// 获取冰柱图所需要的数据
-app.get("/getIcClueDataSds", (req, res) => {
-  let filename = "3";
-  let filedata = path.join(
-    __dirname,
-    "data/ic-clue-data/" + filename + ".json"
-  );
-  fs.readFile(filedata, "utf-8", function (err, data) {
-    if (err) {
-      console.error(err);
-    } else {
-      let jsonData = JSON.parse(data);
-      res.send(jsonData);
       res.end();
     }
   });

@@ -33,7 +33,7 @@ export default function ICClueChart({ w, h }) {
 
   // 请求数据
   useEffect(() => {
-    getIcClueDataSds(3, "IP").then((res) => {
+    getIcClueDataSds(10, "Domain").then((res) => {
       setData(res);
     });
   }, [dataParam]);
