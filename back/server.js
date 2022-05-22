@@ -31,7 +31,6 @@ app.all("*", function (req, res, next) {
   next();
 });
 
-
 app.get("/helloworld", (req, res) => {
   console.log("Hello World.");
   res.send("Hello world!");
@@ -56,7 +55,6 @@ for (let i of nodeInfoJ) {
 }
 nodeNumIdInfo = nodeNumIdInfo.splice(1);
 
-
 // 获取主视图所需要的数据
 app.get("/getMainChartData", (req, res, next) => {
   let node = "tiaozhan1";
@@ -71,7 +69,6 @@ app.get("/getMainChartData", (req, res, next) => {
     }
   });
 });
-
 
 // 获取视图的初始数据：node信息
 app.get("/initial", (req, res, next) => {
@@ -147,7 +144,7 @@ app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
             linksInfo.push({
               source: nodeNumIdInfo[j[0] - 1][1],
               target: nodeNumIdInfo[j[1] - 1][1],
-              linksNumId: [j[0], j[1]]
+              linksNumId: [j[0], j[1]],
             });
           }
         }
@@ -157,7 +154,6 @@ app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
     }
   });
 });
-
 
 // 主图所需要的数据
 app.post("/getMainChartSds", jsonParser, (req, res, next) => {
@@ -188,8 +184,8 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
       }
     }
   }
-  console.log(nodesNumId.size)
-  console.log(linksList.size)
+  console.log(nodesNumId.size);
+  console.log(linksList.size);
   filedata = path.join(
     __dirname,
     "data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/nodeNeighbor.json"
@@ -199,35 +195,34 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
     let nowNodeNeighbor = nowData[i["numId"]].filter((e) => {
       return !nodesNumId.has(e[0]);
     });
-    for (let j of nowNodeNeighbor) { 
+    for (let j of nowNodeNeighbor) {
       nodesNumId.add(j[0]);
       linksList.add(j[1].toString());
     }
   }
-  let nowNodes = []
-  let nowLinks = []
-  for(let i of nodesNumId){
-    let nowNodeInfo = nodeNumIdInfo[i - 1]
+  let nowNodes = [];
+  let nowLinks = [];
+  for (let i of nodesNumId) {
+    let nowNodeInfo = nodeNumIdInfo[i - 1];
     nowNodes.push({
-      "numId": parseInt(nowNodeInfo[0]),
-      "id": nowNodeInfo[1],
-      "name": nowNodeInfo[2],
-      "type": nowNodeInfo[3],
-      "industry": nowNodeInfo[4]
-    })
+      numId: parseInt(nowNodeInfo[0]),
+      id: nowNodeInfo[1],
+      name: nowNodeInfo[2],
+      type: nowNodeInfo[3],
+      industry: nowNodeInfo[4],
+    });
   }
 
-
-  for(let i of linksList){
-    i = i.split(",")
+  for (let i of linksList) {
+    i = i.split(",");
     nowLinks.push({
-      "relation" : i[0],
-      "source": nodeNumIdInfo[parseInt(i[1]) - 1][1],
-      "target": nodeNumIdInfo[parseInt(i[2]) - 1][1],
-      "linksNumId": [parseInt(i[1]), parseInt(i[2])]
-    })
+      relation: i[0],
+      source: nodeNumIdInfo[parseInt(i[1]) - 1][1],
+      target: nodeNumIdInfo[parseInt(i[2]) - 1][1],
+      linksNumId: [parseInt(i[1]), parseInt(i[2])],
+    });
   }
-  
+
   // filedata = path.join(
   //   __dirname,
   //   "dataChinaVis Data Challenge 2022-mini challenge 1-Datase/nodeNneighbor.json"
@@ -274,11 +269,11 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
   //   }
   // }
   let sendData = {
-    "nodes":nowNodes,
-    "links":nowLinks
-  }
-  res.send(sendData)
-  res.end()
+    nodes: nowNodes,
+    links: nowLinks,
+  };
+  res.send(sendData);
+  res.end();
 });
 
 app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
@@ -551,21 +546,35 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
         for (let j of ICLinks[i["linksNumId"][0]]) {
           if (j[1] == i["linksNumId"][1]) {
             difDataNow[i["source"] + " " + i["target"]] = {
-              name: difDataNow[i["linksNumId"][0]]["name"] + " " + difDataNow[i["linksNumId"][1]]["name"],
+              name:
+                difDataNow[i["linksNumId"][0]]["name"] +
+                " " +
+                difDataNow[i["linksNumId"][1]]["name"],
               numId: i["linksNumId"][0].toString() + "," + i["linksNumId"][1],
               id: i["source"] + " " + i["target"],
               value: {},
             };
             for (let k of j[j.length - 1]) {
               if (k[0] != "  ") {
-                difDataNow[i["source"] + " " + i["target"]]["value"][k[0]] = k[1];
-                if (difDataNow[i["linksNumId"][0]]["value"].hasOwnProperty(k[0])) {
+                difDataNow[i["source"] + " " + i["target"]]["value"][k[0]] =
+                  k[1];
+                if (
+                  difDataNow[i["linksNumId"][0]]["value"].hasOwnProperty(k[0])
+                ) {
                   difDataNow[i["linksNumId"][0]]["value"][k[0]] -= k[1];
-                  difDataNow[i["linksNumId"][0]]["value"][k[0]] = Math.max(difDataNow[i["linksNumId"][0]]["value"][k[0]], 0)
+                  difDataNow[i["linksNumId"][0]]["value"][k[0]] = Math.max(
+                    difDataNow[i["linksNumId"][0]]["value"][k[0]],
+                    0
+                  );
                 }
-                if (difDataNow[i["linksNumId"][1]]["value"].hasOwnProperty(k[0])) {
+                if (
+                  difDataNow[i["linksNumId"][1]]["value"].hasOwnProperty(k[0])
+                ) {
                   difDataNow[i["linksNumId"][1]]["value"][k[0]] -= k[1];
-                  difDataNow[i["linksNumId"][1]]["value"][k[0]] = Math.max(difDataNow[i["linksNumId"][1]]["value"][k[0]], 0)
+                  difDataNow[i["linksNumId"][1]]["value"][k[0]] = Math.max(
+                    difDataNow[i["linksNumId"][1]]["value"][k[0]],
+                    0
+                  );
                 }
               }
             }
@@ -778,26 +787,22 @@ app.post("/getDetialListSds", jsonParser, (req, res, next) => {
   let nowNodes = [];
   for (let i in nodesInfo) {
     delete nodesInfo[i]["LinksInfo"];
-<<<<<<< HEAD
-    sendData.push(nodesInfo[i]);
-=======
     nowNodes.push(nodesInfo[i]);
   }
-  let nowLinks = []
+  let nowLinks = [];
   for (let i of links) {
     nowLinks.push({
       relation: i["relation"],
       source: i["source"],
       target: i["target"],
       linksNumId: i["linksNumId"],
-      isCore: true
-    })
+      isCore: true,
+    });
   }
   let sendData = {
     nodes: nowNodes,
-    links: nowLinks
->>>>>>> 6be818daa4069b47f822786bcb882765ef2908b8
-  }
+    links: nowLinks,
+  };
   res.send(sendData);
   res.end();
 });
