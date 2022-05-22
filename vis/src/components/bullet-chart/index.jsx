@@ -2,11 +2,11 @@ import bullet from "./bullet";
 import "./index.css";
 import * as d3 from "d3";
 
-import { getBulletChartData, getBulletChartDataSds } from "../../apis/api";
+import { getBulletChartDataSds } from "../../apis/api";
 import { useEffect, useState } from "react";
 
 export default function BulletChart({ w, h, divname }) {
-  const [data, setData] = useState({});
+  const [data, setData] = useState([]);
   const [dataRange, setDataRange] = useState({ minNum: 0, maxNum: 0 });
 
   const [svgWidth, setSvgWidth] = useState(w);
@@ -2009,21 +2009,34 @@ export default function BulletChart({ w, h, divname }) {
 
   useEffect(() => {
     getBulletChartDataSds(nodesLinksInfo).then((res) => {
-      console.log(res);
-      res = res[0];
+      if (divname === "combine-table-bc-node") {
+        res = res[1]; // nodes
+        // 计算数据中measures和markers共同的最大、最小值 用于画图比例尺映射
+        let allNumInData = [];
+        res.forEach((item, index) => {
+          allNumInData.push(...item["measures"], ...item["markers"]);
+        });
+        setData(res);
+        // 设置数据 + 记录最大、最小值
+        setDataRange({
+          minNum: Math.min(...allNumInData),
+          maxNum: Math.max(...allNumInData),
+        });
+      } else if (divname === "combine-table-bc-link") {
+        res = res[0]; // links
 
-      // 计算数据中measures和markers共同的最大、最小值 用于画图比例尺映射
-      let allNumInData = [];
-      res.forEach((item, index) => {
-        allNumInData.push(...item["measures"], ...item["markers"]);
-      });
-
-      // 设置数据 + 记录最大、最小值
-      setData(res);
-      setDataRange({
-        minNum: Math.min(...allNumInData),
-        maxNum: Math.max(...allNumInData),
-      });
+        // 计算数据中measures和markers共同的最大、最小值 用于画图比例尺映射
+        let allNumInData = [];
+        res.forEach((item, index) => {
+          allNumInData.push(...item["measures"], ...item["markers"]);
+        });
+        setData(res);
+        // 设置数据 + 记录最大、最小值
+        setDataRange({
+          minNum: Math.min(...allNumInData),
+          maxNum: Math.max(...allNumInData),
+        });
+      }
     });
   }, []);
 
@@ -2031,7 +2044,7 @@ export default function BulletChart({ w, h, divname }) {
     const dimensions = {
       width: svgWidth,
       height: svgHeight,
-      margin: { top: 10, right: 5, bottom: 20, left: 5 },
+      margin: { top: 10, right: 5, bottom: 50, left: 5 },
     };
     const boundedWidth =
       dimensions.width - dimensions.margin.left - dimensions.margin.right;
