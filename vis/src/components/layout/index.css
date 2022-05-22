@@ -143,14 +143,22 @@
 
 #sta-node {
   width: 100%;
-  flex: 1;
+  flex: 25;
   background-color: white;
+  /* padding-bottom: 2px; */
+}
+
+#divider {
+  width: 100%;
+  flex: 1;
+  background-color: #eee;
 }
 
 #sta-link {
   width: 100%;
-  flex: 1;
+  flex: 25;
   background-color: white;
+  /* padding-top: 2px; */
 }
 
 #assetandpath {

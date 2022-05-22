@@ -114,6 +114,7 @@ export default function Layout() {
               b="node"
             />
           </div>
+          <div id="divider"></div>
           <div id="sta-link">
             <CombineTable
               w={combineTableWidth}
