@@ -1,9 +1,9 @@
 // 数据请求
-import {
-    initialSds, icClueDataSds, skeletonChartSds,
-    getBulletChartDataSds, infoList, difChart,
-    getFinalDataSds, mainChartSds, detialListSds
-} from "../../apis/api.js";
+// import {
+//     initialSds, icClueDataSds, skeletonChartSds,
+//     getBulletChartDataSds, infoList, difChart,
+//     getFinalDataSds, mainChartSds, detialListSds
+// } from "../../apis/api.js";
 import { useEffect, useState } from "react";
 
 export default function DataProcessChecker() {
@@ -747,10 +747,10 @@ export default function DataProcessChecker() {
     //     });
     // }, [])
 
-    useEffect(() => {
-        detialListSds(nodesLinksInfo).then((res) => {
-            console.log(res)
-        });
-    }, [])
+    // useEffect(() => {
+    //     detialListSds(nodesLinksInfo).then((res) => {
+    //         console.log(res)
+    //     });
+    // }, [])
 
 }

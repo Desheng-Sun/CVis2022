@@ -94,7 +94,7 @@ def getIPCertLinksInSkip3(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW):
         "dirtyDomainNum": dirtyDomain
     })
     with open(nowPath + "ic-clue-data/" + str(nowNodeNumId) + ".json", 'w', encoding='utf-8') as f:
-        json.dump(allLinks, f, ensure_ascii=False)
+        json.dump([allLinks], f, ensure_ascii=False)
     # print("第", coreList, "个线程执行完成了----------------",
     #       time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
 

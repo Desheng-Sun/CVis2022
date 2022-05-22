@@ -22,8 +22,8 @@ export function getDetailListData() {
 }
 
 //孙德晟判断代码是否正确的接口
-export function initialSds() {
-  return get("/initialSds");
+export function getInitialSds() {
+  return get("/getInitialSds");
 }
 
 export function getIcClueDataSds(numId, type) {
@@ -45,20 +45,20 @@ export function getBulletChartDataSds(nodesLinksInfo) {
   });
 }
 
-export function infoListSds(nodesLinksInfo) {
-  return post("/infoListSds", {
+export function getInfoListSds(nodesLinksInfo) {
+  return post("/getInfoListSds", {
     nodesLinksInfo: nodesLinksInfo,
   });
 }
 
-export function difChartSds(linksInfo) {
-  return post("/difChartSds", {
+export function getDifChartSds(linksInfo) {
+  return post("/getDifChartSds", {
     linksInfo: linksInfo,
   });
 }
 
-export function mainChartSds(links, nodes) {
-  return post("/mainChartSds", {
+export function getMainChartSds(links, nodes) {
+  return post("/getMainChartSds", {
     links: links,
     nodes: nodes,
   });
@@ -70,8 +70,8 @@ export function getFinalDataSds(nodesLinksInfo) {
   });
 }
 
-export function detialListSds(nodesLinksInfo) {
-  return post("/detialListSds", {
+export function getDetialListSds(nodesLinksInfo) {
+  return post("/getDetialListSds", {
     nodesLinksInfo: nodesLinksInfo,
   });
 }

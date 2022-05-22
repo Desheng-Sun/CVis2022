@@ -78,7 +78,7 @@ app.get("/initial", (req, res, next) => {
   res.end();
 });
 // 获取视图的初始数据：node信息R
-app.get("/initialSds", (req, res, next) => {
+app.get("/getInitialSds", (req, res, next) => {
   res.send(nodeNumIdInfo);
   res.end();
 });
@@ -116,9 +116,13 @@ app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
       console.log(err);
     } else {
       let ICLinks = JSON.parse(data);
+      let nodes = req.body.Nodes
+      nodes = nodes.map(e => {
+        return parseInt(e)
+      })
       let nodesInfo = [];
       let linksInfo = [];
-      for (let i of req.body.Nodes) {
+      for (let i of nodes) {
         const nowNodeInfo = nodeNumIdInfo[i - 1];
         let nowICIndustry = [];
         for (let j of ICIndustry[i]) {
@@ -149,7 +153,7 @@ app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
 });
 
 // 主图所需要的数据
-app.post("/mainChartSds", jsonParser, (req, res, next) => {
+app.post("/getMainChartSds", jsonParser, (req, res, next) => {
   const links = req.body.links;
   const nodes = req.body.nodes;
   let nowJSource = 0;
@@ -236,7 +240,6 @@ app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
   let r_cname = 0;
   let r_request_jump = 0;
   let r_subdomain = 0;
-  let none = 0;
   let r_dns_a = 0;
   let r_cidr = 0;
   let r_asn = 0;
@@ -430,7 +433,7 @@ app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
   res.end();
 });
 
-app.post("/infoListSds", jsonParser, (req, res, next) => {
+app.post("/getInfoListSds", jsonParser, (req, res, next) => {
   let numnode = 0;
   let numlink = 0;
   let groupscope = "";
@@ -466,7 +469,7 @@ app.post("/infoListSds", jsonParser, (req, res, next) => {
   res.end();
 });
 
-app.post("/difChartSds", jsonParser, (req, res, next) => {
+app.post("/getDifChartSds", jsonParser, (req, res, next) => {
   let filedata = path.join(__dirname, "data/nodesToNodesGraph1.json");
   fs.readFile(filedata, "utf-8", function (err, data) {
     if (err) {
@@ -687,7 +690,7 @@ app.post("/getFinalDataSds", jsonParser, (req, res, next) => {
   res.end();
 });
 
-app.post("/detialListSds", jsonParser, (req, res, next) => {
+app.post("/getDetialListSds", jsonParser, (req, res, next) => {
   const links = req.body.nodesLinksInfo["links"];
   const nodes = req.body.nodesLinksInfo["nodes"];
   let nodesInfo = {};
