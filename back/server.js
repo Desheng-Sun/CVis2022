@@ -95,6 +95,7 @@ app.post("/getIcClueDataSds", jsonParser, (req, res, next) => {
   ]);
 
   pythonProcess.on("exit", () => {
+    console.log(1);
     let filedata = path.join(
       __dirname,
       "data/ic-clue-data/" + req.body.numId + ".json"
@@ -584,6 +585,10 @@ app.post("/getInfoListSds", jsonParser, (req, res, next) => {
   for (let i of nodes) {
     industrytype.add(i["industry"]);
   }
+
+  if (industrytype.has(" \r")) {
+    industrytype.delete(" \r");
+  }
   if (industrytype.size > 1) {
     grouptype = "复合型";
   }
@@ -689,24 +694,6 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
     }
   });
 });
-
-// 获取冰柱图所需要的数据
-// app.get("/getIcClueDataSds", (req, res) => {
-//   let filename = "3";
-//   let filedata = path.join(
-//     __dirname,
-//     "data/ic-clue-data/" + filename + ".json"
-//   );
-//   fs.readFile(filedata, "utf-8", function (err, data) {
-//     if (err) {
-//       console.error(err);
-//     } else {
-//       let jsonData = JSON.parse(data);
-//       res.send(jsonData);
-//       res.end();
-//     }
-//   });
-// });
 
 // 读取BulletChart样例数据
 app.get("/getBulletChartData", (req, res) => {

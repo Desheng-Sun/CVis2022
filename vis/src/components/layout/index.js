@@ -62,7 +62,13 @@ export default function Layout() {
     setMainChartWidth(
       document.getElementById("mainmap").getBoundingClientRect().width
     );
-    setMainChartHeight(968);
+    setCombineTableHeight(
+      document.getElementById("sta-node").getBoundingClientRect().height
+    );
+    // setMainChartWidth(
+    //   document.getElementById("mainmap").getBoundingClientRect().width
+    // );
+    // setMainChartHeight(968);
   });
 
   return (
@@ -87,8 +93,8 @@ export default function Layout() {
         <div id="iright">
           <div id="container-mainmap">
             <div id="mainmap">
-              <ChartHeader chartName={"主图"} />
-              <MainChartCytoscape w={mainChartWidth} h={mainChartHeight} />
+              {/* <ChartHeader chartName={"主图"} />
+              <MainChartCytoscape w={mainChartWidth} h={mainChartHeight} /> */}
             </div>
           </div>
           <div id="container-filter">

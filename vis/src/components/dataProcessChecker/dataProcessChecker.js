@@ -2138,30 +2138,29 @@ export default function DataProcessChecker() {
   //         console.log(res)
   //     });
   //   }, [])
-  // 请求数据
+  //   // 请求数据
   useEffect(() => {
-    getIcClueDataSds(5, "Domain").then((res) => {
+    getIcClueDataSds(8, "Domain").then((res) => {
       console.log(res);
     });
   }, []);
 
   // useEffect(() => {
-  //     getSkeletonChartDataSds([3, 4, 101, 102, 112]).then((res) => {
+  //     getSkeletonChartDataSds(["3", "4", "101", "102", "112"]).then((res) => {
   //         console.log(res)
   //     });
   // }, [])
 
-  // useEffect(() => {
-  //   getBulletChartDataSds(nodesLinksInfo).then((res) => {
-  //       console.log(res)
-  //   });
+  //   useEffect(() => {
+  //     getBulletChartDataSds(nodesLinksInfo).then((res) => {
+  //         console.log(res)
 
-  // }, [])
-  // useEffect(() => {
-  //   getInfoListSds(nodesLinksInfo).then((res) => {
-  //       console.log(res)
-  //   });
-  // }, [])
+  //   }, [])
+  //   useEffect(() => {
+  //     getInfoListSds(nodesLinksInfo).then((res) => {
+  //         console.log(res)
+  //     });
+  //   }, [])
 
   //   useEffect(() => {
   //     getDifChartSds(linksInfo).then((res) => {

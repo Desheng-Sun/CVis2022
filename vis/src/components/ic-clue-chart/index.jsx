@@ -38,8 +38,7 @@ export default function ICClueChart({ w, h }) {
 
   // 请求数据
   useEffect(() => {
-    getIcClueDataSds(5, "Domain").then((res) => {
-      console.log(res);
+    getIcClueDataSds(10, "Domain").then((res) => {
       setData(res);
     });
   }, []);
