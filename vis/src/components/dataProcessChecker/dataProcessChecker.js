@@ -1,6 +1,6 @@
 // 数据请求
 import {
-    getDifChartSds, getSkeletonChartDataSds, getDetialListSds, getInitialSds, getMainChartSds,
+    getDifChartSds, getSkeletonChartDataSds, getDetialListSds, getInitialSds, getMainChartSds,getInfoListSds,
     getBulletChartDataSds
 
 } from "../../apis/api.js";
@@ -2319,11 +2319,11 @@ export default function DataProcessChecker() {
         });
 
       }, [])  
-    //   useEffect(() => {
-    //     infoList(nodesLinksInfo).then((res) => {
-    //         console.log(res)
-    //     });
-    //   }, [])
+      useEffect(() => {
+        getInfoListSds(nodesLinksInfo).then((res) => {
+            console.log(res)
+        });
+      }, [])
 
     //   useEffect(() => {
     //     getDifChartSds(linksInfo).then((res) => {

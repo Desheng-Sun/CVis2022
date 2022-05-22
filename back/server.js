@@ -580,7 +580,7 @@ app.post("/getInfoListSds", jsonParser, (req, res, next) => {
     groupscope = "大";
   }
   for (let i of nodes) {
-    industrytype.add(i[4]);
+    industrytype.add(i["industry"]);
   }
   if (industrytype.size > 1) {
     grouptype = "复合型";
