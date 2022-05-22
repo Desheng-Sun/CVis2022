@@ -1,6 +1,7 @@
 // 数据请求
 import {
-    getDifChartSds, getSkeletonChartDataSds, getDetialListSds, getInitialSds, getMainChartSds
+    getDifChartSds, getSkeletonChartDataSds, getDetialListSds, getInitialSds, getMainChartSds,
+    getBulletChartDataSds
 
 } from "../../apis/api.js";
 import { useEffect, useState } from "react";
@@ -2312,11 +2313,12 @@ export default function DataProcessChecker() {
     //     });
     // }, [])
 
-    //   useEffect(() => {
-    //     getBulletChartDataSds(nodesLinksInfo).then((res) => {
-    //         console.log(res)
-    //     });
-    //   }, [])  
+      useEffect(() => {
+        getBulletChartDataSds(nodesLinksInfo).then((res) => {
+            console.log(res)
+        });
+
+      }, [])  
     //   useEffect(() => {
     //     infoList(nodesLinksInfo).then((res) => {
     //         console.log(res)
@@ -2335,11 +2337,11 @@ export default function DataProcessChecker() {
     //     });
     // }, [])
 
-    useEffect(() => {
-        getDetialListSds(nodesLinksInfo).then((res) => {
-            console.log(res)
-        });
-    }, [])
+    // useEffect(() => {
+    //     getDetialListSds(nodesLinksInfo).then((res) => {
+    //         console.log(res)
+    //     });
+    // }, [])
 
     // useEffect(() => {
     //     getMainChartSds(linksInfo).then((res) => {
