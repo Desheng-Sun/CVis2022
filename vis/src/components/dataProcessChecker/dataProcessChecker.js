@@ -2146,11 +2146,12 @@ export default function DataProcessChecker() {
     //     });
     //   }, [])  
 
-      useEffect(() => {
-        getIcClueData2Sds(4,"Cert").then((res) => {
-            console.log(res)
-        });
-      }, [])  
+    //   useEffect(() => {
+    //     getIcClueData2Sds(4,"Cert").then((res) => {
+    //         console.log(res)
+    //     });
+    //   }, [])  
+
     // useEffect(() => {
     //     getSkeletonChartDataSds(["3", "4", "101", "102", "112"]).then((res) => {
     //         console.log(res)
@@ -2161,12 +2162,12 @@ export default function DataProcessChecker() {
   //     getBulletChartDataSds(nodesLinksInfo).then((res) => {
   //         console.log(res)
 
-  //   }, [])
-  //   useEffect(() => {
-  //     getInfoListSds(nodesLinksInfo).then((res) => {
-  //         console.log(res)
-  //     });
-  //   }, [])
+    // }, [])
+    useEffect(() => {
+      getInfoListSds(nodesLinksInfo).then((res) => {
+          console.log(res)
+      });
+    }, [])
 
   //   useEffect(() => {
   //     getDifChartSds(linksInfo).then((res) => {

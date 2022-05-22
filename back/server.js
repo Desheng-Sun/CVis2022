@@ -591,6 +591,7 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
   res.end();
 });
 
+
 app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
   // 周艺璇画的图的相关数据
   let communityInfo = req.body.nodesLinksInfo; //传的参数，社区的节点和链接信息
@@ -835,11 +836,11 @@ app.post("/getInfoListSds", jsonParser, (req, res, next) => {
     groupscope = "大";
   }
   for (let i of nodes) {
-    industrytype.add(i["industry"]);
+    industrytype.add(i["industry"].replace("\r",""));
   }
 
-  if (industrytype.has(" \r")) {
-    industrytype.delete(" \r");
+  if (industrytype.has("  ")) {
+    industrytype.delete("  ");
   }
   if (industrytype.size > 1) {
     grouptype = "复合型";
