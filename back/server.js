@@ -93,6 +93,7 @@ app.post("/getIcClueDataSds", jsonParser, (req, res, next) => {
     req.body.numId,
     req.body.type,
   ]);
+
   pythonProcess.on("exit", () => {
     let filedata = path.join(
       __dirname,
@@ -117,12 +118,12 @@ app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
     if (err) {
       console.log(err);
     } else {
-
       let ICLinks = JSON.parse(data);
       let nodes = [];
       for (let n of req.body.Nodes) {
         nodes.push(parseInt(n));
       }
+      // console.log(nodes);
       let nodesInfo = [];
       let linksInfo = [];
       for (let i of nodes) {

@@ -62,6 +62,12 @@ export default function Layout() {
     setMainChartWidth(
       document.getElementById("mainmap").getBoundingClientRect().width
     );
+    setCombineTableHeight(
+      document.getElementById("sta-node").getBoundingClientRect().height
+    );
+    setMainChartWidth(
+      document.getElementById("mainmap").getBoundingClientRect().width
+    );
     setMainChartHeight(968);
   });
 
@@ -127,7 +133,7 @@ export default function Layout() {
         <div id="assetandpath">核心资产与关键链路展示</div>
         <div id="conclusion">
           <ChartHeader chartName={"团伙分析结果"} />
-          <ConclusionText />
+          {/* <ConclusionText /> */}
         </div>
       </div>
     </div>
