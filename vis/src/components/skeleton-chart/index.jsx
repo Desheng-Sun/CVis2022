@@ -51,20 +51,19 @@ export default function SkeletonChart({ w, h }) {
 
   // 绘制结构图
   function drawChart() {
-    var combinationOrderSet = new Set();
+    var combinationOrderSet = new Set()
     if (JSON.stringify(data) === "{}") return;
     const links = data.links.map((d) => Object.create(d));
     const nodes = data.nodes.map((d, i) => {
-      for (let item in d.industry) {
-        combinationOrderSet.add(d.industry[item]["industry"]);
+      for(let item in d.industry){
+        combinationOrderSet.add(d.industry[item]['industry'])
       }
-      return Object.create({ ...d, group: i });
+      return Object.create({ ...d, group: i })
     }); // 将每一个点单独看成一个group，被选中的group添加背景颜色
     // const nodes = data.nodes.map((d, i) => Object.create(d));
-
-    // for(let i in combinationOrderSet){
-    //   console.log(i);
-    // }
+    let combinationOrder = [...combinationOrderSet].sort()   // 包含的所有产业类型组合
+    let industryType = [...new Set([...combinationOrder.toString().replaceAll(',', '')])].sort()  // 包含的所有产业类型
+    
     d3.selectAll("div#skeleton-chart svg").remove();
     const svg = d3
       .select("#skeleton-chart")
@@ -80,9 +79,8 @@ export default function SkeletonChart({ w, h }) {
       onClick = undefined,
       onLeave = undefined,
       chargeStrength = undefined,
-      linkStrength = undefined,
-      industryType = ["A", "B", "C", "D", "E"], // 一共有9种产业
-      combinationOrder = ["AB", "AE", "BCD"]; // 按字母对所有产业组合进行排序
+      linkStrength = undefined
+      // combinationOrder = ["AB", "AE", "BCD"]; // 按字母对所有产业组合进行排序
     const wrapper = svg.append("g").attr("transform", `translate(0, 0)`);
 
     // create groups, links and nodes

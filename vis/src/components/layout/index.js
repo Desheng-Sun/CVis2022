@@ -53,12 +53,12 @@ export default function Layout() {
     // setSkeletonChartHeight(
     //   document.getElementById("skeleton-chart").getBoundingClientRect().height
     // );
-    setCombineTableWidth(
-      document.getElementById("sta-node").getBoundingClientRect().width
-    );
-    setCombineTableHeight(
-      document.getElementById("sta-node").getBoundingClientRect().height
-    );
+    // setCombineTableWidth(
+    //   document.getElementById("sta-node").getBoundingClientRect().width
+    // );
+    // setCombineTableHeight(
+    //   document.getElementById("sta-node").getBoundingClientRect().height
+    // );
     setMainChartWidth(
       document.getElementById("mainmap").getBoundingClientRect().width
     );
@@ -107,7 +107,7 @@ export default function Layout() {
         </div>
         <div id="container-statistic">
           <ChartHeader chartName={"节点与边信息"} />
-          <div id="sta-node">
+          {/* <div id="sta-node">
             <CombineTable
               w={combineTableWidth}
               h={combineTableHeight}
@@ -121,7 +121,7 @@ export default function Layout() {
               h={combineTableHeight}
               b="link"
             />
-          </div>
+          </div> */}
         </div>
 
         <div id="assetandpath">核心资产与关键链路展示</div>
