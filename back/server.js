@@ -184,8 +184,8 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
       }
     }
   }
-  console.log(nodesNumId.size)
-  console.log(linksList.size)
+  console.log(nodesNumId.size);
+  console.log(linksList.size);
   // filedata = path.join(
   //   __dirname,
   //   "data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/nodeNeighbor.json"
@@ -195,7 +195,7 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
   //   let nowNodeNeighbor = nowData[i["numId"]].filter((e) => {
   //     return !nodesNumId.has(e[0]);
   //   });
-  //   for (let j of nowNodeNeighbor) { 
+  //   for (let j of nowNodeNeighbor) {
   //     nodesNumId.add(j[0]);
   //     linksList.add(j[1].toString());
   //   }
@@ -213,7 +213,6 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
   //   })
   // }
 
-
   // for(let i of linksList){
   //   i = i.split(",")
   //   nowLinks.push({
@@ -223,8 +222,8 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
   //     "linksNumId": [parseInt(i[1]), parseInt(i[2])]
   //   })
   // }
-  let nowNodes = []
-  let nowLinks = []
+  let nowNodes = [];
+  let nowLinks = [];
   filedata = path.join(
     __dirname,
     "data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/nodeNeighbor.json"
@@ -237,82 +236,80 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
       return !nodesNumId.has(e[0]);
     });
     for (let j of nowNodeNeighbor) {
-      let nowNodeInfo = nodeNumIdInfo[j[0] - 1]
+      let nowNodeInfo = nodeNumIdInfo[j[0] - 1];
       if (nowNodeInfo[3] == "Domain") {
-        if(!nowNodeNodeInfo.hasOwnProperty(nowNodeInfo[3])){
+        if (!nowNodeNodeInfo.hasOwnProperty(nowNodeInfo[3])) {
           nowNodeNodeInfo[nowNodeInfo[4]] = {
-            "numId": parseInt(nowNodeInfo[0]),
-            "id": nowNodeInfo[1],
-            "name": nowNodeInfo[2],
-            "type": nowNodeInfo[3],
-            "industry": nowNodeInfo[4],
-            "children": []
-          }
+            numId: parseInt(nowNodeInfo[0]),
+            id: nowNodeInfo[1],
+            name: nowNodeInfo[2],
+            type: nowNodeInfo[3],
+            industry: nowNodeInfo[4],
+            children: [],
+          };
           nowNodeLinksInfo[nowNodeInfo[4]] = {
-            "relation": j[1][0],
-            "source": nodeNumIdInfo[parseInt(j[1][1]) - 1][1],
-            "target": nodeNumIdInfo[parseInt(j[1][2]) - 1][1],
-            "linksNumId": [parseInt(j[1][1]), parseInt(j[1][2])],
-            "children": [],
-          }
-        }      
+            relation: j[1][0],
+            source: nodeNumIdInfo[parseInt(j[1][1]) - 1][1],
+            target: nodeNumIdInfo[parseInt(j[1][2]) - 1][1],
+            linksNumId: [parseInt(j[1][1]), parseInt(j[1][2])],
+            children: [],
+          };
+        }
         nowNodeNodeInfo[nowNodeInfo[4]]["children"].push({
-          "numId": parseInt(nowNodeInfo[0]),
-          "id": nowNodeInfo[1],
-          "name": nowNodeInfo[2],
-          "type": nowNodeInfo[3],
-          "industry": nowNodeInfo[4],
-        })
+          numId: parseInt(nowNodeInfo[0]),
+          id: nowNodeInfo[1],
+          name: nowNodeInfo[2],
+          type: nowNodeInfo[3],
+          industry: nowNodeInfo[4],
+        });
         nowNodeLinksInfo[nowNodeInfo[4]]["children"].push({
-          "relation": j[1][0],
-          "source": nodeNumIdInfo[parseInt(j[1][1]) - 1][1],
-          "target": nodeNumIdInfo[parseInt(j[1][2]) - 1][1],
-          "linksNumId": [parseInt(j[1][1]), parseInt(j[1][2])]
-        })
-
-      }
-      else{
-        if(!nowNodeNodeInfo.hasOwnProperty(nowNodeInfo[0])){
+          relation: j[1][0],
+          source: nodeNumIdInfo[parseInt(j[1][1]) - 1][1],
+          target: nodeNumIdInfo[parseInt(j[1][2]) - 1][1],
+          linksNumId: [parseInt(j[1][1]), parseInt(j[1][2])],
+        });
+      } else {
+        if (!nowNodeNodeInfo.hasOwnProperty(nowNodeInfo[0])) {
           nowNodeNodeInfo[nowNodeInfo[0]] = {
-            "numId": parseInt(nowNodeInfo[0]),
-            "id": nowNodeInfo[1],
-            "name": nowNodeInfo[2],
-            "type": nowNodeInfo[3],
-            "industry": nowNodeInfo[4],
-            "children": []
-          }
+            numId: parseInt(nowNodeInfo[0]),
+            id: nowNodeInfo[1],
+            name: nowNodeInfo[2],
+            type: nowNodeInfo[3],
+            industry: nowNodeInfo[4],
+            children: [],
+          };
           nowNodeLinksInfo[nowNodeInfo[0]] = {
-            "relation": j[1][0],
-            "source": nodeNumIdInfo[parseInt(j[1][1]) - 1][1],
-            "target": nodeNumIdInfo[parseInt(j[1][2]) - 1][1],
-            "linksNumId": [parseInt(j[1][1]), parseInt(j[1][2])],
-            "children": [],
-          }
-        }  
+            relation: j[1][0],
+            source: nodeNumIdInfo[parseInt(j[1][1]) - 1][1],
+            target: nodeNumIdInfo[parseInt(j[1][2]) - 1][1],
+            linksNumId: [parseInt(j[1][1]), parseInt(j[1][2])],
+            children: [],
+          };
+        }
         nowNodeNodeInfo[nowNodeInfo[0]]["children"].push({
-          "numId": parseInt(nowNodeInfo[0]),
-          "id": nowNodeInfo[1],
-          "name": nowNodeInfo[2],
-          "type": nowNodeInfo[3],
-          "industry": nowNodeInfo[4],
-        })
+          numId: parseInt(nowNodeInfo[0]),
+          id: nowNodeInfo[1],
+          name: nowNodeInfo[2],
+          type: nowNodeInfo[3],
+          industry: nowNodeInfo[4],
+        });
         nowNodeLinksInfo[nowNodeInfo[0]]["children"].push({
-          "relation": j[1][0],
-          "source": nodeNumIdInfo[parseInt(j[1][1]) - 1][1],
-          "target": nodeNumIdInfo[parseInt(j[1][2]) - 1][1],
-          "linksNumId": [parseInt(j[1][1]), parseInt(j[1][2])]
-        })    
+          relation: j[1][0],
+          source: nodeNumIdInfo[parseInt(j[1][1]) - 1][1],
+          target: nodeNumIdInfo[parseInt(j[1][2]) - 1][1],
+          linksNumId: [parseInt(j[1][1]), parseInt(j[1][2])],
+        });
       }
     }
-    for(let j in nowNodeNodeInfo){
-      nowNodes.push(nowNodeNodeInfo[j])
+    for (let j in nowNodeNodeInfo) {
+      nowNodes.push(nowNodeNodeInfo[j]);
     }
-    for(let j in nowNodeLinksInfo){
-      nowLinks.push(nowNodeLinksInfo[j])
+    for (let j in nowNodeLinksInfo) {
+      nowLinks.push(nowNodeLinksInfo[j]);
     }
   }
-  for(let i of nodesNumId){
-    let nowNodeInfo = nodeNumIdInfo[i - 1]
+  for (let i of nodesNumId) {
+    let nowNodeInfo = nodeNumIdInfo[i - 1];
     nowNodes.push({
       numId: parseInt(nowNodeInfo[0]),
       id: nowNodeInfo[1],
@@ -332,11 +329,11 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
     });
   }
   let sendData = {
-    "nodes": nowNodes,
-    "links": nowLinks
-  }
-  res.send(sendData)
-  res.end()
+    nodes: nowNodes,
+    links: nowLinks,
+  };
+  res.send(sendData);
+  res.end();
 });
 
 app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
@@ -422,121 +419,121 @@ app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
   const linksList = [
     {
       title: "certChain",
-      maesures: [r_cert_chain],
-      markes: [7],
+      measures: [r_cert_chain],
+      markers: [7],
     },
     {
       title: "cert",
-      maesures: [r_cert],
-      markes: [50],
+      measures: [r_cert],
+      markers: [50],
     },
     {
       title: "WhoisName",
-      maesures: [r_whois_name],
-      markes: [5],
+      measures: [r_whois_name],
+      markers: [5],
     },
     {
       title: "whoisPhone",
-      maesures: [r_whois_phone],
-      markes: [3],
+      measures: [r_whois_phone],
+      markers: [3],
     },
     {
       title: "whoisEmail",
-      maesures: [r_whois_email],
-      markes: [2],
+      measures: [r_whois_email],
+      markers: [2],
     },
     {
       title: "cname",
-      maesures: [r_cname],
-      markes: [10],
+      measures: [r_cname],
+      markers: [10],
     },
     {
       title: "requestJump",
-      maesures: [r_request_jump],
-      markes: [5],
+      measures: [r_request_jump],
+      markers: [5],
     },
     {
       title: "subdomain",
-      maesures: [r_subdomain],
-      markes: [150],
+      measures: [r_subdomain],
+      markers: [150],
     },
 
     {
       title: "dnsA",
-      maesures: [r_dns_a],
-      markes: [150],
+      measures: [r_dns_a],
+      markers: [150],
     },
     {
       title: "cidr",
-      maesures: [r_cidr],
-      markes: [3],
+      measures: [r_cidr],
+      markers: [3],
     },
     {
       title: "asn",
-      maesures: [r_asn],
-      markes: [3],
+      measures: [r_asn],
+      markers: [3],
     },
   ];
   const nodesList = [
     {
       title: "certT",
-      maesures: [certAsTarget.size],
-      markes: [3],
+      measures: [certAsTarget.size],
+      markers: [3],
     },
     {
-      title: "cetrS",
-      maesures: [certAsSource.size],
-      markes: [7],
+      title: "certS",
+      measures: [certAsSource.size],
+      markers: [7],
     },
     {
       title: "whoisName",
-      maesures: [whoisName.size],
-      markes: [3],
+      measures: [whoisName.size],
+      markers: [3],
     },
     {
       title: "whoisEmail",
-      maesures: [whoisEmail.size],
-      markes: [2],
+      measures: [whoisEmail.size],
+      markers: [2],
     },
     {
       title: "whoisPhone",
-      maesures: [whoisPhone.size],
-      markes: [2],
+      measures: [whoisPhone.size],
+      markers: [2],
     },
     {
       title: "domainCT",
-      maesures: [domainAsCnameTarget.size],
-      markes: [10],
+      measures: [domainAsCnameTarget.size],
+      markers: [10],
     },
     {
       title: "domainJT",
-      maesures: [domainAsJumpTarget.size],
-      markes: [2],
+      measures: [domainAsJumpTarget.size],
+      markers: [2],
     },
     {
       title: "domainST",
-      maesures: [domainAsSubTarget.size],
-      markes: [50],
+      measures: [domainAsSubTarget.size],
+      markers: [50],
     },
     {
       title: "domainS",
-      maesures: [domainAsSource.size],
-      markes: [30],
+      measures: [domainAsSource.size],
+      markers: [30],
     },
     {
       title: "IP",
-      maesures: [ip.size],
-      markes: [7],
+      measures: [ip.size],
+      markers: [7],
     },
     {
       title: "ipc",
-      maesures: [ipc.size],
-      markes: [2],
+      measures: [ipc.size],
+      markers: [2],
     },
     {
       title: "asn",
-      maesures: [asn.size],
-      markes: [3],
+      measures: [asn.size],
+      markers: [3],
     },
   ];
   res.send([linksList, nodesList]);
@@ -707,26 +704,24 @@ app.get("/getBulletChartData", (req, res) => {
 app.post("/getFinalDataSds", jsonParser, (req, res, next) => {
   const initialLinks = req.body.nodesLinksInfo["links"];
   const initialNodes = req.body.nodesLinksInfo["nodes"];
-  let links = []
-  let nodes = []
-  for(let i of initialLinks){
-    if(i.hasOwnProperty("children")){
-      for(let j of i["children"]){
-        links.push(j)
+  let links = [];
+  let nodes = [];
+  for (let i of initialLinks) {
+    if (i.hasOwnProperty("children")) {
+      for (let j of i["children"]) {
+        links.push(j);
       }
-    }      
-    else{
-      links.push(i)
+    } else {
+      links.push(i);
     }
   }
-  for(let i of initialNodes){
-    if(i.hasOwnProperty("children")){
-      for(let j of i["children"]){
-        nodes.push(j)
+  for (let i of initialNodes) {
+    if (i.hasOwnProperty("children")) {
+      for (let j of i["children"]) {
+        nodes.push(j);
       }
-    }      
-    else{
-      nodes.push(i)
+    } else {
+      nodes.push(i);
     }
   }
   let num_all_node = 0;
@@ -833,26 +828,24 @@ app.post("/getFinalDataSds", jsonParser, (req, res, next) => {
 app.post("/getDetialListSds", jsonParser, (req, res, next) => {
   const initialLinks = req.body.nodesLinksInfo["links"];
   const initialNodes = req.body.nodesLinksInfo["nodes"];
-  let links = []
-  let nodes = []
-  for(let i of initialLinks){
-    if(i.hasOwnProperty("children")){
-      for(let j of i["children"]){
-        links.push(j)
+  let links = [];
+  let nodes = [];
+  for (let i of initialLinks) {
+    if (i.hasOwnProperty("children")) {
+      for (let j of i["children"]) {
+        links.push(j);
       }
-    }      
-    else{
-      links.push(i)
+    } else {
+      links.push(i);
     }
   }
-  for(let i of initialNodes){
-    if(i.hasOwnProperty("children")){
-      for(let j of i["children"]){
-        nodes.push(j)
+  for (let i of initialNodes) {
+    if (i.hasOwnProperty("children")) {
+      for (let j of i["children"]) {
+        nodes.push(j);
       }
-    }      
-    else{
-      nodes.push(i)
+    } else {
+      nodes.push(i);
     }
   }
   let nodesInfo = {};
