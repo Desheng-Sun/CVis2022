@@ -5,7 +5,6 @@ from platform import node
 import pandas as pd
 import multiprocessing as mp
 import time
-from alive_progress import alive_bar
 import sys
 
 
@@ -106,7 +105,7 @@ def getNodesInICLinks(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW, nodeAlone
     listLinks = []
     listNode = []
     for i in nodeICLinks[str(nowNodeNumId)]:
-        if(isinstance(i,list)):
+        if(isinstance(i, list)):
             listLinks.append(i)
         else:
             listNode.append(i)
@@ -118,7 +117,7 @@ def getNodesInICLinks(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW, nodeAlone
     for i in nowICNodeSet:
         nowICNodeCount.append([i, nowICNode.count(i)])
     nowICNodeCount.sort(reverse=True, key=lambda x: x[1])
-    
+
     nowICNodeSet = []
     for i in nowICNodeCount:
         nowICNodeSet.append(i[0])
@@ -151,11 +150,11 @@ def getNodesInICLinks(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW, nodeAlone
             }
             # 针对第0层数据的链路添加第一层数据
             for j in nodeToNodeInfo[str(i[0])]:
-                nowICLink = [min(j[0],j[1]), max(j[0],j[1])]
+                nowICLink = [min(j[0], j[1]), max(j[0], j[1])]
                 if((not nowICLink in listLinks)):
                     continue
                 listLinks.remove(nowICLink)
-                
+
                 nowICNodeSet.remove(j[1])
                 nowNodesInfo = list(nodeCsvW[int(j[1]) - 1])
                 nowLinks["children"].append({
@@ -180,8 +179,8 @@ def getNodesInICLinks(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW, nodeAlone
                     # 如果第二层数据和第0层数据相等，则跳过A-B-A
                     if(k[1] == int(nowNodeNumId)):
                         continue
-                    
-                    nowICLink = [min(k[0],k[1]), max(k[0],k[1])]                    
+
+                    nowICLink = [min(k[0], k[1]), max(k[0], k[1])]
                     if((not nowICLink in listLinks)):
                         continue
                     listLinks.remove(nowICLink)
@@ -217,7 +216,7 @@ def getNodesInICLinks(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW, nodeAlone
             if(len(nowLinks["children"]) == 0):
                 continue
             allLinks.append(nowLinks)
-    
+
     for i in listNode:
         nowNodesInfo = list(nodeCsvW[int(i) - 1])
         nowNodeLinkInfo = nodeAloneInfo[str(i)]
@@ -236,7 +235,7 @@ def getNodesInICLinks(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW, nodeAlone
             "WhoisEmailNum": nowNodeLinkInfo[4],
             "WhoisPhoneNum": nowNodeLinkInfo[5],
             "pureDomainNum": nowNodeLinkInfo[1],
-            "dirtyDomainNum": nowNodeLinkInfo[2] 
+            "dirtyDomainNum": nowNodeLinkInfo[2]
         }
         allLinks.append(nowLinks)
 
@@ -249,7 +248,7 @@ if __name__ == '__main__':
         os.path.dirname(__file__))) + "/data/"
     if(not os.path.exists(nowPath + "ic-clue-data/" + str(sys.argv[1]) + ".json")):
         nodeCsvW = pd.read_csv(
-            nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumId.csv", header=0)
+            nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv", header=0)
         nodeCsvW = nodeCsvW.values
         with open(nowPath + "nodesToNodesGraph1.json", 'r', encoding='utf-8') as f:
             nodeToNodeInfo = json.load(f)
@@ -259,4 +258,5 @@ if __name__ == '__main__':
             else:
                 with open(nowPath + "nodesAloneInfo.json", 'r', encoding='utf-8') as f:
                     nodeAloneInfo = json.load(f)
-                    getNodesInICLinks(nowPath, sys.argv[1], nodeToNodeInfo, nodeCsvW, nodeAloneInfo)
+                    getNodesInICLinks(
+                        nowPath, sys.argv[1], nodeToNodeInfo, nodeCsvW, nodeAloneInfo)

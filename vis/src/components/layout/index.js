@@ -41,24 +41,24 @@ export default function Layout() {
     setDifChartHeight(
       document.getElementById("deleterelation").getBoundingClientRect().height
     );
-    // setIcClueChartWidth(
-    //   document.getElementById("icclue-graph").getBoundingClientRect().width
-    // );
-    // setIcClueChartHeight(
-    //   document.getElementById("icclue-graph").getBoundingClientRect().height
-    // );
-    // setSkeletonChartWidth(
-    //   document.getElementById("skeleton-chart").getBoundingClientRect().width
-    // );
-    // setSkeletonChartHeight(
-    //   document.getElementById("skeleton-chart").getBoundingClientRect().height
-    // );
-    // setCombineTableWidth(
-    //   document.getElementById("sta-node").getBoundingClientRect().width
-    // );
-    // setCombineTableHeight(
-    //   document.getElementById("sta-node").getBoundingClientRect().height
-    // );
+    setIcClueChartWidth(
+      document.getElementById("icclue-graph").getBoundingClientRect().width
+    );
+    setIcClueChartHeight(
+      document.getElementById("icclue-graph").getBoundingClientRect().height
+    );
+    setSkeletonChartWidth(
+      document.getElementById("skeleton-chart").getBoundingClientRect().width
+    );
+    setSkeletonChartHeight(
+      document.getElementById("skeleton-chart").getBoundingClientRect().height
+    );
+    setCombineTableWidth(
+      document.getElementById("sta-node").getBoundingClientRect().width
+    );
+    setCombineTableHeight(
+      document.getElementById("sta-node").getBoundingClientRect().height
+    );
     setMainChartWidth(
       document.getElementById("mainmap").getBoundingClientRect().width
     );
@@ -77,11 +77,11 @@ export default function Layout() {
           </div>
           <div id="filteric">
             <ChartHeader chartName={"冰柱图"} />
-            {/* <ICClueChart w={icClueChartWidth} h={icClueChartHeight} /> */}
+            <ICClueChart w={icClueChartWidth} h={icClueChartHeight} />
           </div>
           <div id="nodelinkic">
             <ChartHeader chartName={"IP <——> Cert"} />
-            {/* <SkeletonChart w={skeletonChartWidth} h={skeletonChartHeight} /> */}
+            <SkeletonChart w={skeletonChartWidth} h={skeletonChartHeight} />
           </div>
         </div>
         <div id="iright">
@@ -107,7 +107,7 @@ export default function Layout() {
         </div>
         <div id="container-statistic">
           <ChartHeader chartName={"节点与边信息"} />
-          {/* <div id="sta-node">
+          <div id="sta-node">
             <CombineTable
               w={combineTableWidth}
               h={combineTableHeight}
@@ -121,13 +121,13 @@ export default function Layout() {
               h={combineTableHeight}
               b="link"
             />
-          </div> */}
+          </div>
         </div>
 
         <div id="assetandpath">核心资产与关键链路展示</div>
         <div id="conclusion">
           <ChartHeader chartName={"团伙分析结果"} />
-          <ConclusionText />
+          {/* <ConclusionText /> */}
         </div>
       </div>
     </div>
