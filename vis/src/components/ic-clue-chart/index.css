@@ -1,5 +1,10 @@
 .icicle-viz {
     cursor: move;
+    position: relative;
+  }
+
+  .icicle-viz svg{
+    width: 100% !important;
   }
   
   .icicle-viz rect {
@@ -23,10 +28,7 @@
   .icicle-viz text.light {
     fill: #F7F7F7;
   }
-  
-  .icicle-viz {
-    position: relative;
-  }
+
   
   .icicle-tooltip {
     display: none;
@@ -39,6 +41,7 @@
     color: #eee;
     background: rgba(0,0,0,0.65);
     pointer-events: none;
+    z-index: 999;
   }
   
   .icicle-tooltip .tooltip-title {

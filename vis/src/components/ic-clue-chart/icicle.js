@@ -231,8 +231,8 @@ export default Kapsule({
     var dirtyDomainLinearColor = d3.scaleLinear()  
                                 .domain([0,state.data['dirtyDomainNum']])  
                                 .range([0,1]);
-    const pureDomainColorCompute = d3.interpolate('#65a48711', '#65a487');  
-    const dirtyDomainColorCompute = d3.interpolate('#00000011', '#000000');
+    const pureDomainColorCompute = d3.interpolate('#65a48711', '#2978b4');  
+    const dirtyDomainColorCompute = d3.interpolate('#00000011', '#808080');
     // 宽度映射各自的数量
     var pureDomainLinearColor = d3.scaleLinear()  
                                 .domain([0, state.data['pureDomainNum']])  
@@ -240,7 +240,7 @@ export default Kapsule({
     var dirtyDomainLinearColor = d3.scaleLinear()  
                                 .domain([0,state.data['dirtyDomainNum']])  
                                 .range([0,1]);
-
+    let startNodeColor = {"IP": '#33a02c', "Cert": '#ff756a'}
     let newCellG = newCell.append('g')
     for(let i = 0; i<3; i++){
       newCellG.append('rect')
@@ -254,7 +254,7 @@ export default Kapsule({
       })
       .attr("numId", d => d.data.numId)
       .attr("fill", d => {
-        if (!d.depth) return "#cf9007";
+        if (!d.depth) return startNodeColor[d.data.id.split('_')[0]]
         if(i === 0 && d.data.WhoisPhone == 0 && d.data.WhoisName == 0 && d.data.WhoisEmail == 0) return '#fbbf81'   // 没有whois信息
         else if(i === 0 && (d.data.WhoisPhone != 0 || d.data.WhoisName != 0 || d.data.WhoisEmail != 0)) return '#f67f02'   // 有whois信息
         if(i === 2) return dirtyDomainColorCompute(dirtyDomainLinearColor(d.data.dirtyDomain));   // 映射不纯净的Domain

@@ -97,7 +97,7 @@ app.post("/getIcClueDataSds", jsonParser, (req, res, next) => {
   pythonProcess.on("exit", () => {
     let filedata = path.join(
       __dirname,
-      "data/ic-clue-data/" + req.body.numId + ".json"
+      "data/ic-clue-data/370.json"
     );
     fs.readFile(filedata, "utf-8", function (err, data) {
       if (err) {
