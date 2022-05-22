@@ -17,6 +17,7 @@ app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 /**
  * 设置跨域请求
  */
+
 app.all("*", function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
@@ -29,6 +30,7 @@ app.all("*", function (req, res, next) {
   res.setHeader("Cache-Control", "public, max-age=120");
   next();
 });
+
 
 app.get("/helloworld", (req, res) => {
   console.log("Hello World.");
@@ -53,9 +55,7 @@ for (let i of nodeInfoJ) {
   nodeNumIdInfo.push(i.split(","));
 }
 nodeNumIdInfo = nodeNumIdInfo.splice(1);
-let ICIndustryP = path.join(__dirname, "data/nodeIndustryInfo2.json");
-let ICIndustryJ = fs.readFileSync(ICIndustryP, "utf8");
-const ICIndustry = JSON.parse(ICIndustryJ);
+
 
 // 获取主视图所需要的数据
 app.get("/getMainChartData", (req, res, next) => {
@@ -72,11 +72,13 @@ app.get("/getMainChartData", (req, res, next) => {
   });
 });
 
+
 // 获取视图的初始数据：node信息
 app.get("/initial", (req, res, next) => {
   res.send(nodeNumIdInfo);
   res.end();
 });
+
 // 获取视图的初始数据：node信息R
 app.get("/getInitialSds", (req, res, next) => {
   res.send(nodeNumIdInfo);
@@ -101,7 +103,7 @@ app.post("/getIcClueDataSds", jsonParser, (req, res, next) => {
         console.log(err);
       } else {
         let d = JSON.parse(data);
-        res.send(d[0]);
+        res.send(d);
         res.end();
       }
     });
@@ -115,6 +117,9 @@ app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
     if (err) {
       console.log(err);
     } else {
+      let ICIndustryP = path.join(__dirname, "data/nodeIndustryInfo2.json");
+      let ICIndustryJ = fs.readFileSync(ICIndustryP, "utf8");
+      const ICIndustry = JSON.parse(ICIndustryJ);
       let ICLinks = JSON.parse(data);
       let nodes = [];
       for (let n of req.body.Nodes) {
@@ -142,6 +147,7 @@ app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
             linksInfo.push({
               source: nodeNumIdInfo[j[0] - 1][1],
               target: nodeNumIdInfo[j[1] - 1][1],
+              linksNumId: [j[0], j[1]]
             });
           }
         }
@@ -152,10 +158,11 @@ app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
   });
 });
 
+
 // 主图所需要的数据
 app.post("/getMainChartSds", jsonParser, (req, res, next) => {
-  const links = req.body.links;
-  const nodes = req.body.nodes;
+  const links = req.body.linksInfo["links"];
+  const nodes = req.body.linksInfo["nodes"];
   let nowJSource = 0;
   let nowData = [];
   let nodesNumId = new Set();
@@ -164,13 +171,13 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
     if (i["source"] != nowJSource) {
       let filedata = path.join(
         __dirname,
-        "data/ICScreenLinks/" + i["source"] + ".json"
+        "data/ICScreenLinks/" + i["linksNumId"][0] + ".json"
       );
       nowData = JSON.parse(fs.readFileSync(filedata, "utf-8"));
       nowJSource = i["source"];
     }
     for (let j of nowData) {
-      if (j["end"][0] == i["target"]) {
+      if (j["end"][0] == i["linksNumId"][1]) {
         for (let k of j["nodes"]) {
           nodesNumId.add(k[0]);
         }
@@ -181,52 +188,97 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
       }
     }
   }
-
+  console.log(nodesNumId.size)
+  console.log(linksList.size)
   filedata = path.join(
     __dirname,
-    "dataChinaVis Data Challenge 2022-mini challenge 1-Datase/nodeNneighbor.json"
+    "data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/nodeNeighbor.json"
   );
   nowData = JSON.parse(fs.readFileSync(filedata, "utf-8"));
   for (let i of nodes) {
-    let nowNodeNodeInfo = {};
-    let nowNodeLinksInfo = {};
     let nowNodeNeighbor = nowData[i["numId"]].filter((e) => {
       return !nodesNumId.has(e[0]);
     });
-    for (let j of nowNodeNeighbor) {
-      let nowNodeInfo = nodeNumIdInfo[j - 1];
-      if (nowNodeInfo[2] == "Domain") {
-        if (!nowNodeNodeInfo.hasOwnProperty(nowNodeInfo[4])) {
-          nowNodeNodeInfo[nowNodeInfo[4]] = {
-            numId: nowNodeInfo[0],
-            id: nowNodeInfo[1],
-            type: nowNodeInfo[2],
-            industry: nowNodeInfo[4],
-            num: 1,
-            children: [],
-          };
-          nowNodeLinksInfo[nowNodeInfo[4]] = {
-            r_relation: "r_dns_a",
-            source: nowNodeInfo[0],
-            target: j,
-            children: [],
-          };
-        }
-        nowNodeNodeInfo[nowNodeInfo[4]]["num"] += 1;
-        nowNodeNodeInfo[nowNodeInfo[4]]["children"].push({
-          numId: nowNodeInfo[0],
-          id: nowNodeInfo[1],
-          type: nowNodeInfo[2],
-          name: nowNodeInfo[3],
-          industry: nowNodeInfo[4],
-        });
-        nowNodeLinksInfo[nowNodeInfo[4]]["children"].push(j[1].toString);
-      } else {
-        nodesNumId.add(nowNodeInfo[0]);
-        linksList.add(j[1].toString());
-      }
+    for (let j of nowNodeNeighbor) { 
+      nodesNumId.add(j[0]);
+      linksList.add(j[1].toString());
     }
   }
+  let nowNodes = []
+  let nowLinks = []
+  for(let i of nodesNumId){
+    let nowNodeInfo = nodeNumIdInfo[i - 1]
+    nowNodes.push({
+      "numId": parseInt(nowNodeInfo[0]),
+      "id": nowNodeInfo[1],
+      "name": nowNodeInfo[2],
+      "type": nowNodeInfo[3],
+      "industry": nowNodeInfo[4]
+    })
+  }
+
+
+  for(let i of linksList){
+    i = i.split(",")
+    nowLinks.push({
+      "relation" : i[0],
+      "source": nodeNumIdInfo[parseInt(i[1]) - 1][1],
+      "target": nodeNumIdInfo[parseInt(i[2]) - 1][1],
+      "linksNumId": [parseInt(i[1]), parseInt(i[2])]
+    })
+  }
+  
+  // filedata = path.join(
+  //   __dirname,
+  //   "dataChinaVis Data Challenge 2022-mini challenge 1-Datase/nodeNneighbor.json"
+  // );
+  // nowData = JSON.parse(fs.readFileSync(filedata, "utf-8"));
+  // for (let i of nodes) {
+  //   let nowNodeNodeInfo = {};
+  //   let nowNodeLinksInfo = {};
+  //   let nowNodeNeighbor = nowData[i["numId"]].filter((e) => {
+  //     return !nodesNumId.has(e[0]);
+  //   });
+  //   for (let j of nowNodeNeighbor) {
+  //     let nowNodeInfo = nodeNumIdInfo[j - 1];
+  //     if (nowNodeInfo[2] == "Domain") {
+  //       if (!nowNodeNodeInfo.hasOwnProperty(nowNodeInfo[4])) {
+  //         nowNodeNodeInfo[nowNodeInfo[4]] = {
+  //           numId: nowNodeInfo[0],
+  //           id: nowNodeInfo[1],
+  //           type: nowNodeInfo[2],
+  //           industry: nowNodeInfo[4],
+  //           num: 1,
+  //           children: [],
+  //         };
+  //         nowNodeLinksInfo[nowNodeInfo[4]] = {
+  //           r_relation: "r_dns_a",
+  //           source: nowNodeInfo[0],
+  //           target: j,
+  //           children: [],
+  //         };
+  //       }
+  //       nowNodeNodeInfo[nowNodeInfo[4]]["num"] += 1;
+  //       nowNodeNodeInfo[nowNodeInfo[4]]["children"].push({
+  //         numId: nowNodeInfo[0],
+  //         id: nowNodeInfo[1],
+  //         type: nowNodeInfo[2],
+  //         name: nowNodeInfo[3],
+  //         industry: nowNodeInfo[4],
+  //       });
+  //       nowNodeLinksInfo[nowNodeInfo[4]]["children"].push(j[1].toString);
+  //     } else {
+  //       nodesNumId.add(nowNodeInfo[0]);
+  //       linksList.add(j[1].toString());
+  //     }
+  //   }
+  // }
+  let sendData = {
+    "nodes":nowNodes,
+    "links":nowLinks
+  }
+  res.send(sendData)
+  res.end()
 });
 
 app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
@@ -481,10 +533,10 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
       for (let i of linksInfo["links"]) {
         let difDataNow = {};
         for (let j of linksInfo["nodes"]) {
-          if (j["numId"] == i["source"] || j["numId"] == i["target"]) {
+          if (j["id"] == i["source"] || j["id"] == i["target"]) {
             difDataNow[j["numId"]] = {
               name: j["name"],
-              numID: j["numId"],
+              numId: j["numId"],
               id: j["id"],
               value: {},
             };
@@ -496,30 +548,24 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
             }
           }
         }
-        for (let j of ICLinks[i["target"]]) {
-          if (j[1] == i["source"]) {
-            difDataNow[i["source"].toString() + i["target"]] = {
-              numId: i["source"].toString() + i["target"],
-              name:
-                difDataNow[i["target"]]["name"] +
-                " " +
-                difDataNow[i["source"]]["name"],
-              id:
-                difDataNow[i["target"]]["id"] +
-                " " +
-                difDataNow[i["source"]]["id"],
+        for (let j of ICLinks[i["linksNumId"][0]]) {
+          if (j[1] == i["linksNumId"][1]) {
+            difDataNow[i["source"] + " " + i["target"]] = {
+              name: difDataNow[i["linksNumId"][0]]["name"] + " " + difDataNow[i["linksNumId"][1]]["name"],
+              numId: i["linksNumId"][0].toString() + "," + i["linksNumId"][1],
+              id: i["source"] + " " + i["target"],
               value: {},
             };
             for (let k of j[j.length - 1]) {
               if (k[0] != "  ") {
-                difDataNow[i["source"].toString() + i["target"]]["value"][
-                  k[0]
-                ] = k[1];
-                if (k[0] in difDataNow[i["source"]]["value"]) {
-                  difDataNow[i["source"]]["value"][k[0]] -= k[1];
+                difDataNow[i["source"] + " " + i["target"]]["value"][k[0]] = k[1];
+                if (difDataNow[i["linksNumId"][0]]["value"].hasOwnProperty(k[0])) {
+                  difDataNow[i["linksNumId"][0]]["value"][k[0]] -= k[1];
+                  difDataNow[i["linksNumId"][0]]["value"][k[0]] = Math.max(difDataNow[i["linksNumId"][0]]["value"][k[0]], 0)
                 }
-                if (k[0] in difDataNow[i["target"]]["value"]) {
-                  difDataNow[i["target"]]["value"][k[0]] -= k[1];
+                if (difDataNow[i["linksNumId"][1]]["value"].hasOwnProperty(k[0])) {
+                  difDataNow[i["linksNumId"][1]]["value"][k[0]] -= k[1];
+                  difDataNow[i["linksNumId"][1]]["value"][k[0]] = Math.max(difDataNow[i["linksNumId"][1]]["value"][k[0]], 0)
                 }
               }
             }
@@ -530,7 +576,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
         for (let key in difDataNow) {
           j = difDataNow[key];
           let difDataOneNow = {
-            name: j["names"],
+            name: j["name"],
             numId: j["numId"],
             id: j["id"],
             value: [],
@@ -695,19 +741,19 @@ app.post("/getDetialListSds", jsonParser, (req, res, next) => {
   const nodes = req.body.nodesLinksInfo["nodes"];
   let nodesInfo = {};
   for (let i of nodes) {
-    nodesInfo[i[0]] = {
-      numId: i[0],
-      id: i[1],
-      name: i[2],
-      type: i[3],
-      industry: i[4],
+    nodesInfo[i["numId"]] = {
+      numId: i["numId"],
+      id: i["id"],
+      name: i["name"],
+      type: i["type"],
+      industry: i["industry"],
       isCore: true,
       LinksInfo: [],
     };
   }
   for (let i of links) {
-    nodesInfo[i[1]]["LinksInfo"].push(i[0]);
-    nodesInfo[i[2]]["LinksInfo"].push(i[0]);
+    nodesInfo[i["linksNumId"][0]]["LinksInfo"].push(i["relation"]);
+    nodesInfo[i["linksNumId"][1]]["LinksInfo"].push(i["relation"]);
   }
   const LinksSet = [
     "r_cert",
@@ -729,10 +775,28 @@ app.post("/getDetialListSds", jsonParser, (req, res, next) => {
       }).length;
     }
   }
-  let sendData = [];
+  let nowNodes = [];
   for (let i in nodesInfo) {
     delete nodesInfo[i]["LinksInfo"];
+<<<<<<< HEAD
     sendData.push(nodesInfo[i]);
+=======
+    nowNodes.push(nodesInfo[i]);
+  }
+  let nowLinks = []
+  for (let i of links) {
+    nowLinks.push({
+      relation: i["relation"],
+      source: i["source"],
+      target: i["target"],
+      linksNumId: i["linksNumId"],
+      isCore: true
+    })
+  }
+  let sendData = {
+    nodes: nowNodes,
+    links: nowLinks
+>>>>>>> 6be818daa4069b47f822786bcb882765ef2908b8
   }
   res.send(sendData);
   res.end();
