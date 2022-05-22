@@ -5,6 +5,7 @@ from platform import node
 import pandas as pd
 import multiprocessing as mp
 import time
+from alive_progress import alive_bar
 import sys
 
 
@@ -19,6 +20,7 @@ def getIPCertLinksInSkip3(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW):
     WhoisPhone = 0
     pureDomain = 0
     dirtyDomain = 0
+    skipNum = 0
     allNodes1 = []
     for j in nodeToNodeInfo[str(nowNodeNumId)]:
         allNodes1.append(j[1])
@@ -58,6 +60,7 @@ def getIPCertLinksInSkip3(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW):
         WhoisPhone = max(WhoisPhone, j[7])
         pureDomain = max(pureDomain, j[3] - j[4])
         dirtyDomain = max(dirtyDomain, j[4])
+        skipNum = max(skipNum, 1)
         # 第二层数据
         for k in nodeToNodeInfo[str(j[1])]:
             # 如果第二层数据和第0层数据相等，则跳过A-B-A
@@ -85,12 +88,14 @@ def getIPCertLinksInSkip3(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW):
             WhoisPhone = max(WhoisPhone, k[7])
             pureDomain = max(pureDomain, k[3] - k[4])
             dirtyDomain = max(dirtyDomain, k[4])
+            skipNum = max(skipNum, 1)
     allLinks.update({
         "WhoisNameNum": WhoisName,
         "WhoisPhoneNum": WhoisPhone,
         "WhoisEmailNum": WhoisEmail,
         "pureDomainNum": pureDomain,
-        "dirtyDomainNum": dirtyDomain
+        "dirtyDomainNum": dirtyDomain,
+        "skipNum": skipNum
     })
     with open(nowPath + "ic-clue-data/" + str(nowNodeNumId) + ".json", 'w', encoding='utf-8') as f:
         json.dump([allLinks], f, ensure_ascii=False)
@@ -175,7 +180,7 @@ def getNodesInICLinks(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW, nodeAlone
                 WhoisEmail = max(WhoisEmail, j[7])
                 pureDomain = max(pureDomain, j[3] - j[4])
                 dirtyDomain = max(dirtyDomain, j[4])
-                skipNum = 1
+                skipNum = max(skipNum, 1)
                 # 第二层数据
                 for k in nodeToNodeInfo[str(j[1])]:
                     # 如果第二层数据和第0层数据相等，则跳过A-B-A
@@ -208,7 +213,7 @@ def getNodesInICLinks(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW, nodeAlone
                     WhoisEmail = max(WhoisEmail, k[7])
                     pureDomain = max(pureDomain, k[3] - k[4])
                     dirtyDomain = max(dirtyDomain, k[4])
-                    skipNum = 2
+                skipNum = max(skipNum, 2)
             nowLinks.update({
                 "WhoisNameNum": WhoisName,
                 "WhoisPhoneNum": WhoisPhone,
@@ -253,7 +258,7 @@ if __name__ == '__main__':
         os.path.dirname(__file__))) + "/data/"
     if(not os.path.exists(nowPath + "ic-clue-data/" + str(sys.argv[1]) + ".json")):
         nodeCsvW = pd.read_csv(
-            nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv", header=0)
+            nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumId.csv", header=0)
         nodeCsvW = nodeCsvW.values
         with open(nowPath + "nodesToNodesGraph1.json", 'r', encoding='utf-8') as f:
             nodeToNodeInfo = json.load(f)

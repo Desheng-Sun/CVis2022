@@ -74,3 +74,10 @@ export function getDetialListSds(nodesLinksInfo) {
     nodesLinksInfo: nodesLinksInfo,
   });
 }
+
+export function getIcClueData2Sds(numId, type) {
+  return post("/getIcClueData2Sds", {
+    numId: numId,
+    type: type,
+  });
+}
