@@ -1,89 +1,86 @@
 .icicle-viz {
-    cursor: move;
-    position: relative;
-  }
+  cursor: move;
+  position: relative;
+}
 
-  .icicle-viz svg{
-    width: 100% !important;
-  }
-  
-  .icicle-viz rect {
-    cursor: pointer;
-    transition: fill-opacity .4s;
-  }
-  
-  .icicle-viz rect:hover {
-    fill-opacity: 0.85;
-    transition: fill-opacity .05s;
-  }
-  
-  .icicle-viz text {
-    font-family: sans-serif;
-    font-size: 8px;
-    dominant-baseline: middle;
-    pointer-events: none;
-    fill: #404041;
-  }
-  
-  .icicle-viz text.light {
-    fill: #F7F7F7;
-  }
+.icicle-viz svg {
+  width: 100% !important;
+}
 
-  
-  .icicle-tooltip {
-    display: none;
-    position: absolute;
-    max-width: 320px;
-    white-space: nowrap;
-    padding: 5px;
-    border-radius: 3px;
-    font: 12px sans-serif;
-    color: #eee;
-    background: rgba(0,0,0,0.65);
-    pointer-events: none;
-    z-index: 999;
-  }
-  
-  .icicle-tooltip .tooltip-title {
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 5px;
-  }
+.icicle-viz rect {
+  cursor: pointer;
+  transition: fill-opacity 0.4s;
+}
 
-  .icicleSvg .selectedIclcle{
-    fill:#404041
-  }
+.icicle-viz rect:hover {
+  fill-opacity: 0.85;
+  transition: fill-opacity 0.05s;
+}
 
-  #icclue-control{
-    width: 100%;
-    flex: 1;
-    display: flex;
-  }
+.icicle-viz text {
+  font-family: sans-serif;
+  font-size: 8px;
+  dominant-baseline: middle;
+  pointer-events: none;
+  fill: #404041;
+}
 
+.icicle-viz text.light {
+  fill: #f7f7f7;
+}
 
-    #icclue-graph {
-      width: 100%;
-      flex: 24;
-    
-  }
+.icicle-tooltip {
+  display: none;
+  position: absolute;
+  max-width: 320px;
+  white-space: nowrap;
+  padding: 5px;
+  border-radius: 3px;
+  font: 12px sans-serif;
+  color: #eee;
+  background: rgba(0, 0, 0, 0.65);
+  pointer-events: none;
+  z-index: 999;
+}
 
-  #icclue-control #icclue-title {
-    flex: 4;
-    height: 100%;
-  }
+.icicle-tooltip .tooltip-title {
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 5px;
+}
 
-  #icclue-control #control {
-    flex: 1;
-    height: 100%;
-  }
+.icicleSvg .selectedIclcle {
+  fill: #404041;
+}
 
-  #icclue-chart .ant-btn-sm{
-    width: auto;
-    height:20px;
-    font-size: 12px;
-  }
+#icclue-control {
+  width: 100%;
+  flex: 1;
+  display: flex;
+}
 
-  #icclue-chart{
-    display: flex;
-    flex-direction: column;
-  }
+#icclue-graph {
+  width: 100%;
+  flex: 29;
+}
+
+#icclue-control #icclue-title {
+  flex: 4;
+  height: 100%;
+}
+
+#icclue-control #control {
+  flex: 1;
+  height: 100%;
+}
+
+#icclue-chart .ant-btn-sm {
+  width: auto;
+  height: 20px;
+  font-size: 12px;
+}
+
+#icclue-chart {
+  display: flex;
+  flex-direction: column;
+}

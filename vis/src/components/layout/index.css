@@ -1,7 +1,7 @@
 #layout {
   height: 100vh;
   width: 100vw;
-  background-color: #fff;
+  background-color: rgb(240, 239, 239);
   display: flex;
   overflow: hidden;
 }
@@ -10,7 +10,7 @@
 #identifygroup {
   height: 100%;
   flex: 4;
-  background-color: white;
+  /* background-color: white; */
   display: flex;
   padding-right: 4px;
 }
@@ -18,7 +18,7 @@
 #analyzegroup {
   height: 100%;
   flex: 2;
-  background-color: white;
+  /* background-color: white; */
   display: flex;
   flex-direction: column;
   padding-left: 4px;
@@ -30,7 +30,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: white;
+  /* background-color: white; */
   padding-right: 4px;
 }
 
@@ -39,7 +39,7 @@
   flex: 2;
   display: flex;
   flex-direction: column;
-  background-color: white;
+  /* background-color: white; */
   padding-left: 4px;
 }
 
@@ -47,7 +47,7 @@
 #titlebar {
   width: 100%;
   flex: 1;
-  background-color: white;
+  /* background-color: white; */
   /* padding: 20px 20px; */
 
   font-size: 30px;
@@ -59,7 +59,7 @@
 #searchbar {
   width: 100%;
   flex: 1;
-  background-color: thistle;
+  /* background-color: thistle; */
   /* padding-top: 4px; */
   /* padding-bottom: 4px; */
 }
@@ -67,7 +67,7 @@
 #filteric {
   width: 100%;
   flex: 12;
-  background-color: white;
+  /* background-color: white; */
   /* padding-top: 4px; */
   /* padding-bottom: 4px; */
 }
@@ -75,7 +75,7 @@
 #nodelinkic {
   width: 100%;
   flex: 6;
-  background-color: rgb(192, 192, 194);
+  /* background-color: rgb(192, 192, 194); */
   /* padding-top: 4px; */
 }
 
@@ -85,7 +85,7 @@
   flex: 14;
   display: flex;
   flex-direction: column;
-  background-color: yellowgreen;
+  /* background-color: yellowgreen; */
 }
 
 /* #controlmainmap {
@@ -98,7 +98,7 @@
 #mainmap {
   width: 100%;
   flex: 14;
-  background-color: silver;
+  /* background-color: silver; */
   /* padding-top: 4px; */
   /* padding-bottom: 4px; */
 }
@@ -112,66 +112,61 @@
 #deleterelation {
   height: 100%;
   flex: 1;
-  background-color: rgb(215, 214, 209);
+  /* background-color: rgb(215, 214, 209); */
   /* padding-top: 4px; */
 }
 
 #existingdomain {
   height: 100%;
   flex: 1;
-  background-color: gray;
-  /* padding-top: 4px; */
+  /* background-color: gray; */
 }
 
 /* 分析团伙板块 */
 #infotable {
   width: 100%;
   flex: 2;
-  background-color: azure;
-  /* padding-bottom: 4px; */
+  /* background-color: azure; */
+  padding: 0 10;
 }
 
 #container-statistic {
   width: 100%;
-  flex: 8;
-  background-color: gray;
-  /* padding-top: 4px; */
-  /* padding-bottom: 4px; */
+  flex: 7;
+  /* background-color: gray; */
   display: flex;
   flex-direction: column;
 }
 
 #sta-node {
   width: 100%;
-  flex: 25;
-  background-color: white;
-  /* padding-bottom: 2px; */
+  flex: 40;
+  /* background-color: white; */
 }
 
 #divider {
   width: 100%;
   flex: 1;
-  background-color: #eee;
+  background-color: #ddd;
 }
 
 #sta-link {
   width: 100%;
-  flex: 25;
-  background-color: white;
-  /* padding-top: 2px; */
+  flex: 40;
+  /* background-color: white; */
 }
 
 #assetandpath {
   width: 100%;
   flex: 10;
-  background-color: rgb(220, 213, 226);
+  /* background-color: rgb(220, 213, 226); */
   /* padding-top: 4px; */
   /* padding-bottom: 4px; */
 }
 
 #conclusion {
   width: 100%;
-  flex: 2;
-  background-color: white;
+  flex: 3;
+  /* background-color: white; */
   /* padding-top: 4px; */
 }

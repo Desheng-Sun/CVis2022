@@ -93,7 +93,7 @@ export default function Layout() {
         <div id="iright">
           <div id="container-mainmap">
             <div id="mainmap">
-              <ChartHeader chartName={"主图"} />
+              <ChartHeader chartName={"黑灰产网络资产图"} />
               <MainChartCytoscape w={mainChartWidth} h={mainChartHeight} />
             </div>
           </div>
@@ -112,7 +112,7 @@ export default function Layout() {
           <InfoList />
         </div>
         <div id="container-statistic">
-          <ChartHeader chartName={"节点与边信息"} />
+          <ChartHeader chartName={"团伙网络信息"} />
           <div id="sta-node">
             <CombineTable
               w={combineTableWidth}
@@ -130,7 +130,9 @@ export default function Layout() {
           </div>
         </div>
 
-        <div id="assetandpath">核心资产与关键链路展示</div>
+        <div id="assetandpath">
+          <ChartHeader chartName={"核心资产与关键链路分析"} />
+        </div>
         <div id="conclusion">
           <ChartHeader chartName={"团伙分析结果"} />
           {/* <ConclusionText /> */}

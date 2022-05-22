@@ -2044,7 +2044,7 @@ export default function BulletChart({ w, h, divname }) {
     const dimensions = {
       width: svgWidth,
       height: svgHeight,
-      margin: { top: 10, right: 5, bottom: 50, left: 5 },
+      margin: { top: 10, right: 5, bottom: 60, left: 5 },
     };
     const boundedWidth =
       dimensions.width - dimensions.margin.left - dimensions.margin.right;
@@ -2057,7 +2057,6 @@ export default function BulletChart({ w, h, divname }) {
       .height(boundedHeight)
       .width((boundedWidth / data.length) * 0.9);
 
-    // d3.selectAll("div#bullet-chart svg").remove();
     d3.selectAll(`div#${divname} svg`).remove();
 
     const svg = d3
@@ -2098,13 +2097,13 @@ export default function BulletChart({ w, h, divname }) {
       .selectAll(null)
       .data(data)
       .join("text")
-      .attr("class", "title")
+      .attr("class", "bullet-chart-title")
       .attr(
         "transform",
         (d, i) =>
           `translate(${(boundedWidth / data.length) * (i + 0.3)},${
             boundedHeight + 0.2 * dimensions.margin.bottom
-          }) rotate(60)`
+          }) rotate(45)`
       )
       .text((d) => d.title);
   }, [data, dataRange, svgHeight, svgWidth]);

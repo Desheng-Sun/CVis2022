@@ -50,8 +50,8 @@ export default function SkeletonChart({ w, h }) {
     if (JSON.stringify(data) === "{}") return;
     const links = data.links.map((d) => Object.create(d));
     const nodes = data.nodes.map((d, i) => {
-      for (let item in d.industry) {
-        combinationOrderSet.add(d.industry[item]["industry"]);
+      for (let item in d.ICIndustry) {
+        combinationOrderSet.add(d.ICIndustry[item]["industry"]);
       }
       return Object.create({ ...d, group: i });
     }); // 将每一个点单独看成一个group，被选中的group添加背景颜色
@@ -182,12 +182,12 @@ export default function SkeletonChart({ w, h }) {
           .attr("stroke", "none")
           .attr("fill", (d) => {
             if (first_flag) {
-              for (let indus in d.industry) {
+              for (let indus in d.ICIndustry) {
                 if (
-                  combinationOrder.indexOf(d.industry[indus]["industry"]) == i
+                  combinationOrder.indexOf(d.ICIndustry[indus]["industry"]) == i
                 ) {
                   // 当前产业与当前弧对应的产业一致
-                  let currIndu = d.industry[indus]["industry"]; // 当前产业集合，然后获取当前产业集合包含的子产业对应的径向索引
+                  let currIndu = d.ICIndustry[indus]["industry"]; // 当前产业集合，然后获取当前产业集合包含的子产业对应的径向索引
                   currInduYIndex = currIndu
                     .split("")
                     .map((value) => industryType.indexOf(value));

@@ -31,3 +31,7 @@
 .bullet .subtitle {
   fill: #999;
 }
+
+.bullet-chart-title {
+  font-size: 12px;
+}
