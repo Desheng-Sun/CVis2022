@@ -285,7 +285,7 @@ export default function DetailList({ w, h, divname }) {
 
   useEffect(() => {
     getDetialListSds(nodesLinksInfo).then((res) => {
-      // console.log(res);
+      console.log(res);
       return setData(res);
     });
   }, []);

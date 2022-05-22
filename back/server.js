@@ -731,7 +731,7 @@ app.post("/getDetialListSds", jsonParser, (req, res, next) => {
   }
   let sendData = [];
   for (let i in nodesInfo) {
-    delete nodesInfo[i]["linksInfo"];
+    delete nodesInfo[i]["LinksInfo"];
     sendData.push(nodesInfo[i]);
   }
   res.send(sendData);

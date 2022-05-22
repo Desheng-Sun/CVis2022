@@ -286,7 +286,7 @@ export default function BulletChart({ w, h, divname }) {
 
   useEffect(() => {
     getBulletChartData(nodesLinksInfo).then((res) => {
-      console.log(res);
+      // console.log(res);
       // 计算数据中measures和markers共同的最大、最小值 用于画图比例尺映射
       let allNumInData = [];
       res.forEach((item, index) => {
