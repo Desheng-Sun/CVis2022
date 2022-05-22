@@ -14,6 +14,7 @@ const urlencodedParser = bodyParser.urlencoded({ extended: true });
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
+
 /**
  * 设置跨域请求
  */
@@ -58,6 +59,260 @@ let ICIndustryP = path.join(__dirname, "data/nodeIndustryInfo2.json");
 let ICIndustryJ = fs.readFileSync(ICIndustryP, "utf8");
 const ICIndustry = JSON.parse(ICIndustryJ);
 
+
+function getIPCertLinksInSkip2(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW) {
+  let WhoisName = 0
+  let WhoisEmail = 0
+  let WhoisPhone = 0
+  let pureDomain = 0
+  let dirtyDomain = 0
+  let skipNum = 0
+  let allNodes1 = []
+  for (let j of nodeToNodeInfo[nowNodeNumId]) {
+    allNodes1.push(j[1])
+  }
+  let allLinks = {}
+  let nowNodesInfo = nodeCsvW[parseInt(nowNodeNumId) - 1]
+  //第0层数据
+  allLinks = {
+    "id": nowNodesInfo[1],
+    "nodesNum": 0,
+    "WhoisName": 0,
+    "WhoisEmail": 0,
+    "WhoisPhone": 0,
+    "pureDomain": 0,
+    "dirtyDomain": 0,
+    "numId": nowNodesInfo[0],
+    "name": nowNodesInfo[2],
+    "children": []
+  }
+  //针对第0层数据的链路添加第一层数据
+  for (let j of nodeToNodeInfo[nowNodeNumId]) {
+    nowNodesInfo = nodeCsvW[parseInt(j[1]) - 1]
+    allLinks["children"].push({
+      "id": nowNodesInfo[1],
+      "nodesNum": j[2] - 2,
+      "WhoisName": j[5],
+      "WhoisEmail": j[6],
+      "WhoisPhone": j[7],
+      "pureDomain": j[3] - j[4],
+      "dirtyDomain": j[4],
+      "numId": nowNodesInfo[0],
+      "name": nowNodesInfo[2],
+      "children": []
+    })
+    WhoisName = Math.max(WhoisName, j[5])
+    WhoisEmail = Math.max(WhoisEmail, j[6])
+    WhoisPhone = Math.max(WhoisPhone, j[7])
+    pureDomain = Math.max(pureDomain, j[3] - j[4])
+    dirtyDomain = Math.max(dirtyDomain, j[4])
+    skipNum = Math.max(skipNum, 1)
+    //第二层数据
+    for (let k of nodeToNodeInfo[j[1]]) {
+      //如果第二层数据和第0层数据相等，则跳过A-B-A
+      if (k[1] == parseInt(nowNodeNumId)) {
+        continue
+      }
+      nowNodesInfo = nodeCsvW[parseInt(k[1]) - 1]
+      isInFirst = false
+      if (allNodes1.indexOf(parseInt(k[1])) > 0) {
+        isInFirst = true
+      }
+      allLinks["children"][allLinks["children"].length - 1]["children"].push({
+        "id": nowNodesInfo[1],
+        "nodesNum": k[2] - 2,
+        "WhoisName": k[5],
+        "WhoisEmail": k[6],
+        "WhoisPhone": k[7],
+        "pureDomain": k[3] - k[4],
+        "dirtyDomain": k[4],
+        "numId": nowNodesInfo[0],
+        "name": nowNodesInfo[2],
+        "isInFirst": isInFirst,
+        "children": []
+      })
+      WhoisName = Math.max(WhoisName, k[5])
+      WhoisEmail = Math.max(WhoisEmail, k[6])
+      WhoisPhone = Math.max(WhoisPhone, k[7])
+      pureDomain = Math.max(pureDomain, k[3] - k[4])
+      dirtyDomain = Math.max(dirtyDomain, k[4])
+      skipNum = Math.max(skipNum, 2)
+    }
+  }
+  allLinks["WhoisNameNum"] = WhoisName
+  allLinks["WhoisPhoneNum"] = WhoisPhone
+  allLinks["WhoisEmailNum"] = WhoisEmail
+  allLinks["pureDomainNum"] = pureDomain
+  allLinks["dirtyDomainNum"] = dirtyDomain
+  allLinks["skipNum"] = skipNum
+  fs.writeFileSync(nowPath + "ic-clue-data/" + nowNodeNumId + ".json", JSON.stringify(allLinks), 'utf8')
+}
+
+function getNodesInICLinks(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW, nodeAloneInfo) {
+  let nodeICLinksJ = fs.readFileSync(nowPath + "nodesInICLinks.json", "utf8")
+  let nodeICLinks = JSON.parse(nodeICLinksJ)
+  let allLinks = []
+  let listLinks = []
+  let listNode = []
+  for (let i of nodeICLinks[nowNodeNumId]) {
+    if (i instanceof Array) {
+      listLinks.push(i)
+    }
+    else {
+      listNode.push(i)
+    }
+  }
+  let nowICNode = []
+  for (let i of listLinks) {
+    nowICNode = nowICNode.concat(i)
+  }
+  listLinks = listLinks.map(e => JSON.stringify(e))
+  let nowICNodeSet = Array.from(new Set(nowICNode))
+  let nowICNodeCount = []
+  for (let i of nowICNodeSet) {
+    nowICNodeCount.push([i, nowICNode.filter(e => e == i).length])
+  }
+  nowICNodeCount = nowICNodeCount.sort((a, b) => {
+    return b[1] - a[1]
+  })
+  nowICNodeSet = []
+  for (let i of nowICNodeCount) {
+    nowICNodeSet.push(i[0])
+  }
+  while (nowICNodeSet.length > 0) {
+    for (let i of nowICNodeCount) {
+      if (nowICNodeSet.indexOf(i[0]) < 0) {
+        continue
+      }
+      nowICNodeSet = nowICNodeSet.filter(e =>
+        e != i[0])
+      let WhoisName = 0
+      let WhoisEmail = 0
+      let WhoisPhone = 0
+      let pureDomain = 0
+      let dirtyDomain = 0
+      let skipNum = 0
+      let allNodes1 = []
+      for (let j of nodeToNodeInfo[i[0]]) {
+        allNodes1.push(j[1])
+      }
+      let nowNodesInfo = nodeCsvW[parseInt(i[0]) - 1]
+      let nowLinks = {
+        "id": nowNodesInfo[1],
+        "nodesNum": 0,
+        "WhoisName": 0,
+        "WhoisPhone": 0,
+        "WhoisEmail": 0,
+        "pureDomain": 0,
+        "dirtyDomain": 0,
+        "numId": nowNodesInfo[0],
+        "name": nowNodesInfo[2],
+        "children": []
+      }
+      //针对第0层数据的链路添加第一层数据
+      for (let j of nodeToNodeInfo[i[0]]) {
+        let nowICLink = [Math.min(j[0], j[1]), Math.max(j[0], j[1])]
+        if (listLinks.indexOf(JSON.stringify(nowICLink)) < 0) {
+          continue
+        }
+        listLinks = listLinks.filter(e => e != JSON.stringify(nowICLink))
+        nowICNodeSet = nowICNodeSet.filter(e => e != j[1])
+
+        
+        nowNodesInfo = nodeCsvW[parseInt(j[1]) - 1]
+        nowLinks["children"].push({
+          "id": nowNodesInfo[1],
+          "nodesNum": j[2] - 2,
+          "WhoisName": j[5],
+          "WhoisEmail": j[6],
+          "WhoisPhone": j[7],
+          "pureDomain": j[3] - j[4],
+          "dirtyDomain": j[4],
+          "numId": nowNodesInfo[0],
+          "name": nowNodesInfo[2],
+          "children": []
+        })
+        WhoisName = Math.max(WhoisName, j[5])
+        WhoisPhone = Math.max(WhoisPhone, j[6])
+        WhoisEmail = Math.max(WhoisEmail, j[7])
+        pureDomain = Math.max(pureDomain, j[3] - j[4])
+        dirtyDomain = Math.max(dirtyDomain, j[4])
+        skipNum = Math.max(skipNum, 1)
+        for (let k of nodeToNodeInfo[j[1]]) {
+          if (k[1] == parseInt(nowNodeNumId)) {
+            continue
+          }
+          nowICLink = [Math.min(k[0], k[1]), Math.max(k[0], k[1])]
+          if (listLinks.indexOf(JSON.stringify(nowICLink)) < 0) {
+            continue
+          }
+          listLinks = listLinks.filter(e => e != JSON.stringify(nowICLink))
+          nowNodesInfo = nodeCsvW[parseInt(k[1]) - 1]
+          let isInFirst = false
+          if (allNodes1.indexOf(parseInt(k[1])) > 0) {
+            isInFirst = true
+          }
+          nowLinks["children"][nowLinks["children"].length - 1]["children"].push({
+            "id": nowNodesInfo[1],
+            "nodesNum": k[2] - 2,
+            "WhoisName": k[5],
+            "WhoisEmail": k[6],
+            "WhoisPhone": k[7],
+            "pureDomain": k[3] - k[4],
+            "dirtyDomain": k[4],
+            "numId": nowNodesInfo[0],
+            "name": nowNodesInfo[2],
+            "isInFirst": isInFirst,
+            "children": []
+          })
+          WhoisName = Math.max(WhoisName, k[5])
+          WhoisPhone = Math.max(WhoisPhone, k[6])
+          WhoisEmail = Math.max(WhoisEmail, k[7])
+          pureDomain = Math.max(pureDomain, k[3] - k[4])
+          dirtyDomain = Math.max(dirtyDomain, k[4])
+          skipNum = Math.max(skipNum, 2)
+        }
+
+      }
+      nowLinks["WhoisNameNum"] = WhoisName
+      nowLinks["WhoisPhoneNum"] = WhoisPhone
+      nowLinks["WhoisEmailNum"] = WhoisEmail
+      nowLinks["pureDomainNum"] = pureDomain
+      nowLinks["dirtyDomainNum"] = dirtyDomain
+      nowLinks["skipNum"] = skipNum
+      if (nowLinks["children"].length == 0) {
+        continue
+      }
+      allLinks.push(nowLinks)
+    }
+  }
+
+  for (let i of listNode) {
+    nowNodesInfo = nodeCsvW[parseInt(i) - 1]
+    nowNodeLinkInfo = nodeAloneInfo[i]
+    nowLinks = {
+      "id": nowNodesInfo[1],
+      "nodesNum": nowNodeLinkInfo[0],
+      "WhoisName": nowNodeLinkInfo[3],
+      "WhoisEmail": nowNodeLinkInfo[4],
+      "WhoisPhone": nowNodeLinkInfo[5],
+      "pureDomain": nowNodeLinkInfo[1],
+      "dirtyDomain": nowNodeLinkInfo[2],
+      "numId": nowNodesInfo[0],
+      "name": nowNodesInfo[2],
+      "children": [],
+      "WhoisNameNum": nowNodeLinkInfo[3],
+      "WhoisEmailNum": nowNodeLinkInfo[4],
+      "WhoisPhoneNum": nowNodeLinkInfo[5],
+      "pureDomainNum": nowNodeLinkInfo[1],
+      "dirtyDomainNum": nowNodeLinkInfo[2],
+      "skipNum": 0
+    }
+    allLinks.push(nowLinks)
+  }
+
+  fs.writeFileSync(nowPath + "ic-clue-data/" + nowNodeNumId + ".json", JSON.stringify(allLinks), 'utf8')
+}
 // 获取主视图所需要的数据
 app.get("/getMainChartData", (req, res, next) => {
   let node = "tiaozhan1";
@@ -142,8 +397,6 @@ app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
           ICIndustry: nowICIndustry,
         });
         for (let j of ICLinks[i]) {
-
-          console.log(j)
           if (nodes.includes(j[1]) && j[1] > j[0]) {
             linksInfo.push({
               source: nodeNumIdInfo[j[0] - 1][1],
@@ -602,7 +855,6 @@ app.post("/getInfoListSds", jsonParser, (req, res, next) => {
     grouptype: grouptype,
   };
   res.send(sendData);
-
   res.end();
 });
 
@@ -917,4 +1169,37 @@ app.post("/getDetialListSds", jsonParser, (req, res, next) => {
   };
   res.send(sendData);
   res.end();
+});
+
+
+app.post("/getIcClueData2Sds", jsonParser, (req, res, next) => {
+  let filedata = path.join(
+    __dirname,
+    "data/ic-clue-data/" + req.body.numId + ".json"
+  );
+  let nowPath = path.join(
+    __dirname,
+    "data/")
+  if (!fs.existsSync(filedata)) {
+    console.log(1)
+    let nodeToNodeInfoJ = fs.readFileSync(nowPath + "nodesToNodesGraph1.json", "utf-8")
+    let nodeToNodeInfo = JSON.parse(nodeToNodeInfoJ)
+    if (req.body.type == "IP" || req.body.type == "Cert") {
+      getIPCertLinksInSkip2(nowPath, req.body.numId, nodeToNodeInfo, nodeNumIdInfo)
+    }
+    else {
+      let nodeAloneInfoJ = fs.readFileSync(nowPath + "nodesAloneInfo.json", "utf-8")
+      let nodeAloneInfo = JSON.parse(nodeAloneInfoJ)
+      getNodesInICLinks(nowPath, req.body.numId, nodeToNodeInfo, nodeNumIdInfo, nodeAloneInfo)
+    }
+  }
+  fs.readFile(filedata, "utf-8", function (err, data) {
+    if (err) {
+      console.log(err);
+    } else {
+      let d = JSON.parse(data);
+      res.send(d);
+      res.end();
+    }
+  });
 });
