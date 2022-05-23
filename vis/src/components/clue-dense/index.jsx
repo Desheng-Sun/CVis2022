@@ -379,6 +379,7 @@ let example_data = {
   ],
 };
 
+let prevIndex = -1;
 export default function ClueDense() {
   const [data, setData] = useState({ IP: [], Cert: [] });
   const [currNodeType, setCurrNodeType] = useState(nodeType[0]);
@@ -386,7 +387,7 @@ export default function ClueDense() {
 
   useEffect(() => {
     getClueDenseDataSds().then((res) => {
-      setData(example_data);
+      setData(res);
     });
   }, []);
 
@@ -395,6 +396,37 @@ export default function ClueDense() {
   }, [data, currNodeType, currDataType]);
 
   function drawClueDense(nodetype, datatype) {
+    const hdlMouseMove = function handleMouseMove(event) {
+      event.stopPropagation();
+      let { x, y } = getMousePosition(event, canvas);
+      let r = Math.floor(y / squareSize);
+      let c = Math.floor(x / squareSize);
+      let index = r * oneLine + c;
+      if (prevIndex !== index && index >= 0 && index < currdata.length) {
+        ctx_mouse.clearRect(0, 0, boundedWidth, boundedHeight);
+        ctx_mouse.strokeStyle = "#333";
+        ctx_mouse.strokeRect(
+          (index % oneLine) * squareSize,
+          parseInt(index / oneLine) * squareSize,
+          squareSize,
+          squareSize
+        );
+        prevIndex = index;
+
+        let d = currdata[index];
+
+        // 显示当前数值
+        if (datatype === "rateIn") {
+          d3.select("div#clue-dense-control-info").text(
+            d.name + " - " + (d[datatype] * 100).toFixed(2) + "%"
+          );
+        } else {
+          d3.select("div#clue-dense-control-info").text(
+            d.name + " - " + d[datatype]
+          );
+        }
+      }
+    };
     const dimensions = {
       width: 2000,
       height: 600,
@@ -405,16 +437,15 @@ export default function ClueDense() {
         left: 20,
       },
     };
-    const boundedWidth =
-      dimensions.width - dimensions.margin.left - dimensions.margin.right;
-    const boundedHeight =
-      dimensions.height - dimensions.margin.top - dimensions.margin.bottom;
+    const boundedWidth = dimensions.width;
+    const boundedHeight = dimensions.height;
 
     let currdata = data[nodetype];
 
-    let squareSize = Math.floor(
-      Math.sqrt((boundedHeight * boundedWidth) / currdata.length)
-    ); // 每个方格的边长
+    let containerRatio = dimensions.width / dimensions.height;
+    let squareSize =
+      dimensions.height /
+      Math.ceil(Math.sqrt(currdata.length / containerRatio));
     let oneLine = Math.floor(boundedWidth / squareSize); //需要画多少列 画不下完整一列时，增加列数 列数取floor
     let rows = Math.ceil(currdata.length / oneLine);
 
@@ -422,6 +453,12 @@ export default function ClueDense() {
     canvas.height = boundedHeight;
     canvas.width = boundedWidth;
     const ctx = canvas.getContext("2d");
+
+    const canvas_mouse = document.getElementById("clue-dense-chart-mouse");
+    canvas_mouse.height = boundedHeight;
+    canvas_mouse.width = boundedWidth;
+    const ctx_mouse = canvas_mouse.getContext("2d");
+    ctx_mouse.globalAlpha = 1;
 
     let colorScale = d3.scaleSequential(
       d3.extent(currdata, (d) => d[datatype]),
@@ -437,48 +474,21 @@ export default function ClueDense() {
         squareSize
       );
     }
-    let prevRect = {
-      x: null,
-      y: null,
-      w: squareSize,
-      h: squareSize,
-      index: 0,
-    };
 
-    canvas.addEventListener("mousemove", (event) => {
-      let { x, y } = getMousePosition(event, canvas);
-      let r = Math.floor(y / squareSize);
-      let c = Math.floor(x / squareSize);
-      let index = r * oneLine + c;
-      console.log(index);
-      if (prevRect.index !== index) {
-        let currnum = currdata[prevRect.index][datatype];
-        ctx.clearRect(prevRect.x, prevRect.y, squareSize, squareSize); // 清除上一个rect
+    function getMousePosition(event, canvas) {
+      const { clientX, clientY } = event;
+      //  获取 canvas 的边界位置
+      const { top, left } = canvas.getBoundingClientRect();
+      //  计算鼠标在 canvas 在位置
+      const x = clientX - left;
+      const y = clientY - top;
+      return {
+        x,
+        y,
+      };
+    }
 
-        ctx.fillStyle(colorScale(currnum)); // 重画清除的rect
-        ctx.fillRect();
-
-        // ctx.fillStyle = "#000";
-        // ctx.fillRect(x, y, 8, 8);
-        // ctx.strokeStyle = "#000";
-        // ctx.strokeRect(x, y, 8, 8);
-
-        prevRect = { x: x, y: y, w: squareSize, h: squareSize, index: index };
-      }
-    });
-  }
-
-  function getMousePosition(event, canvas) {
-    const { clientX, clientY } = event;
-    //  获取 canvas 的边界位置
-    const { top, left } = canvas.getBoundingClientRect();
-    //  计算鼠标在 canvas 在位置
-    const x = clientX - left;
-    const y = clientY - top;
-    return {
-      x,
-      y,
-    };
+    canvas_mouse.addEventListener("mousemove", hdlMouseMove, false);
   }
 
   function onNodeTypeChange(e) {
@@ -523,10 +533,8 @@ export default function ClueDense() {
         </div>
         <div id="clue-dense-control-info"></div>
       </div>
-      <canvas
-        id="clue-dense-chart"
-        style={{ width: 2000, height: 600, background: "gray" }}
-      ></canvas>
+      <canvas id="clue-dense-chart"></canvas>
+      <canvas id="clue-dense-chart-mouse"></canvas>
     </div>
   );
 }
