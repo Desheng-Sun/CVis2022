@@ -449,15 +449,14 @@ export default function ClueDense() {
       let { x, y } = getMousePosition(event, canvas);
       let r = Math.floor(y / squareSize);
       let c = Math.floor(x / squareSize);
-      let index = (r - 1) * oneLine + c;
+      let index = r * oneLine + c;
       console.log(index);
       if (prevRect.index !== index) {
-        // console.log(currdata[prevRect.index]);
-        // let currnum = currdata[prevRect.index][datatype];
-        // ctx.clearRect(prevRect.x, prevRect.y, squareSize, squareSize); // 清除上一个rect
-        // console.log(prevRect.index, currdata[prevRect.index][datatype]);
+        let currnum = currdata[prevRect.index][datatype];
+        ctx.clearRect(prevRect.x, prevRect.y, squareSize, squareSize); // 清除上一个rect
 
-        // ctx.fillStyle(colorScale(currnum)); // 重画清除的rect
+        ctx.fillStyle(colorScale(currnum)); // 重画清除的rect
+        ctx.fillRect();
 
         // ctx.fillStyle = "#000";
         // ctx.fillRect(x, y, 8, 8);
