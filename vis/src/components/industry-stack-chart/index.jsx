@@ -1,68 +1,78 @@
 import React, { useEffect, useState } from "react";
 import * as d3 from "d3";
 
-export default function IndustryStackChart({w, h}) {
+export default function IndustryStackChart({ w, h }) {
   const [data, setData] = useState([]);
-  const [svgWidth, setSvgWidth] = useState(400);
-  const [svgHeight, setSvgHeight] = useState(500);
+  const [svgWidth, setSvgWidth] = useState(w);
+  const [svgHeight, setSvgHeight] = useState(h);
 
   useEffect(() => {
     let dt = [
       {
-        id: "Myriel",
+        id: "A",
         industry: [
           { industry: "AB", number: 2 },
+          { industry: "AED", number: 8 },
+          { industry: "BCD", number: 1 },
+        ],
+        group: 1,
+      },
+      {
+        id: "B",
+        industry: [
+          { industry: "AB", number: 2 },
+          { industry: "AE", number: 8 },
+          { industry: "DE", number: 1 },
+        ],
+        group: 1,
+      },
+      {
+        id: "C",
+        industry: [
+          { industry: "B", number: 2 },
           { industry: "AE", number: 8 },
           { industry: "BCD", number: 1 },
         ],
         group: 1,
       },
       {
-        id: "Myriel",
+        id: "D",
         industry: [
           { industry: "AB", number: 2 },
           { industry: "AE", number: 8 },
-          { industry: "BCD", number: 1 },
+          { industry: "H", number: 1 },
         ],
         group: 1,
       },
       {
-        id: "Myriel",
+        id: "E",
         industry: [
           { industry: "AB", number: 2 },
           { industry: "AE", number: 8 },
-          { industry: "BCD", number: 1 },
-        ],
-        group: 1,
-      },
-      {
-        id: "Myriel",
-        industry: [
-          { industry: "AB", number: 2 },
-          { industry: "AE", number: 8 },
-          { industry: "BCD", number: 1 },
-        ],
-        group: 1,
-      },
-      {
-        id: "Myriel",
-        industry: [
-          { industry: "AB", number: 2 },
-          { industry: "AE", number: 8 },
-          { industry: "BCD", number: 1 },
+          { industry: "BCE", number: 1 },
         ],
         group: 1,
       },
     ];
     setData(dt);
-  },[]);
+  }, []);
+
+  useEffect(() => {
+    setSvgWidth(w)
+  }, [w])
+
+  useEffect(() =>{
+    setSvgHeight(h)
+  }, [h])
 
   useEffect(() => {
     drawChart();
-  }, [data]);
+  }, [svgWidth, svgHeight, data]);
 
   function drawChart() {
-    d3.select('#industry-stack svg').remove()
+    if (data.length === 0) return;
+
+    d3.select("#industry-stack svg").remove();
     var combinationOrderSet = new Set();
     var innerCirlceColor = ["#ffd006", "#67bbd7"]; // 内部的圆的颜色映射节点类型
     // 映射产业类型
@@ -78,8 +88,8 @@ export default function IndustryStackChart({w, h}) {
       8: "#87ccff",
     };
     // 获取所有的资产组合和种类
-    for(let d of data){
-      for(let j in d.dustry){
+    for (let d of data) {
+      for (let j in d.industry) {
         combinationOrderSet.add(d.industry[j]["industry"]);
       }
     }
@@ -87,76 +97,104 @@ export default function IndustryStackChart({w, h}) {
     let industryType = [
       ...new Set([...combinationOrder.toString().replaceAll(",", "")]),
     ].sort(); // 包含的所有产业类型
-
-    console.log(combinationOrder, industryType);
-
+    let gWidth = svgWidth / 2, gHeight = 50, circleR = 3
     const arc = d3
       .arc()
-      .innerRadius((i, j) => 2 + 10 * j)
-      .outerRadius((i, j) => 2 + 10 * (j + 1))
+      .innerRadius((i, j) => circleR + (gHeight/industryType.length) * j)
+      .outerRadius((i, j) => circleR + (gHeight/industryType.length) * (j + 1))
       .startAngle((i) => ((2 * Math.PI) / combinationOrder.length) * i - 2)
       .endAngle((i) => ((2 * Math.PI) / combinationOrder.length) * (i + 1) - 2)
       .cornerRadius(60)
-      .padAngle(0.5);
-    
-    let svg = d3
-              .select("#industry-stack")
-              .append("svg")
-              .attr("width", svgWidth)
-              .attr("height", svgHeight)
-    let g = svg.selectAll('g')
-              .data(data)
-              .join("g")
-              .attr("transform", (d, i) => {
-                let x = svgWidth/2*(i%2);
-                let y = 200*(Math.floor(i/2))
-                return "translate(" + x.toString() + ',' + y.toString() + ")"
-              })
-    
+      .padAngle(0.4);
+
+    let wrapper = d3
+      .select("#industry-stack")
+      .append("svg")
+      .attr("width", svgWidth)
+      .attr("height", (gHeight + circleR + 10)*2 *(data.length/2 + 1))
+      .append("g")
+      .attr("transform", (d, i) => {
+        let x = gWidth/4;
+        let y = gHeight + circleR + 20;
+        return "translate(" + x.toString() + "," + y.toString() + ")";
+      });
+
+    let g = wrapper
+      .selectAll("g")
+      .data(data)
+      .join("g")
+      .attr("class", "stackInnerG")
+      .attr("stroke", "#aaa")
+      .attr("transform", (d, i) => {
+        let x = gWidth * (i % 2);
+        let y = (gHeight+ circleR + 10)*2* Math.floor(i / 2);
+        return "translate(" + x.toString() + "," + y.toString() + ")";
+      });
+
+    g.append("text")
+      .attr("transform", (d) => "translate(10,10})")
+      .selectAll("tspan")
+      .data(d => d.industry)
+      .join("tspan")
+        .attr("x", (gHeight + circleR) + 10)
+        .attr("y", (d, i) => `${i * 1.5 - 2}em`)
+        .attr("font-weight", "bold")
+        .attr("stroke", "none")
+        .attr("font", "14px segoe ui")
+        .attr('fill', (d, i) => industryColor[i])
+        .text(d => {
+          return '#'+ d.industry + ': ' + d.number
+        });
+
     g.append("circle")
-      .attr("r", 3)
+      .attr("r", circleR)
       .attr("fill", "white")
-      .attr("cx", 100)
-      .attr("cy", 100)
+      .attr("cx", 0)
+      .attr("cy", 0)
       .attr("fill", (d, index) => innerCirlceColor[index % 2]);
-    
-    // for(let i=0; i< data.length; i++){  // 环向循环次数为所有产业组合的总类数，径向循环次数为所有组合涉及的黑灰产的种类数
-    for (let i = 0; i < combinationOrder.length; i++) {
-      let currInduYIndex = [], first_flag = true;
-      for (let j = 0; j < industryType.length; j++) {
-        g.append("path")
-          .attr("d", arc(i, j))
-          .attr("stroke", "none")
-          .attr("fill", (d) => {
-            console.log(d);
-            if (first_flag) {
-              for (let indus in d.industry) {
-                if (
-                  combinationOrder.indexOf(d.industry[indus]["industry"]) == i
-                ) {
-                  // 当前产业与当前弧对应的产业一致
-                  let currIndu = d.industry[indus]["industry"]; // 当前产业集合，然后获取当前产业集合包含的子产业对应的径向索引
-                  currInduYIndex = currIndu
-                    .split("")
-                    .map((value) => industryType.indexOf(value));
-                  break;
+
+    for (let k = 0; k < data.length; k++) {
+      for (let i = 0; i < combinationOrder.length; i++) {
+        let currInduYIndex = [],
+          first_flag = true;
+        for (let j = 0; j < industryType.length; j++) {
+          d3.select(d3.selectAll(".stackInnerG")._groups[0][k])
+            .append("path")
+            .attr("d", arc(i, j))
+            .attr("stroke", "#aaa")
+            .attr("fill", (d) => {
+              if (first_flag) {
+                for (let indus in d.industry) {
+                  if (
+                    combinationOrder.indexOf(d.industry[indus]["industry"]) == i
+                  ) {
+                    // 当前产业与当前弧对应的产业一致
+                    let currIndu = d.industry[indus]["industry"]; // 当前产业集合，然后获取当前产业集合包含的子产业对应的径向索引
+                    currInduYIndex = currIndu
+                      .split("")
+                      .map((value) => industryType.indexOf(value));
+                    break;
+                  }
                 }
               }
-            }
-            first_flag = false;
-            if (currInduYIndex.length != 0 && currInduYIndex.indexOf(j) != -1) {
-              console.log(d, industryColor[j]);
-              return industryColor[j];
-            }
-            return "white";
-          });
+              first_flag = false;
+              if (
+                currInduYIndex.length != 0 &&
+                currInduYIndex.indexOf(j) != -1
+              ) {
+                return industryColor[j];
+              }
+              return "white";
+            });
+        }
       }
     }
-    // }
-
   }
 
   return (
-    <div id="industry-stack" ></div>
-  )
+    <div
+      id="industry-stack"
+      style={{ width: svgWidth, height: svgHeight, overflow: "auto" }}
+    ></div>
+  );
 }
