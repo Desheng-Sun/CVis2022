@@ -119,8 +119,15 @@ export default function SkeletonChart({ w, h }) {
   // 监听用户选择的节点
   useEffect(() => {
     // PubSub.publish("skeletonSelect", selectedNode);
-    
-
+    let linkArr;
+    let returnRes = {'nodes': [], "links": []}
+    for(let i in linkedByIndex){
+      let source = i.split(',')[0]
+      let target = i.split(',')[1]
+      if(source in selectedNode && target in selectedNode){
+        returnRes['links'].push({source: source, target: target})
+      }
+    }
     console.log(linkedByIndex);
   }, [selectedNode])
 

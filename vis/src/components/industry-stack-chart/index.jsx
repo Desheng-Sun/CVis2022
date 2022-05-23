@@ -97,7 +97,7 @@ export default function IndustryStackChart({ w, h }) {
     let industryType = [
       ...new Set([...combinationOrder.toString().replaceAll(",", "")]),
     ].sort(); // 包含的所有产业类型
-    let gWidth = svgWidth / 2, gHeight = 50, circleR = 3
+    let gWidth = svgWidth / 3, gHeight = 50, circleR = 3, levelNumber = 3
     const arc = d3
       .arc()
       .innerRadius((i, j) => circleR + (gHeight/industryType.length) * j)
@@ -111,10 +111,10 @@ export default function IndustryStackChart({ w, h }) {
       .select("#industry-stack")
       .append("svg")
       .attr("width", svgWidth)
-      .attr("height", (gHeight + circleR + 10)*2 *(data.length/2 + 1))
+      .attr("height", (gHeight + circleR + 10)*2 *(data.length/levelNumber + 1))
       .append("g")
       .attr("transform", (d, i) => {
-        let x = gWidth/4;
+        let x = gWidth/3;
         let y = gHeight + circleR + 20;
         return "translate(" + x.toString() + "," + y.toString() + ")";
       });
@@ -126,13 +126,13 @@ export default function IndustryStackChart({ w, h }) {
       .attr("class", "stackInnerG")
       .attr("stroke", "#aaa")
       .attr("transform", (d, i) => {
-        let x = gWidth * (i % 2);
-        let y = (gHeight+ circleR + 10)*2* Math.floor(i / 2);
+        let x = gWidth * (i % levelNumber);
+        let y = (gHeight+ circleR + 10)*2* Math.floor(i / levelNumber);
         return "translate(" + x.toString() + "," + y.toString() + ")";
       });
 
     g.append("text")
-      .attr("transform", (d) => "translate(10,10})")
+      .attr("transform", (d) => "translate(10,10))")
       .selectAll("tspan")
       .data(d => d.industry)
       .join("tspan")
@@ -151,7 +151,7 @@ export default function IndustryStackChart({ w, h }) {
       .attr("fill", "white")
       .attr("cx", 0)
       .attr("cy", 0)
-      .attr("fill", (d, index) => innerCirlceColor[index % 2]);
+      .attr("fill", (d, index) => innerCirlceColor[index % 3]);
 
     for (let k = 0; k < data.length; k++) {
       for (let i = 0; i < combinationOrder.length; i++) {
