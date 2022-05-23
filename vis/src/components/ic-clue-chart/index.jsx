@@ -51,6 +51,7 @@ export default function ICClueChart({ w, h }) {
     if (JSON.stringify(data) === "{}") return;
     if (JSON.stringify(svgWidth) === "{}" || JSON.stringify(svgHeight) === "{}")
       return;
+    d3.selectAll('#icclue-chart svg').remove()
     var titleSvg = d3
       .select("#icclue-title")
       .append("svg")
@@ -79,12 +80,12 @@ export default function ICClueChart({ w, h }) {
     // console.log(data);
 
     for (let i = 0; i < data.length; i++) {
-      let skipNum = data[i].skipNum + 1
+      let skipNum = data[i].skipNum + 1;
       // let skipNum = 1
       console.log(skipNum);
       icicleChart = Icicle()
         .orientation("lr")
-        .width(svgWidth / 3 * skipNum)
+        .width((svgWidth / 3) * skipNum)
         .height((svgHeight / data.length) * 0.95)
         .data(data[i])
         .size("pureDomain")
