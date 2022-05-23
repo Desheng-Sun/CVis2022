@@ -58,12 +58,12 @@ export default function IndustryStackChart({ w, h }) {
   }, []);
 
   useEffect(() => {
-    setSvgWidth(w)
-  }, [w])
+    setSvgWidth(w);
+  }, [w]);
 
-  useEffect(() =>{
-    setSvgHeight(h)
-  }, [h])
+  useEffect(() => {
+    setSvgHeight(h);
+  }, [h]);
 
   useEffect(() => {
     drawChart();
@@ -74,7 +74,7 @@ export default function IndustryStackChart({ w, h }) {
 
     d3.select("#industry-stack svg").remove();
     var combinationOrderSet = new Set();
-    var innerCirlceColor = ["#ffd006", "#67bbd7"]; // 内部的圆的颜色映射节点类型
+    var innerCirlceColor = ["#33a02c", "#ff756a"]; // 内部的圆的颜色映射节点类型 IP绿 Cert粉
     // 映射产业类型
     const industryColor = {
       0: "#c3e6a1",
@@ -97,24 +97,32 @@ export default function IndustryStackChart({ w, h }) {
     let industryType = [
       ...new Set([...combinationOrder.toString().replaceAll(",", "")]),
     ].sort(); // 包含的所有产业类型
-    let gWidth = svgWidth / 3, gHeight = 50, circleR = 3, levelNumber = 3
+    let gWidth = svgWidth / 3,
+      gHeight = 50,
+      circleR = 3,
+      levelNumber = 3;
     const arc = d3
       .arc()
-      .innerRadius((i, j) => circleR + (gHeight/industryType.length) * j)
-      .outerRadius((i, j) => circleR + (gHeight/industryType.length) * (j + 1))
+      .innerRadius((i, j) => circleR + (gHeight / industryType.length) * j)
+      .outerRadius(
+        (i, j) => circleR + (gHeight / industryType.length) * (j + 1)
+      )
       .startAngle((i) => ((2 * Math.PI) / combinationOrder.length) * i - 2)
       .endAngle((i) => ((2 * Math.PI) / combinationOrder.length) * (i + 1) - 2)
       .cornerRadius(60)
-      .padAngle(0.4);
+      .padAngle(0.1);
 
     let wrapper = d3
       .select("#industry-stack")
       .append("svg")
       .attr("width", svgWidth)
-      .attr("height", (gHeight + circleR + 10)*2 *(data.length/levelNumber + 1))
+      .attr(
+        "height",
+        (gHeight + circleR + 10) * 2 * (data.length / levelNumber + 1)
+      )
       .append("g")
       .attr("transform", (d, i) => {
-        let x = gWidth/3;
+        let x = gWidth / 3;
         let y = gHeight + circleR + 20;
         return "translate(" + x.toString() + "," + y.toString() + ")";
       });
@@ -127,31 +135,34 @@ export default function IndustryStackChart({ w, h }) {
       .attr("stroke", "#aaa")
       .attr("transform", (d, i) => {
         let x = gWidth * (i % levelNumber);
-        let y = (gHeight+ circleR + 10)*2* Math.floor(i / levelNumber);
+        let y = (gHeight + circleR + 10) * 2 * Math.floor(i / levelNumber);
         return "translate(" + x.toString() + "," + y.toString() + ")";
       });
 
     g.append("text")
-      .attr("transform", (d) => "translate(10,10))")
+      .attr("transform", (d) => "translate(10,10)")
       .selectAll("tspan")
-      .data(d => d.industry)
+      .data((d) => d.industry)
       .join("tspan")
-        .attr("x", (gHeight + circleR) + 10)
-        .attr("y", (d, i) => `${i * 1.5 - 2}em`)
-        .attr("font-weight", "bold")
-        .attr("stroke", "none")
-        .attr("font", "14px segoe ui")
-        .attr('fill', (d, i) => industryColor[i])
-        .text(d => {
-          return '#'+ d.industry + ': ' + d.number
-        });
+      .attr("x", gHeight + circleR + 10)
+      .attr("y", (d, i) => `${i * 1.5 - 2}em`)
+      .attr("font-weight", "bold")
+      .attr("stroke", "none")
+      .attr("font", "14px segoe ui")
+      .attr("fill", (d, i) => industryColor[i])
+      .text((d) => {
+        return "#" + d.industry + ": " + d.number;
+      });
 
     g.append("circle")
       .attr("r", circleR)
       .attr("fill", "white")
       .attr("cx", 0)
       .attr("cy", 0)
-      .attr("fill", (d, index) => innerCirlceColor[index % 3]);
+      .attr("fill", (d, index) => {
+        // console.log(d, index);
+        return innerCirlceColor[index % 3];
+      });
 
     for (let k = 0; k < data.length; k++) {
       for (let i = 0; i < combinationOrder.length; i++) {

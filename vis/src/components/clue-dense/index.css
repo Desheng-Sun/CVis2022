@@ -1,0 +1,21 @@
+#clue-dense-control {
+  display: flex;
+}
+
+#clue-dense-control-nodetype {
+  flex: 1;
+  height: 100%;
+}
+#clue-dense-control-datatype {
+  flex: 1;
+  height: 100%;
+}
+#clue-dense-control-info {
+  flex: 1;
+  height: 100%;
+  font-weight: bold;
+  /* font-size: 16px; */
+  /* line-height: 16px; */
+  text-align: center;
+  color: #333;
+}

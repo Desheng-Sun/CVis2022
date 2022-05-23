@@ -59,7 +59,7 @@ export function getDifChartSds(linksInfo) {
 
 export function getMainChartSds(linksInfo) {
   return post("/getMainChartSds", {
-    linksInfo:linksInfo
+    linksInfo: linksInfo,
   });
 }
 
@@ -80,4 +80,8 @@ export function getIcClueData2Sds(numId, type) {
     numId: numId,
     type: type,
   });
+}
+
+export function getClueDenseDataSds() {
+  return post("/getClueDenseDataSds");
 }

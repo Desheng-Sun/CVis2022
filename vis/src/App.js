@@ -23,6 +23,7 @@ import DataProcessChecker from "./components/dataProcessChecker/dataProcessCheck
 import SearchBar from "./components/search-bar";
 import CombineTable from "./components/combine-table";
 import IndustryStackChart from "./components/industry-stack-chart";
+import ClueDense from "./components/clue-dense";
 
 // import SubChart from './components/sub-chart';n
 // 引入问题一的自定义组件
@@ -62,7 +63,11 @@ function App() {
           element={<ICClueChart />}
         />
         <Route key="difchart" path="/difchart" element={<DifChart />} />
-        <Route key="subchartcytoscape" path="/subchartcytoscape" element={<SubChartCytoscape />} />
+        <Route
+          key="subchartcytoscape"
+          path="/subchartcytoscape"
+          element={<SubChartCytoscape />}
+        />
         <Route key="detaillist" path="/detaillist" element={<DetailList />} />
         <Route key="checker" path="/checker" element={<DataProcessChecker />} />
         <Route key="searchbar" path="/searchbar" element={<SearchBar />} />
@@ -76,6 +81,7 @@ function App() {
           path="/industrystackchart"
           element={<IndustryStackChart />}
         />
+        <Route key="cluedense" path="/cluedense" element={<ClueDense />} />
       </Routes>
     </div>
   );

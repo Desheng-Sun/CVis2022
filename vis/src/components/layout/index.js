@@ -28,7 +28,6 @@ export default function Layout() {
   const [mainChartHeight, setMainChartHeight] = useState(0);
   const [industryStackChartWidth, setIndustryStackChartWidth] = useState(0);
   const [industryStackChartHeight, setIndustryStackChartHeight] = useState(0);
-  
 
   const [curIC, setCurrIC] = useState(""); // 当前选中的IP/Cert
 
@@ -67,12 +66,12 @@ export default function Layout() {
       document.getElementById("mainmap").getBoundingClientRect().width
     );
     setMainChartHeight(968);
-    // setIndustryStackChartWidth(
-    //   document.getElementById("assetandpath").getBoundingClientRect().width
-    // );
-    // setIndustryStackChartHeight(
-    //   document.getElementById("assetandpath").getBoundingClientRect().height
-    // );
+    setIndustryStackChartWidth(
+      document.getElementById("assetandpath").getBoundingClientRect().width
+    );
+    setIndustryStackChartHeight(
+      document.getElementById("assetandpath").getBoundingClientRect().height
+    );
   });
 
   return (
@@ -136,7 +135,10 @@ export default function Layout() {
 
         <div id="assetandpath">
           <ChartHeader chartName={"核心资产与关键链路分析"} />
-          {/* <IndustryStackChart  w={industryStackChartWidth} h={industryStackChartHeight} /> */}
+          <IndustryStackChart
+            w={industryStackChartWidth}
+            h={industryStackChartHeight}
+          />
         </div>
         <div id="conclusion">
           <ChartHeader chartName={"团伙分析结果"} />
