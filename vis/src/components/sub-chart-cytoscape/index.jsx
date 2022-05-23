@@ -19,12 +19,8 @@ import "./index.css";
 
 // 数据请求接口
 import { getMainChartData, getMainChartSds } from "../..//apis/api.js";
-// import './cytoscape.min.js'
 
-// import { undoRedo } from './cytoscape-undo-redo.js'
-// var undoRedo = require('cytoscape-undo-redo');
 navigator(cytoscape);
-// cytoscape.use(undoRedo);
 undoRedo(cytoscape);
 contextMenus(cytoscape);
 cytoscape.use(euler);
@@ -104,139 +100,6 @@ var layoutOptionDict = {
   },
 };
 
-let linksInfo = {
-  nodes: [
-    {
-      numId: 3,
-      id: "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
-      name: "5.180.xxx.xxx",
-      ICIndustry: [
-        {
-          industry: "ABCE",
-          number: 26,
-        },
-        {
-          industry: "ABCEG",
-          number: 1,
-        },
-        {
-          industry: "B",
-          number: 11,
-        },
-        {
-          industry: "BC",
-          number: 3,
-        },
-      ],
-    },
-    {
-      numId: 4,
-      id: "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
-      name: "9ace6aae20",
-      ICIndustry: [
-        {
-          industry: "ABCE",
-          number: 87,
-        },
-      ],
-    },
-    {
-      numId: 101,
-      id: "Cert_9032204fc475b809ea02a4ffc7e682660892d9e9d23b7b1777d0b4f0e9a0a656",
-      name: "9032204fc4",
-      ICIndustry: [
-        {
-          industry: "ABCE",
-          number: 16,
-        },
-        {
-          industry: "ABCEG",
-          number: 1,
-        },
-      ],
-    },
-    {
-      numId: 102,
-      id: "IP_e000e83fd5fc8045d04b96af43f55ceb1005ec6e728aba4b066eaa1b47b11789",
-      name: "164.155.xxx.xxx",
-      ICIndustry: [
-        {
-          industry: "A",
-          number: 1,
-        },
-        {
-          industry: "ABCE",
-          number: 2,
-        },
-        {
-          industry: "B",
-          number: 105,
-        },
-      ],
-    },
-    {
-      numId: 112,
-      id: "IP_cdcb3771d72a01e7845b212e74d1ca1b0e8384b79bad1da2f73c93959da5b3d2",
-      name: "172.255.xxx.xxx",
-      ICIndustry: [
-        {
-          industry: "ABCE",
-          number: 1,
-        },
-        {
-          industry: "B",
-          number: 18,
-        },
-        {
-          industry: "BC",
-          number: 1,
-        },
-        {
-          industry: "BG",
-          number: 1,
-        },
-      ],
-    },
-  ],
-  links: [
-    {
-      source:
-        "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
-      target:
-        "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
-      linksNumId: [3, 4],
-    },
-    {
-      source:
-        "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
-      target:
-        "Cert_9032204fc475b809ea02a4ffc7e682660892d9e9d23b7b1777d0b4f0e9a0a656",
-      linksNumId: [3, 101],
-    },
-    {
-      source:
-        "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
-      target:
-        "IP_e000e83fd5fc8045d04b96af43f55ceb1005ec6e728aba4b066eaa1b47b11789",
-      linksNumId: [3, 102],
-    },
-    {
-      source:
-        "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
-      target:
-        "IP_e000e83fd5fc8045d04b96af43f55ceb1005ec6e728aba4b066eaa1b47b11789",
-      linksNumId: [4, 102],
-    },
-    {
-      source:
-        "Cert_9032204fc475b809ea02a4ffc7e682660892d9e9d23b7b1777d0b4f0e9a0a656",
-      target:
-        "IP_cdcb3771d72a01e7845b212e74d1ca1b0e8384b79bad1da2f73c93959da5b3d2",
-      linksNumId: [101, 112],
-    },
-  ],
-};
-
 export default function SubChartCytoscape({ w, h }) {
   const [svgWidth, setSvgWidth] = useState(w);
   const [svgHeight, setSvgHeight] = useState(h);
@@ -269,6 +132,7 @@ export default function SubChartCytoscape({ w, h }) {
 
   // 请求数据并初始化图形
   useEffect(() => {
+    console.log(dataParam);
     getMainChartSds(dataParam).then((res) => {
       setData(res);
     });
@@ -305,7 +169,7 @@ export default function SubChartCytoscape({ w, h }) {
 
   // 处理节点的搜索事件
   useEffect(() => {
-    drawChart();
+    // drawChart();
   }, [data]);
 
   // 监听布局是否变化
