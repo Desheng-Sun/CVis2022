@@ -218,7 +218,7 @@ function getNodesInICLinks(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW, node
         listLinks = listLinks.filter(e => e != JSON.stringify(nowICLink))
         nowICNodeSet = nowICNodeSet.filter(e => e != j[1])
 
-        
+
         nowNodesInfo = nodeCsvW[parseInt(j[1]) - 1]
         nowLinks["children"].push({
           "id": nowNodesInfo[1],
@@ -396,15 +396,18 @@ app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
           name: nowNodeInfo[2],
           ICIndustry: nowICIndustry,
         });
-        for (let j of ICLinks[i]) {
-          if (nodes.includes(j[1]) && j[1] > j[0]) {
-            linksInfo.push({
-              source: nodeNumIdInfo[j[0] - 1][1],
-              target: nodeNumIdInfo[j[1] - 1][1],
-              linksNumId: [j[0], j[1]],
-            });
+        if (ICLinks.hasOwnProperty(i)) {
+          for (let j of ICLinks[i]) {
+            if (nodes.includes(j[1]) && j[1] > j[0]) {
+              linksInfo.push({
+                source: nodeNumIdInfo[j[0] - 1][1],
+                target: nodeNumIdInfo[j[1] - 1][1],
+                linksNumId: [j[0], j[1]],
+              });
+            }
           }
         }
+
       }
       res.send({ nodes: nodesInfo, links: linksInfo });
       res.end();
@@ -441,42 +444,6 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
       }
     }
   }
-  // filedata = path.join(
-  //   __dirname,
-  //   "data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/nodeNeighbor.json"
-  // );
-  // nowData = JSON.parse(fs.readFileSync(filedata, "utf-8"));
-  // for (let i of nodes) {
-  //   let nowNodeNeighbor = nowData[i["numId"]].filter((e) => {
-  //     return !nodesNumId.has(e[0]);
-  //   });
-  //   for (let j of nowNodeNeighbor) {
-  //     nodesNumId.add(j[0]);
-  //     linksList.add(j[1].toString());
-  //   }
-  // }
-  // let nowNodes = []
-  // let nowLinks = []
-  // for(let i of nodesNumId){
-  //   let nowNodeInfo = nodeNumIdInfo[i - 1]
-  //   nowNodes.push({
-  //     "numId": parseInt(nowNodeInfo[0]),
-  //     "id": nowNodeInfo[1],
-  //     "name": nowNodeInfo[2],
-  //     "type": nowNodeInfo[3],
-  //     "industry": nowNodeInfo[4]
-  //   })
-  // }
-
-  // for(let i of linksList){
-  //   i = i.split(",")
-  //   nowLinks.push({
-  //     "relation" : i[0],
-  //     "source": nodeNumIdInfo[parseInt(i[1]) - 1][1],
-  //     "target": nodeNumIdInfo[parseInt(i[2]) - 1][1],
-  //     "linksNumId": [parseInt(i[1]), parseInt(i[2])]
-  //   })
-  // }
   let nowNodes = [];
   let nowLinks = [];
   filedata = path.join(
@@ -836,7 +803,7 @@ app.post("/getInfoListSds", jsonParser, (req, res, next) => {
     groupscope = "大";
   }
   for (let i of nodes) {
-    industrytype.add(i["industry"].replace("\r",""));
+    industrytype.add(i["industry"].replace("\r", ""));
   }
 
   if (industrytype.has("  ")) {

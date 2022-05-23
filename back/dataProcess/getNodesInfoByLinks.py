@@ -3,7 +3,7 @@ import os
 from alive_progress import alive_bar
 import multiprocessing as mp
 import numpy as np
-import pandas as pd
+import pandas as pd 
 
 if __name__ == '__main__':
     nowPath = os.path.abspath(os.path.dirname(
