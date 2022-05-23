@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Select, Button, Form } from 'antd';
 const { Option } = Select;
-const selectTitle = ['id', 'name', 'type', 'industry'];
 var arr = [
     { id: '1', name: 'ip1111111', type: 'IP', industry: 'A' },
     { id: '2', name: 'ip113311', type: 'IP', industry: 'A' },
