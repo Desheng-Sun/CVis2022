@@ -30,3 +30,20 @@
   fill: #bcd981;
   opacity: 0.5;
 }
+
+.d3-context-menu{
+    position:relative;
+    width: 120px;
+    height: 30px;
+    border-radius: 7px;
+    padding-top: 5px;
+    background: rgba(0,0,0, 0.3);
+    color: white;
+}
+.d3-context-menu ul{
+    padding-left: 35px;
+}
+
+.d3-context-menu:hover{
+    background: rgba(0,0,0, 0.6);
+}

@@ -97,7 +97,7 @@ export default function Layout() {
           <div id="container-mainmap">
             <div id="mainmap">
               <ChartHeader chartName={"黑灰产网络资产图"} />
-              {/* <MainChartCytoscape w={mainChartWidth} h={mainChartHeight} /> */}
+              <MainChartCytoscape w={mainChartWidth} h={mainChartHeight} />
             </div>
           </div>
           <div id="container-filter">

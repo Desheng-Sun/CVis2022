@@ -10,12 +10,16 @@ import { icclue, getSkeletonChartDataSds } from "../../apis/api";
 
 const d3Lasso = lasso;
 var linkedByIndex = {};
+var combinationOrderSet = new Set();
 export default function SkeletonChart({ w, h }) {
   const [svgWidth, setSvgWidth] = useState(w);
   const [svgHeight, setSvgHeight] = useState(h);
   const [data, setData] = useState({});
+  const [links, setLinks] = useState([]);
+  const [nodes, setNodes] = useState([]);
   const [dataParam, setDataParam] = useState("");
   const [selectedNode, setSelectedNode] = useState([]);
+  const [selectedNodeFirst, setSelectedNodeFirst] = useState(true);
   const [currIc, setCurrIc] = useState(["3", "4", "101", "112"]); // 当前已选择的ic
 
   // 随系统缩放修改画布大小
@@ -29,112 +33,54 @@ export default function SkeletonChart({ w, h }) {
   // 请求数据
   // 监听冰柱图选择的节点的变化
   useEffect(() => {
-    // getSkeletonChartDataSds(currIc).then((res) => {
-    //   // console.log(res);
-    //   setData(res);
-    // });
-
-    let dt = {
-      nodes: [
-        {
-          id: "Myriel",
-          numId: 1,
-          ICIndustry: [
-            { industry: "AB", number: 2 },
-            { industry: "AE", number: 8 },
-            { industry: "BCD", number: 1 },
-          ],
-          group: 1,
-        },
-        {
-          id: "Napoleon",
-          numId: 2,
-          ICIndustry: [
-            { industry: "AB", number: 2 },
-            { industry: "AE", number: 8 },
-            { industry: "BCD", number: 1 },
-          ],
-          group: 1,
-        },
-        {
-          id: "Mlle.Baptistine",
-          numId: 3,
-          ICIndustry: [
-            { industry: "AB", number: 2 },
-            { industry: "AE", number: 8 },
-            { industry: "BCD", number: 1 },
-          ],
-          group: 1,
-        },
-        {
-          id: "Mme.Magloire",
-          ICIndustry: [
-            { industry: "AB", number: 2 },
-            { industry: "AE", number: 8 },
-            { industry: "BCD", number: 1 },
-          ],
-          group: 1,
-        },
-        {
-          id: "CountessdeLo",
-          numId: 4,
-          ICIndustry: [
-            { industry: "AB", number: 2 },
-            { industry: "AE", number: 8 },
-            { industry: "BCD", number: 1 },
-          ],
-          group: 1,
-        },
-        {
-          id: "Geborand",
-          ICIndustry: [
-            { industry: "AB", number: 2 },
-            { industry: "AE", number: 8 },
-            { industry: "BCD", number: 1 },
-          ],
-          group: 1,
-        },
-        {
-          id: "Champtercier",
-          numId: 5,
-          ICIndustry: [
-            { industry: "AB", number: 2 },
-            { industry: "AE", number: 8 },
-            { industry: "BCD", number: 1 },
-          ],
-          group: 1,
-        }
-      ],
-      links: [
-        { source: "Napoleon", target: "Myriel", value: 1 },
-        { source: "Champtercier", target: "Myriel", value: 8 },
-        { source: "Geborand", target: "Champtercier", value: 10 },
-        { source: "Mlle.Baptistine", target: "Mme.Magloire", value: 6 },
-        { source: "Mlle.Baptistine", target: "Myriel", value: 1 },
-      ],
-    };
-    setData(dt)
+    getSkeletonChartDataSds(currIc).then((res) => {
+      // console.log(res);
+      setData(res);
+    });
   }, [currIc]);
 
   // 监听用户选择的节点
   useEffect(() => {
-    // let returnRes = {'nodes': [], "links": []}
-    // for(let i in linkedByIndex){
-    //   let source = i.split(',')[0]
-    //   let target = i.split(',')[1]
-    //   if(source in selectedNode && target in selectedNode){
-    //     returnRes['links'].push({'source': source, 'target': target})
-    //   }
-    // }
-    // for(let j of selectedNode){
-    //   returnRes['links'].push({'numId': j})
-    // }
-    // PubSub.publish("skeletonSelect", returnRes);
-  }, [selectedNode])
+    if (!selectedNodeFirst) {
+      let returnRes = { nodes: [], links: [] };
+      for (let i in linkedByIndex) {
+        let source = i.split(",")[0];
+        let target = i.split(",")[1];
+        console.log();
+        if (selectedNode.includes(parseInt(source))  && selectedNode.includes(parseInt(target))) {
+          returnRes["links"].push({ linksNumId: [parseInt(source), parseInt(target)]});
+        }
+      }
+      for (let j of selectedNode) {
+        returnRes["nodes"].push({ numId: j });
+      }
+      PubSub.publish("skeletonSelect", returnRes);
+    }
+    setSelectedNodeFirst(false);
+  }, [selectedNode]);
 
   useEffect(() => {
-    drawChart();
+    let tLink = [], tNodes = [];
+    if (JSON.stringify(data) !== "{}") {
+      for (let l of data.links) {
+        tLink.push(l);
+      }
+      for (let n in data.nodes) {
+        for (let item in data.nodes[n].ICIndustry) {
+          combinationOrderSet.add(data.nodes[n].ICIndustry[item]["industry"]);
+        }
+        tNodes.push({ ...data.nodes[n], group: n });
+      }
+      setLinks([...tLink]);
+      setNodes([...tNodes]);
+    }
   }, [data]);
+
+  useEffect(() => {
+    if (nodes.length !== 0 && links.length !== 0) {
+      drawChart();
+    }
+  }, [nodes, links]);
 
   PubSub.subscribe("icicleSelect", (msg, ic) => {
     setCurrIc(ic);
@@ -142,24 +88,17 @@ export default function SkeletonChart({ w, h }) {
 
   // 绘制结构图
   function drawChart() {
-    if (JSON.stringify(data) === "{}") return;
-
-    var combinationOrderSet = new Set();
-    var links = data.links.map((d) => Object.create(d));
-    const nodes = data.nodes.map((d, i) => {
-      for (let item in d.ICIndustry) {
-        combinationOrderSet.add(d.ICIndustry[item]["industry"]);
+    for (let l of links) {
+      let source = l["source"];
+      let target = l["target"];
+      let sourceNumId, targetNumId;
+      for(let n of nodes){
+        if(n.id === source) sourceNumId = n.numId
+        if(n.id === target) targetNumId = n.numId
       }
-      return Object.create({ ...d, group: i });
-    }); 
-
-    if(links){
-      links.forEach((d, i) => {
-        console.log(d, d.source.numId);
-        linkedByIndex[`${d.source.index},${d.target.index}`] = 1;
-      });
+      let key = sourceNumId + "," + targetNumId;
+      linkedByIndex[key] = 1;
     }
-
     let combinationOrder = [...combinationOrderSet].sort(); // 包含的所有产业类型组合
     let industryType = [
       ...new Set([...combinationOrder.toString().replaceAll(",", "")]),
@@ -176,12 +115,7 @@ export default function SkeletonChart({ w, h }) {
       scaleFactor = 1.2, // 值为1表示紧连边缘的点
       margin = scaleFactor,
       nodeRadius = 10,
-      onHover = undefined,
-      onClick = undefined,
-      onLeave = undefined,
-      chargeStrength = undefined,
       linkStrength = undefined;
-    // combinationOrder = ["AB", "AE", "BCD"]; // 按字母对所有产业组合进行排序
     const wrapper = svg.append("g").attr("transform", `translate(0, 0)`);
 
     // create groups, links and nodes
@@ -199,8 +133,8 @@ export default function SkeletonChart({ w, h }) {
           // 获取被取消数据对应的numId
           let numId = nodes
             .filter((d) => d.group == groupId)
-            .map((d) => d.id)[0];
-          // 从选择的数据中删掉被取消的元素
+            .map((d) => d.numId)[0];
+
           setSelectedNode((selectedNode) =>
             selectedNode.filter((d) => d != numId)
           );
@@ -215,7 +149,7 @@ export default function SkeletonChart({ w, h }) {
       .join("line")
       .attr("stroke-width", 1)
       .attr("stroke", "#ccc");
-    const nodeColor = d3.scaleOrdinal(d3.schemeCategory10);
+
     const nodeG = wrapper
       .append("g")
       .attr("class", "nodeG")
@@ -241,19 +175,6 @@ export default function SkeletonChart({ w, h }) {
       .attr("cx", 0)
       .attr("cy", 0)
       .attr("fill", (d, index) => innerCirlceColor[index % 2]);
-
-    if (typeof onHover === "function") {
-      nodeG.on("mouseover", onHover);
-    }
-    if (typeof onLeave === "function") {
-      nodeG.on("mouseout", onLeave);
-    }
-    if (typeof onClick === "function") {
-      nodeG.on("click", onClick);
-    }
-    function onHover() {
-      console.log(this);
-    }
 
     // 绘制每个节点的内部图
     const industryColor = {
@@ -338,12 +259,13 @@ export default function SkeletonChart({ w, h }) {
       .force("collision", d3.forceCollide().radius(19));
     simulation.on("tick", tick);
     function tick() {
+      // nodeG.attr("transform", (d) => "translate(" + d.x + "," + d.y + ")");
+      nodeG.attr("transform", (d) => "translate(" + (d.x < 10? d.x = 10 : d.x > (svgWidth - 10) ? d.x = svgWidth-10 : d.x) + "," + (d.y < 10? d.y = 10 : d.y > (svgHeight - 10) ? d.y = svgHeight-10 : d.y) + ")");
       link
         .attr("x1", (d) => d.source.x)
         .attr("y1", (d) => d.source.y)
         .attr("x2", (d) => d.target.x)
         .attr("y2", (d) => d.target.y);
-      nodeG.attr("transform", (d) => "translate(" + d.x + "," + d.y + ")");
       updateGroups(groupPath, groupIds, nodeG, margin);
     }
 
@@ -362,34 +284,25 @@ export default function SkeletonChart({ w, h }) {
       .attr("class", "path_placeholder")
       .attr("groupId", (d) => d)
       .append("path")
+      .attr("class", "group-background")
       .attr("stroke", "grey")
       .attr("fill", "white")
-      //   .attr("fill", (d) => nodeColor(d))
-      .attr("opacity", 0.2)
-      .on("contextmenu", d3ContextMenu(menu));
-    // .on('mouseover', (event, d) => {
-    //   d3.select(this).transition()
-    //   .duration(2000)
-    //   .attr('opacity', 0.8);
-    //   console.log(this);
-    // })
-    // .on('mouseout', (event, d) => {
-    //   d3.select(this).transition()
-    //   .duration(2000)
-    //   .attr('opacity', 0.2);
-    // })
+      .attr("opacity", 0.5)
+      .on("contextmenu", d3ContextMenu(menu, {
+        position: function(d){
+          var elm = this;
+          var bounds = elm.getBoundingClientRect();
+          return {
+            top: bounds.top + bounds.height,
+            left: bounds.left
+          }
+        }
+      }));
 
     if (displayGroupOnHover) {
       groupPath.transition().duration(2000).attr("opacity", 0.8);
     }
 
-    // 对group添加交互
-    // groups.selectAll('.path_placeholder')
-    //   .call(d3.drag()
-    //     .on('start', group_dragstarted)
-    //     .on('drag', group_dragged)
-    //     .on('end', group_dragended)
-    //   )
     //拖拽节点
     function dragstarted(evt, d) {
       if (!evt.active) simulation.alphaTarget(0.3).restart();
@@ -404,26 +317,6 @@ export default function SkeletonChart({ w, h }) {
       if (!evt.active) simulation.alphaTarget(0);
       d.fx = null;
       d.fy = null;
-    }
-
-    // 拖拽group
-    function group_dragstarted(event, groupId) {
-      if (!event.active) simulation.alphaTarget(0.3).restart();
-      d3.select(this).select("path").style("stroke-width", 3);
-    }
-    function group_dragged(event, groupId) {
-      nodeG
-        .filter(function (d) {
-          return d.group == groupId;
-        })
-        .each(function (d) {
-          d.x += event.dx;
-          d.y += event.dy;
-        });
-    }
-    function group_dragended(event, groupId) {
-      if (!event.active) simulation.alphaTarget(0.3).restart();
-      d3.select(this).select("path").style("stroke-width", 1);
     }
 
     // // 生成group表示，检索group中的节点的位置，返回特定点的convex hull，至少有三个点，否则返回null
@@ -546,13 +439,14 @@ export default function SkeletonChart({ w, h }) {
 
       // 获取选中的数据对应的numId
       var groupIdArr = lasso.selectedItems()._groups[0].map((d) => d.__data__);
-      
+
       if (groupIdArr.length != 0) {
         let numIdArr = nodes
-          .filter((d) => groupIdArr.includes(d.group))
+          .filter((d) => {
+            return groupIdArr.includes(parseInt(d.group))
+          })
           .map((d) => {
-            console.log(d);
-            return d.id
+            return d.numId;
           });
         setSelectedNode((selectedNode) =>
           Array.from(new Set([...selectedNode, ...numIdArr]))

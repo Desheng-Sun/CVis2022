@@ -156,6 +156,8 @@ if __name__ == '__main__':
     # 打开所有的节点
     nodeCsvW = pd.read_csv(
         nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumId.csv", header=0)
+    
+    # 将industry进行修改，改成AB的形式
     nodeCsvNow = []
     for i in nodeCsvW.values:
         nowIndustry = ast.literal_eval(i[-1])
@@ -168,22 +170,29 @@ if __name__ == '__main__':
         nodeCsvNow.append(np.array([i[0],i[1],i[2],i[3], strnowIndustry]))
     nodeCsvNow = pd.DataFrame(nodeCsvNow)
     nodeCsvNow.to_csv(nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv", index=None, header=["numId","id","name","type","industry"])
-    # nodes = ["Domain_c58c149eec59bb14b0c102a0f303d4c20366926b5c3206555d2937474124beb9",
-    # "Domain_f3554b666038baffa5814c319d3053ee2c2eb30d31d0ef509a1a463386b69845",
-    # "IP_400c19e584976ff2a35950659d4d148a3d146f1b71692468132b849b0eb8702c",
-    # "Domain_b10f98a9b53806ccd3a5ee45676c7c09366545c5b12aa96955cde3953e7ad058",
-    # "Domain_24acfd52f9ceb424d4a2643a832638ce1673b8689fa952d9010dd44949e6b1d9",
-    # "Domain_9c72287c3f9bb38cb0186acf37b7054442b75ac32324dfd245aed46a03026de1",
-    # "Domain_717aa5778731a1f4d6f0218dd3a27b114c839213b4af781427ac1e22dc9a7dea",
-    # "Domain_8748687a61811032f0ed1dcdb57e01efef9983a6d9c236b82997b07477e66177",
-    # "Whois_Phone_f4a84443fb72da27731660695dd00877e8ce25b264ec418504fface62cdcbbd7",
-    # "IP_7e730b193c2496fc908086e8c44fc2dbbf7766e599fabde86a4bcb6afdaad66e",
-    # "Cert_6724539e5c0851f37dcf91b7ac85cb35fcd9f8ba4df0107332c308aa53d63bdb",
-    # "Whois_Phone_fd0a3f6712ff520edae7e554cb6dfb4bdd2af1e4a97a39ed9357b31b6888b4af",
-    # "IP_21ce145cae6730a99300bf677b83bbe430cc0ec957047172e73659372f0031b8",
-    # "Domain_7939d01c5b99c39d2a0f2b418f6060b917804e60c15309811ef4059257c0818a",
-    # "Domain_587da0bac152713947db682a5443ef639e35f77a3b59e246e8a07c5eccae67e5"]
-    # nodesNumId= []
-    # for i in nodes:
-    #     nodesNumId.extend((nodeCsvW[nodeCsvW["id"] == i].values).tolist())
-    # print(nodesNumId)
+
+
+    #  根据Links中的NumID 获取每一个节点关联的Links 
+    linksCsvW = pd.read_csv(
+        nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/LinkNumId.csv", header=0)
+    nodesLinks = []
+    for i in nodeCsvW.values:
+        nodesLinks.append([])
+    for i in linksCsvW.values:
+        nodesLinks[i[1] - 1].append(i)
+        nodesLinks[i[2] - 1].append(i)
+    with open(nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/nodeLinksJson.json", "w", encoding="utf-8") as f:
+        json.dump(nodesLinks, f, ensure_ascii=False)
+    
+
+    # 获取每一个IC节点连接的Domain的Industry信息
+    nodeCsvW = pd.read_csv(
+        nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv", header=0)
+    
+    linkCsvW = open(
+        nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/nodeLinksJson.json", 'r', encoding='utf-8')
+    linksAll = json.load(linkCsvW)
+    linkCsvW.close()
+    ipNode = nodeCsvW[nodeCsvW["type"] == "IP"].values
+    certNode = nodeCsvW[nodeCsvW["type"] == "Cert"].values
+    nodeCsvW = nodeCsvW.values
