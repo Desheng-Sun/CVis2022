@@ -5,20 +5,18 @@ import multiprocessing as mp
 import pandas as pd
 import time
 
+
 # 根据某一个IP获取整个链路
-
-
 def getAllLinksByIp(nowPath, numId, nodeCsvW, ICScreen, linksAll):
     nodePath = "ICLinks/"
     nodeLinksJ = open(nowPath + nodePath + str(numId) +
                       ".json", "r", encoding="utf-8")
     nodeLinks = json.load(nodeLinksJ)
-
+    # 根据链路信息将链路进行分类
     linksToIp = []
     linksToCert = []
     linksToWhos = []
     linksToDomain = []
-    linksToEnd = []
     for i in nodeLinks["links"]:
         if(i[0] == "r_dns_a"):
             linksToIp.append(i)
@@ -28,13 +26,10 @@ def getAllLinksByIp(nowPath, numId, nodeCsvW, ICScreen, linksAll):
             linksToWhos.append(i)
         elif(i[3] > 0):
             linksToDomain.append(i)
-        elif(i[3] == -1):
-            linksToEnd.append(i)
     nodeAllLinks = [linksToIp,
                     linksToCert,
                     linksToWhos,
-                    linksToDomain,
-                    linksToEnd]
+                    linksToDomain]
     ipToIpAndCertLinks = []
 
     # 获取节点到目标节点的所有路径
@@ -49,6 +44,7 @@ def getAllLinksByIp(nowPath, numId, nodeCsvW, ICScreen, linksAll):
 
     with open(nowPath + "ICScreenLinks/" + str(numId) + ".json", "w", encoding="utf-8") as f:
         json.dump(ipToIpAndCertLinks, f, ensure_ascii=False)
+
 
 
 def getLinksToTarget(numId, typeName, i, nowPath, nodeAllLinks, nodeLinks, nodeCsvW, linksAll):
@@ -70,16 +66,6 @@ def getLinksToTarget(numId, typeName, i, nowPath, nodeAllLinks, nodeLinks, nodeC
     TargetLinksJ = open(nowPath + nodePath +
                         str(i[0]) + ".json", "r", encoding="utf-8")
     TargetLinks = json.load(TargetLinksJ)["links"]
-
-    for j in linksAll[numId - 1]:
-        if(j[0] == "r_asn" or j[0] == "r_cidr" or j[0] == "r_cert_chain"):
-            linksToTarget.append([j[0], j[1], j[2], -1, True])
-            nodesToTarget.append(j[2])
-
-    for j in linksAll[i[0] - 1]:
-        if(j[0] == "r_asn" or j[0] == "r_cidr" or j[0] == "r_cert_chain"):
-            linksToTarget.append([j[0], j[1], j[2], -1, True])
-            nodesToTarget.append(j[2])
 
     # 获取Target节点链接当前节点的所有nodes和Links
     for j in TargetLinks:
@@ -113,13 +99,7 @@ def getLinksToTarget(numId, typeName, i, nowPath, nodeAllLinks, nodeLinks, nodeC
         if(j[1] in nodesToTarget):
             linksToTarget.append(j)
             nodesToTarget.append(j[2])
-    for j in nodeAllLinks[4]:
-        if(j[1] in nodesToTarget):
-            linksToTarget.append(j)
-            nodesToTarget.append(j[2])
-        if(j[1] == i[0] or j[1] == numId):
-            linksToTarget.append(j)
-            nodesToTarget.append(j[2])
+    
 
     # 统计当前Links和Nodes的数量及类型
     nodeToTargetInfo = [nodeLinks["beginNode"], i]
@@ -154,39 +134,6 @@ def getAllLinksByNodes(coreList, nowPath, nodes, nodeCsvW, ICScreen, linksAll):
           time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
 
 
-def getICScreenLinks(nowPath, ICScreen):
-    with alive_bar(len(ICScreen)) as bar:
-        for i in ICScreen:
-            ICScreenLinksJ = open(
-                nowPath + "ICScreenLinks/" + str(i) + ".json", "r", encoding="utf-8")
-            ICScreenLinks = json.load(ICScreenLinksJ)
-            ICScreenLinks.sort(key=lambda x: x["end"][0])
-            ICScreenLinksJ = open(
-                nowPath + "ICScreenLinks/" + str(i) + ".json", "w", encoding="utf-8")
-            json.dump(ICScreenLinks, ICScreenLinksJ, ensure_ascii=False)
-            ICScreenLinksJ.close()
-            for j in ICScreenLinks:
-                if(j["end"][0] < j["begin"][0]):
-                    continue
-                nextICScreenLinksJ = open(
-                    nowPath + "ICScreenLinks/" + str(j["end"][0]) + ".json", "r", encoding="utf-8")
-                nextICScreenLinks = json.load(nextICScreenLinksJ)
-                nextICScreenLinks.append({
-                    "begin": j["end"],
-                    "end": j["begin"],
-                    "nodes": j["nodes"],
-                    "links": j["links"],
-                    "nodeNum": j["nodeNum"],
-                    "domainNum": j["domainNum"],
-                    "industryNum": j["industryNum"],
-                })
-                nextICScreenLinksJ = open(
-                    nowPath + "ICScreenLinks/" + str(j["end"][0]) + ".json", "w", encoding="utf-8")
-                json.dump(nextICScreenLinks, nextICScreenLinksJ,
-                          ensure_ascii=False)
-                nextICScreenLinksJ.close()
-            bar()
-
 
 if __name__ == '__main__':
     nowPath = os.path.abspath(os.path.dirname(
@@ -208,26 +155,27 @@ if __name__ == '__main__':
     print(len(ICScreen[0]))
     print(len(ICScreen[1]))
     print(len(ICScreen[2]))
+    print(len(ICScreen[3]))
     useNode = []
-    for i in ICScreen[0]:
-        if(not os.path.exists(nowPath + "ICScreenLinks/" + str(i) + ".json")):
-            useNode.append(i)
+    # for i in ICScreen[0]:
+    #     if(not os.path.exists(nowPath + "ICScreenLinks/" + str(i) + ".json")):
+    #         useNode.append(i)
     pool = mp.Pool(processes=12)
     num = 0
-    # numLen = int(len(ICScreen[0]) / 78)
-    numLen = int(len(useNode) / 12)
+    numLen = int(len(ICScreen[0]) / 78)
+    # numLen = int(len(useNode) / 12)
 
 
     for i in range(12):
         num += i + 1
-        # nodeListNum = (num) * numLen
-        nodeListNum = (i + 1) * numLen
+        nodeListNum = (num) * numLen
+        # nodeListNum = (i + 1) * numLen
         if(i == 11):
             nodeListNum = None
-        # pool.apply_async(getAllLinksByNodes, args=(
-        #     i, nowPath, ICScreen[0][(num - i - 1) * numLen: nodeListNum], nodeCsvW, ICScreen[0], linksAll))
         pool.apply_async(getAllLinksByNodes, args=(
-            i, nowPath, useNode[i * numLen: nodeListNum], nodeCsvW, ICScreen[0],linksAll))
+            i, nowPath, ICScreen[0][(num - i - 1) * numLen: nodeListNum], nodeCsvW, ICScreen[0], linksAll))
+        # pool.apply_async(getAllLinksByNodes, args=(
+        #     i, nowPath, useNode[i * numLen: nodeListNum], nodeCsvW, ICScreen[0],linksAll))
         print(i, i + 1, (num - i - 1) * numLen, nodeListNum)
     pool.close()
     pool.join()

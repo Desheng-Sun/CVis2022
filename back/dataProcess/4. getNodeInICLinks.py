@@ -8,6 +8,7 @@ import time
 
 def getNodesInICLinks(nodesInIClinks, ICScreen, nodePath, nowPath):
     with alive_bar(len(ICScreen)) as bar:
+        # 获取每一个节点所在的IC链路或其所在的单独的IC节点NumID
         for i in ICScreen:
             nodeLinksInfoJ = open(nowPath + nodePath +
                                   str(i) + ".json", "r", encoding="utf-8")
@@ -24,15 +25,17 @@ def getNodesInICLinks(nodesInIClinks, ICScreen, nodePath, nowPath):
         return nodesInIClinks
 
 
-def getNodesNeighbourInfop(coreList, nowPath, nodes):
+def getICLinksInfo(coreList, nowPath, nodes):
     print("第", coreList, "个线程开始执行了----------------",
           time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
     nodePath = "ICScreenLinks/"
     allLinksToNodes = {}
     for i in nodes:
+        # 获取IC链路的信息
         nodeLinksJ = open(nowPath + nodePath + str(i) +
                           ".json", "r", encoding="utf-8")
         nodeLinks = json.load(nodeLinksJ)
+        # 获取IC节点的所有链路信息
         nodeLinks.sort(key=lambda x: x["end"][0])
         nodeLinksJ = open(nowPath + nodePath + str(i) +
                           ".json", "w", encoding="utf-8")
@@ -40,11 +43,13 @@ def getNodesNeighbourInfop(coreList, nowPath, nodes):
         nodeLinksJ.close()
         nodesToNodesInfo = []
         for j in nodeLinks:
+            # 数据信息记录
             WhoisName = 0
             WhoisEmail = 0
             WhoisPhone = 0
             DomainIndustry = []
             DomianIndustryInfo = []
+            # 分析节点的信息
             for k in j["nodes"]:
                 if(k[3] == "Domain"):
                     DomainIndustry.append(k[-1])
@@ -57,22 +62,21 @@ def getNodesNeighbourInfop(coreList, nowPath, nodes):
             DomainIndustrySet = list(set(DomainIndustry))
             for k in DomainIndustrySet:
                 DomianIndustryInfo.append([k, DomainIndustry.count(k)])
-
-            nodesToNodesInfo.append(
-                [
-                    j["begin"][0],
-                    j["end"][0],
-                    j["nodeNum"],
-                    j["domainNum"],
-                    j["industryNum"],
-                    WhoisName,
-                    WhoisEmail,
-                    WhoisPhone,
-                    DomianIndustryInfo
-                ])
+            # 存储IC链路信息
+            nodesToNodesInfo.append([
+                j["begin"][0],
+                j["end"][0],
+                j["nodeNum"],
+                j["domainNum"],
+                j["industryNum"],
+                WhoisName,
+                WhoisEmail,
+                WhoisPhone,
+                DomianIndustryInfo
+            ])
         nodesToNodesInfo.sort(key=lambda x: x[1])
         allLinksToNodes[str(i)] = nodesToNodesInfo
-    with open(nowPath + nodePath + "linksToNode" + str(coreList) + ".json", "w", encoding="utf-8") as f:
+    with open(nowPath + nodePath + "ICLinksInfo" + str(coreList) + ".json", "w", encoding="utf-8") as f:
         json.dump(allLinksToNodes, f, ensure_ascii=False)
 
     print("第", coreList, "个线程执行完成了----------------",
@@ -82,7 +86,7 @@ def getNodesNeighbourInfop(coreList, nowPath, nodes):
 def mergeNodesNeighbourInfop():
     nodeToNodeInfo = {}
     for i in range(12):
-        nowIpJ = open(nowPath + "ICScreenLinks/linksToNode" +
+        nowIpJ = open(nowPath + "ICScreenLinks/ICLinksInfo" +
                       str(i) + ".json", "r", encoding='utf-8')
         nowIp = json.load(nowIpJ)
         nodeToNodeInfo.update(nowIp)
@@ -90,6 +94,7 @@ def mergeNodesNeighbourInfop():
     nodeToNodeInfo = dict(nodeToNodeInfo)
     with alive_bar(len(nodeToNodeInfo)) as bar:
         for i in nodeToNodeInfo:
+            # 节点从A到B，则在B中记录从B到A
             for j in nodeToNodeInfo[i]:
                 if(j[1] > j[0]):
                     nodeToNodeInfo[str(j[1])].append([
@@ -97,7 +102,7 @@ def mergeNodesNeighbourInfop():
                     ])
             nodeToNodeInfo[i].sort(key=lambda x: x[1])
             bar()
-    with open(nowPath + "nodesToNodesGraph1.json", 'w', encoding='utf-8') as f:
+    with open(nowPath + "ICLinksInfo.json", 'w', encoding='utf-8') as f:
         json.dump(nodeToNodeInfo, f, ensure_ascii=False)
 
 
@@ -135,7 +140,7 @@ def getNodesAloneInfo(coreList, nowPath, nodes):
             DomianIndustryInfo.append([j, DomainIndustry.count(j)])
         nodesAloneInfo = [
             nodeNum,
-            DomainIndustry.count("  "),
+            len(DomainIndustry),
             len(DomainIndustry) - DomainIndustry.count("  "),
             WhoisName,
             WhoisEmail,
@@ -144,7 +149,7 @@ def getNodesAloneInfo(coreList, nowPath, nodes):
         ]
         allLinksToNodes[str(i)] = nodesAloneInfo
 
-    with open(nowPath + nodePath + "nodesAloneInfo" + str(coreList) + ".json", "w", encoding="utf-8") as f:
+    with open(nowPath + nodePath + "ICAloneInfo" + str(coreList) + ".json", "w", encoding="utf-8") as f:
         json.dump(allLinksToNodes, f, ensure_ascii=False)
 
     print("第", coreList, "个线程执行完成了----------------",
@@ -154,14 +159,14 @@ def getNodesAloneInfo(coreList, nowPath, nodes):
 def mergeNodesAlone():
     nodeToNodeInfo = {}
     for i in range(12):
-        nowIpJ = open(nowPath + "ICLinks/nodesAloneInfo" +
+        nowIpJ = open(nowPath + "ICLinks/ICAloneInfo" +
                       str(i) + ".json", "r", encoding='utf-8')
         nowIp = json.load(nowIpJ)
         nodeToNodeInfo.update(nowIp)
     nodeToNodeInfo = sorted(nodeToNodeInfo.items(), key=lambda d: int(d[0]))
     nodeToNodeInfo = dict(nodeToNodeInfo)
 
-    with open(nowPath + "nodesAloneInfo.json", 'w', encoding='utf-8') as f:
+    with open(nowPath + "ICAloneInfo.json", 'w', encoding='utf-8') as f:
         json.dump(nodeToNodeInfo, f, ensure_ascii=False)
 
 
@@ -172,9 +177,9 @@ if __name__ == '__main__':
     nodeCsvW = pd.read_csv(
         nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv", header=0)
     nodeCsvW = nodeCsvW.values
-    # nodesInIClinks = {}
-    # for i in nodeCsvW:
-    #     nodesInIClinks[str(i[0])] = []
+    nodesInIClinks = {}
+    for i in nodeCsvW:
+        nodesInIClinks[str(i[0])] = []
     ICScreenJ = open(nowPath + "ICScreen.json", "r", encoding="utf-8")
     ICScreen = json.load(ICScreenJ)
     # nodesInIClinks = getNodesInICLinks(
@@ -197,7 +202,7 @@ if __name__ == '__main__':
     #                     print(nodesInIClinks[i])
     #                     break
 
-    # getNodesNeighbourInfop(0, nowPath, ICScreen[0][0: 2])
+    # # getICLinksInfo(0, nowPath, ICScreen[0][0: 2])
 
     # pool = mp.Pool(processes=12)
     # numLen = int(len(ICScreen[0]) / 12)
@@ -205,7 +210,7 @@ if __name__ == '__main__':
     #     nodeListNum = (i + 1) * numLen
     #     if(i == 11):
     #         nodeListNum = None
-    #     pool.apply_async(getNodesNeighbourInfop, args=(
+    #     pool.apply_async(getICLinksInfo, args=(
     #         i, nowPath, ICScreen[0][i * numLen: nodeListNum]))
     #     print(i, i + 1, i * numLen, nodeListNum)
     # pool.close()
