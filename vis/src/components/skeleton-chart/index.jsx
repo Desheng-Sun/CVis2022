@@ -259,12 +259,13 @@ export default function SkeletonChart({ w, h }) {
       .force("collision", d3.forceCollide().radius(19));
     simulation.on("tick", tick);
     function tick() {
+      // nodeG.attr("transform", (d) => "translate(" + d.x + "," + d.y + ")");
+      nodeG.attr("transform", (d) => "translate(" + (d.x < 10? d.x = 10 : d.x > (svgWidth - 10) ? d.x = svgWidth-10 : d.x) + "," + (d.y < 10? d.y = 10 : d.y > (svgHeight - 10) ? d.y = svgHeight-10 : d.y) + ")");
       link
         .attr("x1", (d) => d.source.x)
         .attr("y1", (d) => d.source.y)
         .attr("x2", (d) => d.target.x)
         .attr("y2", (d) => d.target.y);
-      nodeG.attr("transform", (d) => "translate(" + d.x + "," + d.y + ")");
       updateGroups(groupPath, groupIds, nodeG, margin);
     }
 
