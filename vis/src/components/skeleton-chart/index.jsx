@@ -118,17 +118,18 @@ export default function SkeletonChart({ w, h }) {
 
   // 监听用户选择的节点
   useEffect(() => {
-    // PubSub.publish("skeletonSelect", selectedNode);
-    let linkArr;
-    let returnRes = {'nodes': [], "links": []}
-    for(let i in linkedByIndex){
-      let source = i.split(',')[0]
-      let target = i.split(',')[1]
-      if(source in selectedNode && target in selectedNode){
-        returnRes['links'].push({source: source, target: target})
-      }
-    }
-    console.log(linkedByIndex);
+    // let returnRes = {'nodes': [], "links": []}
+    // for(let i in linkedByIndex){
+    //   let source = i.split(',')[0]
+    //   let target = i.split(',')[1]
+    //   if(source in selectedNode && target in selectedNode){
+    //     returnRes['links'].push({'source': source, 'target': target})
+    //   }
+    // }
+    // for(let j of selectedNode){
+    //   returnRes['links'].push({'numId': j})
+    // }
+    // PubSub.publish("skeletonSelect", returnRes);
   }, [selectedNode])
 
   useEffect(() => {
@@ -138,13 +139,6 @@ export default function SkeletonChart({ w, h }) {
   PubSub.subscribe("icicleSelect", (msg, ic) => {
     setCurrIc(ic);
   });
-
-  // 判断两个点之间是否有连接
-  function isConnected(a, b) {
-    return (
-      linkedByIndex[`${a.index},${b.index}`] || linkedByIndex[`${b.index},${a.index}`] || a.index === b.index
-    );
-  }
 
   // 绘制结构图
   function drawChart() {

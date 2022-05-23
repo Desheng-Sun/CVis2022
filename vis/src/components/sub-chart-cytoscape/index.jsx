@@ -4,6 +4,7 @@ import euler from "cytoscape-euler";
 import navigator from "cytoscape-navigator";
 import coseBilkent from "cytoscape-cose-bilkent";
 import undoRedo from "cytoscape-undo-redo";
+import PubSub from "pubsub-js";
 import {
   UndoOutlined,
   RedoOutlined,
@@ -260,6 +261,11 @@ export default function SubChartCytoscape({ w, h }) {
   useEffect(() => {
     setSvgHeight(h);
   }, [h]);
+
+  // 监听传过来的参数是否变化
+  PubSub.subscribe("skeletonSelect", (msg, nodeLink) => {
+    setDataParam(nodeLink);
+  });
 
   // 请求数据并初始化图形
   useEffect(() => {
