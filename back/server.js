@@ -14,6 +14,7 @@ const urlencodedParser = bodyParser.urlencoded({ extended: true });
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
+
 /**
  * 设置跨域请求
  */
@@ -54,7 +55,264 @@ for (let i of nodeInfoJ) {
   nodeNumIdInfo.push(i.split(","));
 }
 nodeNumIdInfo = nodeNumIdInfo.splice(1);
+let ICIndustryP = path.join(__dirname, "data/nodeIndustryInfo2.json");
+let ICIndustryJ = fs.readFileSync(ICIndustryP, "utf8");
+const ICIndustry = JSON.parse(ICIndustryJ);
 
+
+function getIPCertLinksInSkip2(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW) {
+  let WhoisName = 0
+  let WhoisEmail = 0
+  let WhoisPhone = 0
+  let pureDomain = 0
+  let dirtyDomain = 0
+  let skipNum = 0
+  let allNodes1 = []
+  for (let j of nodeToNodeInfo[nowNodeNumId]) {
+    allNodes1.push(j[1])
+  }
+  let allLinks = {}
+  let nowNodesInfo = nodeCsvW[parseInt(nowNodeNumId) - 1]
+  //第0层数据
+  allLinks = {
+    "id": nowNodesInfo[1],
+    "nodesNum": 0,
+    "WhoisName": 0,
+    "WhoisEmail": 0,
+    "WhoisPhone": 0,
+    "pureDomain": 0,
+    "dirtyDomain": 0,
+    "numId": nowNodesInfo[0],
+    "name": nowNodesInfo[2],
+    "children": []
+  }
+  //针对第0层数据的链路添加第一层数据
+  for (let j of nodeToNodeInfo[nowNodeNumId]) {
+    nowNodesInfo = nodeCsvW[parseInt(j[1]) - 1]
+    allLinks["children"].push({
+      "id": nowNodesInfo[1],
+      "nodesNum": j[2] - 2,
+      "WhoisName": j[5],
+      "WhoisEmail": j[6],
+      "WhoisPhone": j[7],
+      "pureDomain": j[3] - j[4],
+      "dirtyDomain": j[4],
+      "numId": nowNodesInfo[0],
+      "name": nowNodesInfo[2],
+      "children": []
+    })
+    WhoisName = Math.max(WhoisName, j[5])
+    WhoisEmail = Math.max(WhoisEmail, j[6])
+    WhoisPhone = Math.max(WhoisPhone, j[7])
+    pureDomain = Math.max(pureDomain, j[3] - j[4])
+    dirtyDomain = Math.max(dirtyDomain, j[4])
+    skipNum = Math.max(skipNum, 1)
+    //第二层数据
+    for (let k of nodeToNodeInfo[j[1]]) {
+      //如果第二层数据和第0层数据相等，则跳过A-B-A
+      if (k[1] == parseInt(nowNodeNumId)) {
+        continue
+      }
+      nowNodesInfo = nodeCsvW[parseInt(k[1]) - 1]
+      isInFirst = false
+      if (allNodes1.indexOf(parseInt(k[1])) > 0) {
+        isInFirst = true
+      }
+      allLinks["children"][allLinks["children"].length - 1]["children"].push({
+        "id": nowNodesInfo[1],
+        "nodesNum": k[2] - 2,
+        "WhoisName": k[5],
+        "WhoisEmail": k[6],
+        "WhoisPhone": k[7],
+        "pureDomain": k[3] - k[4],
+        "dirtyDomain": k[4],
+        "numId": nowNodesInfo[0],
+        "name": nowNodesInfo[2],
+        "isInFirst": isInFirst,
+        "children": []
+      })
+      WhoisName = Math.max(WhoisName, k[5])
+      WhoisEmail = Math.max(WhoisEmail, k[6])
+      WhoisPhone = Math.max(WhoisPhone, k[7])
+      pureDomain = Math.max(pureDomain, k[3] - k[4])
+      dirtyDomain = Math.max(dirtyDomain, k[4])
+      skipNum = Math.max(skipNum, 2)
+    }
+  }
+  allLinks["WhoisNameNum"] = WhoisName
+  allLinks["WhoisPhoneNum"] = WhoisPhone
+  allLinks["WhoisEmailNum"] = WhoisEmail
+  allLinks["pureDomainNum"] = pureDomain
+  allLinks["dirtyDomainNum"] = dirtyDomain
+  allLinks["skipNum"] = skipNum
+  fs.writeFileSync(nowPath + "ic-clue-data/" + nowNodeNumId + ".json", JSON.stringify(allLinks), 'utf8')
+}
+
+function getNodesInICLinks(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW, nodeAloneInfo) {
+  let nodeICLinksJ = fs.readFileSync(nowPath + "nodesInICLinks.json", "utf8")
+  let nodeICLinks = JSON.parse(nodeICLinksJ)
+  let allLinks = []
+  let listLinks = []
+  let listNode = []
+  for (let i of nodeICLinks[nowNodeNumId]) {
+    if (i instanceof Array) {
+      listLinks.push(i)
+    }
+    else {
+      listNode.push(i)
+    }
+  }
+  let nowICNode = []
+  for (let i of listLinks) {
+    nowICNode = nowICNode.concat(i)
+  }
+  listLinks = listLinks.map(e => JSON.stringify(e))
+  let nowICNodeSet = Array.from(new Set(nowICNode))
+  let nowICNodeCount = []
+  for (let i of nowICNodeSet) {
+    nowICNodeCount.push([i, nowICNode.filter(e => e == i).length])
+  }
+  nowICNodeCount = nowICNodeCount.sort((a, b) => {
+    return b[1] - a[1]
+  })
+  nowICNodeSet = []
+  for (let i of nowICNodeCount) {
+    nowICNodeSet.push(i[0])
+  }
+  while (nowICNodeSet.length > 0) {
+    for (let i of nowICNodeCount) {
+      if (nowICNodeSet.indexOf(i[0]) < 0) {
+        continue
+      }
+      nowICNodeSet = nowICNodeSet.filter(e =>
+        e != i[0])
+      let WhoisName = 0
+      let WhoisEmail = 0
+      let WhoisPhone = 0
+      let pureDomain = 0
+      let dirtyDomain = 0
+      let skipNum = 0
+      let allNodes1 = []
+      for (let j of nodeToNodeInfo[i[0]]) {
+        allNodes1.push(j[1])
+      }
+      let nowNodesInfo = nodeCsvW[parseInt(i[0]) - 1]
+      let nowLinks = {
+        "id": nowNodesInfo[1],
+        "nodesNum": 0,
+        "WhoisName": 0,
+        "WhoisPhone": 0,
+        "WhoisEmail": 0,
+        "pureDomain": 0,
+        "dirtyDomain": 0,
+        "numId": nowNodesInfo[0],
+        "name": nowNodesInfo[2],
+        "children": []
+      }
+      //针对第0层数据的链路添加第一层数据
+      for (let j of nodeToNodeInfo[i[0]]) {
+        let nowICLink = [Math.min(j[0], j[1]), Math.max(j[0], j[1])]
+        if (listLinks.indexOf(JSON.stringify(nowICLink)) < 0) {
+          continue
+        }
+        listLinks = listLinks.filter(e => e != JSON.stringify(nowICLink))
+        nowICNodeSet = nowICNodeSet.filter(e => e != j[1])
+
+
+        nowNodesInfo = nodeCsvW[parseInt(j[1]) - 1]
+        nowLinks["children"].push({
+          "id": nowNodesInfo[1],
+          "nodesNum": j[2] - 2,
+          "WhoisName": j[5],
+          "WhoisEmail": j[6],
+          "WhoisPhone": j[7],
+          "pureDomain": j[3] - j[4],
+          "dirtyDomain": j[4],
+          "numId": nowNodesInfo[0],
+          "name": nowNodesInfo[2],
+          "children": []
+        })
+        WhoisName = Math.max(WhoisName, j[5])
+        WhoisPhone = Math.max(WhoisPhone, j[6])
+        WhoisEmail = Math.max(WhoisEmail, j[7])
+        pureDomain = Math.max(pureDomain, j[3] - j[4])
+        dirtyDomain = Math.max(dirtyDomain, j[4])
+        skipNum = Math.max(skipNum, 1)
+        for (let k of nodeToNodeInfo[j[1]]) {
+          if (k[1] == parseInt(nowNodeNumId)) {
+            continue
+          }
+          nowICLink = [Math.min(k[0], k[1]), Math.max(k[0], k[1])]
+          if (listLinks.indexOf(JSON.stringify(nowICLink)) < 0) {
+            continue
+          }
+          listLinks = listLinks.filter(e => e != JSON.stringify(nowICLink))
+          nowNodesInfo = nodeCsvW[parseInt(k[1]) - 1]
+          let isInFirst = false
+          if (allNodes1.indexOf(parseInt(k[1])) > 0) {
+            isInFirst = true
+          }
+          nowLinks["children"][nowLinks["children"].length - 1]["children"].push({
+            "id": nowNodesInfo[1],
+            "nodesNum": k[2] - 2,
+            "WhoisName": k[5],
+            "WhoisEmail": k[6],
+            "WhoisPhone": k[7],
+            "pureDomain": k[3] - k[4],
+            "dirtyDomain": k[4],
+            "numId": nowNodesInfo[0],
+            "name": nowNodesInfo[2],
+            "isInFirst": isInFirst,
+            "children": []
+          })
+          WhoisName = Math.max(WhoisName, k[5])
+          WhoisPhone = Math.max(WhoisPhone, k[6])
+          WhoisEmail = Math.max(WhoisEmail, k[7])
+          pureDomain = Math.max(pureDomain, k[3] - k[4])
+          dirtyDomain = Math.max(dirtyDomain, k[4])
+          skipNum = Math.max(skipNum, 2)
+        }
+
+      }
+      nowLinks["WhoisNameNum"] = WhoisName
+      nowLinks["WhoisPhoneNum"] = WhoisPhone
+      nowLinks["WhoisEmailNum"] = WhoisEmail
+      nowLinks["pureDomainNum"] = pureDomain
+      nowLinks["dirtyDomainNum"] = dirtyDomain
+      nowLinks["skipNum"] = skipNum
+      if (nowLinks["children"].length == 0) {
+        continue
+      }
+      allLinks.push(nowLinks)
+    }
+  }
+
+  for (let i of listNode) {
+    nowNodesInfo = nodeCsvW[parseInt(i) - 1]
+    nowNodeLinkInfo = nodeAloneInfo[i]
+    nowLinks = {
+      "id": nowNodesInfo[1],
+      "nodesNum": nowNodeLinkInfo[0],
+      "WhoisName": nowNodeLinkInfo[3],
+      "WhoisEmail": nowNodeLinkInfo[4],
+      "WhoisPhone": nowNodeLinkInfo[5],
+      "pureDomain": nowNodeLinkInfo[1],
+      "dirtyDomain": nowNodeLinkInfo[2],
+      "numId": nowNodesInfo[0],
+      "name": nowNodesInfo[2],
+      "children": [],
+      "WhoisNameNum": nowNodeLinkInfo[3],
+      "WhoisEmailNum": nowNodeLinkInfo[4],
+      "WhoisPhoneNum": nowNodeLinkInfo[5],
+      "pureDomainNum": nowNodeLinkInfo[1],
+      "dirtyDomainNum": nowNodeLinkInfo[2],
+      "skipNum": 0
+    }
+    allLinks.push(nowLinks)
+  }
+
+  fs.writeFileSync(nowPath + "ic-clue-data/" + nowNodeNumId + ".json", JSON.stringify(allLinks), 'utf8')
+}
 // 获取主视图所需要的数据
 app.get("/getMainChartData", (req, res, next) => {
   let node = "tiaozhan1";
@@ -90,10 +348,11 @@ app.post("/getIcClueDataSds", jsonParser, (req, res, next) => {
     req.body.numId,
     req.body.type,
   ]);
+
   pythonProcess.on("exit", () => {
     let filedata = path.join(
       __dirname,
-      "data/ic-clue-data/" + req.body.numId + ".json"
+      "data/ic-clue-data/370.json"
     );
     fs.readFile(filedata, "utf-8", function (err, data) {
       if (err) {
@@ -114,14 +373,12 @@ app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
     if (err) {
       console.log(err);
     } else {
-      let ICIndustryP = path.join(__dirname, "data/nodeIndustryInfo2.json");
-      let ICIndustryJ = fs.readFileSync(ICIndustryP, "utf8");
-      const ICIndustry = JSON.parse(ICIndustryJ);
       let ICLinks = JSON.parse(data);
       let nodes = [];
       for (let n of req.body.Nodes) {
         nodes.push(parseInt(n));
       }
+      // console.log(nodes);
       let nodesInfo = [];
       let linksInfo = [];
       for (let i of nodes) {
@@ -139,15 +396,18 @@ app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
           name: nowNodeInfo[2],
           ICIndustry: nowICIndustry,
         });
-        for (let j of ICLinks[i]) {
-          if (req.body.Nodes.includes(j[1]) && j[1] > j[0]) {
-            linksInfo.push({
-              source: nodeNumIdInfo[j[0] - 1][1],
-              target: nodeNumIdInfo[j[1] - 1][1],
-              linksNumId: [j[0], j[1]],
-            });
+        if (ICLinks.hasOwnProperty(i)) {
+          for (let j of ICLinks[i]) {
+            if (nodes.includes(j[1]) && j[1] > j[0]) {
+              linksInfo.push({
+                source: nodeNumIdInfo[j[0] - 1][1],
+                target: nodeNumIdInfo[j[1] - 1][1],
+                linksNumId: [j[0], j[1]],
+              });
+            }
           }
         }
+
       }
       res.send({ nodes: nodesInfo, links: linksInfo });
       res.end();
@@ -184,24 +444,92 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
       }
     }
   }
-  console.log(nodesNumId.size);
-  console.log(linksList.size);
+  let nowNodes = [];
+  let nowLinks = [];
   filedata = path.join(
     __dirname,
     "data/ChinaVis Data Challenge 2022-mini challenge 1-Dataset/nodeNeighbor.json"
   );
   nowData = JSON.parse(fs.readFileSync(filedata, "utf-8"));
   for (let i of nodes) {
+    let nowNodeNodeInfo = {};
+    let nowNodeLinksInfo = {};
     let nowNodeNeighbor = nowData[i["numId"]].filter((e) => {
       return !nodesNumId.has(e[0]);
     });
     for (let j of nowNodeNeighbor) {
-      nodesNumId.add(j[0]);
-      linksList.add(j[1].toString());
+      let nowNodeInfo = nodeNumIdInfo[j[0] - 1];
+      if (nowNodeInfo[3] == "Domain") {
+        if (!nowNodeNodeInfo.hasOwnProperty(nowNodeInfo[3])) {
+          nowNodeNodeInfo[nowNodeInfo[4]] = {
+            numId: parseInt(nowNodeInfo[0]),
+            id: nowNodeInfo[1],
+            name: nowNodeInfo[2],
+            type: nowNodeInfo[3],
+            industry: nowNodeInfo[4],
+            children: [],
+          };
+          nowNodeLinksInfo[nowNodeInfo[4]] = {
+            relation: j[1][0],
+            source: nodeNumIdInfo[parseInt(j[1][1]) - 1][1],
+            target: nodeNumIdInfo[parseInt(j[1][2]) - 1][1],
+            linksNumId: [parseInt(j[1][1]), parseInt(j[1][2])],
+            children: [],
+          };
+        }
+        nowNodeNodeInfo[nowNodeInfo[4]]["children"].push({
+          numId: parseInt(nowNodeInfo[0]),
+          id: nowNodeInfo[1],
+          name: nowNodeInfo[2],
+          type: nowNodeInfo[3],
+          industry: nowNodeInfo[4],
+        });
+        nowNodeLinksInfo[nowNodeInfo[4]]["children"].push({
+          relation: j[1][0],
+          source: nodeNumIdInfo[parseInt(j[1][1]) - 1][1],
+          target: nodeNumIdInfo[parseInt(j[1][2]) - 1][1],
+          linksNumId: [parseInt(j[1][1]), parseInt(j[1][2])],
+        });
+      } else {
+        if (!nowNodeNodeInfo.hasOwnProperty(nowNodeInfo[0])) {
+          nowNodeNodeInfo[nowNodeInfo[0]] = {
+            numId: parseInt(nowNodeInfo[0]),
+            id: nowNodeInfo[1],
+            name: nowNodeInfo[2],
+            type: nowNodeInfo[3],
+            industry: nowNodeInfo[4],
+            children: [],
+          };
+          nowNodeLinksInfo[nowNodeInfo[0]] = {
+            relation: j[1][0],
+            source: nodeNumIdInfo[parseInt(j[1][1]) - 1][1],
+            target: nodeNumIdInfo[parseInt(j[1][2]) - 1][1],
+            linksNumId: [parseInt(j[1][1]), parseInt(j[1][2])],
+            children: [],
+          };
+        }
+        nowNodeNodeInfo[nowNodeInfo[0]]["children"].push({
+          numId: parseInt(nowNodeInfo[0]),
+          id: nowNodeInfo[1],
+          name: nowNodeInfo[2],
+          type: nowNodeInfo[3],
+          industry: nowNodeInfo[4],
+        });
+        nowNodeLinksInfo[nowNodeInfo[0]]["children"].push({
+          relation: j[1][0],
+          source: nodeNumIdInfo[parseInt(j[1][1]) - 1][1],
+          target: nodeNumIdInfo[parseInt(j[1][2]) - 1][1],
+          linksNumId: [parseInt(j[1][1]), parseInt(j[1][2])],
+        });
+      }
+    }
+    for (let j in nowNodeNodeInfo) {
+      nowNodes.push(nowNodeNodeInfo[j]);
+    }
+    for (let j in nowNodeLinksInfo) {
+      nowLinks.push(nowNodeLinksInfo[j]);
     }
   }
-  let nowNodes = [];
-  let nowLinks = [];
   for (let i of nodesNumId) {
     let nowNodeInfo = nodeNumIdInfo[i - 1];
     nowNodes.push({
@@ -222,52 +550,6 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
       linksNumId: [parseInt(i[1]), parseInt(i[2])],
     });
   }
-
-  // filedata = path.join(
-  //   __dirname,
-  //   "dataChinaVis Data Challenge 2022-mini challenge 1-Datase/nodeNneighbor.json"
-  // );
-  // nowData = JSON.parse(fs.readFileSync(filedata, "utf-8"));
-  // for (let i of nodes) {
-  //   let nowNodeNodeInfo = {};
-  //   let nowNodeLinksInfo = {};
-  //   let nowNodeNeighbor = nowData[i["numId"]].filter((e) => {
-  //     return !nodesNumId.has(e[0]);
-  //   });
-  //   for (let j of nowNodeNeighbor) {
-  //     let nowNodeInfo = nodeNumIdInfo[j - 1];
-  //     if (nowNodeInfo[2] == "Domain") {
-  //       if (!nowNodeNodeInfo.hasOwnProperty(nowNodeInfo[4])) {
-  //         nowNodeNodeInfo[nowNodeInfo[4]] = {
-  //           numId: nowNodeInfo[0],
-  //           id: nowNodeInfo[1],
-  //           type: nowNodeInfo[2],
-  //           industry: nowNodeInfo[4],
-  //           num: 1,
-  //           children: [],
-  //         };
-  //         nowNodeLinksInfo[nowNodeInfo[4]] = {
-  //           r_relation: "r_dns_a",
-  //           source: nowNodeInfo[0],
-  //           target: j,
-  //           children: [],
-  //         };
-  //       }
-  //       nowNodeNodeInfo[nowNodeInfo[4]]["num"] += 1;
-  //       nowNodeNodeInfo[nowNodeInfo[4]]["children"].push({
-  //         numId: nowNodeInfo[0],
-  //         id: nowNodeInfo[1],
-  //         type: nowNodeInfo[2],
-  //         name: nowNodeInfo[3],
-  //         industry: nowNodeInfo[4],
-  //       });
-  //       nowNodeLinksInfo[nowNodeInfo[4]]["children"].push(j[1].toString);
-  //     } else {
-  //       nodesNumId.add(nowNodeInfo[0]);
-  //       linksList.add(j[1].toString());
-  //     }
-  //   }
-  // }
   let sendData = {
     nodes: nowNodes,
     links: nowLinks,
@@ -275,6 +557,7 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
   res.send(sendData);
   res.end();
 });
+
 
 app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
   // 周艺璇画的图的相关数据
@@ -303,46 +586,46 @@ app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
   let ipc = new Set();
   let asn = new Set();
   for (let i of communityInfo["links"]) {
-    if (i[0] == "r_cert_chain") {
+    if (i["relation"] == "r_cert_chain") {
       r_cert_chain += 1;
       certAsSource.add(i[1]);
       certAsTarget.add(i[2]);
-    } else if (i[0] == "r_cert") {
+    } else if (i["relation"] == "r_cert") {
       r_cert += 1;
       domainAsSource.add(i[1]);
-    } else if (i[0] == "r_whois_name") {
+    } else if (i["relation"] == "r_whois_name") {
       r_whois_name += 1;
       domainAsSource.add(i[1]);
       whoisName.add(i[2]);
-    } else if (i[0] == "r_whois_email") {
+    } else if (i["relation"] == "r_whois_email") {
       r_whois_email += 1;
       domainAsSource.add(i[1]);
       whoisEmail.add(i[2]);
-    } else if (i[0] == "r_whois_phone") {
+    } else if (i["relation"] == "r_whois_phone") {
       r_whois_phone += 1;
       domainAsSource.add(i[1]);
       whoisPhone.add(i[2]);
-    } else if (i[0] == "r_cname") {
+    } else if (i["relation"] == "r_cname") {
       r_cname += 1;
       domainAsSource.add(i[1]);
       domainAsCnameTarget.add(i[2]);
-    } else if (i[0] == "r_request_jump") {
+    } else if (i["relation"] == "r_request_jump") {
       r_request_jump += 1;
       domainAsSource.add(i[1]);
       domainAsJumpTarget.add(i[2]);
-    } else if (i[0] == "r_subdomain") {
+    } else if (i["relation"] == "r_subdomain") {
       r_subdomain += 1;
       domainAsSource.add(i[1]);
       domainAsSubTarget.add(i[2]);
-    } else if (i[0] == "r_dns_a") {
+    } else if (i["relation"] == "r_dns_a") {
       r_dns_a += 1;
       domainAsSource.add(i[1]);
       ip.add(i[2]);
-    } else if (i[0] == "r_cidr") {
+    } else if (i["relation"] == "r_cidr") {
       r_cidr += 1;
       ip.add(i[1]);
       ipc.add(i[2]);
-    } else if (i[0] == "r_asn") {
+    } else if (i["relation"] == "r_asn") {
       r_asn += 1;
       ip.add(i[1]);
       asn.add(i[2]);
@@ -356,124 +639,125 @@ app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
       !domainAsSubTarget.has(e)
     );
   });
+
   const linksList = [
     {
       title: "certChain",
-      maesures: [r_cert_chain],
-      markes: [7],
+      measures: [r_cert_chain],
+      markers: [7],
     },
     {
       title: "cert",
-      maesures: [r_cert],
-      markes: [50],
+      measures: [r_cert],
+      markers: [50],
     },
     {
       title: "WhoisName",
-      maesures: [r_whois_name],
-      markes: [5],
+      measures: [r_whois_name],
+      markers: [5],
     },
     {
       title: "whoisPhone",
-      maesures: [r_whois_phone],
-      markes: [3],
+      measures: [r_whois_phone],
+      markers: [3],
     },
     {
       title: "whoisEmail",
-      maesures: [r_whois_email],
-      markes: [2],
+      measures: [r_whois_email],
+      markers: [2],
     },
     {
       title: "cname",
-      maesures: [r_cname],
-      markes: [10],
+      measures: [r_cname],
+      markers: [10],
     },
     {
       title: "requestJump",
-      maesures: [r_request_jump],
-      markes: [5],
+      measures: [r_request_jump],
+      markers: [5],
     },
     {
       title: "subdomain",
-      maesures: [r_subdomain],
-      markes: [150],
+      measures: [r_subdomain],
+      markers: [150],
     },
 
     {
       title: "dnsA",
-      maesures: [r_dns_a],
-      markes: [150],
+      measures: [r_dns_a],
+      markers: [150],
     },
     {
       title: "cidr",
-      maesures: [r_cidr],
-      markes: [3],
+      measures: [r_cidr],
+      markers: [3],
     },
     {
       title: "asn",
-      maesures: [r_asn],
-      markes: [3],
+      measures: [r_asn],
+      markers: [3],
     },
   ];
   const nodesList = [
     {
       title: "certT",
-      maesures: [certAsTarget.size],
-      markes: [3],
+      measures: [certAsTarget.size],
+      markers: [3],
     },
     {
-      title: "cetrS",
-      maesures: [certAsSource.size],
-      markes: [7],
+      title: "certS",
+      measures: [certAsSource.size],
+      markers: [7],
     },
     {
       title: "whoisName",
-      maesures: [whoisName.size],
-      markes: [3],
+      measures: [whoisName.size],
+      markers: [3],
     },
     {
       title: "whoisEmail",
-      maesures: [whoisEmail.size],
-      markes: [2],
+      measures: [whoisEmail.size],
+      markers: [2],
     },
     {
       title: "whoisPhone",
-      maesures: [whoisPhone.size],
-      markes: [2],
+      measures: [whoisPhone.size],
+      markers: [2],
     },
     {
       title: "domainCT",
-      maesures: [domainAsCnameTarget.size],
-      markes: [10],
+      measures: [domainAsCnameTarget.size],
+      markers: [10],
     },
     {
       title: "domainJT",
-      maesures: [domainAsJumpTarget.size],
-      markes: [2],
+      measures: [domainAsJumpTarget.size],
+      markers: [2],
     },
     {
       title: "domainST",
-      maesures: [domainAsSubTarget.size],
-      markes: [50],
+      measures: [domainAsSubTarget.size],
+      markers: [50],
     },
     {
       title: "domainS",
-      maesures: [domainAsSource.size],
-      markes: [30],
+      measures: [domainAsSource.length],
+      markers: [30],
     },
     {
       title: "IP",
-      maesures: [ip.size],
-      markes: [7],
+      measures: [ip.size],
+      markers: [7],
     },
     {
       title: "ipc",
-      maesures: [ipc.size],
-      markes: [2],
+      measures: [ipc.size],
+      markers: [2],
     },
     {
       title: "asn",
-      maesures: [asn.size],
-      markes: [3],
+      measures: [asn.size],
+      markers: [3],
     },
   ];
   res.send([linksList, nodesList]);
@@ -486,9 +770,30 @@ app.post("/getInfoListSds", jsonParser, (req, res, next) => {
   let groupscope = "";
   let industrytype = new Set();
   let grouptype = "单一型";
-  let communityInfo = req.body.nodesLinksInfo; //传的参数，社区的节点和链接信息
-  numnode = communityInfo["nodes"].length;
-  numlink = communityInfo["links"].length;
+  const initialLinks = req.body.nodesLinksInfo["links"];
+  const initialNodes = req.body.nodesLinksInfo["nodes"];
+  let links = [];
+  let nodes = [];
+  for (let i of initialLinks) {
+    if (i.hasOwnProperty("children")) {
+      for (let j of i["children"]) {
+        links.push(j);
+      }
+    } else {
+      links.push(i);
+    }
+  }
+  for (let i of initialNodes) {
+    if (i.hasOwnProperty("children")) {
+      for (let j of i["children"]) {
+        nodes.push(j);
+      }
+    } else {
+      nodes.push(i);
+    }
+  }
+  numnode = nodes.length;
+  numlink = links.length;
 
   if (numnode < 300) {
     groupscope = "小";
@@ -497,8 +802,12 @@ app.post("/getInfoListSds", jsonParser, (req, res, next) => {
   } else {
     groupscope = "大";
   }
-  for (let i of communityInfo["nodes"]) {
-    industrytype.add(i[4]);
+  for (let i of nodes) {
+    industrytype.add(i["industry"].replace("\r", ""));
+  }
+
+  if (industrytype.has("  ")) {
+    industrytype.delete("  ");
   }
   if (industrytype.size > 1) {
     grouptype = "复合型";
@@ -512,7 +821,6 @@ app.post("/getInfoListSds", jsonParser, (req, res, next) => {
     grouptype: grouptype,
   };
   res.send(sendData);
-
   res.end();
 });
 
@@ -606,24 +914,6 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
   });
 });
 
-// 获取冰柱图所需要的数据
-app.get("/getIcClueDataSds", (req, res) => {
-  let filename = "3";
-  let filedata = path.join(
-    __dirname,
-    "data/ic-clue-data/" + filename + ".json"
-  );
-  fs.readFile(filedata, "utf-8", function (err, data) {
-    if (err) {
-      console.error(err);
-    } else {
-      let jsonData = JSON.parse(data);
-      res.send(jsonData);
-      res.end();
-    }
-  });
-});
-
 // 读取BulletChart样例数据
 app.get("/getBulletChartData", (req, res) => {
   let filepath = path.join(
@@ -642,8 +932,28 @@ app.get("/getBulletChartData", (req, res) => {
 });
 
 app.post("/getFinalDataSds", jsonParser, (req, res, next) => {
-  const links = req.body.nodesLinksInfo["links"];
-  const nodes = req.body.nodesLinksInfo["nodes"];
+  const initialLinks = req.body.nodesLinksInfo["links"];
+  const initialNodes = req.body.nodesLinksInfo["nodes"];
+  let links = [];
+  let nodes = [];
+  for (let i of initialLinks) {
+    if (i.hasOwnProperty("children")) {
+      for (let j of i["children"]) {
+        links.push(j);
+      }
+    } else {
+      links.push(i);
+    }
+  }
+  for (let i of initialNodes) {
+    if (i.hasOwnProperty("children")) {
+      for (let j of i["children"]) {
+        nodes.push(j);
+      }
+    } else {
+      nodes.push(i);
+    }
+  }
   let num_all_node = 0;
   num_all_node = nodes.length;
   let node_type = [
@@ -746,8 +1056,28 @@ app.post("/getFinalDataSds", jsonParser, (req, res, next) => {
 });
 
 app.post("/getDetialListSds", jsonParser, (req, res, next) => {
-  const links = req.body.nodesLinksInfo["links"];
-  const nodes = req.body.nodesLinksInfo["nodes"];
+  const initialLinks = req.body.nodesLinksInfo["links"];
+  const initialNodes = req.body.nodesLinksInfo["nodes"];
+  let links = [];
+  let nodes = [];
+  for (let i of initialLinks) {
+    if (i.hasOwnProperty("children")) {
+      for (let j of i["children"]) {
+        links.push(j);
+      }
+    } else {
+      links.push(i);
+    }
+  }
+  for (let i of initialNodes) {
+    if (i.hasOwnProperty("children")) {
+      for (let j of i["children"]) {
+        nodes.push(j);
+      }
+    } else {
+      nodes.push(i);
+    }
+  }
   let nodesInfo = {};
   for (let i of nodes) {
     nodesInfo[i["numId"]] = {
@@ -805,4 +1135,37 @@ app.post("/getDetialListSds", jsonParser, (req, res, next) => {
   };
   res.send(sendData);
   res.end();
+});
+
+
+app.post("/getIcClueData2Sds", jsonParser, (req, res, next) => {
+  let filedata = path.join(
+    __dirname,
+    "data/ic-clue-data/" + req.body.numId + ".json"
+  );
+  let nowPath = path.join(
+    __dirname,
+    "data/")
+  if (!fs.existsSync(filedata)) {
+    console.log(1)
+    let nodeToNodeInfoJ = fs.readFileSync(nowPath + "nodesToNodesGraph1.json", "utf-8")
+    let nodeToNodeInfo = JSON.parse(nodeToNodeInfoJ)
+    if (req.body.type == "IP" || req.body.type == "Cert") {
+      getIPCertLinksInSkip2(nowPath, req.body.numId, nodeToNodeInfo, nodeNumIdInfo)
+    }
+    else {
+      let nodeAloneInfoJ = fs.readFileSync(nowPath + "nodesAloneInfo.json", "utf-8")
+      let nodeAloneInfo = JSON.parse(nodeAloneInfoJ)
+      getNodesInICLinks(nowPath, req.body.numId, nodeToNodeInfo, nodeNumIdInfo, nodeAloneInfo)
+    }
+  }
+  fs.readFile(filedata, "utf-8", function (err, data) {
+    if (err) {
+      console.log(err);
+    } else {
+      let d = JSON.parse(data);
+      res.send(d);
+      res.end();
+    }
+  });
 });

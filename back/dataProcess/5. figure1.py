@@ -20,6 +20,7 @@ def getIPCertLinksInSkip3(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW):
     WhoisPhone = 0
     pureDomain = 0
     dirtyDomain = 0
+    skipNum = 0
     allNodes1 = []
     for j in nodeToNodeInfo[str(nowNodeNumId)]:
         allNodes1.append(j[1])
@@ -59,6 +60,7 @@ def getIPCertLinksInSkip3(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW):
         WhoisPhone = max(WhoisPhone, j[7])
         pureDomain = max(pureDomain, j[3] - j[4])
         dirtyDomain = max(dirtyDomain, j[4])
+        skipNum = max(skipNum, 1)
         # 第二层数据
         for k in nodeToNodeInfo[str(j[1])]:
             # 如果第二层数据和第0层数据相等，则跳过A-B-A
@@ -86,12 +88,14 @@ def getIPCertLinksInSkip3(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW):
             WhoisPhone = max(WhoisPhone, k[7])
             pureDomain = max(pureDomain, k[3] - k[4])
             dirtyDomain = max(dirtyDomain, k[4])
+            skipNum = max(skipNum, 1)
     allLinks.update({
         "WhoisNameNum": WhoisName,
         "WhoisPhoneNum": WhoisPhone,
         "WhoisEmailNum": WhoisEmail,
         "pureDomainNum": pureDomain,
-        "dirtyDomainNum": dirtyDomain
+        "dirtyDomainNum": dirtyDomain,
+        "skipNum": skipNum
     })
     with open(nowPath + "ic-clue-data/" + str(nowNodeNumId) + ".json", 'w', encoding='utf-8') as f:
         json.dump([allLinks], f, ensure_ascii=False)
@@ -106,7 +110,7 @@ def getNodesInICLinks(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW, nodeAlone
     listLinks = []
     listNode = []
     for i in nodeICLinks[str(nowNodeNumId)]:
-        if(isinstance(i,list)):
+        if(isinstance(i, list)):
             listLinks.append(i)
         else:
             listNode.append(i)
@@ -118,7 +122,7 @@ def getNodesInICLinks(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW, nodeAlone
     for i in nowICNodeSet:
         nowICNodeCount.append([i, nowICNode.count(i)])
     nowICNodeCount.sort(reverse=True, key=lambda x: x[1])
-    
+
     nowICNodeSet = []
     for i in nowICNodeCount:
         nowICNodeSet.append(i[0])
@@ -133,6 +137,7 @@ def getNodesInICLinks(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW, nodeAlone
             WhoisEmail = 0
             pureDomain = 0
             dirtyDomain = 0
+            skipNum = 0
             allNodes1 = []
             for j in nodeToNodeInfo[str(i[0])]:
                 allNodes1.append(j[1])
@@ -151,11 +156,11 @@ def getNodesInICLinks(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW, nodeAlone
             }
             # 针对第0层数据的链路添加第一层数据
             for j in nodeToNodeInfo[str(i[0])]:
-                nowICLink = [min(j[0],j[1]), max(j[0],j[1])]
+                nowICLink = [min(j[0], j[1]), max(j[0], j[1])]
                 if((not nowICLink in listLinks)):
                     continue
                 listLinks.remove(nowICLink)
-                
+
                 nowICNodeSet.remove(j[1])
                 nowNodesInfo = list(nodeCsvW[int(j[1]) - 1])
                 nowLinks["children"].append({
@@ -175,13 +180,14 @@ def getNodesInICLinks(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW, nodeAlone
                 WhoisEmail = max(WhoisEmail, j[7])
                 pureDomain = max(pureDomain, j[3] - j[4])
                 dirtyDomain = max(dirtyDomain, j[4])
+                skipNum = max(skipNum, 1)
                 # 第二层数据
                 for k in nodeToNodeInfo[str(j[1])]:
                     # 如果第二层数据和第0层数据相等，则跳过A-B-A
                     if(k[1] == int(nowNodeNumId)):
                         continue
-                    
-                    nowICLink = [min(k[0],k[1]), max(k[0],k[1])]                    
+
+                    nowICLink = [min(k[0], k[1]), max(k[0], k[1])]
                     if((not nowICLink in listLinks)):
                         continue
                     listLinks.remove(nowICLink)
@@ -207,17 +213,19 @@ def getNodesInICLinks(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW, nodeAlone
                     WhoisEmail = max(WhoisEmail, k[7])
                     pureDomain = max(pureDomain, k[3] - k[4])
                     dirtyDomain = max(dirtyDomain, k[4])
+                skipNum = max(skipNum, 2)
             nowLinks.update({
                 "WhoisNameNum": WhoisName,
                 "WhoisPhoneNum": WhoisPhone,
                 "WhoisEmailNum": WhoisEmail,
                 "pureDomainNum": pureDomain,
-                "dirtyDomainNum": dirtyDomain
+                "dirtyDomainNum": dirtyDomain,
+                "skipNum": skipNum
             })
             if(len(nowLinks["children"]) == 0):
                 continue
             allLinks.append(nowLinks)
-    
+
     for i in listNode:
         nowNodesInfo = list(nodeCsvW[int(i) - 1])
         nowNodeLinkInfo = nodeAloneInfo[str(i)]
@@ -236,7 +244,8 @@ def getNodesInICLinks(nowPath, nowNodeNumId, nodeToNodeInfo, nodeCsvW, nodeAlone
             "WhoisEmailNum": nowNodeLinkInfo[4],
             "WhoisPhoneNum": nowNodeLinkInfo[5],
             "pureDomainNum": nowNodeLinkInfo[1],
-            "dirtyDomainNum": nowNodeLinkInfo[2] 
+            "dirtyDomainNum": nowNodeLinkInfo[2],
+            "skipNum": 0
         }
         allLinks.append(nowLinks)
 
@@ -259,4 +268,5 @@ if __name__ == '__main__':
             else:
                 with open(nowPath + "nodesAloneInfo.json", 'r', encoding='utf-8') as f:
                     nodeAloneInfo = json.load(f)
-                    getNodesInICLinks(nowPath, sys.argv[1], nodeToNodeInfo, nodeCsvW, nodeAloneInfo)
+                    getNodesInICLinks(
+                        nowPath, sys.argv[1], nodeToNodeInfo, nodeCsvW, nodeAloneInfo)

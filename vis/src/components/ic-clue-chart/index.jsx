@@ -7,7 +7,7 @@ import * as d3 from "d3";
 import "./index.css";
 
 // 数据请求
-import { getIcClueData, getIcClueDataSds } from "../../apis/api.js";
+import { getIcClueDataSds } from "../../apis/api.js";
 
 var icicleChart;
 let prevSelected = [];
@@ -16,7 +16,12 @@ export default function ICClueChart({ w, h }) {
   const [svgHeight, setSvgHeight] = useState(h);
   const [data, setData] = useState({});
   const [dataParam, setDataParam] = useState("");
-  const [selectedIclcleNode, setSelectedIclcleNode] = useState([]);
+  const [selectedIclcleNode, setSelectedIclcleNode] = useState([
+    "3",
+    "4",
+    "101",
+    "112",
+  ]);
   // const [icicleChart, setIcicleChart] = useState([])
 
   // 监听选择的节点的变化，如果变化了就传递给另一个组件
@@ -33,10 +38,10 @@ export default function ICClueChart({ w, h }) {
 
   // 请求数据
   useEffect(() => {
-    getIcClueDataSds(3, "IP").then((res) => {
+    getIcClueDataSds(10, "Domain").then((res) => {
       setData(res);
     });
-  }, [dataParam]);
+  }, []);
 
   useEffect(() => {
     drawICClueChart();
@@ -46,6 +51,7 @@ export default function ICClueChart({ w, h }) {
     if (JSON.stringify(data) === "{}") return;
     if (JSON.stringify(svgWidth) === "{}" || JSON.stringify(svgHeight) === "{}")
       return;
+    d3.selectAll('#icclue-chart svg').remove()
     var titleSvg = d3
       .select("#icclue-title")
       .append("svg")
@@ -71,21 +77,27 @@ export default function ICClueChart({ w, h }) {
       .style("color", "black")
       .style("line-height", 1)
       .attr("text-align", "center");
+    // console.log(data);
 
-    icicleChart = Icicle()
-      .orientation("lr")
-      .width(svgWidth)
-      .height(svgHeight * 0.95)
-      .data(data)
-      .size("pureDomain")
-      .tooltipContent((d, node) => {
-        return `WhoisPhone: <i>${node.data.WhoisPhone}</i><br>
+    for (let i = 0; i < data.length; i++) {
+      let skipNum = data[i].skipNum + 1;
+      // let skipNum = 1
+      console.log(skipNum);
+      icicleChart = Icicle()
+        .orientation("lr")
+        .width((svgWidth / 3) * skipNum)
+        .height((svgHeight / data.length) * 0.95)
+        .data(data[i])
+        .size("pureDomain")
+        .tooltipContent((d, node) => {
+          return `WhoisPhone: <i>${node.data.WhoisPhone}</i><br>
                   WhoisEmail: <i>${node.data.WhoisEmail}</i><br>
                   WhoisName: <i>${node.data.WhoisName}</i><br>
                   pureDomain: <i>${node.data.pureDomain}</i><br>
                   dirtyDomain: <i>${node.data.dirtyDomain}</i>
                 `;
-      })(document.getElementById("icclue-graph"));
+        })(document.getElementById("icclue-graph"));
+    }
   }
 
   function btnGetSelectedIcicleNode() {

@@ -1,32 +1,39 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, React } from "react";
 import cytoscape from "cytoscape";
 import euler from "cytoscape-euler";
 import navigator from "cytoscape-navigator";
 import coseBilkent from "cytoscape-cose-bilkent";
-import fcose from 'cytoscape-fcose'
+import undoRedo from "cytoscape-undo-redo";
+import PubSub from "pubsub-js";
+import {
+  UndoOutlined,
+  RedoOutlined,
+  RollbackOutlined,
+} from "@ant-design/icons";
+import fcose from "cytoscape-fcose";
 import "cytoscape-navigator/cytoscape.js-navigator.css";
-import contextMenus from 'cytoscape-context-menus';  
+import contextMenus from "cytoscape-context-menus";
 import { Cascader, Select, Input, Slider, Button } from "antd";
 import * as d3 from "d3";
 import "./index.css";
 
-
 // 数据请求接口
-import { getMainChartData } from "../..//apis/api.js";
+import { getMainChartData, getMainChartSds } from "../..//apis/api.js";
 
 navigator(cytoscape);
+undoRedo(cytoscape);
 contextMenus(cytoscape);
 cytoscape.use(euler);
 cytoscape.use(coseBilkent);
 cytoscape.use(fcose);
 
-
 const { Option } = Select;
 const { Search } = Input;
 
-var cy, layoutOption, styles, layout, collection;
-var layoutOptionDict={
-  'euler':{
+var cy, layoutOption, styles, layout, allCollection;
+var ur, urOption; // 保留点和边的初状态
+var layoutOptionDict = {
+  euler: {
     name: "euler",
     fit: true, // whether to fit to viewport
     animate: true, // whether to transition the node positions
@@ -41,29 +48,33 @@ var layoutOptionDict={
       return node.degree();
     },
   },
-  'concentric':{
+  concentric: {
     name: "concentric",
     // fit: true, // whether to fit to viewport
     animate: true, // whether to transition the node positions
     avoidOverlap: true,
-    minNodeSpace:1,
-    concentric: function(node){ return node.degree()},
-    levelWidth: function( nodes ){ // the variation of concentric values in each level
+    minNodeSpace: 1,
+    concentric: function (node) {
+      return node.degree();
+    },
+    levelWidth: function (nodes) {
+      // the variation of concentric values in each level
       return nodes.maxDegree() / 5;
     },
-    spacingFactor: 0.2,
-    animationDuration: 2000, // duration of animation in ms if enabled
+    spacingFactor: 1,
+    animationDuration: 1000, // duration of animation in ms if enabled
     // width: 200,
     // height: 200
     // boundingBox:{x1:0, x2:0, w:500, h:500}
   },
-  'dagre':{
+  dagre: {
     name: "concentric",
     fit: true, // whether to fit to viewport
     animate: true, // whether to transition the node positions
     avoidOverlap: true,
   },
-  'coseBilkent':{   // 这两个很类似，决定保留哪一个
+  coseBilkent: {
+    // 这两个很类似，决定保留哪一个
     name: "cose-bilkent",
     fit: true,
     animate: true,
@@ -73,9 +84,9 @@ var layoutOptionDict={
     idealEdgeLength: 50,
     edgeElasticity: 0.55,
     nestingFactor: 0.1,
-    gravity: 0.55
+    gravity: 0.55,
   },
-  'fcose':{
+  fcose: {
     name: "fcose",
     fit: true,
     quality: "default",
@@ -86,9 +97,8 @@ var layoutOptionDict={
     idealEdgeLength: 50,
     edgeElasticity: 0.55,
     gravity: 0.55,
-  }
-}
-
+  },
+};
 
 export default function SubChartCytoscape({ w, h }) {
   const [svgWidth, setSvgWidth] = useState(w);
@@ -100,6 +110,9 @@ export default function SubChartCytoscape({ w, h }) {
   const [nodeDistance, setNodeDistance] = useState(5);
   const [distanceFlag, setDistanceFlag] = useState(false);
   const [chartLayout, setChartLayout] = useState("euler");
+  const [undoOut, setUndoOut] = useState(false);
+  const [redoIn, setRedoIn] = useState(false);
+  const [rollback, setRollback] = useState(false);
   const [layoutFlag, setLayoutFlag] = useState(false);
   const [data, setData] = useState({ nodes: [], edges: [] });
   const [dataParam, setDataParam] = useState("");
@@ -112,9 +125,15 @@ export default function SubChartCytoscape({ w, h }) {
     setSvgHeight(h);
   }, [h]);
 
+  // 监听传过来的参数是否变化
+  PubSub.subscribe("skeletonSelect", (msg, nodeLink) => {
+    setDataParam(nodeLink);
+  });
+
   // 请求数据并初始化图形
   useEffect(() => {
-    getMainChartData().then((res) => {
+    console.log(dataParam);
+    getMainChartSds(dataParam).then((res) => {
       setData(res);
     });
   }, [dataParam]);
@@ -123,17 +142,17 @@ export default function SubChartCytoscape({ w, h }) {
   useEffect(() => {
     if (searchNodebyId) {
       var j = cy.getElementById(searchNodebyId);
-      cy.center(j);                              // 将被搜索元素居中
-      cy.getElementById(searchNodebyId).style({  // 高亮显示被选中节点
+      cy.center(j); // 将被搜索元素居中
+      cy.getElementById(searchNodebyId).style({
+        // 高亮显示被选中节点
         "background-color": "#ffff00",
-      }); 
+      });
     }
   }, [searchNodebyId]);
 
   // 监听过滤事件
   useEffect(() => {
     if (filterFlag) {
-      // console.log("执行过滤", filterType);
       let ele = filterType[0];
       let type = filterType[1];
       let collection;
@@ -141,52 +160,78 @@ export default function SubChartCytoscape({ w, h }) {
         collection = cy.elements(ele + "[type='" + type + "']");
       } else {
         collection = cy.elements(ele + "[relation='" + type + "']");
+        ur.do("remove", collection.connectedNodes());
       }
-      cy.remove(collection);
+      ur.do("remove", collection);
     }
     setFilterFlag(false);
   }, [filterFlag]);
 
   // 处理节点的搜索事件
   useEffect(() => {
-    drawChart();
+    // drawChart();
   }, [data]);
 
   // 监听布局是否变化
   useEffect(() => {
-    if(layoutFlag){
-      layoutOption = layoutOptionDict[chartLayout]
+    if (layoutFlag) {
+      layoutOption = layoutOptionDict[chartLayout];
       layout.stop();
       layout = cy.layout(layoutOption);
       layout.run();
-      setEdgeLength(5)
-      setNodeDistance(5)
+      setEdgeLength(5);
+      setNodeDistance(5);
     }
-    setLayoutFlag(false)
+    setLayoutFlag(false);
   }, [chartLayout]);
-
 
   // 监听节点和边之间的距离是否变化
   useEffect(() => {
     if (distanceFlag && nodeDistance && edgeLength) {
       layout.stop();
-      if(chartLayout === 'euler'){
+      if (chartLayout === "euler") {
         layoutOption.mass = 20 - nodeDistance;
         layoutOption.springLength = edgeLength * 20;
-      }else if(chartLayout === 'fcose' || chartLayout === 'coseBilkent'){
-        layoutOption.nodeRepulsion = nodeDistance*1000;
-        layoutOption.idealEdgeLength = edgeLength*10
+      } else if (chartLayout === "fcose" || chartLayout === "coseBilkent") {
+        layoutOption.nodeRepulsion = nodeDistance * 1000;
+        layoutOption.idealEdgeLength = edgeLength * 10;
+      } else if (chartLayout === "concentric") {
+        layoutOption.spacingFactor = 1; // 分辨率
+        layoutOption.minNodeSpacing = nodeDistance;
       }
-      
+
       layout = cy.layout(layoutOption);
       layout.run();
     }
     setDistanceFlag(true);
   }, [nodeDistance, edgeLength]);
 
+  // 撤销上一步操作
+  useEffect(() => {
+    if (undoOut) {
+      ur.undo();
+    }
+    setUndoOut(false);
+  }, [undoOut]);
+
+  // 还原上一步撤销
+  useEffect(() => {
+    if (redoIn) {
+      ur.redo();
+    }
+    setRedoIn(false);
+  }, [redoIn]);
+  // 还原所有操作
+  useEffect(() => {
+    if (rollback) {
+      ur.undoAll();
+    }
+    setRollback(false);
+  }, [rollback]);
+
   function drawChart() {
     if (data.nodes.length === 0 && data.edges.length === 0) return;
-    const links = data.edges.map((d) => ({ data: { ...d } }));
+    const links = data.links.map((d) => ({ data: { ...d } }));
     const nodes = data.nodes.map((d) => ({ data: { ...d } }));
     // 初始化图
     Promise.all([
@@ -208,7 +253,7 @@ export default function SubChartCytoscape({ w, h }) {
         },
       };
       styles.push(newStyleArr);
-      cy = cytoscape({
+      cy = window.cy = cytoscape({
         container: document.getElementById("main-chart"),
         elements: {
           nodes: nodes,
@@ -216,7 +261,7 @@ export default function SubChartCytoscape({ w, h }) {
         },
         style: styles,
       });
-      layoutOption = layoutOptionDict[chartLayout]
+      layoutOption = layoutOptionDict[chartLayout];
 
       var defaults = {
         container: false, // html dom element
@@ -232,17 +277,38 @@ export default function SubChartCytoscape({ w, h }) {
       layout = cy.layout(layoutOption);
       layout.run();
       cy.boxSelectionEnabled(true); // 设置支持框选操作，如果同时启用平移，用户必须按住shift、control、alt或command中的一个来启动框选择
-      collection = cy.collection();
+      allCollection = cy.collection();
+
+      urOption = {
+        isDebug: true, // Debug mode for console messages
+        actions: {}, // actions to be added
+        undoableDrag: true, // Whether dragging nodes are undoable can be a function as well
+        stackSizeLimit: undefined, // Size limit of undo stack, note that the size of redo stack cannot exceed size of undo stack
+      };
+
+      // 事件的撤销还原操作
+      ur = cy.undoRedo(urOption);
+
+      // 键盘控制事件
+      document.addEventListener("keydown", function (e) {
+        if (e.which === 46) {
+          // 按删除键
+          var selecteds = cy.$(":selected");
+          if (selecteds.length > 0) ur.do("remove", selecteds);
+        }
+        if (e.ctrlKey && e.target.nodeName === "BODY")
+          if (e.which === 90) ur.undo();
+          else if (e.which === 89) ur.redo();
+      });
+      // ///////////////////////////////////////// 编写节点的事件///////////////////////////////////
       // 节点的点击事件
       cy.on("click", "node", function (e) {
         var node = e.target;
-        // console.log("click " + node.id());
       });
 
       // 节点的mouseover事件
       cy.on("mouseover", "node", function (e) {
         var neigh = e.target;
-        collection = collection.union(neigh);
         cy.elements()
           .difference(neigh.outgoers().union(neigh.incomers()))
           .not(neigh)
@@ -259,38 +325,39 @@ export default function SubChartCytoscape({ w, h }) {
           .removeClass("highlight");
       });
 
-
       var menuOptions = {
-        evtType: 'cxttap',
+        evtType: "cxttap",
         menuItems: [
           {
-            id: 'select-self-neigh', // ID of menu item
-            content: '选中节点', // Display content of menu item
-            tooltipText: '选中当前节点和邻居节点', // Tooltip text for menu item
-            selector: 'node', 
-            onClickFunction: function (e) { // 选中当前节点及其邻居节点
+            id: "select-self-neigh", // ID of menu item
+            content: "选中节点", // Display content of menu item
+            tooltipText: "选中当前节点和邻居节点", // Tooltip text for menu item
+            selector: "node",
+            onClickFunction: function (e) {
+              // 选中当前节点及其邻居节点
               let n = e.target;
-              let curNodeId = n.id()
-              n.select()
-              cy.getElementById(curNodeId).neighborhood().select()
-            }
+              let curNodeId = n.id();
+              n.select();
+              cy.getElementById(curNodeId).neighborhood().select();
+            },
           },
           {
-            id: 'select-neigh', // ID of menu item
-            content: '选中邻居节点', // Display content of menu item
-            tooltipText: '选中邻居节点', // Tooltip text for menu item
-            selector: 'node', 
-            onClickFunction: function (e) { // 选中当前节点及其邻居节点
+            id: "select-neigh", // ID of menu item
+            content: "选中邻居节点", // Display content of menu item
+            tooltipText: "选中邻居节点", // Tooltip text for menu item
+            selector: "node",
+            onClickFunction: function (e) {
+              // 选中当前节点及其邻居节点
               let n = e.target;
-              let curNodeId = n.id()
-              cy.getElementById(curNodeId).neighborhood().select()
-            }
-          }
+              let curNodeId = n.id();
+              cy.getElementById(curNodeId).neighborhood().select();
+            },
+          },
         ],
         menuItemClasses: [],
-        contextMenuClasses: []
-    };
-    var muneInstance = cy.contextMenus(menuOptions);
+        contextMenuClasses: [],
+      };
+      var muneInstance = cy.contextMenus(menuOptions);
     });
   }
 
@@ -445,7 +512,6 @@ export default function SubChartCytoscape({ w, h }) {
 
   function onGetSelected() {
     let selection = cy.elements(":selected");
-    // console.log(selection);
   }
 
   // 过滤对应的回车和按钮提交事件
@@ -459,7 +525,7 @@ export default function SubChartCytoscape({ w, h }) {
     setSearchNodebyId(value);
   }
   function onChangeLayout(value) {
-    setLayoutFlag(true)
+    setLayoutFlag(true);
     setChartLayout(value);
   }
   function onChangeEdgeLength(value) {
@@ -474,10 +540,23 @@ export default function SubChartCytoscape({ w, h }) {
         option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1
     );
   }
+
+  function onUndoOut() {
+    setUndoOut(true);
+  }
+
+  function onRedoIn() {
+    setRedoIn(true);
+  }
+
+  function onRollback() {
+    setRollback(true);
+  }
+
   return (
     <div
       id="main-container"
-      style={{ width: svgWidth, height: svgHeight, background: "#eee" }}
+      style={{ width: svgWidth, height: svgHeight, background: "#fff" }}
     >
       <div id="main-chart-control">
         <div
@@ -491,7 +570,6 @@ export default function SubChartCytoscape({ w, h }) {
             lineHeight: 2.2,
           }}
         >
-          {" "}
           {/*  控制数据 */}
           <div id="main-data-search">
             节点搜索：
@@ -511,6 +589,30 @@ export default function SubChartCytoscape({ w, h }) {
             />
             <Button type="primary" onClick={onFilter}>
               Submit
+            </Button>
+            <Button
+              type="dashed"
+              icon={<UndoOutlined />}
+              style={{ marginLeft: "10px" }}
+              onClick={onUndoOut}
+            >
+              undo
+            </Button>
+            <Button
+              type="dashed"
+              icon={<RedoOutlined />}
+              style={{ marginLeft: "5px" }}
+              onClick={onRedoIn}
+            >
+              redo
+            </Button>
+            <Button
+              type="dashed"
+              icon={<RollbackOutlined />}
+              style={{ marginLeft: "5px" }}
+              onClick={onRollback}
+            >
+              还原
             </Button>
           </div>
         </div>

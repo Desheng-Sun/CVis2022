@@ -10,6 +10,7 @@ import SearchBar from "../search-bar";
 import CombineTable from "../combine-table";
 import MainChartCytoscape from "../sub-chart-cytoscape";
 import ConclusionText from "../conclusion-text";
+import IndustryStackChart from "../industry-stack-chart";
 import { useEffect, useState } from "react";
 
 export default function Layout() {
@@ -25,6 +26,9 @@ export default function Layout() {
   const [combineTableHeight, setCombineTableHeight] = useState(0);
   const [mainChartWidth, setMainChartWidth] = useState(0);
   const [mainChartHeight, setMainChartHeight] = useState(0);
+  const [industryStackChartWidth, setIndustryStackChartWidth] = useState(0);
+  const [industryStackChartHeight, setIndustryStackChartHeight] = useState(0);
+  
 
   const [curIC, setCurrIC] = useState(""); // 当前选中的IP/Cert
 
@@ -47,12 +51,12 @@ export default function Layout() {
     // setIcClueChartHeight(
     //   document.getElementById("icclue-graph").getBoundingClientRect().height
     // );
-    // setSkeletonChartWidth(
-    //   document.getElementById("skeleton-chart").getBoundingClientRect().width
-    // );
-    // setSkeletonChartHeight(
-    //   document.getElementById("skeleton-chart").getBoundingClientRect().height
-    // );
+    setSkeletonChartWidth(
+      document.getElementById("skeleton-chart").getBoundingClientRect().width
+    );
+    setSkeletonChartHeight(
+      document.getElementById("skeleton-chart").getBoundingClientRect().height
+    );
     setCombineTableWidth(
       document.getElementById("sta-node").getBoundingClientRect().width
     );
@@ -63,6 +67,12 @@ export default function Layout() {
       document.getElementById("mainmap").getBoundingClientRect().width
     );
     setMainChartHeight(968);
+    // setIndustryStackChartWidth(
+    //   document.getElementById("assetandpath").getBoundingClientRect().width
+    // );
+    // setIndustryStackChartHeight(
+    //   document.getElementById("assetandpath").getBoundingClientRect().height
+    // );
   });
 
   return (
@@ -81,13 +91,13 @@ export default function Layout() {
           </div>
           <div id="nodelinkic">
             <ChartHeader chartName={"IP <——> Cert"} />
-            {/* <SkeletonChart w={skeletonChartWidth} h={skeletonChartHeight} /> */}
+            <SkeletonChart w={skeletonChartWidth} h={skeletonChartHeight} />
           </div>
         </div>
         <div id="iright">
           <div id="container-mainmap">
             <div id="mainmap">
-              <ChartHeader chartName={"主图"} />
+              <ChartHeader chartName={"黑灰产网络资产图"} />
               <MainChartCytoscape w={mainChartWidth} h={mainChartHeight} />
             </div>
           </div>
@@ -106,7 +116,7 @@ export default function Layout() {
           <InfoList />
         </div>
         <div id="container-statistic">
-          <ChartHeader chartName={"节点与边信息"} />
+          <ChartHeader chartName={"团伙网络信息"} />
           <div id="sta-node">
             <CombineTable
               w={combineTableWidth}
@@ -114,6 +124,7 @@ export default function Layout() {
               b="node"
             />
           </div>
+          <div id="divider"></div>
           <div id="sta-link">
             <CombineTable
               w={combineTableWidth}
@@ -123,7 +134,10 @@ export default function Layout() {
           </div>
         </div>
 
-        <div id="assetandpath">核心资产与关键链路展示</div>
+        <div id="assetandpath">
+          <ChartHeader chartName={"核心资产与关键链路分析"} />
+          {/* <IndustryStackChart  w={industryStackChartWidth} h={industryStackChartHeight} /> */}
+        </div>
         <div id="conclusion">
           <ChartHeader chartName={"团伙分析结果"} />
           {/* <ConclusionText /> */}
