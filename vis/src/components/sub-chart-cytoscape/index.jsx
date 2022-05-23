@@ -269,7 +269,7 @@ export default function SubChartCytoscape({ w, h }) {
 
   // 请求数据并初始化图形
   useEffect(() => {
-    getMainChartSds(linksInfo).then((res) => {
+    getMainChartSds(dataParam).then((res) => {
       setData(res);
     });
   }, [dataParam]);
