@@ -82,7 +82,7 @@ let nodeICLinks = JSON.parse(nodeICLinksJ)
 let ICNeighborJ = fs.readFileSync(nowPath + "ICNeighbor.json", "utf8")
 let ICNeighbor = JSON.parse(ICNeighborJ)
 
-function getIPCertLinksInSkip2(nowPath, nowNodeNumId, ICLinksInfo, nodeCsvW) {
+function getIPCertLinksInSkip2(nowPath, nowNodeNumId, ICLinksInfo, nodeNumIdInfo) {
   // 数据信息存储变量
   let WhoisName = 0
   let WhoisEmail = 0
@@ -98,7 +98,7 @@ function getIPCertLinksInSkip2(nowPath, nowNodeNumId, ICLinksInfo, nodeCsvW) {
 
   let allLinks = {}
   // 获取当前节点的相关信息
-  let nowNodesInfo = nodeCsvW[parseInt(nowNodeNumId) - 1]
+  let nowNodesInfo = nodeNumIdInfo[parseInt(nowNodeNumId) - 1]
   //第0层数据
   allLinks = {
     "id": nowNodesInfo[1],
@@ -114,7 +114,7 @@ function getIPCertLinksInSkip2(nowPath, nowNodeNumId, ICLinksInfo, nodeCsvW) {
   }
   //针对第0层数据的链路添加第一层数据
   for (let j of ICLinksInfo[nowNodeNumId]) {
-    nowNodesInfo = nodeCsvW[parseInt(j[1]) - 1]
+    nowNodesInfo = nodeNumIdInfo[parseInt(j[1]) - 1]
     allLinks["children"].push({
       "id": nowNodesInfo[1],
       "nodesNum": j[2] - 2,
@@ -140,7 +140,7 @@ function getIPCertLinksInSkip2(nowPath, nowNodeNumId, ICLinksInfo, nodeCsvW) {
       if (k[1] == parseInt(nowNodeNumId)) {
         continue
       }
-      nowNodesInfo = nodeCsvW[parseInt(k[1]) - 1]
+      nowNodesInfo = nodeNumIdInfo[parseInt(k[1]) - 1]
       isInFirst = false
       // 如果连接的节点出现在第一层，则表示三个节点互相连接
       if (allNodes1.indexOf(parseInt(k[1])) > 0) {
@@ -178,7 +178,7 @@ function getIPCertLinksInSkip2(nowPath, nowNodeNumId, ICLinksInfo, nodeCsvW) {
   return allLinks
 }
 
-function getNodesInICLinks(nowPath, nowNodeNumId, ICLinksInfo, nodeCsvW, ICAloneInfo) {
+function getNodesInICLinks(nowPath, nowNodeNumId, ICLinksInfo, nodeNumIdInfo, ICAloneInfo) {
   let allLinks = []
   let listLinks = []
   let listNode = []
@@ -230,7 +230,7 @@ function getNodesInICLinks(nowPath, nowNodeNumId, ICLinksInfo, nodeCsvW, ICAlone
       for (let j of ICLinksInfo[i[0]]) {
         allNodes1.push(j[1])
       }
-      let nowNodesInfo = nodeCsvW[parseInt(i[0]) - 1]
+      let nowNodesInfo = nodeNumIdInfo[parseInt(i[0]) - 1]
       let nowLinks = {
         "id": nowNodesInfo[1],
         "nodesNum": 0,
@@ -253,7 +253,7 @@ function getNodesInICLinks(nowPath, nowNodeNumId, ICLinksInfo, nodeCsvW, ICAlone
         listLinks = listLinks.filter(e => e != JSON.stringify(nowICLink))
         //存储相关链路，添加该节点的第二层数据，则表明第一层的节点信息已经存储过
         nowICNodeSet = nowICNodeSet.filter(e => e != j[1])
-        nowNodesInfo = nodeCsvW[parseInt(j[1]) - 1]
+        nowNodesInfo = nodeNumIdInfo[parseInt(j[1]) - 1]
         nowLinks["children"].push({
           "id": nowNodesInfo[1],
           "nodesNum": j[2] - 2,
@@ -285,7 +285,7 @@ function getNodesInICLinks(nowPath, nowNodeNumId, ICLinksInfo, nodeCsvW, ICAlone
             continue
           }
           listLinks = listLinks.filter(e => e != JSON.stringify(nowICLink))
-          nowNodesInfo = nodeCsvW[parseInt(k[1]) - 1]
+          nowNodesInfo = nodeNumIdInfo[parseInt(k[1]) - 1]
           //当前节点在第一层出现过，则表示三个节点相互连接
           let isInFirst = false
           if (allNodes1.indexOf(parseInt(k[1])) > 0) {
@@ -328,7 +328,7 @@ function getNodesInICLinks(nowPath, nowNodeNumId, ICLinksInfo, nodeCsvW, ICAlone
   }
   // 对于节点的单独信息，获取该单独IC路径的相关信息
   for (let i of listNode) {
-    nowNodesInfo = nodeCsvW[parseInt(i) - 1]
+    nowNodesInfo = nodeNumIdInfo[parseInt(i) - 1]
     nowNodeLinkInfo = ICAloneInfo[i]
     nowLinks = {
       "id": nowNodesInfo[1],
@@ -643,7 +643,7 @@ app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
     }
   }
   for (let i of initialNodes) {
-    
+
     //如果nodes有children，表明该nodes为融合连接，获取其内部信息
     if (i.hasOwnProperty("children")) {
       for (let j of i["children"]) {
@@ -684,7 +684,7 @@ app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
       r_cert_chain += 1;
       certAsSource.add(i[1]);
       certAsTarget.add(i[2]);
-    } 
+    }
     //如果为r_cert，则将source作为domainAsSource
     else if (i["relation"] == "r_cert") {
       r_cert += 1;
@@ -701,43 +701,43 @@ app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
       r_whois_email += 1;
       domainAsSource.add(i[1]);
       whoisEmail.add(i[2]);
-    } 
+    }
     //如果为r_whois_phone，则将source作为domainAsSource，target作为whoisPhone
     else if (i["relation"] == "r_whois_phone") {
       r_whois_phone += 1;
       domainAsSource.add(i[1]);
       whoisPhone.add(i[2]);
-    } 
+    }
     //如果为r_cname，则将source作为domainAsSource，target作为domainAsCnameTarget
     else if (i["relation"] == "r_cname") {
       r_cname += 1;
       domainAsSource.add(i[1]);
       domainAsCnameTarget.add(i[2]);
-    } 
+    }
     //如果为r_request_jump，则将source作为domainAsSource，target作为domainAsJumpTarget
     else if (i["relation"] == "r_request_jump") {
       r_request_jump += 1;
       domainAsSource.add(i[1]);
       domainAsJumpTarget.add(i[2]);
-    } 
+    }
     //如果为r_subdomain，则将source作为domainAsSource，target作为domainAsSubTarget
     else if (i["relation"] == "r_subdomain") {
       r_subdomain += 1;
       domainAsSource.add(i[1]);
       domainAsSubTarget.add(i[2]);
-    } 
+    }
     //如果为r_dns_a，则将source作为domainAsSource，target作为ip
     else if (i["relation"] == "r_dns_a") {
       r_dns_a += 1;
       domainAsSource.add(i[1]);
       ip.add(i[2]);
-    } 
+    }
     //如果为r_cidr，则将source作为domainAsSource，target作为ipc
     else if (i["relation"] == "r_cidr") {
       r_cidr += 1;
       ip.add(i[1]);
       ipc.add(i[2]);
-    } 
+    }
     //如果为r_asn，则将source作为domainAsSource，target作为asn
     else if (i["relation"] == "r_asn") {
       r_asn += 1;
@@ -877,7 +877,7 @@ app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
     },
   ];
   nodeNum = 0
-  for(let i of nodesList){
+  for (let i of nodesList) {
     nodeNum += i["measures"][0]
   }
   console.log(nodes.length)
@@ -929,7 +929,7 @@ app.post("/getInfoListSds", jsonParser, (req, res, next) => {
     groupscope = "中";
   } else if (numnode < 3000) {
     groupscope = "大";
-  }else {
+  } else {
     groupscope = "超大";
   }
   // 获取industry数据，并删除空产业
@@ -1076,7 +1076,7 @@ app.post("/getFinalDataSds", jsonParser, (req, res, next) => {
     }
   }
   for (let i of initialNodes) {
-    
+
     //如果nodes有children，表明该nodes为融合连接，获取其内部信息
     if (i.hasOwnProperty("children")) {
       for (let j of i["children"]) {
@@ -1142,7 +1142,7 @@ app.post("/getFinalDataSds", jsonParser, (req, res, next) => {
     groupscope = "中";
   } else if (numnode < 3000) {
     groupscope = "大";
-  }else {
+  } else {
     groupscope = "超大";
   }
 
@@ -1288,22 +1288,26 @@ app.post("/getIcClueData2Sds", jsonParser, (req, res, next) => {
   let nowPath = path.join(
     __dirname,
     "data/")
+  let sendData
   if (!fs.existsSync(filedata)) {
     if (req.body.type == "IP" || req.body.type == "Cert") {
-      getIPCertLinksInSkip2(nowPath, req.body.numId, ICLinksInfo, nodeNumIdInfo)
+      sendData = getIPCertLinksInSkip2(nowPath, req.body.numId, ICLinksInfo, nodeNumIdInfo)
     }
     else {
-
-      getNodesInICLinks(nowPath, req.body.numId, ICLinksInfo, nodeNumIdInfo, ICAloneInfo)
+      sendData = getNodesInICLinks(nowPath, req.body.numId, ICLinksInfo, nodeNumIdInfo, ICAloneInfo)
     }
+    res.send(sendData)
+    res.end
   }
-  fs.readFile(filedata, "utf-8", function (err, data) {
-    if (err) {
-      console.log(err);
-    } else {
-      let d = JSON.parse(data);
-      res.send(d);
-      res.end();
-    }
-  });
+  else {
+    fs.readFile(filedata, "utf-8", function (err, data) {
+      if (err) {
+        console.log(err);
+      } else {
+        let d = JSON.parse(data);
+        res.send(d);
+        res.end();
+      }
+    });
+  }
 });
