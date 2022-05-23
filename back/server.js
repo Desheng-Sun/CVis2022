@@ -56,8 +56,8 @@ for (let i of nodeInfoJ) {
 nodeNumIdInfo = nodeNumIdInfo.splice(1);
 
 // 获取IC节点的黑灰产信息
-let ICIndustryP = path.join(__dirname, "data/ICIndustryInfo.json");
-let ICIndustryJ = fs.readFileSync(ICIndustryP, "utf8");
+let nowPath = path.join(__dirname, "data/");
+let ICIndustryJ = fs.readFileSync(nowPath + "ICIndustryInfo.json", "utf8");
 const ICIndustry = JSON.parse(ICIndustryJ);
 
 // 获取IC的links信息
@@ -65,7 +65,7 @@ const ICLinksInfoJ = fs.readFileSync(nowPath + "ICLinksInfo.json", "utf-8");
 const ICLinksInfo = JSON.parse(ICLinksInfoJ);
 
 // 获取单独IC的相关信息
-const ICAloneInfoJ = fs.readFileSync(nowPath + "nodesAloneInfo.json", "utf-8");
+const ICAloneInfoJ = fs.readFileSync(nowPath + "ICAloneInfo.json", "utf-8");
 const ICAloneInfo = JSON.parse(ICAloneInfoJ);
 
 // 获取筛选的IC节点的信息
@@ -73,7 +73,7 @@ const ICScreenJ = fs.readFileSync(nowPath + "ICScreen.json", "utf-8");
 const ICScreen = JSON.parse(ICScreenJ);
 
 // 获取每个节点所在的ICLinks的信息
-let nodeICLinksJ = fs.readFileSync(nowPath + "nodesInICLinks.json", "utf8");
+let nodeICLinksJ = fs.readFileSync(nowPath + "nodeICLinks.json", "utf8");
 let nodeICLinks = JSON.parse(nodeICLinksJ);
 
 // 获取每个IC节点直接相连的节点的信息
