@@ -33,93 +33,93 @@ export default function SkeletonChart({ w, h }) {
   // 请求数据
   // 监听冰柱图选择的节点的变化
   useEffect(() => {
-    // getSkeletonChartDataSds(currIc).then((res) => {
-    //   // console.log(res);
-    //   setData(res);
-    // });
+    getSkeletonChartDataSds(currIc).then((res) => {
+      // console.log(res);
+      setData(res);
+    });
 
-    let dt = {
-      nodes: [
-        {
-          id: "Myriel",
-          numId: 1,
-          ICIndustry: [
-            { industry: "AB", number: 2 },
-            { industry: "AE", number: 8 },
-            { industry: "BCD", number: 1 },
-          ],
-          group: 1,
-        },
-        {
-          id: "Napoleon",
-          numId: 2,
-          ICIndustry: [
-            { industry: "AB", number: 2 },
-            { industry: "AE", number: 8 },
-            { industry: "BCD", number: 1 },
-          ],
-          group: 1,
-        },
-        {
-          id: "Mlle.Baptistine",
-          numId: 3,
-          ICIndustry: [
-            { industry: "AB", number: 2 },
-            { industry: "AE", number: 8 },
-            { industry: "BCD", number: 1 },
-          ],
-          group: 1,
-        },
-        {
-          id: "Mme.Magloire",
-          numId: 4,
-          ICIndustry: [
-            { industry: "AB", number: 2 },
-            { industry: "AE", number: 8 },
-            { industry: "BCD", number: 1 },
-          ],
-          group: 1,
-        },
-        {
-          id: "CountessdeLo",
-          numId: 5,
-          ICIndustry: [
-            { industry: "AB", number: 2 },
-            { industry: "AE", number: 8 },
-            { industry: "BCD", number: 1 },
-          ],
-          group: 1,
-        },
-        {
-          id: "Geborand",
-          numId: 6,
-          ICIndustry: [
-            { industry: "AB", number: 2 },
-            { industry: "AE", number: 8 },
-            { industry: "BCD", number: 1 },
-          ],
-          group: 1,
-        },
-        {
-          id: "Champtercier",
-          numId: 7,
-          ICIndustry: [
-            { industry: "AB", number: 2 },
-            { industry: "AE", number: 8 },
-            { industry: "BCD", number: 1 },
-          ],
-          group: 1,
-        },
-      ],
-      links: [
-        { source: "Napoleon", target: "Myriel", value: 1 },
-        { source: "Champtercier", target: "Myriel", value: 8 },
-        { source: "Geborand", target: "Champtercier", value: 10 },
-        { source: "Mlle.Baptistine", target: "Mme.Magloire", value: 6 },
-        { source: "Mlle.Baptistine", target: "Myriel", value: 1 },
-      ],
-    };
-    setData(dt);
+    // let dt = {
+    //   nodes: [
+    //     {
+    //       id: "Myriel",
+    //       numId: 1,
+    //       ICIndustry: [
+    //         { industry: "AB", number: 2 },
+    //         { industry: "AE", number: 8 },
+    //         { industry: "BCD", number: 1 },
+    //       ],
+    //       group: 1,
+    //     },
+    //     {
+    //       id: "Napoleon",
+    //       numId: 2,
+    //       ICIndustry: [
+    //         { industry: "AB", number: 2 },
+    //         { industry: "AE", number: 8 },
+    //         { industry: "BCD", number: 1 },
+    //       ],
+    //       group: 1,
+    //     },
+    //     {
+    //       id: "Mlle.Baptistine",
+    //       numId: 3,
+    //       ICIndustry: [
+    //         { industry: "AB", number: 2 },
+    //         { industry: "AE", number: 8 },
+    //         { industry: "BCD", number: 1 },
+    //       ],
+    //       group: 1,
+    //     },
+    //     {
+    //       id: "Mme.Magloire",
+    //       numId: 4,
+    //       ICIndustry: [
+    //         { industry: "AB", number: 2 },
+    //         { industry: "AE", number: 8 },
+    //         { industry: "BCD", number: 1 },
+    //       ],
+    //       group: 1,
+    //     },
+    //     {
+    //       id: "CountessdeLo",
+    //       numId: 5,
+    //       ICIndustry: [
+    //         { industry: "AB", number: 2 },
+    //         { industry: "AE", number: 8 },
+    //         { industry: "BCD", number: 1 },
+    //       ],
+    //       group: 1,
+    //     },
+    //     {
+    //       id: "Geborand",
+    //       numId: 6,
+    //       ICIndustry: [
+    //         { industry: "AB", number: 2 },
+    //         { industry: "AE", number: 8 },
+    //         { industry: "BCD", number: 1 },
+    //       ],
+    //       group: 1,
+    //     },
+    //     {
+    //       id: "Champtercier",
+    //       numId: 7,
+    //       ICIndustry: [
+    //         { industry: "AB", number: 2 },
+    //         { industry: "AE", number: 8 },
+    //         { industry: "BCD", number: 1 },
+    //       ],
+    //       group: 1,
+    //     },
+    //   ],
+    //   links: [
+    //     { source: "Napoleon", target: "Myriel", value: 1 },
+    //     { source: "Champtercier", target: "Myriel", value: 8 },
+    //     { source: "Geborand", target: "Champtercier", value: 10 },
+    //     { source: "Mlle.Baptistine", target: "Mme.Magloire", value: 6 },
+    //     { source: "Mlle.Baptistine", target: "Myriel", value: 1 },
+    //   ],
+    // };
+    // setData(dt);
   }, [currIc]);
 
   // 监听用户选择的节点
