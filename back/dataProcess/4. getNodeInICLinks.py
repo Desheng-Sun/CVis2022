@@ -187,7 +187,7 @@ if __name__ == '__main__':
     # nodesInIClinks = getNodesInICLinks(
     #     nodesInIClinks, ICScreen[1], "ICLinks/", nowPath)
 
-    # with open(nowPath + "nodesInICLinks.json", "w", encoding="utf-8") as f:
+    # with open(nowPath + "nodeICLinks.json", "w", encoding="utf-8") as f:
     #     json.dump(nodesInIClinks, f, ensure_ascii=False)
 
     # with open(nowPath + "nodesInICLinks.json", "r", encoding="utf-8") as f:
