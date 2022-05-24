@@ -108,30 +108,6 @@ app.post("/getClueDenseDataSds", jsonParser, (req, res, next) => {
   });
 });
 
-// 获取冰柱图需要的数据
-app.post("/getIcClueDataSds", jsonParser, (req, res, next) => {
-  //   const spawn = require("child_process").spawn;
-  //   const pythonProcess = spawn("python", [
-  //     path.join(__dirname, "dataProcess/5. figure1.py"),
-  //     req.body.numId,
-  //     req.body.type,
-  //   ]);
-  //   pythonProcess.on("exit", () => {
-  //     let filedata = path.join(
-  //       __dirname,
-  //       "data/ic-clue-data/370.json"
-  //     );
-  //     fs.readFile(filedata, "utf-8", function (err, data) {
-  //       if (err) {
-  //         console.log(err);
-  //       } else {
-  //         let d = JSON.parse(data);
-  //         res.send(d);
-  //         res.end();
-  //       }
-  //     });
-  //   });
-});
 
 // 获取IC节点两跳内的数据
 function getIPCertLinksInSkip2(
@@ -270,7 +246,7 @@ function getIPCertLinksInSkip2(
       pureDomainNum: 0,
       dirtyDomainNum: 0,
       skipNum: 0,
-      text: "该IC节点在三跳内不存在任何含有黑灰产业的节点，是一个孤立节点",
+      text: "该IC节点在三跳内不存在任何含有黑灰产业的节点，是一个孤立节点"
     };
   }
 
@@ -484,7 +460,7 @@ function getNodesInICLinks(
       pureDomainNum: 0,
       dirtyDomainNum: 0,
       skipNum: 0,
-      text: "该节点不再任何含有黑灰产业的IC链路中",
+      text: "该节点不再任何含有黑灰产业的IC链路中"
     };
   }
   fs.writeFile(
@@ -750,102 +726,176 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
 
 //获取差异图的数据
 app.post("/getDifChartSds", jsonParser, (req, res, next) => {
-  //   let ICLinks = JSON.parse(data);
-  //   let linksInfo = req.body.linksInfo;
-  //   let diffData = [];
-  //   for (let i of linksInfo["links"]) {
-  //     let difDataNow = {};
-  //     for (let j of linksInfo["nodes"]) {
-  //       if (j["id"] == i["source"] || j["id"] == i["target"]) {
-  //         difDataNow[j["numId"]] = {
-  //           name: j["name"],
-  //           numId: j["numId"],
-  //           id: j["id"],
-  //           value: {},
-  //         };
-  //         for (let k of j["ICIndustry"]) {
-  //           difDataNow[j["numId"]]["value"][k["industry"]] = k["number"];
-  //         }
-  //         if (difDataNow.length == 2) {
-  //           break;
-  //         }
-  //       }
-  //     }
-  //     for (let j of ICLinks[i["linksNumId"][0]]) {
-  //       if (j[1] == i["linksNumId"][1]) {
-  //         difDataNow[i["source"] + " " + i["target"]] = {
-  //           name:
-  //             difDataNow[i["linksNumId"][0]]["name"] +
-  //             " " +
-  //             difDataNow[i["linksNumId"][1]]["name"],
-  //           numId: i["linksNumId"][0].toString() + "," + i["linksNumId"][1],
-  //           id: i["source"] + " " + i["target"],
-  //           value: {},
-  //         };
-  //         for (let k of j[j.length - 1]) {
-  //           if (k[0] != "  ") {
-  //             difDataNow[i["source"] + " " + i["target"]]["value"][k[0]] =
-  //               k[1];
-  //             if (
-  //               difDataNow[i["linksNumId"][0]]["value"].hasOwnProperty(k[0])
-  //             ) {
-  //               difDataNow[i["linksNumId"][0]]["value"][k[0]] -= k[1];
-  //               difDataNow[i["linksNumId"][0]]["value"][k[0]] = Math.max(
-  //                 difDataNow[i["linksNumId"][0]]["value"][k[0]],
-  //                 0
-  //               );
-  //             }
-  //             if (
-  //               difDataNow[i["linksNumId"][1]]["value"].hasOwnProperty(k[0])
-  //             ) {
-  //               difDataNow[i["linksNumId"][1]]["value"][k[0]] -= k[1];
-  //               difDataNow[i["linksNumId"][1]]["value"][k[0]] = Math.max(
-  //                 difDataNow[i["linksNumId"][1]]["value"][k[0]],
-  //                 0
-  //               );
-  //             }
-  //           }
-  //         }
-  //         break;
-  //       }
-  //     }
-  //     let difDataUseNow = [];
-  //     for (let key in difDataNow) {
-  //       j = difDataNow[key];
-  //       let difDataOneNow = {
-  //         name: j["name"],
-  //         numId: j["numId"],
-  //         id: j["id"],
-  //         value: [],
-  //       };
-  //       for (let k in j["value"]) {
-  //         difDataOneNow["value"].push({
-  //           name: k,
-  //           value: j["value"][k],
-  //         });
-  //       }
-  //       difDataUseNow.push(difDataOneNow);
-  //     }
-  //     diffData.push(difDataUseNow);
-  //   }
-  //   res.send(diffData);
-  //   res.end();
-  // });
-  // // 读取BulletChart样例数据
-  // app.get("/getBulletChartData", (req, res) => {
-  //   let filepath = path.join(
-  //     __dirname,
-  //     "data/bullet-chart-data/example-simplify.json"
-  //   );
-  //   fs.readFile(filepath, "utf-8", function (err, data) {
-  //     if (err) {
-  //       console.error(err);
-  //     } else {
-  //       let jsonData = JSON.parse(data);
-  //       res.send(jsonData);
-  //       res.end();
-  //     }
-  //   });
+  const links = req.body.linksInfo["links"];
+  const nodes = req.body.linksInfo["nodes"];
+  let listLinks = {}
+  //存储每一个IC节点的信息和IC链路信息
+  for (let i of nodes) {
+    listLinks[i["numId"]] = {
+      "numId": i["numId"],
+      "id": i["id"],
+      "name": i["name"],
+      "type": i["type"],
+      "ICIndustry": i["ICIndustry"],
+      "ICLinks": []
+    }
+  }
+  for (let i of links) {
+    listLinks[i["linksNumId"][0]]["ICLinks"].push(i["linksNumId"].toString())
+    listLinks[i["linksNumId"][1]]["ICLinks"].push(i["linksNumId"].toString())
+  }
+  //针对IC节点的链路数量进行排序
+  let listLinksSortKey = Object.keys(listLinks).sort(function (a, b) {
+    return listLinks[b]["ICLinks"].length - listLinks[a]["ICLinks"].length;
+  });
+  let sendData = {
+    "name": "root",
+    "children": []
+  }
+  //根据排序后的IC节点进行循环
+  for (let i of listLinksSortKey) {
+    const nowICLinks = listLinks[i]["ICLinks"]
+    if (nowICLinks.length == 0) {
+      continue
+    }
+    //当前IC节点的信息进行存储
+    let nowICDifData = {
+      "numId": listLinks[i]["numId"],
+      "id": listLinks[i]["id"],
+      "name": listLinks[i]["name"],
+      "type": listLinks[i]["type"],
+      "children": []
+    }
+    //针对IC节点的每一个IC链路进行循环
+    for (let j of nowICLinks) {
+      let nowLink = j.split(",")
+      let nowAllIndustry = {}
+      let nowICIndustry = []
+      let nextICIndustry = []
+      // 判断当前节点是IC链路的Source还是target
+      if (nowLink[0] == listLinks[i]["numId"]) {
+        nowICIndustry = listLinks[nowLink[0]]["ICIndustry"]
+        nextICIndustry = listLinks[nowLink[1]]["ICIndustry"]
+      }
+      else {
+        nowICIndustry = listLinks[nowLink[1]]["ICIndustry"]
+        nextICIndustry = listLinks[nowLink[0]]["ICIndustry"]
+      }
+      // 获取两个IC节点的所有Industry信息
+      for (let k of nowICIndustry) {
+        nowAllIndustry[k["industry"]] = {}
+      }
+      for (let k of nextICIndustry) {
+        nowAllIndustry[k["industry"]] = {}
+      }
+      nowAllIndustry["  "] = {}
+      // 存储两个节点响应的Indusrty的数量
+      for (let k of nowICIndustry) {
+        nowAllIndustry[k["industry"]][1] = k["number"]
+        nowAllIndustry[k["industry"]][2] = 0
+        nowAllIndustry[k["industry"]][3] = 0
+      }
+      for (let k of nextICIndustry) {
+        nowAllIndustry[k["industry"]][1] = Math.max(0, nowAllIndustry[k["industry"]][1])
+        nowAllIndustry[k["industry"]][2] = 0
+        nowAllIndustry[k["industry"]][3] = k["number"]
+      }
+      nowAllIndustry["  "][1] = 0
+      nowAllIndustry["  "][3] = 0
+
+      //对sourceIC节点的ICLinks进行循环
+      for (let k of ICLinksInfo[nowLink[0]]) {
+        // 判断循环的IC路径是否为当前路径
+        if (k[1] == nowLink[1]) {
+          for (let l of k[k.length - 1]) {
+            nowAllIndustry[l[0]][2] = l[1]
+            // 最小值为0
+            nowAllIndustry[l[0]][1] -= Math.min(l[1], nowAllIndustry[l[0]][1])
+            nowAllIndustry[l[0]][3] -= Math.min(l[1], nowAllIndustry[l[0]][3])
+          }
+          break
+        }
+      }
+      delete nowAllIndustry["  "];
+
+      let nowICDifIndustry = [{}, {}, {}]
+      let nowICDifIndustry1 = []
+      let nowICDifIndustry2 = []
+      let nowICDifIndustry3 = []
+      // 获取所有的Industry
+      for (let k in nowAllIndustry) {
+        nowICDifIndustry1.push({
+          "name": k,
+          "num": nowAllIndustry[k][1]
+        })
+        nowICDifIndustry2.push({
+          "name": k,
+          "num": nowAllIndustry[k][2]
+        })
+        nowICDifIndustry3.push({
+          "name": k,
+          "num": nowAllIndustry[k][3]
+        })
+      }
+      //创建对应的数组存储数据
+      nowICDifIndustry[0] = {
+        "name": nowICDifIndustry1[nowICDifIndustry1.length - 1]["name"],
+        "num": nowICDifIndustry1[nowICDifIndustry1.length - 1]["num"],
+        "value": 5
+      }
+      nowICDifIndustry[1] = {
+        "name": nowICDifIndustry2[nowICDifIndustry2.length - 1]["name"],
+        "num": nowICDifIndustry2[nowICDifIndustry2.length - 1]["num"],
+        "value": 5
+      }
+      nowICDifIndustry[2] = {
+        "name": nowICDifIndustry3[nowICDifIndustry3.length - 1]["name"],
+        "num": nowICDifIndustry3[nowICDifIndustry3.length - 1]["num"],
+        "value": 5
+      }
+      for (let k = nowICDifIndustry1.length - 2; k--; k >= 0) {
+        nowICDifIndustry[0] = {
+          "name": nowICDifIndustry1[k]["name"],
+          "num": nowICDifIndustry1[k]["num"],
+          "children": [nowICDifIndustry[0]]
+        }
+        nowICDifIndustry[1] = {
+          "name": nowICDifIndustry2[k]["name"],
+          "num": nowICDifIndustry2[k]["num"],
+          "children": [nowICDifIndustry[1]]
+        }
+        nowICDifIndustry[2] = {
+          "name": nowICDifIndustry3[k]["name"],
+          "num": nowICDifIndustry3[k]["num"],
+          "children": [nowICDifIndustry[2]]
+        }
+      }
+      //添加数据，并删除对应IC节点的该条数据
+      if (nowLink[0] == listLinks[i]["numId"]) {
+        nowICDifData["children"].push({
+          "numId": listLinks[nowLink[1]]["numId"],
+          "id": listLinks[nowLink[1]]["id"],
+          "name": listLinks[nowLink[1]]["name"],
+          "type": listLinks[nowLink[1]]["type"],
+          "children": nowICDifIndustry
+        })
+        listLinks[nowLink[1]]["ICLinks"] = listLinks[nowLink[1]]["ICLinks"].filter(e => e!= j)
+      }        
+      else{
+        nowICDifData["children"].push({
+          "numId": listLinks[nowLink[0]]["numId"],
+          "id": listLinks[nowLink[0]]["id"],
+          "name": listLinks[nowLink[0]]["name"],
+          "type": listLinks[nowLink[0]]["type"],
+          "children": nowICDifIndustry
+        })
+        listLinks[nowLink[0]]["ICLinks"] = listLinks[nowLink[0]]["ICLinks"].filter(e => e!= j)
+      }
+    }
+    sendData["children"].push(nowICDifData)
+  }
+  res.send(sendData);
+  res.end()
 });
 
 // 初步获取社区的主要信息

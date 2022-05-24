@@ -4,6 +4,7 @@ import {
   getIcClueData2Sds,
   getSkeletonChartDataSds,
   getMainChartSds,
+  getDifChartSds,
   getInfoListSds,
   getBulletChartDataSds,
   getDetialListSds,
@@ -5595,11 +5596,11 @@ export default function DataProcessChecker() {
   //   });
   // }, [])
 
-  useEffect(() => {
-    getIcClueData2Sds(289, "Cert").then((res) => {
-      console.log(res)
-    });
-  }, [])
+  // useEffect(() => {
+  //   getIcClueData2Sds(289, "Cert").then((res) => {
+  //     console.log(res)
+  //   });
+  // }, [])
 
   // useEffect(() => {
   //   getSkeletonChartDataSds(["3", "4", "101", "102", "112", "289"]).then((res) => {
@@ -5607,41 +5608,41 @@ export default function DataProcessChecker() {
   //   });
   // }, [])
 
-  useEffect(() => {
-    getMainChartSds(linksInfo).then((res) => {
-      console.log(res)
-    });
-  }, [])
-
   // useEffect(() => {
-  //   getDifChartSds(linksInfo).then((res) => {
+  //   getMainChartSds(linksInfo).then((res) => {
   //     console.log(res)
   //   });
   // }, [])
 
   useEffect(() => {
-    getInfoListSds(nodesLinksInfo).then((res) => {
+    getDifChartSds(linksInfo).then((res) => {
       console.log(res)
     });
   }, [])
 
-  useEffect(() => {
-    getBulletChartDataSds(nodesLinksInfo).then((res) => {
-      console.log(res)
-    }, [])
-  })
+  // useEffect(() => {
+  //   getInfoListSds(nodesLinksInfo).then((res) => {
+  //     console.log(res)
+  //   });
+  // }, [])
 
-  useEffect(() => {
-    getDetialListSds(nodesLinksInfo).then((res) => {
-      console.log(res)
-    });
-  }, [])
+  // useEffect(() => {
+  //   getBulletChartDataSds(nodesLinksInfo).then((res) => {
+  //     console.log(res)
+  //   }, [])
+  // })
 
-  useEffect(() => {
-    getFinalDataSds(nodesLinksInfo).then((res) => {
-      console.log(res)
-    });
-  }, [])
+  // useEffect(() => {
+  //   getDetialListSds(nodesLinksInfo).then((res) => {
+  //     console.log(res)
+  //   });
+  // }, [])
+
+  // useEffect(() => {
+  //   getFinalDataSds(nodesLinksInfo).then((res) => {
+  //     console.log(res)
+  //   });
+  // }, [])
 
 
 }
