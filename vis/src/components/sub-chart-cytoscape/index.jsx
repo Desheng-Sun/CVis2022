@@ -1,5 +1,6 @@
 import { useEffect, useState, React } from "react";
 import cytoscape, { use } from "cytoscape";
+import expandCollapse from "cytoscape-expand-collapse";
 import euler from "cytoscape-euler";
 import navigator from "cytoscape-navigator";
 import coseBilkent from "cytoscape-cose-bilkent";
@@ -24,6 +25,7 @@ import SkeletonChart from "../skeleton-chart";
 
 navigator(cytoscape);
 undoRedo(cytoscape);
+expandCollapse(cytoscape);
 contextMenus(cytoscape);
 cytoscape.use(euler);
 cytoscape.use(coseBilkent);
@@ -32,7 +34,7 @@ cytoscape.use(fcose);
 const { Option } = Select;
 const { Search } = Input;
 
-var cy, layoutOption, stylesJson, layout, allCollection;
+var cy, layoutOption, ecLayoutOption, stylesJson, layout, api;
 var ur, urOption; // 保留点和边的初状态
 var layoutOptionDict = {
   euler: {
@@ -95,6 +97,34 @@ var layoutOptionDict = {
     idealEdgeLength: 50,
     edgeElasticity: 0.55,
     gravity: 0.55,
+  },
+};
+var ecLayoutOptionDict = {
+  euler: {
+    layoutBy: {
+      name: "euler",
+    },
+  },
+  concentric: {
+    layoutBy: {
+      name: "concentric",
+    },
+  },
+  dagre: {
+    dagre: {
+      name: "concentric",
+    },
+  },
+  fcose: {
+    coseBilkent: {
+      name: "fcose",
+      undoable: true,
+    },
+  },
+  coseBilkent: {
+    coseBilkent: {
+      name: "cose-bilkent",
+    },
   },
 };
 
@@ -279,6 +309,8 @@ export default function SubChartCytoscape({ w, h }) {
           id: "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
           name: "5.180.xxx.xxx",
           type: "IP",
+          parent:
+            "Domain_34a6231f101fdfa2b051beaa4b94d463fe5f9f42b7789bbe60f6fd4c292ee7ac",
           industry: "  \r",
         },
         {
@@ -518,6 +550,8 @@ export default function SubChartCytoscape({ w, h }) {
           id: "IP_CIDR_6399042623e54e0439705fde4e655b85e0beef20bc18e9eea628bbe6278f71f8",
           name: "5.180.xxx.0/24",
           type: "IP_C",
+          parent:
+            "Domain_34a6231f101fdfa2b051beaa4b94d463fe5f9f42b7789bbe60f6fd4c292ee7ac",
           industry: "  \r",
         },
         {
@@ -1396,9 +1430,11 @@ export default function SubChartCytoscape({ w, h }) {
   useEffect(() => {
     if (layoutFlag) {
       layoutOption = layoutOptionDict[chartLayout];
+      ecLayoutOption = ecLayoutOptionDict[chartLayout];
       layout.stop();
-      layout = cy.layout(layoutOption);
-      layout.run();
+      // layout = cy.layout(layoutOption);
+      api = cy.expandCollapse(ecLayoutOption);
+      api.collapseAll();
       setEdgeLength(5);
       setNodeDistance(5);
     }
@@ -1422,6 +1458,7 @@ export default function SubChartCytoscape({ w, h }) {
 
       layout = cy.layout(layoutOption);
       layout.run();
+      api.collapseAll();
     }
     setDistanceFlag(true);
   }, [nodeDistance, edgeLength]);
@@ -1556,8 +1593,6 @@ export default function SubChartCytoscape({ w, h }) {
         },
         style: stylesJson,
       });
-      layoutOption = layoutOptionDict[chartLayout];
-
       var defaults = {
         container: false, // html dom element
         viewLiveFramerate: 0, // set false to update graph pan only on drag end; set 0 to do it instantly; set a number (frames per second) to update not more than N times per second
@@ -1567,12 +1602,16 @@ export default function SubChartCytoscape({ w, h }) {
         removeCustomContainer: false, // destroy the container specified by user on plugin destroy
         rerenderDelay: 100, // ms to throttle rerender updates to the panzoom for performance
       };
-
       cy.navigator(defaults);
+      layoutOption = layoutOptionDict[chartLayout];
       layout = cy.layout(layoutOption);
-      layout.run();
+      ecLayoutOption = ecLayoutOptionDict[chartLayout];
+      api = cy.expandCollapse(ecLayoutOption);
+      // api = cy.expandCollapse(layoutOption)
+      api.collapseAll();
+      // layout.run();
+
       cy.boxSelectionEnabled(true); // 设置支持框选操作，如果同时启用平移，用户必须按住shift、control、alt或command中的一个来启动框选择
-      allCollection = cy.collection();
 
       urOption = {
         isDebug: true, // Debug mode for console messages
