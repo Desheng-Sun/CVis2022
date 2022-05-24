@@ -40,10 +40,13 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
 
-
 const nowPath = path.join(__dirname, "data/");
 // 获取节点的相关信息
-let nodeInfoJ = fs.readFileSync(nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv", "utf8");
+let nodeInfoJ = fs.readFileSync(
+  nowPath +
+    "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv",
+  "utf8"
+);
 nodeInfoJ = nodeInfoJ.split("\n");
 let nodeNumIdInfo = [];
 for (let i of nodeInfoJ) {
@@ -91,7 +94,6 @@ app.get("/getInitialSds", (req, res, next) => {
   res.end();
 });
 
-
 // 获取筛选后的IC节点的信息
 app.post("/getClueDenseDataSds", jsonParser, (req, res, next) => {
   let filepath = path.join(__dirname, "data/ICDomainInfo.json");
@@ -135,8 +137,7 @@ function getIPCertLinksInSkip2(
       dirtyDomainNum: nowNodeLinkInfo[2],
       skipNum: 0,
     };
-  }
-  else if (ICScreen[0].indexOf[nowNodeNumId] > -1) {
+  } else if (ICScreen[0].indexOf[nowNodeNumId] > -1) {
     // 数据信息存储变量
     let WhoisName = 0;
     let WhoisEmail = 0;
@@ -227,8 +228,7 @@ function getIPCertLinksInSkip2(
     allLinks["pureDomainNum"] = pureDomain;
     allLinks["dirtyDomainNum"] = dirtyDomain;
     allLinks["skipNum"] = skipNum;
-  }
-  else {
+  } else {
     allLinks = {
       id: 0,
       nodesNum: 0,
@@ -254,7 +254,7 @@ function getIPCertLinksInSkip2(
     nowPath + "ic-clue-data/" + nowNodeNumId + ".json",
     JSON.stringify([allLinks]),
     "utf-8",
-    err => {
+    (err) => {
       if (err) {
         console.error(err);
       }
@@ -467,7 +467,7 @@ function getNodesInICLinks(
     nowPath + "ic-clue-data/" + nowNodeNumId + ".json",
     JSON.stringify(allLinks),
     "utf8",
-    err => {
+    (err) => {
       if (err) {
         console.error(err);
       }
@@ -475,7 +475,6 @@ function getNodesInICLinks(
   );
   return allLinks;
 }
-
 
 // 获取冰柱图的数据
 app.post("/getIcClueData2Sds", jsonParser, (req, res, next) => {
@@ -516,7 +515,6 @@ app.post("/getIcClueData2Sds", jsonParser, (req, res, next) => {
     });
   }
 });
-
 
 // 获取IC连接图所需要的数据
 app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
@@ -567,7 +565,6 @@ app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
   res.send(sendData);
   res.end();
 });
-
 
 // 主图所需要的数据
 app.post("/getMainChartSds", jsonParser, (req, res, next) => {
@@ -714,11 +711,11 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
     });
   }
   nowNodes.sort((a, b) => {
-    return a["numId"] - b["numId"]
-  })
+    return a["numId"] - b["numId"];
+  });
   nowLinks.sort((a, b) => {
-    return a["linksNumId"][0] - b["linksNumId"][0]
-  })
+    return a["linksNumId"][0] - b["linksNumId"][0];
+  });
   let sendData = {
     nodes: nowNodes,
     links: nowLinks,
@@ -726,7 +723,6 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
   res.send(sendData);
   res.end();
 });
-
 
 //获取差异图的数据
 app.post("/getDifChartSds", jsonParser, (req, res, next) => {
@@ -902,7 +898,6 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
   res.end()
 });
 
-
 // 初步获取社区的主要信息
 app.post("/getInfoListSds", jsonParser, (req, res, next) => {
   let numnode = 0;
@@ -970,7 +965,6 @@ app.post("/getInfoListSds", jsonParser, (req, res, next) => {
   res.send(sendData);
   res.end();
 });
-
 
 // 获取社区的Links和nodes信息
 app.post("/getBulletChartDataSds", jsonParser, (req, res, next) => {
@@ -1449,7 +1443,3 @@ app.post("/getFinalDataSds", jsonParser, (req, res, next) => {
   res.send(sendData);
   res.end();
 });
-
-
-
-
