@@ -46,7 +46,6 @@ export default function SkeletonChart({ w, h }) {
       for (let i in linkedByIndex) {
         let source = i.split(",")[0];
         let target = i.split(",")[1];
-        console.log();
         if (selectedNode.includes(parseInt(source))  && selectedNode.includes(parseInt(target))) {
           returnRes["links"].push({ linksNumId: [parseInt(source), parseInt(target)]});
         }
@@ -69,7 +68,7 @@ export default function SkeletonChart({ w, h }) {
         for (let item in data.nodes[n].ICIndustry) {
           combinationOrderSet.add(data.nodes[n].ICIndustry[item]["industry"]);
         }
-        tNodes.push({ ...data.nodes[n], group: n });
+        tNodes.push({ ...data.nodes[n], group: parseInt(n) });
       }
       setLinks([...tLink]);
       setNodes([...tNodes]);
@@ -132,11 +131,11 @@ export default function SkeletonChart({ w, h }) {
 
           // 获取被取消数据对应的numId
           let numId = nodes
-            .filter((d) => d.group == groupId)
+            .filter((d) => d.group === groupId)
             .map((d) => d.numId)[0];
 
           setSelectedNode((selectedNode) =>
-            selectedNode.filter((d) => d != numId)
+            selectedNode.filter((d) => d !== numId)
           );
         },
       },
@@ -209,7 +208,7 @@ export default function SkeletonChart({ w, h }) {
             if (first_flag) {
               for (let indus in d.ICIndustry) {
                 if (
-                  combinationOrder.indexOf(d.ICIndustry[indus]["industry"]) == i
+                  combinationOrder.indexOf(d.ICIndustry[indus]["industry"]) === i
                 ) {
                   // 当前产业与当前弧对应的产业一致
                   let currIndu = d.ICIndustry[indus]["industry"]; // 当前产业集合，然后获取当前产业集合包含的子产业对应的径向索引
@@ -221,7 +220,7 @@ export default function SkeletonChart({ w, h }) {
               }
             }
             first_flag = false;
-            if (currInduYIndex.length != 0 && currInduYIndex.indexOf(j) != -1) {
+            if (currInduYIndex.length !== 0 && currInduYIndex.indexOf(j) !== -1) {
               return industryColor[j];
             }
             return "white";
@@ -251,7 +250,7 @@ export default function SkeletonChart({ w, h }) {
           .forceLink()
           .links(links)
           .id((d) => d.id)
-          .strength((d) => (d.source.group == d.target.group ? 0.6 : 0.1))
+          .strength((d) => (d.source.group === d.target.group ? 0.6 : 0.1))
       );
     }
     simulation
@@ -273,7 +272,7 @@ export default function SkeletonChart({ w, h }) {
     const groupIds = [...new Set(nodes.map((n) => +n.group))]
       .map((groupId) => ({
         groupId: groupId,
-        count: nodes.filter((n) => +n.group == groupId).length,
+        count: nodes.filter((n) => +n.group === groupId).length,
       }))
       .map((group) => group.groupId);
 
@@ -322,11 +321,11 @@ export default function SkeletonChart({ w, h }) {
     // // 生成group表示，检索group中的节点的位置，返回特定点的convex hull，至少有三个点，否则返回null
     function polygonGenerator(groupId, node) {
       var node_coords = nodeG
-        .filter((d) => d.group == groupId)
+        .filter((d) => d.group === groupId)
         .data()
         .map((d) => [d.x, d.y]);
       // 处理点数小于3的组
-      if (node_coords.length == 2) {
+      if (node_coords.length === 2) {
         let point_x1 = node_coords[0][0],
           point_y1 = node_coords[0][1];
         let point_x2 = node_coords[1][0],
@@ -336,7 +335,7 @@ export default function SkeletonChart({ w, h }) {
         node_coords.push([point_x1, point_y1 - nodeRadius]);
         node_coords.push([point_x2, point_y2 + nodeRadius]);
         node_coords.push([point_x2, point_y2 - nodeRadius]);
-      } else if (node_coords.length == 1) {
+      } else if (node_coords.length === 1) {
         let point_x = node_coords[0][0],
           point_y = node_coords[0][1];
         node_coords = [];
@@ -357,7 +356,7 @@ export default function SkeletonChart({ w, h }) {
       groupIds.forEach((groupId) => {
         let centroid = [];
         let path = groupPath
-          .filter((d) => d == groupId)
+          .filter((d) => d === groupId)
           .attr("transform", "scale(1) translate(0,0)")
           .attr("d", (d) => {
             const polygon = polygonGenerator(d, node);
@@ -388,7 +387,7 @@ export default function SkeletonChart({ w, h }) {
     //   .zoom()
     //   .on("zoom", zoomAction)
     //   .filter(function (event) {
-    //     return !event.button && event.type != "dblclick";
+    //     return !event.button && event.type !== "dblclick";
     //   });
     // function zoomAction(event) {
     //   wrapper.attr(
@@ -427,7 +426,7 @@ export default function SkeletonChart({ w, h }) {
       // 保留多次选择的结果
       d3.selectAll(".path_placeholder path")
         .filter(function (d) {
-          return d3.select(this).attr("class") != "selected";
+          return d3.select(this).attr("class") !== "selected";
         })
         .attr("fill", "white")
         .attr("opacity", 0.2);
@@ -440,7 +439,7 @@ export default function SkeletonChart({ w, h }) {
       // 获取选中的数据对应的numId
       var groupIdArr = lasso.selectedItems()._groups[0].map((d) => d.__data__);
 
-      if (groupIdArr.length != 0) {
+      if (groupIdArr.length !== 0) {
         let numIdArr = nodes
           .filter((d) => {
             return groupIdArr.includes(parseInt(d.group))

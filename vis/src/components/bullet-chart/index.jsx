@@ -1,17 +1,20 @@
 import bullet from "./bullet";
 import "./index.css";
 import * as d3 from "d3";
+import PubSub from "pubsub-js";
 
 import { getBulletChartDataSds } from "../../apis/api";
 import { useEffect, useState } from "react";
 
-export default function BulletChart({ w, h, divname }) {
+export default function BulletChart({ w, h, divname, dataparam }) {
   const [data, setData] = useState([]);
   const [dataRange, setDataRange] = useState({ minNum: 0, maxNum: 0 });
 
   const [svgWidth, setSvgWidth] = useState(w);
   const [svgHeight, setSvgHeight] = useState(h);
   const [divName, setDivName] = useState(divname);
+  const [dataParam, setDataParam] = useState({nodes: [], links: []});
+
   let nodesLinksInfo = {
     nodes: [
       {
@@ -2008,7 +2011,7 @@ export default function BulletChart({ w, h, divname }) {
   }, [h]);
 
   useEffect(() => {
-    getBulletChartDataSds(nodesLinksInfo).then((res) => {
+    getBulletChartDataSds(dataparam).then((res) => {
       if (divname === "combine-table-bc-node") {
         res = res[1]; // nodes
         // 计算数据中measures和markers共同的最大、最小值 用于画图比例尺映射
@@ -2038,7 +2041,15 @@ export default function BulletChart({ w, h, divname }) {
         });
       }
     });
-  }, []);
+  }, [dataparam]);
+
+  // 监听从主图传过来的参数
+  // PubSub.unsubscribe('bullet');
+  // PubSub.subscribe('bullet', (msg, bulletDt) => {
+  //   // console.log(bulletDt);
+  //   setDataParam({nodes: [...bulletDt.nodes], links: [...bulletDt.links]});
+  // })
+  
 
   useEffect(() => {
     const dimensions = {

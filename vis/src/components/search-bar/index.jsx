@@ -32,8 +32,8 @@ export default function SearchBar() {
     }
     const changeId = (value) => {
         setSelectId(value);
-        if (value != undefined) {
-            let selectedidarr = setContent.filter(item => item.id == value)
+        if (value !== undefined) {
+            let selectedidarr = setContent.filter(item => item.id === value)
             setselectContent(selectedidarr)
         }
     };
@@ -44,8 +44,8 @@ export default function SearchBar() {
     };
     const changeName = (value) => {
         setSelectName(value);
-        if (value != undefined) {
-            let selectednamearr = setContent.filter(item => item.name == value)
+        if (value !== undefined) {
+            let selectednamearr = setContent.filter(item => item.name === value)
             setselectContent(selectednamearr)
         }
     };
@@ -56,8 +56,8 @@ export default function SearchBar() {
     };
     const changeType = (value) => {
         setSelectType(value);
-        if (value != undefined) {
-            let selectedtypearr = setContent.filter(item => item.type == value)
+        if (value !== undefined) {
+            let selectedtypearr = setContent.filter(item => item.type === value)
             setselectContent(selectedtypearr)
         }
     };
@@ -68,8 +68,8 @@ export default function SearchBar() {
     };
     const changeIndustry = (value) => {
         setSelectIndustry(value);
-        if (value != undefined) {
-            let selectedindustryarr = setContent.filter(item => item.industry == value)
+        if (value !== undefined) {
+            let selectedindustryarr = setContent.filter(item => item.industry === value)
             setselectContent(selectedindustryarr)
         }
     };

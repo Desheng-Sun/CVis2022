@@ -7,7 +7,7 @@ import * as d3 from "d3";
 import "./index.css";
 
 // 数据请求
-import { getIcClueDataSds } from "../../apis/api.js";
+import { getIcClueData2Sds } from "../../apis/api.js";
 
 var icicleChart;
 let prevSelected = [];
@@ -38,7 +38,8 @@ export default function ICClueChart({ w, h }) {
 
   // 请求数据
   useEffect(() => {
-    getIcClueDataSds(10, "Domain").then((res) => {
+    getIcClueData2Sds(10, "Domain").then((res) => {
+      console.log(res);
       setData(res);
     });
   }, []);
@@ -102,7 +103,7 @@ export default function ICClueChart({ w, h }) {
 
   function btnGetSelectedIcicleNode() {
     let curSelected = icicleChart.getSelectedIcicleNode(); // 获取被选中的节点
-    if (prevSelected.sort().toString() != curSelected.sort().toString()) {
+    if (prevSelected.sort().toString() !== curSelected.sort().toString()) {
       // 有变化的节点
       prevSelected = [...curSelected];
       setSelectedIclcleNode([...prevSelected]);

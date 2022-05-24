@@ -177,7 +177,7 @@ export default function IndustryStackChart({ w, h }) {
               if (first_flag) {
                 for (let indus in d.industry) {
                   if (
-                    combinationOrder.indexOf(d.industry[indus]["industry"]) == i
+                    combinationOrder.indexOf(d.industry[indus]["industry"]) === i
                   ) {
                     // 当前产业与当前弧对应的产业一致
                     let currIndu = d.industry[indus]["industry"]; // 当前产业集合，然后获取当前产业集合包含的子产业对应的径向索引
@@ -190,8 +190,8 @@ export default function IndustryStackChart({ w, h }) {
               }
               first_flag = false;
               if (
-                currInduYIndex.length != 0 &&
-                currInduYIndex.indexOf(j) != -1
+                currInduYIndex.length !== 0 &&
+                currInduYIndex.indexOf(j) !== -1
               ) {
                 return industryColor[j];
               }

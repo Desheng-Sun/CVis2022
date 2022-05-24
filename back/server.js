@@ -62,6 +62,11 @@ const ICIndustry = JSON.parse(ICIndustryJ);
 const ICLinksInfoJ = fs.readFileSync(nowPath + "ICLinksInfo.json", "utf-8");
 const ICLinksInfo = JSON.parse(ICLinksInfoJ);
 
+
+// 获取每个IC节点直接相连的节点的信息
+const ICNeighborJ = fs.readFileSync(nowPath + "ICNeighbor.json", "utf8");
+const ICNeighbor = JSON.parse(ICNeighborJ);
+
 // 获取单独IC的相关信息
 const ICAloneInfoJ = fs.readFileSync(nowPath + "ICAloneInfo.json", "utf-8");
 const ICAloneInfo = JSON.parse(ICAloneInfoJ);
@@ -74,9 +79,6 @@ const ICScreen = JSON.parse(ICScreenJ);
 const nodeICLinksJ = fs.readFileSync(nowPath + "nodeICLinks.json", "utf8");
 const nodeICLinks = JSON.parse(nodeICLinksJ);
 
-// 获取每个IC节点直接相连的节点的信息
-const ICNeighborJ = fs.readFileSync(nowPath + "ICNeighbor.json", "utf8");
-const ICNeighbor = JSON.parse(ICNeighborJ);
 
 // 获取视图的初始数据：node信息改为json文件
 app.get("/getInitialSds", (req, res, next) => {

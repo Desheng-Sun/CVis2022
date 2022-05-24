@@ -3,6 +3,7 @@ import "./index.css";
 import { table } from "@observablehq/inputs";
 import { useEffect, useState } from "react";
 import { html } from "htl";
+import PubSub from "pubsub-js";
 
 import { getDetialListSds } from "../../apis/api.js";
 
@@ -2015,12 +2016,15 @@ let nodesLinksInfo = {
   ],
 };
 
-export default function DetailList({ w, h, divname }) {
+export default function DetailList({ w, h, divname, dataparam }) {
   const [nodeData, setNodeData] = useState([]);
   const [linkData, setLinkData] = useState([]);
 
   const [svgWidth, setSvgWidth] = useState(w);
   const [svgHeight, setSvgHeight] = useState(h);
+  const [selectionNode, setSelectionNode] = useState([]);
+  const [selectionLink, setSelectionLink] = useState([]);
+  const [dataParam, setDataParam] = useState(dataparam);
 
   // 随系统缩放修改画布大小
   useEffect(() => {
@@ -2031,12 +2035,21 @@ export default function DetailList({ w, h, divname }) {
   }, [h]);
 
   useEffect(() => {
-    getDetialListSds(nodesLinksInfo).then((res) => {
+    getDetialListSds(dataparam).then((res) => {
       setNodeData(res.nodes);
       setLinkData(res.links);
-      // return setData(res.nodes);
     });
-  }, []);
+  }, [dataparam]);
+
+
+  useEffect(() => {
+    console.log(selectionNode);
+  }, [selectionNode])
+
+  useEffect(() => {
+    console.log(selectionNode);
+  }, [selectionLink])
+
   useEffect(() => {
     const dimensions = {
       width: svgWidth,
@@ -2061,10 +2074,10 @@ export default function DetailList({ w, h, divname }) {
         "transform",
         `translate(${dimensions.margin.left}px, ${dimensions.margin.top}px)`
       );
-
+    var nodeTable, linkTable;
     if (divname === "combine-table-dl-node") {
-      g.append(() =>
-        table(nodeData, {
+      g.append(() => {
+        nodeTable = table(nodeData, {
           rows: Infinity,
           required: false,
           columns: nodeColumns,
@@ -2084,11 +2097,25 @@ export default function DetailList({ w, h, divname }) {
           },
           maxWidth: svgWidth,
           maxHeight: svgHeight,
-        })
-      );
+        });
+        return nodeTable
+      });
+      nodeTable.addEventListener('click', (event)=>{
+        if(event.target.nodeName === 'INPUT'){
+          let curNumId = parseInt(event.path[2].cells[1].innerHTML)
+          let nodeTemp = new Set([...selectionNode, curNumId])
+          setSelectionNode([...nodeTemp])
+          setNodeData((selectionNode) => {
+            let curNumId = parseInt(event.path[2].cells[1].innerHTML)
+            // let nodeTemp = new Set([...selectionNode, curNumId])
+            return new Set([...selectionNode, curNumId])
+          })
+        }
+      })
     } else if (divname === "combine-table-dl-link") {
-      g.append(() =>
-        table(linkData, {
+      g.append(() =>{
+
+        linkTable = table(linkData, {
           rows: Infinity,
           required: false,
           columns: linkColumns,
@@ -2098,7 +2125,19 @@ export default function DetailList({ w, h, divname }) {
           maxWidth: svgWidth,
           maxHeight: svgHeight,
         })
-      );
+        return linkTable
+      }
+    );
+    linkTable.addEventListener('click', (event)=>{
+      if(event.target.nodeName === 'INPUT'){
+        console.log(event);
+        let curSource = event.path[2].cells[3].innerHTML
+        let curTarget = event.path[2].cells[4].innerHTML
+        let curPair = curSource + '-' + curTarget
+        let linkTemp = new Set([...selectionLink, curPair])
+        setSelectionLink([...linkTemp])
+      }
+    })
     }
   }, [nodeData, linkData, svgWidth, svgHeight]);
 
@@ -2134,6 +2173,7 @@ export default function DetailList({ w, h, divname }) {
     >
       ${x.toLocaleString("en")}
     </div>`;
+    
   }
 
   // return <div style={{ width: "100%", height: "100%" }}></div>;

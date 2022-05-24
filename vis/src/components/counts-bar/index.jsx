@@ -50,6 +50,7 @@ export default function CountsBar({ w, h }) {
     setSvgHeight(h);
   }, [h]);
 
+
   useEffect(() => {
     // 初始化画布
     const dimensions = {
