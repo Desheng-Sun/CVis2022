@@ -9,48 +9,61 @@
     }
   },
   {
-    "selector": "node.highlight",
+    "selector": "node.stackhighlightNode",
     "style": {
-        "border-color": "#FFF",
-        "border-width": "2px"
+      "border-color": "#f5f440",
+      "border-width": "3px"
     }
   },
   {
-      "selector": "node.semitransp",
-      "style":{ "opacity": "0.5" }
+    "selector": "node.tablehighlightNode",
+    "style": {
+      "border-color": "#f5f440",
+      "border-width": "3px"
+    }
+  },
+  {
+    "selector": "edge.tablehighlightLink",
+    "style": {
+      "line-style": "dashed",
+      "width": 6
+    }
+  },
+  {
+    "selector": "node.semitransp",
+    "style": { "opacity": "0.5" }
   },
   {
     "selector": "node.coreNode",
     "style": {
-        "border-color": "#f5f440",
-        "border-width": "2px",
-        "opacity": "1"
+      "border-color": "#f5f440",
+      "border-width": "2px",
+      "opacity": "1"
     }
   },
   {
-      "selector": "node.keyRoad",
-      "style":{ 
-        "border-color": "#f5f440",
-        "opacity": "1" 
-      }
+    "selector": "node.keyRoad",
+    "style": {
+      "border-color": "#f5f440",
+      "opacity": "1"
+    }
   },
   {
-      "selector": "edge.semitransp",
-      "style":{ "opacity": "0.2" }
+    "selector": "edge.semitransp",
+    "style": { "opacity": "0.2" }
   },
   {
     "selector": "node[type=\"new\"]",
     "style": {
       "background-color": "red",
-      "width":200,
-      "height":200
+      "width": 200,
+      "height": 200
     }
   },
   {
     "selector": "node[type=\"Domain\"]",
     "style": {
       "background-color": "#2978b4"
-      
     }
   },
   {
@@ -170,5 +183,5 @@
     "style": {
       "line-color": "#e53f32"
     }
-  }  
+  }
 ]

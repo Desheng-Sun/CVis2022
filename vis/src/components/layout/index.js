@@ -36,12 +36,12 @@ export default function Layout() {
     // setCountsBarHeight(
     //   document.getElementById("statistic").getBoundingClientRect().height
     // );
-    setDifChartWidth(
-      document.getElementById("deleterelation").getBoundingClientRect().width
-    );
-    setDifChartHeight(
-      document.getElementById("deleterelation").getBoundingClientRect().height
-    );
+    // setDifChartWidth(
+    //   document.getElementById("deleterelation").getBoundingClientRect().width
+    // );
+    // setDifChartHeight(
+    //   document.getElementById("deleterelation").getBoundingClientRect().height
+    // );
     // setIcClueChartWidth(
     //   document.getElementById("icclue-graph").getBoundingClientRect().width
     // );
@@ -64,12 +64,12 @@ export default function Layout() {
       document.getElementById("mainmap").getBoundingClientRect().width
     );
     setMainChartHeight(968);
-    // setIndustryStackChartWidth(
-    //   document.getElementById("assetandpath").getBoundingClientRect().width
-    // );
-    // setIndustryStackChartHeight(
-    //   document.getElementById("assetandpath").getBoundingClientRect().height
-    // );
+    setIndustryStackChartWidth(
+      document.getElementById("assetandpath").getBoundingClientRect().width
+    );
+    setIndustryStackChartHeight(
+      document.getElementById("assetandpath").getBoundingClientRect().height
+    );
   });
 
   return (
@@ -101,7 +101,7 @@ export default function Layout() {
           <div id="container-filter">
             <div id="deleterelation">
               <ChartHeader chartName={"差异视图"} />
-              <DifChart w={difChartWidth} h={difChartHeight} />
+              {/* <DifChart w={difChartWidth} h={difChartHeight} /> */}
             </div>
             <div id="existingdomain">展示当前子图中domain情况</div>
           </div>
@@ -133,10 +133,10 @@ export default function Layout() {
 
         <div id="assetandpath">
           <ChartHeader chartName={"核心资产与关键链路分析"} />
-          {/* <IndustryStackChart
+          <IndustryStackChart
             w={industryStackChartWidth}
             h={industryStackChartHeight}
-          /> */}
+          />
         </div>
         <div id="conclusion">
           <ChartHeader chartName={"团伙分析结果"} />

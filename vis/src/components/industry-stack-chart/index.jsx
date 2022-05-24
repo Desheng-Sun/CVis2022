@@ -1,15 +1,24 @@
 import React, { useEffect, useState } from "react";
 import * as d3 from "d3";
+import PubSub from "pubsub-js";
 
 export default function IndustryStackChart({ w, h }) {
   const [data, setData] = useState([]);
   const [svgWidth, setSvgWidth] = useState(w);
   const [svgHeight, setSvgHeight] = useState(h);
+  const [dataParam, setDataParam] = useState([]);
+  const [selectedNodeNumId, setSelectedNodeNumId] = useState("");
 
+  PubSub.unsubscribe("industryStackDt");
+  PubSub.subscribe("industryStackDt", (msg, dataparam) => {
+    setDataParam(dataparam);
+  });
   useEffect(() => {
+    console.log(dataParam);
     let dt = [
       {
         id: "A",
+        numId: 0,
         industry: [
           { industry: "AB", number: 2 },
           { industry: "AED", number: 8 },
@@ -19,6 +28,7 @@ export default function IndustryStackChart({ w, h }) {
       },
       {
         id: "B",
+        numId: 0,
         industry: [
           { industry: "AB", number: 2 },
           { industry: "AE", number: 8 },
@@ -28,6 +38,7 @@ export default function IndustryStackChart({ w, h }) {
       },
       {
         id: "C",
+        numId: 0,
         industry: [
           { industry: "B", number: 2 },
           { industry: "AE", number: 8 },
@@ -37,6 +48,7 @@ export default function IndustryStackChart({ w, h }) {
       },
       {
         id: "D",
+        numId: 0,
         industry: [
           { industry: "AB", number: 2 },
           { industry: "AE", number: 8 },
@@ -46,6 +58,7 @@ export default function IndustryStackChart({ w, h }) {
       },
       {
         id: "E",
+        numId: 0,
         industry: [
           { industry: "AB", number: 2 },
           { industry: "AE", number: 8 },
@@ -55,7 +68,13 @@ export default function IndustryStackChart({ w, h }) {
       },
     ];
     setData(dt);
-  }, []);
+  }, [dataParam]);
+
+  useEffect(() => {
+    if (selectedNodeNumId !== "") {
+      PubSub.publish("industryStackToMainDt", selectedNodeNumId);
+    }
+  }, [selectedNodeNumId]);
 
   useEffect(() => {
     setSvgWidth(w);
@@ -137,6 +156,13 @@ export default function IndustryStackChart({ w, h }) {
         let x = gWidth * (i % levelNumber);
         let y = (gHeight + circleR + 10) * 2 * Math.floor(i / levelNumber);
         return "translate(" + x.toString() + "," + y.toString() + ")";
+      })
+      .on("click", function (event, d) {
+        // 单击选择，双击取消
+        setSelectedNodeNumId("set-" + d.id);
+      })
+      .on("dblclick", function (event, d) {
+        setSelectedNodeNumId("reset-" + d.id);
       });
 
     g.append("text")
@@ -177,7 +203,8 @@ export default function IndustryStackChart({ w, h }) {
               if (first_flag) {
                 for (let indus in d.industry) {
                   if (
-                    combinationOrder.indexOf(d.industry[indus]["industry"]) === i
+                    combinationOrder.indexOf(d.industry[indus]["industry"]) ===
+                    i
                   ) {
                     // 当前产业与当前弧对应的产业一致
                     let currIndu = d.industry[indus]["industry"]; // 当前产业集合，然后获取当前产业集合包含的子产业对应的径向索引

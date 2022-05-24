@@ -2016,6 +2016,7 @@ let nodesLinksInfo = {
   ],
 };
 
+var nodeTable, linkTable;
 export default function DetailList({ w, h, divname, dataparam }) {
   const [nodeData, setNodeData] = useState([]);
   const [linkData, setLinkData] = useState([]);
@@ -2041,14 +2042,13 @@ export default function DetailList({ w, h, divname, dataparam }) {
     });
   }, [dataparam]);
 
+  useEffect(() => {
+    PubSub.publish("tableToMainNodeDt", selectionNode);
+  }, [selectionNode]);
 
   useEffect(() => {
-    console.log(selectionNode);
-  }, [selectionNode])
-
-  useEffect(() => {
-    console.log(selectionNode);
-  }, [selectionLink])
+    PubSub.publish("tableToMainLinkDt", selectionLink);
+  }, [selectionLink]);
 
   useEffect(() => {
     const dimensions = {
@@ -2074,7 +2074,6 @@ export default function DetailList({ w, h, divname, dataparam }) {
         "transform",
         `translate(${dimensions.margin.left}px, ${dimensions.margin.top}px)`
       );
-    var nodeTable, linkTable;
     if (divname === "combine-table-dl-node") {
       g.append(() => {
         nodeTable = table(nodeData, {
@@ -2098,23 +2097,32 @@ export default function DetailList({ w, h, divname, dataparam }) {
           maxWidth: svgWidth,
           maxHeight: svgHeight,
         });
-        return nodeTable
+        return nodeTable;
       });
-      nodeTable.addEventListener('click', (event)=>{
-        if(event.target.nodeName === 'INPUT'){
-          let curNumId = parseInt(event.path[2].cells[1].innerHTML)
-          let nodeTemp = new Set([...selectionNode, curNumId])
-          setSelectionNode([...nodeTemp])
-          setNodeData((selectionNode) => {
-            let curNumId = parseInt(event.path[2].cells[1].innerHTML)
-            // let nodeTemp = new Set([...selectionNode, curNumId])
-            return new Set([...selectionNode, curNumId])
-          })
+      nodeTable.addEventListener("click", (event) => {
+        // 增加元素
+        if (event.target.nodeName === "INPUT" && event.target.checked) {
+          let curNumId = parseInt(event.path[2].cells[1].innerHTML); // 将html的numId转换为int类型
+          if (!isNaN(curNumId)) {
+            setSelectionNode((selectionNode) =>
+              Array.from(new Set([...selectionNode, curNumId]))
+            );
+          }
         }
-      })
+        // 删除元素
+        if (event.target.nodeName === "INPUT" && !event.target.checked) {
+          let curNumId = parseInt(event.path[2].cells[1].innerHTML);
+          if (!isNaN(curNumId)) {
+            setSelectionNode((selectionNode) =>
+              selectionNode.filter((d) => d !== curNumId)
+            );
+          } else {
+            setSelectionNode([]);
+          }
+        }
+      });
     } else if (divname === "combine-table-dl-link") {
-      g.append(() =>{
-
+      g.append(() => {
         linkTable = table(linkData, {
           rows: Infinity,
           required: false,
@@ -2124,20 +2132,35 @@ export default function DetailList({ w, h, divname, dataparam }) {
           },
           maxWidth: svgWidth,
           maxHeight: svgHeight,
-        })
-        return linkTable
-      }
-    );
-    linkTable.addEventListener('click', (event)=>{
-      if(event.target.nodeName === 'INPUT'){
-        console.log(event);
-        let curSource = event.path[2].cells[3].innerHTML
-        let curTarget = event.path[2].cells[4].innerHTML
-        let curPair = curSource + '-' + curTarget
-        let linkTemp = new Set([...selectionLink, curPair])
-        setSelectionLink([...linkTemp])
-      }
-    })
+        });
+        return linkTable;
+      });
+      linkTable.addEventListener("click", (event) => {
+        // 增加元素
+        if (event.target.nodeName === "INPUT" && event.target.checked) {
+          let curSource = event.path[2].cells[3].innerHTML;
+          let curTarget = event.path[2].cells[4].innerHTML;
+          let curPair = curSource + "-" + curTarget;
+          if (curPair != "<span></span>source-<span></span>target") {
+            setSelectionLink((selectionLink) =>
+              Array.from(new Set([...selectionLink, curPair]))
+            );
+          }
+        }
+        // 删除元素
+        if (event.target.nodeName === "INPUT" && !event.target.checked) {
+          let curSource = event.path[2].cells[3].innerHTML;
+          let curTarget = event.path[2].cells[4].innerHTML;
+          let curPair = curSource + "-" + curTarget;
+          if (curPair != "<span></span>source-<span></span>target") {
+            setSelectionLink((selectionLink) =>
+              selectionLink.filter((d) => d !== curPair)
+            );
+          } else {
+            setSelectionLink([]);
+          }
+        }
+      });
     }
   }, [nodeData, linkData, svgWidth, svgHeight]);
 
@@ -2173,9 +2196,6 @@ export default function DetailList({ w, h, divname, dataparam }) {
     >
       ${x.toLocaleString("en")}
     </div>`;
-    
   }
-
-  // return <div style={{ width: "100%", height: "100%" }}></div>;
   return <></>;
 }
