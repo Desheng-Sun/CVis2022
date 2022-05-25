@@ -298,10 +298,6 @@ export default function SkeletonChart({ w, h }) {
         }
       }));
 
-    if (displayGroupOnHover) {
-      groupPath.transition().duration(2000).attr("opacity", 0.8);
-    }
-
     //拖拽节点
     function dragstarted(evt, d) {
       if (!evt.active) simulation.alphaTarget(0.3).restart();
