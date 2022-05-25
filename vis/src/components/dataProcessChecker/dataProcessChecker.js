@@ -8,6 +8,7 @@ import {
   getInfoListSds,
   getBulletChartDataSds,
   getDetialListSds,
+  getIndustryStackSds,
   getFinalDataSds
 
 } from "../../apis/api.js";
@@ -5432,162 +5433,242 @@ export default function DataProcessChecker() {
 
   let linksInfo = {
     "nodes": [
-      {
-        "numId": 3,
-        "id": "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
-        "name": "5.180.xxx.xxx",
-        "type": "IP",
-        "ICIndustry": [
-          {
-            "industry": "ABCE",
-            "number": 26
-          },
-          {
-            "industry": "ABCEG",
-            "number": 1
-          },
-          {
-            "industry": "B",
-            "number": 11
-          },
-          {
-            "industry": "BC",
-            "number": 3
-          }
-        ]
-      },
-      {
-        "numId": 4,
-        "id": "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
-        "name": "9ace6aae20",
-        "type": "Cert",
-        "ICIndustry": [
-          {
-            "industry": "ABCE",
-            "number": 87
-          }
-        ]
-      },
-      {
-        "numId": 101,
-        "id": "Cert_9032204fc475b809ea02a4ffc7e682660892d9e9d23b7b1777d0b4f0e9a0a656",
-        "name": "9032204fc4",
-        "type": "Cert",
-        "ICIndustry": [
-          {
-            "industry": "ABCE",
-            "number": 16
-          },
-          {
-            "industry": "ABCEG",
-            "number": 1
-          }
-        ]
-      },
-      {
-        "numId": 102,
-        "id": "IP_e000e83fd5fc8045d04b96af43f55ceb1005ec6e728aba4b066eaa1b47b11789",
-        "name": "164.155.xxx.xxx",
-        "type": "IP",
-        "ICIndustry": [
-          {
-            "industry": "A",
-            "number": 1
-          },
-          {
-            "industry": "ABCE",
-            "number": 2
-          },
-          {
-            "industry": "B",
-            "number": 105
-          }
-        ]
-      },
-      {
-        "numId": 112,
-        "id": "IP_cdcb3771d72a01e7845b212e74d1ca1b0e8384b79bad1da2f73c93959da5b3d2",
-        "name": "172.255.xxx.xxx",
-        "type": "IP",
-        "ICIndustry": [
-          {
-            "industry": "ABCE",
-            "number": 1
-          },
-          {
-            "industry": "B",
-            "number": 18
-          },
-          {
-            "industry": "BC",
-            "number": 1
-          },
-          {
-            "industry": "BG",
-            "number": 1
-          }
-        ]
-      },
-      {
-        "numId": 289,
-        "id": "IP_1d3a1a167ca6eace5aa04de52459614885bdd88d044e93af3cf733ce581ebf47",
-        "name": "154.92.xxx.xxx",
-        "type": "IP",
-        "ICIndustry": [
-          {
-            "industry": "AB",
-            "number": 2
-          },
-          {
-            "industry": "B",
-            "number": 1
-          }
-        ]
-      }
+        {
+            "numId": 3,
+            "id": "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
+            "name": "5.180.xxx.xxx",
+            "type": "IP",
+            "ICIndustry": [
+                {
+                    "industry": "ABCE",
+                    "number": 26
+                },
+                {
+                    "industry": "ABCEG",
+                    "number": 1
+                },
+                {
+                    "industry": "B",
+                    "number": 11
+                },
+                {
+                    "industry": "BC",
+                    "number": 3
+                }
+            ]
+        },
+        {
+            "numId": 4,
+            "id": "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
+            "name": "9ace6aae20",
+            "type": "Cert",
+            "ICIndustry": [
+                {
+                    "industry": "ABCE",
+                    "number": 87
+                }
+            ]
+        },
+        {
+            "numId": 101,
+            "id": "Cert_9032204fc475b809ea02a4ffc7e682660892d9e9d23b7b1777d0b4f0e9a0a656",
+            "name": "9032204fc4",
+            "type": "Cert",
+            "ICIndustry": [
+                {
+                    "industry": "ABCE",
+                    "number": 16
+                },
+                {
+                    "industry": "ABCEG",
+                    "number": 1
+                }
+            ]
+        },
+        {
+            "numId": 102,
+            "id": "IP_e000e83fd5fc8045d04b96af43f55ceb1005ec6e728aba4b066eaa1b47b11789",
+            "name": "164.155.xxx.xxx",
+            "type": "IP",
+            "ICIndustry": [
+                {
+                    "industry": "A",
+                    "number": 1
+                },
+                {
+                    "industry": "ABCE",
+                    "number": 2
+                },
+                {
+                    "industry": "B",
+                    "number": 105
+                }
+            ]
+        },
+        {
+            "numId": 112,
+            "id": "IP_cdcb3771d72a01e7845b212e74d1ca1b0e8384b79bad1da2f73c93959da5b3d2",
+            "name": "172.255.xxx.xxx",
+            "type": "IP",
+            "ICIndustry": [
+                {
+                    "industry": "ABCE",
+                    "number": 1
+                },
+                {
+                    "industry": "B",
+                    "number": 18
+                },
+                {
+                    "industry": "BC",
+                    "number": 1
+                },
+                {
+                    "industry": "BG",
+                    "number": 1
+                }
+            ]
+        },
+        {
+            "numId": 289,
+            "id": "IP_1d3a1a167ca6eace5aa04de52459614885bdd88d044e93af3cf733ce581ebf47",
+            "name": "154.92.xxx.xxx",
+            "type": "IP",
+            "ICIndustry": [
+                {
+                    "industry": "AB",
+                    "number": 2
+                },
+                {
+                    "industry": "B",
+                    "number": 1
+                }
+            ]
+        },
+        {
+            "numId": 35959,
+            "id": "IP_2ecbab579fa0523913c5b56ca5a02dda98f0cdc12153c79a81a93d2560cdf202",
+            "name": "23.108.xxx.xxx",
+            "type": "IP",
+            "ICIndustry": [
+                {
+                    "industry": "B",
+                    "number": 36
+                },
+                {
+                    "industry": "BC",
+                    "number": 3
+                },
+                {
+                    "industry": "BG",
+                    "number": 2
+                },
+                {
+                    "industry": "C",
+                    "number": 1
+                },
+                {
+                    "industry": "G",
+                    "number": 1
+                }
+            ]
+        },
+        {
+            "numId": 5719,
+            "id": "IP_7f8392f3c34ce8ad1c7fefb44b43b221218679f9ebf77d557cf86dcd7b4e57ca",
+            "name": "199.59.xxx.xxx",
+            "type": "IP",
+            "ICIndustry": [
+                {
+                    "industry": "A",
+                    "number": 3
+                },
+                {
+                    "industry": "ABCE",
+                    "number": 2
+                },
+                {
+                    "industry": "B",
+                    "number": 6
+                },
+                {
+                    "industry": "C",
+                    "number": 5
+                },
+                {
+                    "industry": "G",
+                    "number": 1
+                }
+            ]
+        }
     ],
     "links": [
-      {
-        "source": "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
-        "target": "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
-        "linksNumId": [
-          3,
-          4
-        ]
-      },
-      {
-        "source": "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
-        "target": "Cert_9032204fc475b809ea02a4ffc7e682660892d9e9d23b7b1777d0b4f0e9a0a656",
-        "linksNumId": [
-          3,
-          101
-        ]
-      },
-      {
-        "source": "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
-        "target": "IP_e000e83fd5fc8045d04b96af43f55ceb1005ec6e728aba4b066eaa1b47b11789",
-        "linksNumId": [
-          3,
-          102
-        ]
-      },
-      {
-        "source": "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
-        "target": "IP_e000e83fd5fc8045d04b96af43f55ceb1005ec6e728aba4b066eaa1b47b11789",
-        "linksNumId": [
-          4,
-          102
-        ]
-      },
-      {
-        "source": "Cert_9032204fc475b809ea02a4ffc7e682660892d9e9d23b7b1777d0b4f0e9a0a656",
-        "target": "IP_cdcb3771d72a01e7845b212e74d1ca1b0e8384b79bad1da2f73c93959da5b3d2",
-        "linksNumId": [
-          101,
-          112
-        ]
-      }
+        {
+            "source": "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
+            "target": "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
+            "linksNumId": [
+                3,
+                4
+            ]
+        },
+        {
+            "source": "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
+            "target": "Cert_9032204fc475b809ea02a4ffc7e682660892d9e9d23b7b1777d0b4f0e9a0a656",
+            "linksNumId": [
+                3,
+                101
+            ]
+        },
+        {
+            "source": "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
+            "target": "IP_e000e83fd5fc8045d04b96af43f55ceb1005ec6e728aba4b066eaa1b47b11789",
+            "linksNumId": [
+                3,
+                102
+            ]
+        },
+        {
+            "source": "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
+            "target": "IP_7f8392f3c34ce8ad1c7fefb44b43b221218679f9ebf77d557cf86dcd7b4e57ca",
+            "linksNumId": [
+                3,
+                5719
+            ]
+        },
+        {
+            "source": "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
+            "target": "IP_2ecbab579fa0523913c5b56ca5a02dda98f0cdc12153c79a81a93d2560cdf202",
+            "linksNumId": [
+                3,
+                35959
+            ]
+        },
+        {
+            "source": "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
+            "target": "IP_e000e83fd5fc8045d04b96af43f55ceb1005ec6e728aba4b066eaa1b47b11789",
+            "linksNumId": [
+                4,
+                102
+            ]
+        },
+        {
+            "source": "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
+            "target": "IP_7f8392f3c34ce8ad1c7fefb44b43b221218679f9ebf77d557cf86dcd7b4e57ca",
+            "linksNumId": [
+                4,
+                5719
+            ]
+        },
+        {
+            "source": "Cert_9032204fc475b809ea02a4ffc7e682660892d9e9d23b7b1777d0b4f0e9a0a656",
+            "target": "IP_cdcb3771d72a01e7845b212e74d1ca1b0e8384b79bad1da2f73c93959da5b3d2",
+            "linksNumId": [
+                101,
+                112
+            ]
+        }
     ]
-  }
+}
 
   // //请求数据
   // useEffect(() => {
@@ -5603,7 +5684,7 @@ export default function DataProcessChecker() {
   // }, [])
 
   // useEffect(() => {
-  //   getSkeletonChartDataSds(["3", "4", "101", "102", "112", "289"]).then((res) => {
+  //   getSkeletonChartDataSds(["3", "4", "101", "102", "112", "289","35959","5719"]).then((res) => {
   //     console.log(res)
   //   });
   // }, [])
@@ -5614,11 +5695,11 @@ export default function DataProcessChecker() {
   //   });
   // }, [])
 
-  useEffect(() => {
-    getDifChartSds(linksInfo).then((res) => {
-      console.log(res)
-    });
-  }, [])
+  // useEffect(() => {
+  //   getDifChartSds(linksInfo).then((res) => {
+  //     console.log(res)
+  //   });
+  // }, [])
 
   // useEffect(() => {
   //   getInfoListSds(nodesLinksInfo).then((res) => {
@@ -5637,6 +5718,12 @@ export default function DataProcessChecker() {
   //     console.log(res)
   //   });
   // }, [])
+
+    useEffect(() => {
+      getIndustryStackSds(nodesLinksInfo).then((res) => {
+      console.log(res)
+    });
+  }, [])
 
   // useEffect(() => {
   //   getFinalDataSds(nodesLinksInfo).then((res) => {

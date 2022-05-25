@@ -44,7 +44,7 @@ const nowPath = path.join(__dirname, "data/");
 // 获取节点的相关信息
 let nodeInfoJ = fs.readFileSync(
   nowPath +
-    "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv",
+  "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv",
   "utf8"
 );
 nodeInfoJ = nodeInfoJ.split("\n");
@@ -881,9 +881,9 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
           "type": listLinks[nowLink[1]]["type"],
           "children": nowICDifIndustry
         })
-        listLinks[nowLink[1]]["ICLinks"] = listLinks[nowLink[1]]["ICLinks"].filter(e => e!= j)
-      }        
-      else{
+        listLinks[nowLink[1]]["ICLinks"] = listLinks[nowLink[1]]["ICLinks"].filter(e => e != j)
+      }
+      else {
         nowICDifData["children"].push({
           "numId": listLinks[nowLink[0]]["numId"],
           "id": listLinks[nowLink[0]]["id"],
@@ -891,7 +891,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
           "type": listLinks[nowLink[0]]["type"],
           "children": nowICDifIndustry
         })
-        listLinks[nowLink[0]]["ICLinks"] = listLinks[nowLink[0]]["ICLinks"].filter(e => e!= j)
+        listLinks[nowLink[0]]["ICLinks"] = listLinks[nowLink[0]]["ICLinks"].filter(e => e != j)
       }
     }
     sendData["children"].push(nowICDifData)
@@ -1309,6 +1309,71 @@ app.post("/getDetialListSds", jsonParser, (req, res, next) => {
   res.send(sendData);
   res.end();
 });
+
+// 获取核心资产和关键链路的数据
+app.post("/getIndustryStackSds", jsonParser, (req, res, next) => {
+  const initialLinks = req.body.nodesLinksInfo["links"];
+  const initialNodes = req.body.nodesLinksInfo["nodes"];
+  let links = [];
+  let nodes = [];
+  for (let i of initialLinks) {
+    if (i.hasOwnProperty("children")) {
+      for (let j of i["children"]) {
+        links.push(j);
+      }
+    } else {
+      links.push(i);
+    }
+  }
+  for (let i of initialNodes) {
+    if (i.hasOwnProperty("children")) {
+      for (let j of i["children"]) {
+        nodes.push(j);
+      }
+    } else {
+      nodes.push(i);
+    }
+  }
+  nowICIndustry = {}
+  for (let i of nodes) {
+    if (i["type"] == "IP" || i["type"] == "Cert") {
+      nowICIndustry[i["numId"]] = {
+        "numId": i["numId"],
+        "id": i["id"],
+        "name": i["name"],
+        "type": i["type"],
+        "industry": [],
+      }
+    }
+  }
+  for (let i of links) {
+    if (i["relation"] == "r_cert" || i["relation"] == "r_dns_a") {
+      nowICIndustry[i["linksNumId"][1]]["industry"].push(nodeNumIdInfo[parseInt(i["linksNumId"][0]) - 1][4].replace("\r", ""))
+    }
+  }
+  let sendData = []
+  for(let i in nowICIndustry){
+    if(nowICIndustry[i]["industry"].length == 0){
+      continue
+    }
+    let nowICIndustryCount = []
+    nowICIndustrySet = Array.from(new Set(nowICIndustry[i]["industry"]))
+    for(let j of nowICIndustrySet){
+      if(j == "  "){
+        continue
+      }
+      nowICIndustryCount.push({
+        "industry": j,
+        "number": nowICIndustry[i]["industry"].filter(e => e == j).length
+      })
+    }
+    nowICIndustry[i]["industry"] = nowICIndustryCount
+    sendData.push(nowICIndustry[i])
+  }
+  res.send(sendData);
+  res.end();
+});
+
 
 // 获取社区的最终数据
 app.post("/getFinalDataSds", jsonParser, (req, res, next) => {
