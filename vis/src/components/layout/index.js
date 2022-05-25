@@ -11,6 +11,7 @@ import CombineTable from "../combine-table";
 import MainChartCytoscape from "../sub-chart-cytoscape";
 import ConclusionText from "../conclusion-text";
 import IndustryStackChart from "../industry-stack-chart";
+import ClueDense from "../clue-dense";
 import { useEffect, useState } from "react";
 
 export default function Layout() {
@@ -28,6 +29,8 @@ export default function Layout() {
   const [mainChartHeight, setMainChartHeight] = useState(0);
   const [industryStackChartWidth, setIndustryStackChartWidth] = useState(0);
   const [industryStackChartHeight, setIndustryStackChartHeight] = useState(0);
+  const [cluedenseWidth, setClueDenseWidth] = useState(0);
+  const [cluedenseHeight, setClueDenseHeight] = useState(0);
 
   useEffect(() => {
     // setCountsBarWidth(
@@ -70,6 +73,12 @@ export default function Layout() {
     setIndustryStackChartHeight(
       document.getElementById("assetandpath").getBoundingClientRect().height
     );
+    setClueDenseWidth(
+      document.getElementById("clue-dense").getBoundingClientRect().width
+    );
+    setClueDenseHeight(
+      document.getElementById("clue-dense").getBoundingClientRect().height
+    );
   });
 
   return (
@@ -79,16 +88,14 @@ export default function Layout() {
           <div id="titlebar">黑灰产网络资产可视分析系统</div>
           <div id="searchbar">
             <SearchBar />
-            {/* 输入/搜索框 用户有IP/Cert类型的线索
-            或根据其他节点查找到对应的IP/Cert类型的线索 */}
+          </div>
+          <div id="overviewic">
+            <ChartHeader chartName={"潜在核心资产概览图"} />
+            <ClueDense w={cluedenseWidth} h={cluedenseHeight} />
           </div>
           <div id="filteric">
             <ChartHeader chartName={"冰柱图"} />
             {/* <ICClueChart w={icClueChartWidth} h={icClueChartHeight} /> */}
-          </div>
-          <div id="nodelinkic">
-            <ChartHeader chartName={"IP <——> Cert"} />
-            {/* <SkeletonChart w={skeletonChartWidth} h={skeletonChartHeight} /> */}
           </div>
         </div>
         <div id="iright">
@@ -99,6 +106,10 @@ export default function Layout() {
             </div>
           </div>
           <div id="container-filter">
+            <div id="nodelinkic">
+              <ChartHeader chartName={"IP <——> Cert"} />
+              {/* <SkeletonChart w={skeletonChartWidth} h={skeletonChartHeight} /> */}
+            </div>
             <div id="deleterelation">
               <ChartHeader chartName={"差异视图"} />
               {/* <DifChart w={difChartWidth} h={difChartHeight} /> */}
