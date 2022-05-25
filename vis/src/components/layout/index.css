@@ -65,19 +65,18 @@
   /* padding-bottom: 4px; */
 }
 
+#overviewic {
+  width: 100%;
+  flex: 6;
+  background-color: white;
+}
+
 #filteric {
   width: 100%;
   flex: 12;
   /* background-color: white; */
   /* padding-top: 4px; */
   /* padding-bottom: 4px; */
-}
-
-#nodelinkic {
-  width: 100%;
-  flex: 6;
-  /* background-color: rgb(192, 192, 194); */
-  /* padding-top: 4px; */
 }
 
 /* 发现团伙板块 右边栏 */
@@ -108,6 +107,12 @@
   width: 100%;
   flex: 6;
   display: flex;
+}
+
+#nodelinkic {
+  height: 100%;
+  flex: 1;
+  background-color: cadetblue;
 }
 
 #deleterelation {
