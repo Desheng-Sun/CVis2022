@@ -1,6 +1,7 @@
 import { useEffect, useState, React } from "react";
 import cytoscape, { use } from "cytoscape";
-import expandCollapse from "cytoscape-expand-collapse";
+import dagre from "cytoscape-dagre";
+// import expandCollapse from "cytoscape-expand-collapse";
 import euler from "cytoscape-euler";
 import navigator from "cytoscape-navigator";
 import coseBilkent from "cytoscape-cose-bilkent";
@@ -25,8 +26,9 @@ import SkeletonChart from "../skeleton-chart";
 
 navigator(cytoscape);
 undoRedo(cytoscape);
-expandCollapse(cytoscape);
+// expandCollapse(cytoscape);
 contextMenus(cytoscape);
+cytoscape.use(dagre);
 cytoscape.use(euler);
 cytoscape.use(coseBilkent);
 cytoscape.use(fcose);
@@ -69,7 +71,7 @@ var layoutOptionDict = {
     animationDuration: 1000, // duration of animation in ms if enabled
   },
   dagre: {
-    name: "concentric",
+    name: "dagre",
     fit: true, // whether to fit to viewport
     animate: true, // whether to transition the node positions
     avoidOverlap: true,
@@ -99,39 +101,39 @@ var layoutOptionDict = {
     gravity: 0.55,
   },
 };
-var ecLayoutOptionDict = {
-  euler: {
-    layoutBy: {
-      name: "euler",
-      // fit: false
-    }
-  },
-  concentric: {
-    layoutBy: {
-      name: "concentric",
-      // fit: false
-    }
-  },
-  dagre: {
-    layoutBy: {
-      name: "concentric",
-      // fit: false
-    }
-  },
-  fcose: {
-    layoutBy: {
-      name: "fcose",
-      // fit: false
-    }
-  },
-  coseBilkent: {
-    layoutBy: {
-      name: "cose-bilkent",
-      randomize: false,
-      // fit: false
-    }
-  },
-};
+// var ecLayoutOptionDict = {
+//   euler: {
+//     layoutBy: {
+//       name: "euler",
+//       // fit: false
+//     }
+//   },
+//   concentric: {
+//     layoutBy: {
+//       name: "concentric",
+//       // fit: false
+//     }
+//   },
+//   dagre: {
+//     layoutBy: {
+//       name: "dagre",
+//       // fit: false
+//     }
+//   },
+//   fcose: {
+//     layoutBy: {
+//       name: "fcose",
+//       // fit: false
+//     }
+//   },
+//   coseBilkent: {
+//     layoutBy: {
+//       name: "cose-bilkent",
+//       randomize: false,
+//       // fit: false
+//     }
+//   },
+// };
 
 export default function SubChartCytoscape({ w, h }) {
   const [svgWidth, setSvgWidth] = useState(w);
@@ -314,8 +316,6 @@ export default function SubChartCytoscape({ w, h }) {
           id: "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
           name: "5.180.xxx.xxx",
           type: "IP",
-          parent:
-            "Domain_34a6231f101fdfa2b051beaa4b94d463fe5f9f42b7789bbe60f6fd4c292ee7ac",
           industry: "  \r",
         },
         {
@@ -555,8 +555,6 @@ export default function SubChartCytoscape({ w, h }) {
           id: "IP_CIDR_6399042623e54e0439705fde4e655b85e0beef20bc18e9eea628bbe6278f71f8",
           name: "5.180.xxx.0/24",
           type: "IP_C",
-          parent:
-            "Domain_34a6231f101fdfa2b051beaa4b94d463fe5f9f42b7789bbe60f6fd4c292ee7ac",
           industry: "  \r",
         },
         {
@@ -1435,13 +1433,13 @@ export default function SubChartCytoscape({ w, h }) {
   useEffect(() => {
     if (layoutFlag) {
       layoutOption = layoutOptionDict[chartLayout];
-      ecLayoutOption = ecLayoutOptionDict[chartLayout];
+      // ecLayoutOption = ecLayoutOptionDict[chartLayout];
       layout.stop();
       layout = cy.layout(layoutOption);
       // api = cy.expandCollapse(ecLayoutOption);
-      api.setOption('layoutBy', ecLayoutOption)
-      api.collapseAll();
-      // layout.run()
+      // api.setOption('layoutBy', ecLayoutOption)
+      // api.collapseAll();
+      layout.run()
       setEdgeLength(5);
       setNodeDistance(5);
     }
@@ -1538,7 +1536,6 @@ export default function SubChartCytoscape({ w, h }) {
           )
         ) {
           ele.addClass("tablehighlightLink");
-          console.log(ele);
           // ele.style("line-color", "#f5f440");
         }
       });
@@ -1612,11 +1609,11 @@ export default function SubChartCytoscape({ w, h }) {
       cy.navigator(defaults);
       layoutOption = layoutOptionDict[chartLayout];
       layout = cy.layout(layoutOption);
-      ecLayoutOption = ecLayoutOptionDict[chartLayout];
-      api = cy.expandCollapse(ecLayoutOption);
-      api.collapseAll();
+      // ecLayoutOption = ecLayoutOptionDict[chartLayout];
+      // api = cy.expandCollapse(ecLayoutOption);
+      // api.collapseAll();
 
-      // layout.run();
+      layout.run();
 
       cy.boxSelectionEnabled(true); // 设置支持框选操作，如果同时启用平移，用户必须按住shift、control、alt或command中的一个来启动框选择
 
@@ -1673,10 +1670,11 @@ export default function SubChartCytoscape({ w, h }) {
             id: "select-self-neigh", // ID of menu item
             content: "选中节点", // Display content of menu item
             tooltipText: "选中当前节点和邻居节点", // Tooltip text for menu item
-            selector: "node",
+            selector: "element",
             onClickFunction: function (e) {
               // 选中当前节点及其邻居节点
               let n = e.target;
+              console.log(n);
               let curNodeId = n.id();
               n.select();
               cy.getElementById(curNodeId).neighborhood().select();
