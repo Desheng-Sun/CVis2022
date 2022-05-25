@@ -1,5 +1,11 @@
 [
   {
+    "selector": "edge",
+    "style": {
+      "opacity": 0.6
+    }
+  },
+  {
     "selector": "edge.arrow",
     "style": {
       "target-arrow-shape": "vee",
@@ -183,19 +189,5 @@
     "style": {
       "line-color": "#e53f32"
     }
-  },
-      {
-        "selector": "$node > node",
-        "css": {
-          "background-color": "#333333",
-          "background-image": null,
-          "border-width": "1px",
-          "border-color": "#05a18f",
-          "color": "#fff",
-          "text-margin-x": "0px",
-          "text-margin-y": "-4px",
-          "text-background-color": "#ccc",
-          "text-background-padding": "4px"
-        }
-      }
+  }
 ]

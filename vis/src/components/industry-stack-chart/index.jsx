@@ -312,9 +312,6 @@ export default function IndustryStackChart({ w, h }) {
               return "#bbb";
             })
             .attr("stroke", () => {
-              // if (currInduYIndex.length !== 0 && currInduYIndex.includes(j))
-              //   return industryColor[j];
-              // return "#bbb";
               return "none";
             })
             .attr("stroke-width", 0.5)
