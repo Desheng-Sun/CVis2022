@@ -103,28 +103,33 @@ var ecLayoutOptionDict = {
   euler: {
     layoutBy: {
       name: "euler",
-    },
+      // fit: false
+    }
   },
   concentric: {
     layoutBy: {
       name: "concentric",
-    },
+      // fit: false
+    }
   },
   dagre: {
-    dagre: {
+    layoutBy: {
       name: "concentric",
-    },
+      // fit: false
+    }
   },
   fcose: {
-    coseBilkent: {
+    layoutBy: {
       name: "fcose",
-      undoable: true,
-    },
+      // fit: false
+    }
   },
   coseBilkent: {
-    coseBilkent: {
+    layoutBy: {
       name: "cose-bilkent",
-    },
+      randomize: false,
+      // fit: false
+    }
   },
 };
 
@@ -1432,9 +1437,11 @@ export default function SubChartCytoscape({ w, h }) {
       layoutOption = layoutOptionDict[chartLayout];
       ecLayoutOption = ecLayoutOptionDict[chartLayout];
       layout.stop();
-      // layout = cy.layout(layoutOption);
-      api = cy.expandCollapse(ecLayoutOption);
+      layout = cy.layout(layoutOption);
+      // api = cy.expandCollapse(ecLayoutOption);
+      api.setOption('layoutBy', ecLayoutOption)
       api.collapseAll();
+      // layout.run()
       setEdgeLength(5);
       setNodeDistance(5);
     }
@@ -1458,7 +1465,7 @@ export default function SubChartCytoscape({ w, h }) {
 
       layout = cy.layout(layoutOption);
       layout.run();
-      api.collapseAll();
+      // api.collapseAll();
     }
     setDistanceFlag(true);
   }, [nodeDistance, edgeLength]);
@@ -1607,8 +1614,8 @@ export default function SubChartCytoscape({ w, h }) {
       layout = cy.layout(layoutOption);
       ecLayoutOption = ecLayoutOptionDict[chartLayout];
       api = cy.expandCollapse(ecLayoutOption);
-      // api = cy.expandCollapse(layoutOption)
       api.collapseAll();
+
       // layout.run();
 
       cy.boxSelectionEnabled(true); // 设置支持框选操作，如果同时启用平移，用户必须按住shift、control、alt或command中的一个来启动框选择
