@@ -6,11 +6,7 @@ import { getClueDenseDataSds } from "../../apis/api";
 
 const nodeType = ["IP", "Cert"];
 const dataType = ["numConnectedDomain", "numDomainWithIn", "rateIn"];
-const dataTypeForShow = [
-  "连接Domain数",
-  "连接涉黑Domain数",
-  "涉黑灰产Domain比例",
-];
+const dataTypeForShow = ["#D", "#DarkD", "ratio"];
 
 let example_data = {
   IP: [
@@ -379,11 +375,22 @@ let example_data = {
   ],
 };
 
-let prevIndex = -1;
-export default function ClueDense() {
+let prevIndex = -1; // 记录鼠标上一个坐标位置对应的数据index
+export default function ClueDense({ w, h }) {
   const [data, setData] = useState({ IP: [], Cert: [] });
   const [currNodeType, setCurrNodeType] = useState(nodeType[0]);
   const [currDataType, setCurrDataType] = useState(dataType[0]);
+
+  const [svgWidth, setSvgWidth] = useState(w);
+  const [svgHeight, setSvgHeight] = useState(h);
+
+  // 随系统缩放修改画布大小
+  useEffect(() => {
+    setSvgWidth(w);
+  }, [w]);
+  useEffect(() => {
+    setSvgHeight(h);
+  }, [h]);
 
   useEffect(() => {
     getClueDenseDataSds().then((res) => {
@@ -428,8 +435,8 @@ export default function ClueDense() {
       }
     };
     const dimensions = {
-      width: 2000,
-      height: 600,
+      width: svgWidth,
+      height: svgHeight * 0.94,
       margin: {
         top: 20,
         right: 20,
@@ -449,7 +456,7 @@ export default function ClueDense() {
     let oneLine = Math.floor(boundedWidth / squareSize); //需要画多少列 画不下完整一列时，增加列数 列数取floor
     let rows = Math.ceil(currdata.length / oneLine);
 
-    const canvas = document.getElementById("clue-dense-chart");
+    const canvas = document.getElementById("clue-dense-chart-shape");
     canvas.height = boundedHeight;
     canvas.width = boundedWidth;
     const ctx = canvas.getContext("2d");
@@ -500,10 +507,10 @@ export default function ClueDense() {
   }
 
   return (
-    <div id="clue-dense" style={{ width: 2000, height: 650 }}>
+    <div id="clue-dense" style={{ width: "100%", height: "100%" }}>
       <div
         id="clue-dense-control"
-        style={{ width: 2000, height: 50, padding: 10 }}
+        style={{ width: "100%", height: "6%", padding: "1px" }}
       >
         <div id="clue-dense-control-nodetype">
           <Radio.Group
@@ -533,8 +540,16 @@ export default function ClueDense() {
         </div>
         <div id="clue-dense-control-info"></div>
       </div>
-      <canvas id="clue-dense-chart"></canvas>
-      <canvas id="clue-dense-chart-mouse"></canvas>
+      <div
+        id="clue-dense-chart"
+        style={{ width: "100%", height: "94%", position: "relative" }}
+      >
+        <canvas id="clue-dense-chart-shape"></canvas>
+        <canvas
+          id="clue-dense-chart-mouse"
+          style={{ position: "absolute", left: 0, top: 0 }}
+        ></canvas>
+      </div>
     </div>
   );
 }
