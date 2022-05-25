@@ -1,14 +1,15 @@
 .toolTip {
-    position: relative;
-    display: none;
+    position:absolute;
+    /* display: none; */
+    visibility: hidden;
     min-width: 30px;
     max-width: 240px;
     border-radius: 4px;
     height: auto;
-    background: rgba(250,250,250, 0.9);
+    background: rgba(255,250,250, 0.8);
     border: 1px solid #DDD;
     padding: 4px 8px;
-    font-size: .85rem;
+    font-size: 10px;
     text-align: left;
     z-index: 1000;
   }
