@@ -119,7 +119,8 @@ function getIPCertLinksInSkip2(
   nodeNumIdInfo
 ) {
   let allLinks = {};
-  if (ICScreen[1].indexOf[nowNodeNumId] > -1) {
+  console.log(nowNodeNumId)
+  if (ICScreen[1].indexOf(nowNodeNumId) > -1) {
     nowNodeLinkInfo = ICAloneInfo[i];
     allLinks = {
       id: nowNodesInfo[1],
@@ -139,7 +140,7 @@ function getIPCertLinksInSkip2(
       dirtyDomainNum: nowNodeLinkInfo[2],
       skipNum: 0,
     };
-  } else if (ICScreen[0].indexOf[nowNodeNumId] > -1) {
+  } else if (ICScreen[0].indexOf(nowNodeNumId) > -1) {
     // 数据信息存储变量
     let WhoisName = 0;
     let WhoisEmail = 0;
@@ -239,7 +240,7 @@ function getIPCertLinksInSkip2(
       WhoisPhone: 0,
       pureDomain: 0,
       dirtyDomain: 0,
-      numId: 0,
+      numId: nowNodeNumId,
       name: 0,
       children: 0,
       WhoisNameNum: 0,
@@ -752,8 +753,12 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
   });
   let sendData = {
     "name": "root",
+    "depthmax": 0,
+    "ICLinksNum": 0,
+    "startICNum": 0,
     "children": []
   }
+  let depthmax = 0
   //根据排序后的IC节点进行循环
   for (let i of listLinksSortKey) {
     const nowICLinks = listLinks[i]["ICLinks"]
@@ -766,6 +771,8 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
       "id": listLinks[i]["id"],
       "name": listLinks[i]["name"],
       "type": listLinks[i]["type"],
+      "startICNum": sendData["startICNum"],
+      "startICLinkNum": sendData["ICLinksNum"],
       "children": []
     }
     //针对IC节点的每一个IC链路进行循环
@@ -798,7 +805,9 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
         nowAllIndustry[k["industry"]][3] = 0
       }
       for (let k of nextICIndustry) {
-        nowAllIndustry[k["industry"]][1] = Math.max(0, nowAllIndustry[k["industry"]][1])
+        if (nowAllIndustry[k["industry"]][1] == null) {
+          nowAllIndustry[k["industry"]][1] = 0
+        }
         nowAllIndustry[k["industry"]][2] = 0
         nowAllIndustry[k["industry"]][3] = k["number"]
       }
@@ -843,35 +852,60 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
       nowICDifIndustry[0] = {
         "name": nowICDifIndustry1[nowICDifIndustry1.length - 1]["name"],
         "num": nowICDifIndustry1[nowICDifIndustry1.length - 1]["num"],
+        "nowICIndex":sendData["startICNum"] + 1,
+        "nowICLinksIndex":sendData["ICLinksNum"] + 1,
+        "childrenLen":nowICDifIndustry1.length,
+        "index": 1,
         "value": 5
       }
       nowICDifIndustry[1] = {
         "name": nowICDifIndustry2[nowICDifIndustry2.length - 1]["name"],
         "num": nowICDifIndustry2[nowICDifIndustry2.length - 1]["num"],
+        "nowICIndex":sendData["startICNum"] + 1,
+        "nowICLinksIndex":sendData["ICLinksNum"] + 1,
+        "childrenLen":nowICDifIndustry2.length,
+        "index": 2,
         "value": 5
       }
       nowICDifIndustry[2] = {
         "name": nowICDifIndustry3[nowICDifIndustry3.length - 1]["name"],
         "num": nowICDifIndustry3[nowICDifIndustry3.length - 1]["num"],
+        "nowICIndex":sendData["startICNum"] + 1,
+        "nowICLinksIndex":sendData["ICLinksNum"] + 1,
+        "childrenLen":nowICDifIndustry3.length,
+        "index": 3,
         "value": 5
       }
-      for (let k = nowICDifIndustry1.length - 2; k--; k >= 0) {
+      for (let k = nowICDifIndustry1.length - 2; k>=0; k --) {
         nowICDifIndustry[0] = {
           "name": nowICDifIndustry1[k]["name"],
           "num": nowICDifIndustry1[k]["num"],
+          "nowICIndex":sendData["startICNum"] + 1,
+          "nowICLinksIndex":sendData["ICLinksNum"] + 1,
+          "childrenLen":nowICDifIndustry1.length,
+          "index": 1,
           "children": [nowICDifIndustry[0]]
         }
         nowICDifIndustry[1] = {
           "name": nowICDifIndustry2[k]["name"],
           "num": nowICDifIndustry2[k]["num"],
+          "nowICIndex":sendData["startICNum"] + 1,
+          "nowICLinksIndex":sendData["ICLinksNum"] + 1,
+          "childrenLen":nowICDifIndustry2.length,
+          "index": 2,
           "children": [nowICDifIndustry[1]]
         }
         nowICDifIndustry[2] = {
           "name": nowICDifIndustry3[k]["name"],
           "num": nowICDifIndustry3[k]["num"],
+          "nowICIndex":sendData["startICNum"] + 1,
+          "nowICLinksIndex":sendData["ICLinksNum"] + 1,
+          "childrenLen":nowICDifIndustry3.length,
+          "index": 3,
           "children": [nowICDifIndustry[2]]
         }
       }
+      depthmax = Math.max(nowICDifIndustry1.length, depthmax)
       //添加数据，并删除对应IC节点的该条数据
       if (nowLink[0] == listLinks[i]["numId"]) {
         nowICDifData["children"].push({
@@ -879,8 +913,11 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
           "id": listLinks[nowLink[1]]["id"],
           "name": listLinks[nowLink[1]]["name"],
           "type": listLinks[nowLink[1]]["type"],
+          "nowICLinksNum":sendData["ICLinksNum"] + 1,
+          "nowICNum": sendData["startICNum"] + 1,
           "children": nowICDifIndustry
         })
+        sendData["ICLinksNum"] += 1
         listLinks[nowLink[1]]["ICLinks"] = listLinks[nowLink[1]]["ICLinks"].filter(e => e != j)
       }
       else {
@@ -889,13 +926,18 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
           "id": listLinks[nowLink[0]]["id"],
           "name": listLinks[nowLink[0]]["name"],
           "type": listLinks[nowLink[0]]["type"],
+          "nowICLinksNum":sendData["ICLinksNum"] + 1,
+          "nowICNum": sendData["startICNum"] + 1,
           "children": nowICDifIndustry
         })
+        sendData["ICLinksNum"] += 1
         listLinks[nowLink[0]]["ICLinks"] = listLinks[nowLink[0]]["ICLinks"].filter(e => e != j)
       }
     }
     sendData["children"].push(nowICDifData)
+    sendData["startICNum"] += 1
   }
+  sendData["depthmax"] = depthmax
   res.send(sendData);
   res.end()
 });
@@ -1352,14 +1394,14 @@ app.post("/getIndustryStackSds", jsonParser, (req, res, next) => {
     }
   }
   let sendData = []
-  for(let i in nowICIndustry){
-    if(nowICIndustry[i]["industry"].length == 0){
+  for (let i in nowICIndustry) {
+    if (nowICIndustry[i]["industry"].length == 0) {
       continue
     }
     let nowICIndustryCount = []
     nowICIndustrySet = Array.from(new Set(nowICIndustry[i]["industry"]))
-    for(let j of nowICIndustrySet){
-      if(j == "  "){
+    for (let j of nowICIndustrySet) {
+      if (j == "  ") {
         continue
       }
       nowICIndustryCount.push({
