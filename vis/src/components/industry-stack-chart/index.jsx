@@ -14,7 +14,6 @@ export default function IndustryStackChart({ w, h }) {
     setDataParam(dataparam);
   });
   useEffect(() => {
-    console.log(dataParam);
     let dt = [
       {
         id: "A",
