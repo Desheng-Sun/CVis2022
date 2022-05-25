@@ -172,7 +172,7 @@ export default function IndustryStackChart({ w, h }) {
       I: IColorScale,
     };
 
-    let gHeight = 30,
+    let gHeight = 50,
       circleR = 5,
       levelNumber = 3;
     let gWidth = svgWidth / levelNumber;
@@ -224,7 +224,7 @@ export default function IndustryStackChart({ w, h }) {
     g.append("rect")
       .attr("rx", 6)
       .attr("ry", 6)
-      .attr("x", -40)
+      .attr("x", -60)
       .attr("y", -57)
       .attr("class", "bgRect")
       .attr("fill", "transparent")
@@ -233,7 +233,7 @@ export default function IndustryStackChart({ w, h }) {
       .attr("height", (gHeight + circleR * 2) * 2 + 5)
       .on("click", function (event, d) {
         // 单击选择，双击取消
-        d3.select(this).attr("fill", "#aaa");
+        d3.select(this).attr("fill", "#ccc");
       })
       .on("dblclick", function (event, d) {
         d3.select(this).attr("fill", "transparent");
@@ -269,7 +269,7 @@ export default function IndustryStackChart({ w, h }) {
     var industryStacktoolTip = d3
       .select("#industry-stack")
       .append("div")
-      .attr("class", "toolTip");
+      .attr("class", "stackToolTip");
 
     for (let k = 0; k < data.length; k++) {
       for (let i = 0; i < combinationOrder.length; i++) {

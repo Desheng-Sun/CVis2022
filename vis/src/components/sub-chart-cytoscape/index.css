@@ -73,5 +73,18 @@
     display: contents;
   }
 
-
+  .mainToolTip {
+    position:absolute;
+    visibility: hidden;
+    min-width: 30px;
+    max-width: auto;
+    border-radius: 4px;
+    height: auto;
+    background: rgba(255,250,250, 0.8);
+    border: 1px solid #DDD;
+    padding: 4px 8px;
+    font-size: 12px;
+    text-align: left;
+    z-index: 1000;
+  }
 

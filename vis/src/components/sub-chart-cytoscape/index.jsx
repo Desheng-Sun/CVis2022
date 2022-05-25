@@ -45,7 +45,7 @@ var layoutOptionDict = {
     animate: true, // whether to transition the node positions
     avoidOverlap: true,
     springLength: 10,
-    mass: 5,
+    mass: 7,
     animateFilter: function (node, i) {
       return true;
     }, // 决定是否节点的位置应该被渲染
@@ -142,7 +142,7 @@ export default function SubChartCytoscape({ w, h }) {
   const [filterType, setFilterType] = useState([]);
   const [filterFlag, setFilterFlag] = useState(false);
   const [edgeLength, setEdgeLength] = useState(10);
-  const [nodeDistance, setNodeDistance] = useState(10);
+  const [nodeDistance, setNodeDistance] = useState(6);
   const [distanceFlag, setDistanceFlag] = useState(false);
   const [chartLayout, setChartLayout] = useState("euler");
   const [undoOut, setUndoOut] = useState(false);
@@ -186,7 +186,7 @@ export default function SubChartCytoscape({ w, h }) {
           id: "Domain_34a6231f101fdfa2b051beaa4b94d463fe5f9f42b7789bbe60f6fd4c292ee7ac",
           name: "34a6231f10.com",
           type: "Domain",
-          industry: "ABCE\r",
+          industry: "a\r",
           nodeToICNumId: 3,
           childrenNum: 17,
           children: [
@@ -195,21 +195,21 @@ export default function SubChartCytoscape({ w, h }) {
               id: "Domain_34a6231f101fdfa2b051beaa4b94d463fe5f9f42b7789bbe60f6fd4c292ee7ac",
               name: "34a6231f10.com",
               type: "Domain",
-              industry: "ABCE\r",
+              industry: "ab\r",
             },
             {
               numId: 2,
               id: "Domain_5052db3f33d5337ab631025f7d5de3c5ac559edb2c40deda5530c0051f39b1e2",
               name: "5052db3f33.com",
               type: "Domain",
-              industry: "ABCE\r",
+              industry: "abcd\r",
             },
             {
               numId: 16,
               id: "Domain_6f51b90ab3ab80b45407724da4f21428fc679ab578242223ba6be8020bd6b2c0",
               name: "6f51b90ab3.com",
               type: "Domain",
-              industry: "ABCE\r",
+              industry: "abcde\r",
             },
             {
               numId: 18,
@@ -1440,8 +1440,8 @@ export default function SubChartCytoscape({ w, h }) {
       // api.setOption('layoutBy', ecLayoutOption)
       // api.collapseAll();
       layout.run();
-      setEdgeLength(5);
-      setNodeDistance(5);
+      setEdgeLength(10);
+      setNodeDistance(10);
     }
     setLayoutFlag(false);
   }, [chartLayout]);
@@ -1585,10 +1585,21 @@ export default function SubChartCytoscape({ w, h }) {
           }, // 根据节点的度数设置
           height: function (ele) {
             return ele.degree() < 30 ? 30 : ele.degree();
+          }
+        },
+      };
+      let domainNOdeStyle = {
+        selector: "node[type=\"Domain\"]",
+        style: {
+          "background-color": "#fff",
+          'background-image': function(ele){
+            return "url('./images/Domain/" + ele.json().data['industry'].toLowerCase().replace('\r', '') + ".png')"
           },
+          "background-fit": 'contain'
         },
       };
       stylesJson.push(newStyleArr);
+      stylesJson.push(domainNOdeStyle);
       cy = window.cy = cytoscape({
         container: document.getElementById("main-chart"),
         elements: {
@@ -1644,14 +1655,30 @@ export default function SubChartCytoscape({ w, h }) {
         var node = e.target;
       });
 
+      var maintoolTip = d3
+      .select("#main-container")
+      .append("div")
+      .attr("class", "mainToolTip");
+
       // 节点的mouseover事件
       cy.on("mouseover", "node", function (e) {
         var neigh = e.target;
+        let curNOdeData = neigh.json().data
         cy.elements()
           .difference(neigh.outgoers().union(neigh.incomers()))
           .not(neigh)
           .addClass("semitransp");
         neigh.addClass("highlight").outgoers().addClass("highlight");
+        // 增加tooltip
+        let htmlText;
+        if(curNOdeData.type === 'Domain') htmlText = '<b>' + "id: " + '</b>'+ "id: " + curNOdeData.id + '<br>' + '<b>' + "id: " + '</b>'+ "name: " + curNOdeData.name + '<br>' + '<b>' + "id: " + '</b>'+  "industry: " + curNOdeData.industry
+        else htmlText = '<b>' + "id: " + '</b>' + curNOdeData.id + '<br>' + '<b>' + "id: " + '</b>'+ "name" + curNOdeData.name 
+        maintoolTip
+          .style("left", e.renderedPosition.x + 610+ "px")
+          .style("top",  e.renderedPosition.y + 110 + "px")
+          .style("visibility", "visible")
+          .html(htmlText);
+
       });
       cy.on("mouseout", "node", function (e) {
         var neigh = e.target;
@@ -1661,6 +1688,8 @@ export default function SubChartCytoscape({ w, h }) {
           .outgoers()
           .union(neigh.incomers())
           .removeClass("highlight");
+        maintoolTip.style("visibility", "hidden"); // Hide toolTip
+            
       });
 
       var menuOptions = {
