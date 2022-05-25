@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as d3 from "d3";
 import PubSub from "pubsub-js";
+import "./index.css";
 
 export default function IndustryStackChart({ w, h }) {
   const [data, setData] = useState([]);
@@ -89,10 +90,10 @@ export default function IndustryStackChart({ w, h }) {
 
   function drawChart() {
     if (data.length === 0) return;
-    
+
     d3.select("#industry-stack svg").remove();
     var combinationOrderSet = new Set();
-    var innerCirlceColor = {'IP': '#33a02c', 'Cert': '#ff756a'}
+    var innerCirlceColor = { IP: "#33a02c", Cert: "#ff756a" };
     // 映射产业类型
     const industryColor = {
       0: "#c3e6a1",
@@ -105,14 +106,15 @@ export default function IndustryStackChart({ w, h }) {
       7: "#fffb96",
       8: "#87ccff",
     };
-    
+
     // 获取所有的资产组合和种类
     // let AMin=0, AMax=0, BMin=0, BMax=0, CMin=0, CMax=0, DMin=0, DMax=0, EMin=0, EMax=0, FMin=0, FMax=0, GMin=0, GMax=0, HMIn=0 ,HMax=0, IMin=0, IMax=0;
-    let min= 0, max = 0
+    let min = 0,
+      max = 0;
     for (let d of data) {
       for (let j in d.ICIndustry) {
-        min = Math.min(min, d.ICIndustry[j]["number"])
-        max = Math.max(max, d.ICIndustry[j]["number"])
+        min = Math.min(min, d.ICIndustry[j]["number"]);
+        max = Math.max(max, d.ICIndustry[j]["number"]);
         combinationOrderSet.add(d.ICIndustry[j]["industry"]);
       }
     }
@@ -121,32 +123,59 @@ export default function IndustryStackChart({ w, h }) {
       ...new Set([...combinationOrder.toString().replaceAll(",", "")]),
     ].sort(); // 包含的所有产业类型
 
-    const AColorScale = d3.scaleLinear().domain([0, max]).range(["#fff", "#c3e6a1"])
-    const BColorScale = d3.scaleLinear().domain([0, max]).range(["#fff", "#e4657f"])
-    const CColorScale = d3.scaleLinear().domain([0, max]).range(["#fff", "#a17fda"])
-    const DColorScale = d3.scaleLinear().domain([0, max]).range(["#fff", "#ff9f6d"])
-    const EColorScale = d3.scaleLinear().domain([0, max]).range(["#fff", "#4caead"])
-    const FColorScale = d3.scaleLinear().domain([0, max]).range(["#fff", "#64d9d7"])
-    const GColorScale = d3.scaleLinear().domain([0, max]).range(["#fff", "#82b461"])
-    const HColorScale = d3.scaleLinear().domain([0, max]).range(["#fff", "#fffb96"])
-    const IColorScale = d3.scaleLinear().domain([0, max]).range(["#fff", "#87ccff"])
-console.log(max);
+    const AColorScale = d3
+      .scaleLinear()
+      .domain([0, max])
+      .range(["#fff", "#c3e6a1"]);
+    const BColorScale = d3
+      .scaleLinear()
+      .domain([0, max])
+      .range(["#fff", "#e4657f"]);
+    const CColorScale = d3
+      .scaleLinear()
+      .domain([0, max])
+      .range(["#fff", "#a17fda"]);
+    const DColorScale = d3
+      .scaleLinear()
+      .domain([0, max])
+      .range(["#fff", "#ff9f6d"]);
+    const EColorScale = d3
+      .scaleLinear()
+      .domain([0, max])
+      .range(["#fff", "#4caead"]);
+    const FColorScale = d3
+      .scaleLinear()
+      .domain([0, max])
+      .range(["#fff", "#64d9d7"]);
+    const GColorScale = d3
+      .scaleLinear()
+      .domain([0, max])
+      .range(["#fff", "#82b461"]);
+    const HColorScale = d3
+      .scaleLinear()
+      .domain([0, max])
+      .range(["#fff", "#fffb96"]);
+    const IColorScale = d3
+      .scaleLinear()
+      .domain([0, max])
+      .range(["#fff", "#87ccff"]);
+    console.log(max);
     const industryColoeScale = {
-      "A": AColorScale,
-      "B": BColorScale,
-      "C": CColorScale,
-      "D": DColorScale,
-      "E": EColorScale,
-      "F": FColorScale,
-      "G": GColorScale,
-      "H": HColorScale,
-      "I": IColorScale,
-    }
+      A: AColorScale,
+      B: BColorScale,
+      C: CColorScale,
+      D: DColorScale,
+      E: EColorScale,
+      F: FColorScale,
+      G: GColorScale,
+      H: HColorScale,
+      I: IColorScale,
+    };
 
-    let gHeight = 50,
-      circleR = 50,
+    let gHeight = 30,
+      circleR = 5,
       levelNumber = 3;
-    let gWidth = svgWidth / levelNumber
+    let gWidth = svgWidth / levelNumber;
     const arc = d3
       .arc()
       .innerRadius((i, j) => circleR + (gHeight / industryType.length) * j)
@@ -168,8 +197,8 @@ console.log(max);
       )
       .append("g")
       .attr("transform", (d, i) => {
-        let x = gWidth / levelNumber + 30;
-        let y = gHeight + circleR*2 - 30;
+        let x = gWidth / levelNumber + 10;
+        let y = gHeight + circleR * 2;
         return "translate(" + x.toString() + "," + y.toString() + ")";
       });
 
@@ -184,7 +213,8 @@ console.log(max);
         let y = (gHeight + circleR + 10) * 2 * Math.floor(i / levelNumber);
         return "translate(" + x.toString() + "," + y.toString() + ")";
       })
-      .on("click", function (event, d) {  // 单击选择，双击取消
+      .on("click", function (event, d) {
+        // 单击选择，双击取消
         setSelectedNodeNumId("set-" + d.id);
       })
       .on("dblclick", function (event, d) {
@@ -192,32 +222,34 @@ console.log(max);
       });
 
     g.append("rect")
-    .attr("rx", 6)
-    .attr("ry", 6)
-    .attr("x", -61)
-    .attr("y", -57)
-    .attr("class", "bgRect")
-    .attr("fill", "transparent")
-    .attr("stroke", "none")
-    .attr("width", (gHeight + circleR*2)*2 + 10)
-    .attr("height", (gHeight + circleR*2)*2 +5)
-    .on("click", function (event, d) {  // 单击选择，双击取消
-      d3.select(this).attr('fill', '#aaa')
-    })
-    .on("dblclick", function (event, d) { 
-      d3.select(this).attr('fill', 'transparent')
-    })
+      .attr("rx", 6)
+      .attr("ry", 6)
+      .attr("x", -40)
+      .attr("y", -57)
+      .attr("class", "bgRect")
+      .attr("fill", "transparent")
+      .attr("stroke", "none")
+      .attr("width", (gHeight + circleR * 2) * 2 + 10)
+      .attr("height", (gHeight + circleR * 2) * 2 + 5)
+      .on("click", function (event, d) {
+        // 单击选择，双击取消
+        d3.select(this).attr("fill", "#aaa");
+      })
+      .on("dblclick", function (event, d) {
+        d3.select(this).attr("fill", "transparent");
+      });
 
     g.append("text")
       .attr("transform", (d) => "translate(10,10)")
       .selectAll("tspan")
       .data((d) => d.ICIndustry)
       .join("tspan")
-      .attr("x", -30)
+      .attr("x", 50)
       .attr("y", (d, i) => `${i * 1.5 - 2}em`)
       .attr("font-weight", "bold")
       .attr("stroke", "none")
-      .attr("font", "14px segoe ui")
+      .attr("font-size", "10px")
+      .attr("font", "10px segoe ui")
       .style("user-select", "none")
       .attr("fill", (d, i) => industryColor[i])
       .text((d) => {
@@ -230,72 +262,87 @@ console.log(max);
       .attr("cx", 0)
       .attr("cy", 0)
       .attr("stroke", (d, index) => {
-          return innerCirlceColor[d['id'].split('_')[0]];
+        return innerCirlceColor[d["id"].split("_")[0]];
       })
-      .attr("stroke-width", 3)
+      .attr("stroke-width", 3);
 
-    var industryStacktoolTip = d3.select("#industry-stack").append("div").attr("class", "toolTip")
+    var industryStacktoolTip = d3
+      .select("#industry-stack")
+      .append("div")
+      .attr("class", "toolTip");
 
     for (let k = 0; k < data.length; k++) {
       for (let i = 0; i < combinationOrder.length; i++) {
         let currInduYIndex = [],
-          first_flag = true;
-          
-        let indu = 0
+          first_flag = true,
+          indu = 0;
         for (let j = 0; j < industryType.length; j++) {
           d3.select(d3.selectAll(".stackInnerG")._groups[0][k])
             .append("path")
             .attr("d", arc(i, j))
-            .attr("stroke", "#aaa")
+            // .attr("stroke", "#aaa")
             .attr("fill", (d) => {
               if (first_flag) {
                 for (let loopIndu in d.ICIndustry) {
                   if (
-                    combinationOrder.indexOf(d.ICIndustry[loopIndu]["industry"]) ===
-                    i
+                    combinationOrder.indexOf(
+                      d.ICIndustry[loopIndu]["industry"]
+                    ) === i
                   ) {
                     // 当前产业与当前弧对应的产业一致
                     let currIndu = d.ICIndustry[loopIndu]["industry"]; // 当前产业集合，然后获取当前产业集合包含的子产业对应的径向索引
                     currInduYIndex = currIndu
                       .split("")
                       .map((value) => industryType.indexOf(value));
-                    indu = loopIndu
+                    indu = loopIndu;
                     break;
                   }
                 }
               }
               first_flag = false;
-              console.log(currInduYIndex)
               if (
                 currInduYIndex.length !== 0 &&
                 currInduYIndex.indexOf(j) !== -1
               ) {
                 // return industryColor[j];
-                return industryColoeScale[industryType[j]](d.ICIndustry[indu]["number"])
+                return industryColoeScale[industryType[j]](
+                  d.ICIndustry[indu]["number"]
+                );
               }
-              return "white";
+              return "#bbb";
             })
-            .on('mouseover', (event, d)=>{
-              // let htmlText = `产业 <strong>${industryType[j]}</strong>`
-              // // if(currInduYIndex.length === 0) htmlText = `产业 <strong>${industryType[j]} : ${d.ICIndustry[j]['number']}</strong>`
-              // industryStacktoolTip.style("left", event.layerX + 18 + "px")
-              // .style("top", event.layerY + 18 + "px")
-              // .style("display", "block")
-              // .html(htmlText);
+            .attr("stroke", () => {
+              // if (currInduYIndex.length !== 0 && currInduYIndex.includes(j))
+              //   return industryColor[j];
+              // return "#bbb";
+              return "none";
             })
-            .on('mouseout', (event, d)=>{
-              industryStacktoolTip.style("display", "none"); // Hide toolTip
+            .attr("stroke-width", 0.5)
+            .on("mouseover", (event, d) => {
+              let htmlText = `产业 <strong>${industryType[j]}</strong>`;
+              industryStacktoolTip
+                .style("left", event.pageX + 5 + "px")
+                .style("top", event.pageY + 5 + "px")
+                .style("visibility", "visible")
+                .html(htmlText);
             })
+            .on("mouseout", () => {
+              industryStacktoolTip.style("visibility", "hidden"); // Hide toolTip
+            });
         }
       }
     }
-
   }
 
   return (
     <div
       id="industry-stack"
-      style={{ width: svgWidth, height: svgHeight, overflow: "auto" }}
+      style={{
+        width: svgWidth,
+        height: svgHeight,
+        overflow: "auto",
+        background: "white",
+      }}
     ></div>
   );
 }
