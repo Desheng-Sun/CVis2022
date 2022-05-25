@@ -1439,7 +1439,7 @@ export default function SubChartCytoscape({ w, h }) {
       // api = cy.expandCollapse(ecLayoutOption);
       // api.setOption('layoutBy', ecLayoutOption)
       // api.collapseAll();
-      layout.run()
+      layout.run();
       setEdgeLength(5);
       setNodeDistance(5);
     }

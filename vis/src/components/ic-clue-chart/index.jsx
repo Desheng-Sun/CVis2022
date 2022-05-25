@@ -24,6 +24,13 @@ export default function ICClueChart({ w, h }) {
   ]);
   // const [icicleChart, setIcicleChart] = useState([])
 
+  // cluedense点击后更新冰柱图
+  PubSub.unsubscribe("getClueFromDense");
+  PubSub.subscribe("getClueFromDense", (msg, clue) => {
+    getIcClueData2Sds(clue.numId, clue.Id).then((res) => {
+      setData(res);
+    });
+  });
   // 监听选择的节点的变化，如果变化了就传递给另一个组件
   useEffect(() => {
     PubSub.publish("icicleSelect", selectedIclcleNode);
@@ -52,7 +59,7 @@ export default function ICClueChart({ w, h }) {
     if (JSON.stringify(data) === "{}") return;
     if (JSON.stringify(svgWidth) === "{}" || JSON.stringify(svgHeight) === "{}")
       return;
-    d3.selectAll('#icclue-chart svg').remove()
+    d3.selectAll("#icclue-chart svg").remove();
     var titleSvg = d3
       .select("#icclue-title")
       .append("svg")
@@ -78,12 +85,9 @@ export default function ICClueChart({ w, h }) {
       .style("color", "black")
       .style("line-height", 1)
       .attr("text-align", "center");
-    // console.log(data);
 
     for (let i = 0; i < data.length; i++) {
       let skipNum = data[i].skipNum + 1;
-      // let skipNum = 1
-      console.log(skipNum);
       icicleChart = Icicle()
         .orientation("lr")
         .width((svgWidth / 3) * skipNum)

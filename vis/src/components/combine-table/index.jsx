@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import BulletChart from "../bullet-chart";
 import DetailList from "../detail-list";
-import PubSub, { subscribe } from "pubsub-js";
+import PubSub from "pubsub-js";
 import "./index.css";
 export default function CombineTable({ w, h, b }) {
   const [bcWidth, setBcWidth] = useState(0);

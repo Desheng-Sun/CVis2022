@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./index.css";
 import * as d3 from "d3";
 import { Radio } from "antd";
 import { getClueDenseDataSds } from "../../apis/api";
+
+import PubSub from "pubsub-js";
 
 const nodeType = ["IP", "Cert"];
 const dataType = ["numConnectedDomain", "numDomainWithIn", "rateIn"];
@@ -381,6 +383,8 @@ export default function ClueDense({ w, h }) {
   const [currNodeType, setCurrNodeType] = useState(nodeType[0]);
   const [currDataType, setCurrDataType] = useState(dataType[0]);
 
+  const currDataTypeRef = useRef(currDataType);
+
   const [svgWidth, setSvgWidth] = useState(w);
   const [svgHeight, setSvgHeight] = useState(h);
 
@@ -399,11 +403,13 @@ export default function ClueDense({ w, h }) {
   }, []);
 
   useEffect(() => {
-    drawClueDense(currNodeType, currDataType);
+    if (data.IP.length !== 0) {
+      drawClueDense();
+    }
   }, [data, currNodeType, currDataType]);
 
-  function drawClueDense(nodetype, datatype) {
-    const hdlMouseMove = function handleMouseMove(event) {
+  function drawClueDense() {
+    const hdlMouseMove = function (event) {
       event.stopPropagation();
       let { x, y } = getMousePosition(event, canvas);
       let r = Math.floor(y / squareSize);
@@ -421,19 +427,31 @@ export default function ClueDense({ w, h }) {
         prevIndex = index;
 
         let d = currdata[index];
-
         // 显示当前数值
-        if (datatype === "rateIn") {
+        if (currDataTypeRef.current === "rateIn") {
           d3.select("div#clue-dense-control-info").text(
-            d.name + " - " + (d[datatype] * 100).toFixed(2) + "%"
+            d.name + " - " + (d[currDataTypeRef.current] * 100).toFixed(2) + "%"
           );
         } else {
           d3.select("div#clue-dense-control-info").text(
-            d.name + " - " + d[datatype]
+            d.name + " - " + d[currDataTypeRef.current]
           );
         }
       }
     };
+
+    const hdlClick = function (event) {
+      let { x, y } = getMousePosition(event, canvas);
+      let r = Math.floor(y / squareSize);
+      let c = Math.floor(x / squareSize);
+      let index = r * oneLine + c;
+      let d = currdata[index];
+      PubSub.publish("getClueFromDense", {
+        numId: d.numId,
+        Id: d.Id.split("_")[0],
+      });
+    };
+
     const dimensions = {
       width: svgWidth,
       height: svgHeight * 0.94,
@@ -447,7 +465,7 @@ export default function ClueDense({ w, h }) {
     const boundedWidth = dimensions.width;
     const boundedHeight = dimensions.height;
 
-    let currdata = data[nodetype];
+    let currdata = data[currNodeType];
 
     let containerRatio = dimensions.width / dimensions.height;
     let squareSize =
@@ -467,13 +485,33 @@ export default function ClueDense({ w, h }) {
     const ctx_mouse = canvas_mouse.getContext("2d");
     ctx_mouse.globalAlpha = 1;
 
-    let colorScale = d3.scaleSequential(
-      d3.extent(currdata, (d) => d[datatype]),
-      d3.interpolateGnBu
-    );
+    let currdata_for_sort = [...currdata];
+
+    let colorScale;
+
+    if (currDataType !== "rateIn") {
+      let sortedData = currdata_for_sort.sort(
+        (a, b) => a[currDataType] - b[currDataType]
+      );
+      let topNIndex = parseInt(currdata.length * 0.9); // 取前90%的数据作为区间分割点
+
+      colorScale = d3
+        .scaleSequential()
+        .domain([
+          d3.min(currdata, (d) => d[currDataType]),
+          sortedData[topNIndex][currDataType],
+          d3.max(currdata, (d) => d[currDataType]),
+        ])
+        .range(["#fdf1e5", "#e57b3a", "#993c19"]);
+    } else {
+      colorScale = d3
+        .scaleSequential()
+        .domain(d3.extent(currdata, (d) => d[currDataType]))
+        .range(["#fdf1e5", "#993c19"]);
+    }
 
     for (let d in currdata) {
-      ctx.fillStyle = colorScale(currdata[d][datatype]);
+      ctx.fillStyle = colorScale(currdata[d][currDataType]);
       ctx.fillRect(
         (d % oneLine) * squareSize,
         parseInt(d / oneLine) * squareSize,
@@ -496,6 +534,7 @@ export default function ClueDense({ w, h }) {
     }
 
     canvas_mouse.addEventListener("mousemove", hdlMouseMove, false);
+    canvas_mouse.addEventListener("click", hdlClick, false);
   }
 
   function onNodeTypeChange(e) {
@@ -503,6 +542,7 @@ export default function ClueDense({ w, h }) {
   }
 
   function onDataTypeChange(e) {
+    currDataTypeRef.current = e.target.value;
     setCurrDataType(e.target.value);
   }
 
