@@ -4,6 +4,8 @@ import * as d3 from "d3";
 import { Radio } from "antd";
 import { getClueDenseDataSds } from "../../apis/api";
 
+import PubSub from "pubsub-js";
+
 const nodeType = ["IP", "Cert"];
 const dataType = ["numConnectedDomain", "numDomainWithIn", "rateIn"];
 const dataTypeForShow = ["#D", "#DarkD", "ratio"];
@@ -438,6 +440,18 @@ export default function ClueDense({ w, h }) {
       }
     };
 
+    const hdlClick = function (event) {
+      let { x, y } = getMousePosition(event, canvas);
+      let r = Math.floor(y / squareSize);
+      let c = Math.floor(x / squareSize);
+      let index = r * oneLine + c;
+      let d = currdata[index];
+      PubSub.publish("getClueFromDense", {
+        numId: d.numId,
+        Id: d.Id.split("_")[0],
+      });
+    };
+
     const dimensions = {
       width: svgWidth,
       height: svgHeight * 0.94,
@@ -496,17 +510,6 @@ export default function ClueDense({ w, h }) {
         .range(["#fdf1e5", "#993c19"]);
     }
 
-    // let colorScale = d3.scaleSequential(
-    //   d3.extent(currdata, (d) => Math.log2(d[currDataType])),
-    //   d3.interpolateOranges
-    //   // d3.interpolateGreys
-    // );
-
-    // let colorScale = d3
-    //   .scaleSequential()
-    //   .domain(d3.extent(currdata, (d) => d[currDataType]))
-    //   .range(["#f2f2f2", "#3e3e3e"]);
-
     for (let d in currdata) {
       ctx.fillStyle = colorScale(currdata[d][currDataType]);
       ctx.fillRect(
@@ -531,6 +534,7 @@ export default function ClueDense({ w, h }) {
     }
 
     canvas_mouse.addEventListener("mousemove", hdlMouseMove, false);
+    canvas_mouse.addEventListener("click", hdlClick, false);
   }
 
   function onNodeTypeChange(e) {
