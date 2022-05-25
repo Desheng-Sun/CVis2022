@@ -24,32 +24,648 @@ export default function DifChart({ w, h }) {
     let radius = svgWidth / 2;
 
     let rawdata = {
-      name: "root",
-      children: [
+      "name": "root",
+      "children": [
         {
-          name: "IP_1", children: [
+          "numId": 3,
+          "id": "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
+          "name": "5.180.xxx.xxx",
+          "type": "IP",
+          "children": [
             {
-              name: "IP_2", children: [
-                { name: "A", num: 4, children: [{ name: "B", num: 0, children: [{ name: "C", num: 6, value: 5 }] }] },//IP1自己的黑灰产数量num value都是5
-                { name: "A", num: 0, children: [{ name: "B", num: 3, children: [{ name: "C", num: 1, value: 5 }] }] },//IP和IP2共有的黑灰产数量
-                { name: "A", num: 2, children: [{ name: "B", num: 0, children: [{ name: "C", num: 2, value: 5 }] }] }]//IP2自己的黑灰产数量
+              "numId": 4,
+              "id": "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
+              "name": "9ace6aae20",
+              "type": "Cert",
+              "children": [
+                {
+                  "name": "ABCE",
+                  "num": 6,
+                  "children": [
+                    {
+                      "name": "ABCEG",
+                      "num": 1,
+                      "children": [
+                        {
+                          "name": "BC",
+                          "num": 3,
+                          "value": 5
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "ABCE",
+                  "num": 20,
+                  "children": [
+                    {
+                      "name": "ABCEG",
+                      "num": 0,
+                      "children": [
+                        {
+                          "name": "BC",
+                          "num": 0,
+                          "value": 5
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "ABCE",
+                  "num": 67,
+                  "children": [
+                    {
+                      "name": "ABCEG",
+                      "num": 0,
+                      "children": [
+                        {
+                          "name": "BC",
+                          "num": 0,
+                          "value": 5
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             },
             {
-              name: "IP_3", children: [
-                { name: "AB", num: 0, children: [{ name: "BC", num: 1, children: [{ name: "CE", num: 0, value: 5 }] }] },
-                { name: "AB", num: 1, children: [{ name: "BC", num: 3, children: [{ name: "CE", num: 2, value: 5 }] }] },
-                { name: "AB", num: 4, children: [{ name: "BC", num: 3, children: [{ name: "CE", num: 1, value: 5 }] }] }]
-            }]
+              "numId": 101,
+              "id": "Cert_9032204fc475b809ea02a4ffc7e682660892d9e9d23b7b1777d0b4f0e9a0a656",
+              "name": "9032204fc4",
+              "type": "Cert",
+              "children": [
+                {
+                  "name": "ABCE",
+                  "num": 17,
+                  "children": [
+                    {
+                      "name": "ABCEG",
+                      "num": 0,
+                      "children": [
+                        {
+                          "name": "BC",
+                          "num": 3,
+                          "value": 5
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "ABCE",
+                  "num": 9,
+                  "children": [
+                    {
+                      "name": "ABCEG",
+                      "num": 1,
+                      "children": [
+                        {
+                          "name": "BC",
+                          "num": 0,
+                          "value": 5
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "ABCE",
+                  "num": 7,
+                  "children": [
+                    {
+                      "name": "ABCEG",
+                      "num": 0,
+                      "children": [
+                        {
+                          "name": "BC",
+                          "num": 0,
+                          "value": 5
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "numId": 102,
+              "id": "IP_e000e83fd5fc8045d04b96af43f55ceb1005ec6e728aba4b066eaa1b47b11789",
+              "name": "164.155.xxx.xxx",
+              "type": "IP",
+              "children": [
+                {
+                  "name": "ABCE",
+                  "num": 24,
+                  "children": [
+                    {
+                      "name": "ABCEG",
+                      "num": 1,
+                      "children": [
+                        {
+                          "name": "B",
+                          "num": 11,
+                          "children": [
+                            {
+                              "name": "A",
+                              "num": null,
+                              "value": 5
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "ABCE",
+                  "num": 2,
+                  "children": [
+                    {
+                      "name": "ABCEG",
+                      "num": 0,
+                      "children": [
+                        {
+                          "name": "B",
+                          "num": 0,
+                          "children": [
+                            {
+                              "name": "A",
+                              "num": 0,
+                              "value": 5
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "ABCE",
+                  "num": 0,
+                  "children": [
+                    {
+                      "name": "ABCEG",
+                      "num": 0,
+                      "children": [
+                        {
+                          "name": "B",
+                          "num": 105,
+                          "children": [
+                            {
+                              "name": "A",
+                              "num": 1,
+                              "value": 5
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "numId": 5719,
+              "id": "IP_7f8392f3c34ce8ad1c7fefb44b43b221218679f9ebf77d557cf86dcd7b4e57ca",
+              "name": "199.59.xxx.xxx",
+              "type": "IP",
+              "children": [
+                {
+                  "name": "ABCE",
+                  "num": 24,
+                  "children": [
+                    {
+                      "name": "ABCEG",
+                      "num": 1,
+                      "children": [
+                        {
+                          "name": "B",
+                          "num": 11,
+                          "children": [
+                            {
+                              "name": "BC",
+                              "num": 3,
+                              "children": [
+                                {
+                                  "name": "A",
+                                  "num": null,
+                                  "children": [
+                                    {
+                                      "name": "G",
+                                      "num": null,
+                                      "value": 5
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "ABCE",
+                  "num": 2,
+                  "children": [
+                    {
+                      "name": "ABCEG",
+                      "num": 0,
+                      "children": [
+                        {
+                          "name": "B",
+                          "num": 0,
+                          "children": [
+                            {
+                              "name": "BC",
+                              "num": 0,
+                              "children": [
+                                {
+                                  "name": "A",
+                                  "num": 0,
+                                  "children": [
+                                    {
+                                      "name": "G",
+                                      "num": 0,
+                                      "value": 5
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "ABCE",
+                  "num": 0,
+                  "children": [
+                    {
+                      "name": "ABCEG",
+                      "num": 0,
+                      "children": [
+                        {
+                          "name": "B",
+                          "num": 6,
+                          "children": [
+                            {
+                              "name": "BC",
+                              "num": 0,
+                              "children": [
+                                {
+                                  "name": "A",
+                                  "num": 3,
+                                  "children": [
+                                    {
+                                      "name": "G",
+                                      "num": 1,
+                                      "value": 5
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "numId": 35959,
+              "id": "IP_2ecbab579fa0523913c5b56ca5a02dda98f0cdc12153c79a81a93d2560cdf202",
+              "name": "23.108.xxx.xxx",
+              "type": "IP",
+              "children": [
+                {
+                  "name": "ABCE",
+                  "num": 26,
+                  "children": [
+                    {
+                      "name": "ABCEG",
+                      "num": 1,
+                      "children": [
+                        {
+                          "name": "B",
+                          "num": 2,
+                          "children": [
+                            {
+                              "name": "BC",
+                              "num": 0,
+                              "children": [
+                                {
+                                  "name": "BG",
+                                  "num": null,
+                                  "children": [
+                                    {
+                                      "name": "G",
+                                      "num": null,
+                                      "value": 5
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "ABCE",
+                  "num": 0,
+                  "children": [
+                    {
+                      "name": "ABCEG",
+                      "num": 0,
+                      "children": [
+                        {
+                          "name": "B",
+                          "num": 9,
+                          "children": [
+                            {
+                              "name": "BC",
+                              "num": 3,
+                              "children": [
+                                {
+                                  "name": "BG",
+                                  "num": 0,
+                                  "children": [
+                                    {
+                                      "name": "G",
+                                      "num": 0,
+                                      "value": 5
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "ABCE",
+                  "num": 0,
+                  "children": [
+                    {
+                      "name": "ABCEG",
+                      "num": 0,
+                      "children": [
+                        {
+                          "name": "B",
+                          "num": 27,
+                          "children": [
+                            {
+                              "name": "BC",
+                              "num": 0,
+                              "children": [
+                                {
+                                  "name": "BG",
+                                  "num": 2,
+                                  "children": [
+                                    {
+                                      "name": "G",
+                                      "num": 1,
+                                      "value": 5
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         },
         {
-          name: "IP_4", children: [{
-            name: "IP_5", children: [
-              { name: "AE", num: 4, children: [{ name: "B", num: 0, value: 5 }] },//IP1自己的黑灰产数量num value都是5
-              { name: "AE", num: 0, children: [{ name: "B", num: 3, value: 5}] },//IP和IP2共有的黑灰产数量
-              { name: "AE", num: 2, children: [{ name: "B", num: 0, value: 5}] }]//IP2自己的黑灰产数量
-          }]
+          "numId": 4,
+          "id": "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
+          "name": "9ace6aae20",
+          "type": "Cert",
+          "children": [
+            {
+              "numId": 102,
+              "id": "IP_e000e83fd5fc8045d04b96af43f55ceb1005ec6e728aba4b066eaa1b47b11789",
+              "name": "164.155.xxx.xxx",
+              "type": "IP",
+              "children": [
+                {
+                  "name": "ABCE",
+                  "num": 85,
+                  "children": [
+                    {
+                      "name": "B",
+                      "num": null,
+                      "value": 5
+                    }
+                  ]
+                },
+                {
+                  "name": "ABCE",
+                  "num": 2,
+                  "children": [
+                    {
+                      "name": "B",
+                      "num": 0,
+                      "value": 5
+                    }
+                  ]
+                },
+                {
+                  "name": "ABCE",
+                  "num": 0,
+                  "children": [
+                    {
+                      "name": "B",
+                      "num": 105,
+                      "value": 5
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "numId": 5719,
+              "id": "IP_7f8392f3c34ce8ad1c7fefb44b43b221218679f9ebf77d557cf86dcd7b4e57ca",
+              "name": "199.59.xxx.xxx",
+              "type": "IP",
+              "children": [
+                {
+                  "name": "ABCE",
+                  "num": 85,
+                  "children": [
+                    {
+                      "name": "A",
+                      "num": null,
+                      "children": [
+                        {
+                          "name": "B",
+                          "num": null,
+                          "children": [
+                            {
+                              "name": "G",
+                              "num": null,
+                              "value": 5
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "ABCE",
+                  "num": 2,
+                  "children": [
+                    {
+                      "name": "A",
+                      "num": 0,
+                      "children": [
+                        {
+                          "name": "B",
+                          "num": 0,
+                          "children": [
+                            {
+                              "name": "G",
+                              "num": 0,
+                              "value": 5
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "ABCE",
+                  "num": 0,
+                  "children": [
+                    {
+                      "name": "A",
+                      "num": 3,
+                      "children": [
+                        {
+                          "name": "B",
+                          "num": 6,
+                          "children": [
+                            {
+                              "name": "G",
+                              "num": 1,
+                              "value": 5
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         },
-
+        {
+          "numId": 101,
+          "id": "Cert_9032204fc475b809ea02a4ffc7e682660892d9e9d23b7b1777d0b4f0e9a0a656",
+          "name": "9032204fc4",
+          "type": "Cert",
+          "children": [
+            {
+              "numId": 112,
+              "id": "IP_cdcb3771d72a01e7845b212e74d1ca1b0e8384b79bad1da2f73c93959da5b3d2",
+              "name": "172.255.xxx.xxx",
+              "type": "IP",
+              "children": [
+                {
+                  "name": "ABCE",
+                  "num": 14,
+                  "children": [
+                    {
+                      "name": "ABCEG",
+                      "num": 1,
+                      "children": [
+                        {
+                          "name": "B",
+                          "num": null,
+                          "children": [
+                            {
+                              "name": "BG",
+                              "num": null,
+                              "value": 5
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "ABCE",
+                  "num": 2,
+                  "children": [
+                    {
+                      "name": "ABCEG",
+                      "num": 0,
+                      "children": [
+                        {
+                          "name": "B",
+                          "num": 18,
+                          "children": [
+                            {
+                              "name": "BG",
+                              "num": 1,
+                              "value": 5
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "ABCE",
+                  "num": 0,
+                  "children": [
+                    {
+                      "name": "ABCEG",
+                      "num": 0,
+                      "children": [
+                        {
+                          "name": "B",
+                          "num": 0,
+                          "children": [
+                            {
+                              "name": "BG",
+                              "num": 0,
+                              "value": 5
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
       ]
     }
     function partition(data) {
@@ -73,6 +689,7 @@ export default function DifChart({ w, h }) {
       .append("svg")
       .attr('width', svgWidth)
       .attr('height', svgHeight);
+
     // let element = svg.node();
     // element.value = { sequence: [], percentage: 0.0 };
 
@@ -102,6 +719,7 @@ export default function DifChart({ w, h }) {
       .attr("viewBox", `${-radius} ${-radius} ${svgWidth} ${svgWidth}`)
       .style("max-width", `${svgWidth}px`)
       .style("font", "12px sans-serif");
+
     let arc = d3
       .arc()
       .startAngle(d => d.x0)
@@ -110,15 +728,13 @@ export default function DifChart({ w, h }) {
       .cornerRadius(60)
       // .padRadius(0.9)
       .innerRadius(d => {
-
         if (d.depth === 1) return 0
         return Math.sqrt(d.y0)
       })
       .outerRadius(d => {
         if (!d.depth) return 0
         return Math.sqrt(d.y1) - 1
-      }
-      )
+      })
     const path = svg
       .append("g")
       .selectAll("path")
@@ -126,7 +742,10 @@ export default function DifChart({ w, h }) {
       .join("path")
       .attr("fill", d => {
         if (undefined == d.data.num) return "#9e70cf"
-        return color(d.data.num)
+        return color(d.data.name)
+      })
+      .attr("opacity", d => {
+        return d.data.num / 10
       })
       .attr("d", arc);
 

@@ -85,3 +85,9 @@ export function getIcClueData2Sds(numId, type) {
 export function getClueDenseDataSds() {
   return post("/getClueDenseDataSds");
 }
+
+export function getIndustryStackSds(nodesLinksInfo) {
+  return post("/getIndustryStackSds", {
+    nodesLinksInfo: nodesLinksInfo,
+  });
+}
