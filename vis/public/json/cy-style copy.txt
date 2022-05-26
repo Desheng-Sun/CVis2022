@@ -69,8 +69,16 @@
   {
     "selector": "node[type=\"Domain\"]",
     "style": {
-      "width": 100,
-      "height":100
+      "background-color": "function(ele){ return url('../images/IP.') }",
+      "function(ele){ return url('../images/IP.png') }",
+      "pie-size": "90%",
+      "shape":"circle",
+      "pie-1-background-color": "#E8747C",
+      "pie-1-background-size": "1",
+      "pie-2-background-color": "#74CBE8",
+      "pie-2-background-size": "2",
+      "pie-3-background-color": "#74E883",
+      "pie-3-background-size": "3"
     }
   },
   {
@@ -187,15 +195,8 @@
   {
     "selector": "node:selected",
     "style": {
-      "border-color": "#e53f32",
-      "border-width": "3px"
-    }
-  },
-  {
-    "selector": "node[type=\"Domain\"]:selected",
-    "style": {
-      "border-color": "#e53f32",
-      "border-width": "3px"
+      "background-color": "#e53f32",
+      "border-color": "red"
     }
   },
   {

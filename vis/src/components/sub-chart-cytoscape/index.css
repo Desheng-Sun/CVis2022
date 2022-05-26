@@ -1,22 +1,21 @@
-#chart{
-    /* position: absolute; */
-    text-align: start;
+#chart {
+  /* position: absolute; */
+  text-align: start;
 }
 
-#main-container{
+#main-container {
   display: flex;
   flex-direction: column;
   text-align: start;
 }
 
-#main-chart{
+#main-chart {
   width: 100%;
   /* flex: 29; */
-  height:890px
+  height: 890px;
 }
 
-
-#main-chart-control{
+#main-chart-control {
   width: 100%;
   flex: 1;
   font-weight: bold;
@@ -24,54 +23,97 @@
   font-size: 15px;
 }
 
-.__________cytoscape_container canvas{
-    position: relative;
+.__________cytoscape_container canvas {
+  position: relative;
 }
 
-.highlight{
-    background-color: blue;
+.highlight {
+  background-color: blue;
 }
 
 /*Ovveride Navigator border and background:*/
 .cytoscape-navigator {
-    border: 2px solid #bebebe !important;
-    background: white !important;
-    height: 10vh !important;
-    width: 6vw !important;
-    margin-bottom: 17%;
-    margin-right: 34%;
-  }
-  
-  /*Add border to View container:*/
-  .cytoscape-navigator .cytoscape-navigatorView {
-    border: 2px solid #124191;
-    background: transparent;
-  }
-  
-  /*Ovveride overlay container when mouse is over Navigator*/
-  .cytoscape-navigator:hover .cytoscape-navigatorOverlay {
-    border: 2px solid #124191;
-    background: transparent;
-  }
-  
-  /*Ovveride view's container when mouse is over view*/
-  .cytoscape-navigator.mouseover-view .cytoscape-navigatorView {
-    background-color: rgba(18, 65, 145, 0.3);
-  }
+  border: 2px solid #bebebe !important;
+  background: white !important;
+  height: 10vh !important;
+  width: 6vw !important;
+  margin-bottom: 17%;
+  margin-right: 34%;
+}
 
-  .cy-context-menus-cxt-menu button{
-    width: 100px !important;
-    border: grey;
-    background: rgba(0, 0,0, 0.3);
-    color: white;
-  }
-  .cy-context-menus-cxt-menu button:hover{
-    background: rgba(0, 0, 0, 0.7);
-  }
+/*Add border to View container:*/
+.cytoscape-navigator .cytoscape-navigatorView {
+  border: 2px solid #124191;
+  background: transparent;
+}
 
-  #navigator{
-    display: contents;
-  }
+/*Ovveride overlay container when mouse is over Navigator*/
+.cytoscape-navigator:hover .cytoscape-navigatorOverlay {
+  border: 2px solid #124191;
+  background: transparent;
+}
 
+/*Ovveride view's container when mouse is over view*/
+.cytoscape-navigator.mouseover-view .cytoscape-navigatorView {
+  background-color: rgba(18, 65, 145, 0.3);
+}
 
+.cy-context-menus-cxt-menu button {
+  width: 100px !important;
+  border: grey;
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+}
+.cy-context-menus-cxt-menu button:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
 
+#navigator {
+  display: contents;
+}
+
+#mainLegend {
+  position: absolute;
+  width: 120px;
+  top: 119px;
+  background: #eee;
+  cursor: pointer;
+}
+#legendHeader {
+  width: 120px;
+  padding-left: 9px;
+  background: #eee;
+}
+#legendDivider {
+  width: 120px;
+  height: 2px;
+  background-color: #aaa;
+}
+#collapseLegendIcon svg {
+  background: #eee;
+}
+
+#collapseLegendIcon svg:hover {
+  background: #ccc;
+}
+#expandLegendIcon svg {
+  background: #eee;
+}
+#expandLegendIcon svg:hover {
+  background: #ccc;
+}
+
+.mainToolTip {
+  position: absolute;
+  visibility: hidden;
+  min-width: 30px;
+  max-width: auto;
+  border-radius: 4px;
+  height: auto;
+  background: rgba(255, 250, 250, 0.8);
+  border: 1px solid #ddd;
+  padding: 4px 8px;
+  font-size: 12px;
+  text-align: left;
+  z-index: 1000;
+}

@@ -92,7 +92,7 @@ app.get("/getInitialSds", (req, res, next) => {
       industry: i[4],
     });
   }
-  res.send(useNodeIdInfo);
+  res.send(useNodeIdInfo.slice(0, 15));
   res.end();
 });
 

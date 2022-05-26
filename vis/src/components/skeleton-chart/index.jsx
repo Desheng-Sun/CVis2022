@@ -443,9 +443,7 @@ export default function SkeletonChart({ w, h }) {
           .map((d) => {
             return d.numId;
           });
-        setSelectedNode((selectedNode) =>
-          Array.from(new Set([...selectedNode, ...numIdArr]))
-        );
+        setSelectedNode((selectedNode) => Array.from(new Set([...selectedNode, ...numIdArr])));
       }
     };
 

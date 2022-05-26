@@ -12,6 +12,8 @@ import {
   RedoOutlined,
   RollbackOutlined,
   CheckOutlined,
+  CaretUpOutlined,
+  ExpandOutlined,
 } from "@ant-design/icons";
 import fcose from "cytoscape-fcose";
 import "cytoscape-navigator/cytoscape.js-navigator.css";
@@ -45,7 +47,7 @@ var layoutOptionDict = {
     animate: true, // whether to transition the node positions
     avoidOverlap: true,
     springLength: 10,
-    mass: 5,
+    mass: 7,
     animateFilter: function (node, i) {
       return true;
     }, // 决定是否节点的位置应该被渲染
@@ -142,7 +144,7 @@ export default function SubChartCytoscape({ w, h }) {
   const [filterType, setFilterType] = useState([]);
   const [filterFlag, setFilterFlag] = useState(false);
   const [edgeLength, setEdgeLength] = useState(10);
-  const [nodeDistance, setNodeDistance] = useState(10);
+  const [nodeDistance, setNodeDistance] = useState(6);
   const [distanceFlag, setDistanceFlag] = useState(false);
   const [chartLayout, setChartLayout] = useState("euler");
   const [undoOut, setUndoOut] = useState(false);
@@ -165,6 +167,7 @@ export default function SubChartCytoscape({ w, h }) {
   }, [w]);
   useEffect(() => {
     setSvgHeight(h);
+    drawLegend();
   }, [h]);
 
   // 接收skeleton图过来的参数是否变化
@@ -186,7 +189,7 @@ export default function SubChartCytoscape({ w, h }) {
           id: "Domain_34a6231f101fdfa2b051beaa4b94d463fe5f9f42b7789bbe60f6fd4c292ee7ac",
           name: "34a6231f10.com",
           type: "Domain",
-          industry: "ABCE\r",
+          industry: "a\r",
           nodeToICNumId: 3,
           childrenNum: 17,
           children: [
@@ -195,21 +198,21 @@ export default function SubChartCytoscape({ w, h }) {
               id: "Domain_34a6231f101fdfa2b051beaa4b94d463fe5f9f42b7789bbe60f6fd4c292ee7ac",
               name: "34a6231f10.com",
               type: "Domain",
-              industry: "ABCE\r",
+              industry: "ab\r",
             },
             {
               numId: 2,
               id: "Domain_5052db3f33d5337ab631025f7d5de3c5ac559edb2c40deda5530c0051f39b1e2",
               name: "5052db3f33.com",
               type: "Domain",
-              industry: "ABCE\r",
+              industry: "abcd\r",
             },
             {
               numId: 16,
               id: "Domain_6f51b90ab3ab80b45407724da4f21428fc679ab578242223ba6be8020bd6b2c0",
               name: "6f51b90ab3.com",
               type: "Domain",
-              industry: "ABCE\r",
+              industry: "abcde\r",
             },
             {
               numId: 18,
@@ -1410,7 +1413,8 @@ export default function SubChartCytoscape({ w, h }) {
 
   // 处理节点的搜索事件
   useEffect(() => {
-    drawChart();
+    // drawChart();
+    dragElement(document.getElementById("mainLegend"));
   }, [data]);
 
   // 监听是否选择当前数据为一个团伙
@@ -1440,8 +1444,8 @@ export default function SubChartCytoscape({ w, h }) {
       // api.setOption('layoutBy', ecLayoutOption)
       // api.collapseAll();
       layout.run();
-      setEdgeLength(5);
-      setNodeDistance(5);
+      setEdgeLength(10);
+      setNodeDistance(10);
     }
     setLayoutFlag(false);
   }, [chartLayout]);
@@ -1588,7 +1592,22 @@ export default function SubChartCytoscape({ w, h }) {
           },
         },
       };
+      let domainNOdeStyle = {
+        selector: 'node[type="Domain"]',
+        style: {
+          "background-color": "#fff",
+          "background-image": function (ele) {
+            return (
+              "url('./images/Domain/" +
+              ele.json().data["industry"].toLowerCase().replace("\r", "") +
+              ".png')"
+            );
+          },
+          "background-fit": "contain",
+        },
+      };
       stylesJson.push(newStyleArr);
+      stylesJson.push(domainNOdeStyle);
       cy = window.cy = cytoscape({
         container: document.getElementById("main-chart"),
         elements: {
@@ -1644,14 +1663,58 @@ export default function SubChartCytoscape({ w, h }) {
         var node = e.target;
       });
 
+      var maintoolTip = d3
+        .select("#main-container")
+        .append("div")
+        .attr("class", "mainToolTip");
+
       // 节点的mouseover事件
       cy.on("mouseover", "node", function (e) {
         var neigh = e.target;
+        let curNOdeData = neigh.json().data;
         cy.elements()
           .difference(neigh.outgoers().union(neigh.incomers()))
           .not(neigh)
           .addClass("semitransp");
         neigh.addClass("highlight").outgoers().addClass("highlight");
+        // 增加tooltip
+        let htmlText;
+        if (curNOdeData.type === "Domain")
+          htmlText =
+            "<b>" +
+            "id: " +
+            "</b>" +
+            "id: " +
+            curNOdeData.id +
+            "<br>" +
+            "<b>" +
+            "id: " +
+            "</b>" +
+            "name: " +
+            curNOdeData.name +
+            "<br>" +
+            "<b>" +
+            "id: " +
+            "</b>" +
+            "industry: " +
+            curNOdeData.industry;
+        else
+          htmlText =
+            "<b>" +
+            "id: " +
+            "</b>" +
+            curNOdeData.id +
+            "<br>" +
+            "<b>" +
+            "id: " +
+            "</b>" +
+            "name" +
+            curNOdeData.name;
+        maintoolTip
+          .style("left", e.renderedPosition.x + 610 + "px")
+          .style("top", e.renderedPosition.y + 110 + "px")
+          .style("visibility", "visible")
+          .html(htmlText);
       });
       cy.on("mouseout", "node", function (e) {
         var neigh = e.target;
@@ -1661,6 +1724,7 @@ export default function SubChartCytoscape({ w, h }) {
           .outgoers()
           .union(neigh.incomers())
           .removeClass("highlight");
+        maintoolTip.style("visibility", "hidden"); // Hide toolTip
       });
 
       var menuOptions = {
@@ -1920,6 +1984,207 @@ export default function SubChartCytoscape({ w, h }) {
     setResData({ nodes: [...nodes], links: [...links] });
   }
 
+  function drawLegend() {
+    d3.selectAll("#mainLegendContent svg").remove();
+    let legendSvg = d3
+      .select("#mainLegendContent")
+      .append("svg")
+      .attr("width", "115px")
+      .attr("height", "280px");
+    let nodeType = ["Domain", "IP", "IP_C", "Cert", "Whois", "ASN"];
+    let nodeColor = [
+      "#fff",
+      "#7fc97f",
+      "#7fc97f",
+      "#ff756a",
+      "#f67f02",
+      "#f9bf6f",
+    ];
+    let edgeType = [
+      "cert",
+      "subdomain",
+      "request_jump",
+      "dns_a",
+      "whois",
+      "cert_chain",
+      "cname",
+      "asn",
+      "cidr",
+    ];
+    let edgeColor = [
+      "#ff756a",
+      "#2978b4",
+      "#1e38a1",
+      "#33a02c",
+      "#f67f02",
+      "#f9b4ae",
+      "#a6cee3",
+      "#f9bf6f",
+      "#7fc97f",
+    ];
+    let industryType = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
+    let industryColor = [
+      "#7fc97f",
+      "#f9bf6f",
+      "#ff756a",
+      "#2978b4",
+      "#f67f02",
+      "#a6cee3",
+      "#e53f32",
+      "#f9b4ae",
+      "#f5f440",
+    ];
+    // 添加节点类型的图例
+    let nodeTypeWrapper = legendSvg
+      .append("g")
+      .attr("transform", "translate(5, 0)")
+      .attr("class", "nodeTyleWrapper");
+    nodeTypeWrapper
+      .append("text")
+      .text("节点类型")
+      .attr("y", "20px")
+      .attr("font-weight", "bold")
+      .attr("font-size", "12px");
+    let nodeTypeG = nodeTypeWrapper
+      .selectAll("g")
+      .data(nodeType)
+      .join("g")
+      .attr(
+        "transform",
+        (d, i) =>
+          "translate(" +
+          `${(i % 2) * 60 + 10}` +
+          "," +
+          `${Math.floor(i / 2) * 20 + 40}` +
+          ")"
+      );
+    nodeTypeG
+      .append("circle")
+      .attr("cx", 0)
+      .attr("cy", 0)
+      .attr("r", "6px")
+      .attr("stroke", (d, i) => {
+        if (i === 0) return "red";
+      })
+      .style("stroke-dasharray", (d, i) => {
+        if (i === 0) return "2, 2";
+      })
+      .attr("fill", (d, i) => nodeColor[i]);
+    nodeTypeG
+      .append("text")
+      .text((d) => d)
+      .attr("x", 10)
+      .attr("y", 3)
+      .attr("font-size", "10px");
+    // 添加边类型的图例
+    let edgeTypeWrapper = legendSvg
+      .append("g")
+      .attr("transform", "translate(5, 90)")
+      .attr("class", "edgeTyleWrapper");
+    edgeTypeWrapper
+      .append("text")
+      .text("边类型")
+      .attr("y", "20px")
+      .attr("font-weight", "bold")
+      .attr("font-size", "12px");
+    let edgeTypeG = edgeTypeWrapper
+      .selectAll("g")
+      .data(edgeType)
+      .join("g")
+      .attr(
+        "transform",
+        (d, i) => "translate(" + `${0}` + "," + `${i * 12 + 25}` + ")"
+      );
+
+    edgeTypeG
+      .append("line")
+      .attr("x1", 0) //起点横坐标
+      .attr("y1", 5)
+      .attr("x2", 40)
+      .attr("y2", 5)
+      .attr("stroke", (d, i) => edgeColor[i])
+      .attr("stroke-width", 3);
+    edgeTypeG
+      .append("text")
+      .text((d) => d)
+      .attr("x", 42)
+      .attr("dy", 8)
+      .attr("font-size", "11px");
+
+    // 添加产业类型的图例
+    let industryTypeWrapper = legendSvg
+      .append("g")
+      .attr("transform", "translate(5, 220)")
+      .attr("class", "industryTyleWrapper");
+
+    industryTypeWrapper
+      .append("text")
+      .text("产业类型")
+      .attr("y", "20px")
+      .attr("font-weight", "bold")
+      .attr("font-size", "12px");
+
+    let industryTypeG = industryTypeWrapper
+      .selectAll("g")
+      .data(industryType)
+      .join("g")
+      .attr(
+        "transform",
+        (d, i) => "translate(" + `${i * 2 + 3} ` + "," + "20)"
+      );
+    industryTypeG
+      .append("rect")
+      .attr("x", (d, i) => i * 9)
+      .attr("y", 10)
+      .attr("width", 9)
+      .attr("height", 15)
+      .attr("fill", (d, i) => industryColor[i]);
+    industryTypeG
+      .append("text")
+      .text((d) => d)
+      .attr("x", (d, i) => i * 9 + 2)
+      .attr("y", 35)
+      .attr("font-size", "10px")
+      .attr("text-align", "center");
+  }
+
+  function onCollapse(event) {
+    d3.select("#mainLegendContent").style("display", "none");
+  }
+  function onExpand(event) {
+    d3.select("#mainLegendContent").style("display", "contents");
+  }
+  // 图例可拖拽
+  function dragElement(elmnt) {
+    var pos1 = 0,
+      pos2 = 0,
+      pos3 = 0,
+      pos4 = 0;
+    elmnt.onmousedown = dragMouseDown;
+
+    function dragMouseDown(e) {
+      e = e || window.event;
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      document.onmouseup = closeDragElement;
+      document.onmousemove = elementDrag;
+    }
+
+    function elementDrag(e) {
+      e = e || window.event;
+      pos1 = pos3 - e.clientX;
+      pos2 = pos4 - e.clientY;
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      elmnt.style.top = elmnt.offsetTop - pos2 + "px";
+      elmnt.style.left = elmnt.offsetLeft - pos1 + "px";
+    }
+
+    function closeDragElement() {
+      document.onmouseup = null;
+      document.onmousemove = null;
+    }
+  }
   return (
     <div
       id="main-container"
@@ -2054,6 +2319,23 @@ export default function SubChartCytoscape({ w, h }) {
           </div>
           <Checkbox onChange={addArrow}>箭头方向</Checkbox>
         </div>
+      </div>
+      <div id="mainLegend">
+        <div id="legendHeader">
+          图例
+          <CaretUpOutlined
+            id="collapseLegendIcon"
+            style={{ paddingLeft: "40px" }}
+            onClick={onCollapse}
+          />
+          <ExpandOutlined
+            id="expandLegendIcon"
+            style={{ paddingLeft: "10px" }}
+            onClick={onExpand}
+          />
+        </div>
+        <div id="legendDivider"></div>
+        <div id="mainLegendContent"></div>
       </div>
       <div id="navigator"></div>
       <div id="main-chart"></div>
