@@ -261,6 +261,7 @@ export default function DifChart({ w, h }) {
     if (JSON.stringify(data) === "[]") return;
     d3.selectAll("#diff-legend svg").remove();
     d3.selectAll("#diff-chart svg").remove();
+
     let outerData = data[0];
     let innerData = data[1];
     let radius = Math.min(svgWidth / 2, svgHeight / 2);
@@ -610,6 +611,7 @@ export default function DifChart({ w, h }) {
           return d.data.name;
         }
         return d.data.num;
+        // return d.data.num !== 0 ? d.data.num : "";
       })
       .attr("z-index", 999);
 
