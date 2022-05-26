@@ -252,6 +252,7 @@ export default function DifChart({ w, h }) {
 
   useEffect(() => {
     getDifChartSds(linksInfo).then((res) => {
+      console.log(res);
       setData(res);
     });
   }, []);
@@ -625,7 +626,7 @@ export default function DifChart({ w, h }) {
     let arc3 = d3
       .arc()
       .startAngle((d, i) => {
-        if (i == 0) {
+        if (i === 0) {
           return 0;
         }
         return (
@@ -636,7 +637,7 @@ export default function DifChart({ w, h }) {
         );
       })
       .endAngle((d, i) => {
-        if (i == 0) {
+        if (i === 0) {
           return (
             innerDataILPad +
             (innerDataPad + innerDataAngle) *
