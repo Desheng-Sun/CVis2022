@@ -187,8 +187,15 @@
   {
     "selector": "node:selected",
     "style": {
-      "background-color": "#e53f32",
-      "border-color": "red"
+      "border-color": "#e53f32",
+      "border-width": "3px"
+    }
+  },
+  {
+    "selector": "node[type=\"Domain\"]:selected",
+    "style": {
+      "border-color": "#e53f32",
+      "border-width": "3px"
     }
   },
   {

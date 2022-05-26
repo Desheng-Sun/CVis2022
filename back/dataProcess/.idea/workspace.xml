@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="dbe8f486-9b70-4c64-9ecf-41b903c5e517" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../../vis/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../vis/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../vis/public/json/cy-style.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../vis/public/json/cy-style.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../vis/src/components/sub-chart-cytoscape/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../../vis/src/components/sub-chart-cytoscape/index.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -35,7 +35,11 @@
       <option name="presentableId" value="Default" />
       <updated>1653457038033</updated>
       <workItem from="1653457059214" duration="104000" />
+      <workItem from="1653551542666" duration="594000" />
     </task>
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
   </component>
 </project>
