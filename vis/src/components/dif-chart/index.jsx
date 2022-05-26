@@ -373,11 +373,15 @@ export default function DifChart({ w, h }) {
       .style("max-width", `${svgWidth}px`)
       .style("font", "12px sans-serif");
     // 绘制图例-------------------------------------------------------------------------------------
+    let totalLetter = industryName.reduce(function (prev, curr) {
+      // 所有字符出现得总次数
+      return prev + curr.length;
+    }, 0);
     let diffLegendSvg = d3
       .select("#diff-legend")
       .append("svg")
       .attr("width", svgWidth)
-      .attr("height", "50px");
+      .attr("height", "25px");
     diffLegendSvg
       .append("g")
       .attr("class", "diff-legend")
@@ -385,22 +389,28 @@ export default function DifChart({ w, h }) {
       .data(industryName)
       .join("rect")
       .attr("fill", (d) => color(d))
-      .attr("x", (d, i) => ((svgWidth - 10) / industryName.length) * i + 5)
+      .attr("x", (d, i) => {
+        let beforeLatter = 0;
+        for (let j = 0; j < i; j++) beforeLatter += industryName[j].length;
+        return ((svgWidth - 10) / totalLetter) * beforeLatter + 5;
+      })
       .attr("y", 2)
       .attr("height", 20)
-      .attr("width", (svgWidth - 10) / industryName.length);
-    let totalLetter = industryName.reduce(function (prev, curr) {
-      // 所有字符出现得总次数
-      return prev + curr.length;
-    }, 0);
+      .attr("width", (d) => ((svgWidth - 10) / totalLetter) * d.length);
     diffLegendSvg
       .append("g")
       .selectAll("text")
       .data(industryName)
       .join("text")
       .attr("class", "legend-text")
-      .attr("text-anchor", "middle")
-      .attr("x", (d, i) => ((svgWidth - 10) / industryName.length) * i + 10)
+      .attr("width", (d, i) => ((svgWidth - 10) / totalLetter) * d.length)
+      .attr("x", (d, i) => {
+        let beforeLatter = 0;
+        for (let j = 0; j < i; j++) beforeLatter += industryName[j].length;
+        return (
+          ((svgWidth - 10) / totalLetter) * (beforeLatter + d.length / 2) + 5
+        );
+      })
       .attr("y", 15)
       .text((d) => {
         return d;
@@ -552,13 +562,12 @@ export default function DifChart({ w, h }) {
         })
       )
       .join("text")
-      .attr("class", "datatext")
-      .attr("text-anchor", "middle")
+      .attr("class", "data-text")
       .attr("transform", (d) => {
         let x, y;
         if (d.depth === 1) {
           x = (((d.x0 + d.x1) / 2) * 180) / Math.PI;
-          y = (innerRadius * 9) / 10 + 2;
+          y = (innerRadius * 9) / 10 - 6;
           if (x >= 90 && x <= 270) {
             y = y + 8;
           }
@@ -569,9 +578,9 @@ export default function DifChart({ w, h }) {
               childrenLen * ((d.data.nowICLinksNum - 1) * 3 + 1.5)) *
               180) /
             Math.PI;
-          y = innerRadius + radiusUse * root.data.depthmax - 3;
+          y = innerRadius + radiusUse * root.data.depthmax + 8;
           if (x < 90 || x > 270) {
-            y = y - 8;
+            y = y - 5;
           }
         } else {
           x =
@@ -587,9 +596,9 @@ export default function DifChart({ w, h }) {
               (root.data.depthmax / d.data.childrenLen) *
               (d.depth - 2.5);
           if (x >= 90 && x <= 270) {
-            y = y + 6;
+            y = y + 2;
           } else {
-            y = y - 6;
+            y = y - 2;
           }
         }
         return `rotate(${x - 90}) translate(${y},${0}) rotate(${
@@ -602,7 +611,7 @@ export default function DifChart({ w, h }) {
         }
         return d.data.num;
       })
-      .attr("font-size", "8px");
+      .attr("z-index", 999);
 
     // 绘制中间的玫瑰图-------------------------------------------------------------------------------------------------------------
     let maxLength = Math.log(innerData["largetLength"] + 1);
@@ -667,12 +676,10 @@ export default function DifChart({ w, h }) {
 
     svg
       .append("g")
-      .selectAll("path")
-      .data(["In ICLinks", "Not In ICLinks"])
-      .enter()
-      .append("text")
-      .attr("class", "datatext")
-      .attr("text-anchor", "middle")
+      .selectAll("text")
+      .data(["In", "Not In"])
+      .join("text")
+      .attr("class", "diff-left-right-text")
       .attr("transform", (d, i) => {
         let x =
           ((innerDataILPad +
@@ -682,7 +689,7 @@ export default function DifChart({ w, h }) {
             90) /
             Math.PI +
           i * 180;
-        let y = innerRadius + innerRadius / 10 - 20;
+        let y = innerRadius + innerRadius / 10 - 5;
         return `rotate(${x - 90}) translate(${y},${0}) rotate(${
           x < 90 || x > 270 ? 90 : 270
         })`;
@@ -690,16 +697,14 @@ export default function DifChart({ w, h }) {
       .text((d) => {
         return d;
       })
-      .attr("font-size", "8px");
+      .attr("fill", "purple");
 
     svg
       .append("g")
-      .selectAll("path")
+      .selectAll("text")
       .data(innerData["industryINLinks"])
-      .enter()
-      .append("text")
-      .attr("class", "datatext")
-      .attr("text-anchor", "middle")
+      .join("text")
+      .attr("class", "data-text")
       .attr("transform", (d, i) => {
         let x =
           ((innerDataILPad / 2 +
@@ -718,7 +723,7 @@ export default function DifChart({ w, h }) {
       .text((d) => {
         return d.number;
       })
-      .attr("font-size", "8px");
+      .attr("fill", "red");
 
     let arc4 = d3
       .arc()
@@ -748,8 +753,7 @@ export default function DifChart({ w, h }) {
       .data(innerData["industryINLinks"])
       .enter()
       .append("text")
-      .attr("class", "datatext")
-      .attr("text-anchor", "middle")
+      .attr("class", "data-text")
       .attr("transform", (d, i) => {
         let x =
           ((innerDataILPad / 2 +
@@ -767,8 +771,7 @@ export default function DifChart({ w, h }) {
       })
       .text((d) => {
         return d.number;
-      })
-      .attr("font-size", "8px");
+      });
 
     let arc5 = d3
       .arc()
@@ -806,8 +809,7 @@ export default function DifChart({ w, h }) {
       .data(innerData["industryINNodes"])
       .enter()
       .append("text")
-      .attr("class", "datatext")
-      .attr("text-anchor", "middle")
+      .attr("class", "inner-radar-text")
       .attr("transform", (d, i) => {
         let x =
           ((innerDataILPad * 1.5 +
@@ -825,8 +827,7 @@ export default function DifChart({ w, h }) {
       })
       .text((d) => {
         return d.number;
-      })
-      .attr("font-size", "8px");
+      });
   }
 
   return (

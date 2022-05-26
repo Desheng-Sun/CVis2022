@@ -2,8 +2,24 @@
     display: none; /* Chrome Safari */
   }
 
-#legend-text{
-  color: #fff;
+.legend-text{
+  fill: #fff;
   font-size: 10px;
-  text-align: center;
+  text-anchor: middle;
+}
+
+.diff-left-right-text{
+  text-anchor: middle;
+  font-size: 8px;
+  font-weight: bold;
+}
+
+.data-text{
+  text-anchor: middle;
+  font-size: 6px;
+}
+
+.inner-radar-text{
+  text-anchor: middle;
+  font-size: 8px;
 }
