@@ -92,7 +92,7 @@ app.get("/getInitialSds", (req, res, next) => {
       industry: i[4],
     });
   }
-  res.send(useNodeIdInfo);
+  res.send(useNodeIdInfo.slice(0, 15));
   res.end();
 });
 
@@ -852,55 +852,55 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
       nowICDifIndustry[0] = {
         "name": nowICDifIndustry1[nowICDifIndustry1.length - 1]["name"],
         "num": nowICDifIndustry1[nowICDifIndustry1.length - 1]["num"],
-        "nowICIndex":sendData["startICNum"] + 1,
-        "nowICLinksIndex":sendData["ICLinksNum"] + 1,
-        "childrenLen":nowICDifIndustry1.length,
+        "nowICIndex": sendData["startICNum"] + 1,
+        "nowICLinksIndex": sendData["ICLinksNum"] + 1,
+        "childrenLen": nowICDifIndustry1.length,
         "index": 1,
         "value": 5
       }
       nowICDifIndustry[1] = {
         "name": nowICDifIndustry2[nowICDifIndustry2.length - 1]["name"],
         "num": nowICDifIndustry2[nowICDifIndustry2.length - 1]["num"],
-        "nowICIndex":sendData["startICNum"] + 1,
-        "nowICLinksIndex":sendData["ICLinksNum"] + 1,
-        "childrenLen":nowICDifIndustry2.length,
+        "nowICIndex": sendData["startICNum"] + 1,
+        "nowICLinksIndex": sendData["ICLinksNum"] + 1,
+        "childrenLen": nowICDifIndustry2.length,
         "index": 2,
         "value": 5
       }
       nowICDifIndustry[2] = {
         "name": nowICDifIndustry3[nowICDifIndustry3.length - 1]["name"],
         "num": nowICDifIndustry3[nowICDifIndustry3.length - 1]["num"],
-        "nowICIndex":sendData["startICNum"] + 1,
-        "nowICLinksIndex":sendData["ICLinksNum"] + 1,
-        "childrenLen":nowICDifIndustry3.length,
+        "nowICIndex": sendData["startICNum"] + 1,
+        "nowICLinksIndex": sendData["ICLinksNum"] + 1,
+        "childrenLen": nowICDifIndustry3.length,
         "index": 3,
         "value": 5
       }
-      for (let k = nowICDifIndustry1.length - 2; k>=0; k --) {
+      for (let k = nowICDifIndustry1.length - 2; k >= 0; k--) {
         nowICDifIndustry[0] = {
           "name": nowICDifIndustry1[k]["name"],
           "num": nowICDifIndustry1[k]["num"],
-          "nowICIndex":sendData["startICNum"] + 1,
-          "nowICLinksIndex":sendData["ICLinksNum"] + 1,
-          "childrenLen":nowICDifIndustry1.length,
+          "nowICIndex": sendData["startICNum"] + 1,
+          "nowICLinksIndex": sendData["ICLinksNum"] + 1,
+          "childrenLen": nowICDifIndustry1.length,
           "index": 1,
           "children": [nowICDifIndustry[0]]
         }
         nowICDifIndustry[1] = {
           "name": nowICDifIndustry2[k]["name"],
           "num": nowICDifIndustry2[k]["num"],
-          "nowICIndex":sendData["startICNum"] + 1,
-          "nowICLinksIndex":sendData["ICLinksNum"] + 1,
-          "childrenLen":nowICDifIndustry2.length,
+          "nowICIndex": sendData["startICNum"] + 1,
+          "nowICLinksIndex": sendData["ICLinksNum"] + 1,
+          "childrenLen": nowICDifIndustry2.length,
           "index": 2,
           "children": [nowICDifIndustry[1]]
         }
         nowICDifIndustry[2] = {
           "name": nowICDifIndustry3[k]["name"],
           "num": nowICDifIndustry3[k]["num"],
-          "nowICIndex":sendData["startICNum"] + 1,
-          "nowICLinksIndex":sendData["ICLinksNum"] + 1,
-          "childrenLen":nowICDifIndustry3.length,
+          "nowICIndex": sendData["startICNum"] + 1,
+          "nowICLinksIndex": sendData["ICLinksNum"] + 1,
+          "childrenLen": nowICDifIndustry3.length,
           "index": 3,
           "children": [nowICDifIndustry[2]]
         }
@@ -913,7 +913,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
           "id": listLinks[nowLink[1]]["id"],
           "name": listLinks[nowLink[1]]["name"],
           "type": listLinks[nowLink[1]]["type"],
-          "nowICLinksNum":sendData["ICLinksNum"] + 1,
+          "nowICLinksNum": sendData["ICLinksNum"] + 1,
           "nowICNum": sendData["startICNum"] + 1,
           "children": nowICDifIndustry
         })
@@ -926,7 +926,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
           "id": listLinks[nowLink[0]]["id"],
           "name": listLinks[nowLink[0]]["name"],
           "type": listLinks[nowLink[0]]["type"],
-          "nowICLinksNum":sendData["ICLinksNum"] + 1,
+          "nowICLinksNum": sendData["ICLinksNum"] + 1,
           "nowICNum": sendData["startICNum"] + 1,
           "children": nowICDifIndustry
         })
