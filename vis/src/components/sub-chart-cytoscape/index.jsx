@@ -1915,8 +1915,23 @@ export default function SubChartCytoscape({ w, h }) {
     cy.getElementById(Id).style({ "background-color": "purple" }); // 更改被选中节点的属性
   }
 
+  // 图片的下载功能
   function onExportChart() {
-    let jpg64 = cy.jpg();
+    let blob = cy.png({
+      output: "blob",
+      bg: "transparent",
+      full: true,
+      scale: 4,
+      quality: 1,
+    });
+    let aLink = document.createElement("a");
+    let evt = document.createEvent("HTMLEvents");
+    evt.initEvent("click", true, true);
+    aLink.download = `${new Date().getTime()}.png`;
+    aLink.href = URL.createObjectURL(blob);
+    aLink.dispatchEvent(evt);
+    aLink.click();
+    // document.body.removeChild(aLink);
   }
 
   function onCenter(Id) {
