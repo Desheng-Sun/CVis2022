@@ -119,7 +119,6 @@ function getIPCertLinksInSkip2(
   nodeNumIdInfo
 ) {
   let allLinks = {};
-  console.log(nowNodeNumId)
   if (ICScreen[1].indexOf(nowNodeNumId) > -1) {
     nowNodeLinkInfo = ICAloneInfo[i];
     allLinks = {
@@ -756,9 +755,6 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
     }
     else if(ICScreen[0].indexOf(i["numId"]) > -1){
       for (let j of ICNeighbor[i["numId"]]) {
-        if(j[0] == "AB"){
-          console.log(i["numId"],j)
-        }
         industryINICNodes.add(j[0])
       }
     }

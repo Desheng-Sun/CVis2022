@@ -309,18 +309,18 @@ if __name__ == '__main__':
                     with open(nowPath + "ICAloneLinks/" + str(i) + ".json", "w", encoding="utf-8") as f2:
                         json.dump(nowICLinksInfo, f2, ensure_ascii=False)
                 bar()
-    #     nowICInfo1 = getICDomainInfo(linksAll, nodeCsvW, ICScreen[0])
-    #     nowICInfo2 = getICDomainInfo(linksAll, nodeCsvW, ICScreen[1])
-    #     ICDomainInfo = [nowICInfo1[0], nowICInfo2[0]]
-    #     ICIndustryInfo = nowICInfo1[1]
-    #     ICIndustryInfo.update(nowICInfo2[1])
-    #     ICIndustryInfo
-    #     ICneighbor = nowICInfo1[2]
-    #     ICneighbor.update(nowICInfo2[1])
-    #     with open(nowPath + "ICIndustryInfo.json", "w", encoding="utf-8") as f:
-    #         json.dump(ICIndustryInfo, f, ensure_ascii=False)
-    #     with open(nowPath + "ICneighbor.json", "w", encoding="utf-8") as f:
-    #         json.dump(ICneighbor, f, ensure_ascii=False)
-    #     with open(nowPath + "ICDomainInfo.json", "w", encoding="utf-8") as f:
-    #         json.dump(ICDomainInfo, f, ensure_ascii=False)
-    #     print(1)
+        # nowICInfo1 = getICDomainInfo(linksAll, nodeCsvW, ICScreen[0])
+        # nowICInfo2 = getICDomainInfo(linksAll, nodeCsvW, ICScreen[1])
+        # ICDomainInfo = [nowICInfo1[0], nowICInfo2[0]]
+        # ICIndustryInfo = nowICInfo1[1]
+        # ICIndustryInfo.update(nowICInfo2[1])
+        # ICIndustryInfo
+        # ICneighbor = nowICInfo1[2]
+        # ICneighbor.update(nowICInfo2[1])
+        # with open(nowPath + "ICIndustryInfo.json", "w", encoding="utf-8") as f:
+        #     json.dump(ICIndustryInfo, f, ensure_ascii=False)
+        # with open(nowPath + "ICneighbor.json", "w", encoding="utf-8") as f:
+        #     json.dump(ICneighbor, f, ensure_ascii=False)
+        # with open(nowPath + "ICDomainInfo.json", "w", encoding="utf-8") as f:
+        #     json.dump(ICDomainInfo, f, ensure_ascii=False)
+        # print(1)
