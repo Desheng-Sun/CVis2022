@@ -1414,7 +1414,7 @@ export default function SubChartCytoscape({ w, h }) {
   // 处理节点的搜索事件
   useEffect(() => {
     // drawChart();
-    dragElement(document.getElementById("mainLegend"));
+    dragElement(document.getElementById("main-legend"));
   }, [data]);
 
   // 监听是否选择当前数据为一个团伙
@@ -1985,9 +1985,9 @@ export default function SubChartCytoscape({ w, h }) {
   }
 
   function drawLegend() {
-    d3.selectAll("#mainLegendContent svg").remove();
+    d3.selectAll("#main-legend-content svg").remove();
     let legendSvg = d3
-      .select("#mainLegendContent")
+      .select("#main-legend-content")
       .append("svg")
       .attr("width", "115px")
       .attr("height", "280px");
@@ -2038,7 +2038,7 @@ export default function SubChartCytoscape({ w, h }) {
     let nodeTypeWrapper = legendSvg
       .append("g")
       .attr("transform", "translate(5, 0)")
-      .attr("class", "nodeTyleWrapper");
+      .attr("class", "node-tyle-wrapper");
     nodeTypeWrapper
       .append("text")
       .text("节点类型")
@@ -2080,7 +2080,7 @@ export default function SubChartCytoscape({ w, h }) {
     let edgeTypeWrapper = legendSvg
       .append("g")
       .attr("transform", "translate(5, 90)")
-      .attr("class", "edgeTyleWrapper");
+      .attr("class", "edge-type-wrapper");
     edgeTypeWrapper
       .append("text")
       .text("边类型")
@@ -2115,7 +2115,7 @@ export default function SubChartCytoscape({ w, h }) {
     let industryTypeWrapper = legendSvg
       .append("g")
       .attr("transform", "translate(5, 220)")
-      .attr("class", "industryTyleWrapper");
+      .attr("class", "industry-tyle-wrapper");
 
     industryTypeWrapper
       .append("text")
@@ -2149,10 +2149,10 @@ export default function SubChartCytoscape({ w, h }) {
   }
 
   function onCollapse(event) {
-    d3.select("#mainLegendContent").style("display", "none");
+    d3.select("#main-legend-content").style("display", "none");
   }
   function onExpand(event) {
-    d3.select("#mainLegendContent").style("display", "contents");
+    d3.select("#main-legend-content").style("display", "contents");
   }
   // 图例可拖拽
   function dragElement(elmnt) {
@@ -2320,22 +2320,22 @@ export default function SubChartCytoscape({ w, h }) {
           <Checkbox onChange={addArrow}>箭头方向</Checkbox>
         </div>
       </div>
-      <div id="mainLegend">
-        <div id="legendHeader">
+      <div id="main-legend">
+        <div id="legend-header">
           图例
           <CaretUpOutlined
-            id="collapseLegendIcon"
+            id="collapse-legend-icon"
             style={{ paddingLeft: "40px" }}
             onClick={onCollapse}
           />
           <ExpandOutlined
-            id="expandLegendIcon"
+            id="expand-legend-icon"
             style={{ paddingLeft: "10px" }}
             onClick={onExpand}
           />
         </div>
-        <div id="legendDivider"></div>
-        <div id="mainLegendContent"></div>
+        <div id="legend-divider"></div>
+        <div id="main-legend-content"></div>
       </div>
       <div id="navigator"></div>
       <div id="main-chart"></div>
