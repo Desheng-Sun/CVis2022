@@ -125,11 +125,11 @@ export default function SearchBar() {
           style={{ width: 100 }}
           value={selectId}
         >
-          {/* {getArrT(0).map((item, index) => (
+          {getArrT(0).map((item, index) => (
             <Option key={index} value={item}>
               {item}
             </Option>
-          ))} */}
+          ))}
         </Select>
         <Select
           allowClear
@@ -141,11 +141,11 @@ export default function SearchBar() {
           style={{ width: 100 }}
           value={selectName}
         >
-          {/* {getArrT(1).map((item, index) => (
+          {getArrT(1).map((item, index) => (
             <Option key={index} value={item}>
               {item}
             </Option>
-          ))} */}
+          ))}
         </Select>
         <Select
           allowClear
@@ -173,11 +173,11 @@ export default function SearchBar() {
           style={{ width: 100 }}
           value={selectIndustry}
         >
-          {/* {getArrT(3).map((item, index) => (
+          {getArrT(3).map((item, index) => (
             <Option key={index} value={item}>
               {item}
             </Option>
-          ))} */}
+          ))}
         </Select>
         <Button type="primary" onClick={onSearchData}>
           检索

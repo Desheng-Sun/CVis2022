@@ -5677,11 +5677,11 @@ export default function DataProcessChecker() {
   //   });
   // }, [])
 
-  useEffect(() => {
-    getIcClueData2Sds(385418, "Cert").then((res) => {
-      console.log(res)
-    });
-  }, [])
+  // useEffect(() => {
+  //   getIcClueData2Sds(385418, "Cert").then((res) => {
+  //     console.log(res)
+  //   });
+  // }, [])
 
   // useEffect(() => {
   //   getSkeletonChartDataSds(["3", "4", "101", "102", "112", "289","35959","5719"]).then((res) => {
@@ -5695,11 +5695,11 @@ export default function DataProcessChecker() {
   //   });
   // }, [])
 
-  // useEffect(() => {
-  //   getDifChartSds(linksInfo).then((res) => {
-  //     console.log(res)
-  //   });
-  // }, [])
+  useEffect(() => {
+    getDifChartSds(linksInfo).then((res) => {
+      console.log(res)
+    });
+  }, [])
 
   // useEffect(() => {
   //   getInfoListSds(nodesLinksInfo).then((res) => {
