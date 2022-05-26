@@ -39,46 +39,46 @@ export default function Layout() {
     // setCountsBarHeight(
     //   document.getElementById("statistic").getBoundingClientRect().height
     // );
-    // setDifChartWidth(
-    //   document.getElementById("deleterelation").getBoundingClientRect().width
-    // );
-    // setDifChartHeight(
-    //   document.getElementById("deleterelation").getBoundingClientRect().height
-    // );
-    // setIcClueChartWidth(
-    //   document.getElementById("icclue-graph").getBoundingClientRect().width
-    // );
-    // setIcClueChartHeight(
-    //   document.getElementById("icclue-graph").getBoundingClientRect().height
-    // );
-    // setSkeletonChartWidth(
-    //   document.getElementById("skeleton-chart").getBoundingClientRect().width
-    // );
-    // setSkeletonChartHeight(
-    //   document.getElementById("skeleton-chart").getBoundingClientRect().height
-    // );
-    // setCombineTableWidth(
-    //   document.getElementById("sta-node").getBoundingClientRect().width
-    // );
-    // setCombineTableHeight(
-    //   document.getElementById("sta-node").getBoundingClientRect().height
-    // );
+    setDifChartWidth(
+      document.getElementById("deleterelation").getBoundingClientRect().width
+    );
+    setDifChartHeight(
+      document.getElementById("deleterelation").getBoundingClientRect().height
+    );
+    setIcClueChartWidth(
+      document.getElementById("icclue-graph").getBoundingClientRect().width
+    );
+    setIcClueChartHeight(
+      document.getElementById("icclue-graph").getBoundingClientRect().height
+    );
+    setSkeletonChartWidth(
+      document.getElementById("skeleton-chart").getBoundingClientRect().width
+    );
+    setSkeletonChartHeight(
+      document.getElementById("skeleton-chart").getBoundingClientRect().height
+    );
+    setCombineTableWidth(
+      document.getElementById("sta-node").getBoundingClientRect().width
+    );
+    setCombineTableHeight(
+      document.getElementById("sta-node").getBoundingClientRect().height
+    );
     setMainChartWidth(
       document.getElementById("mainmap").getBoundingClientRect().width
     );
     setMainChartHeight(968);
-    // setIndustryStackChartWidth(
-    //   document.getElementById("assetandpath").getBoundingClientRect().width
-    // );
-    // setIndustryStackChartHeight(
-    //   document.getElementById("assetandpath").getBoundingClientRect().height
-    // );
-    // setClueDenseWidth(
-    //   document.getElementById("clue-dense").getBoundingClientRect().width
-    // );
-    // setClueDenseHeight(
-    //   document.getElementById("clue-dense").getBoundingClientRect().height
-    // );
+    setIndustryStackChartWidth(
+      document.getElementById("assetandpath").getBoundingClientRect().width
+    );
+    setIndustryStackChartHeight(
+      document.getElementById("assetandpath").getBoundingClientRect().height
+    );
+    setClueDenseWidth(
+      document.getElementById("clue-dense").getBoundingClientRect().width
+    );
+    setClueDenseHeight(
+      document.getElementById("clue-dense").getBoundingClientRect().height
+    );
   });
 
   return (
@@ -91,11 +91,11 @@ export default function Layout() {
           </div>
           <div id="overviewic">
             <ChartHeader chartName={"潜在核心资产概览图"} />
-            {/* <ClueDense w={cluedenseWidth} h={cluedenseHeight} /> */}
+            <ClueDense w={cluedenseWidth} h={cluedenseHeight} />
           </div>
           <div id="filteric">
             <ChartHeader chartName={"冰柱图"} />
-            {/* <ICClueChart w={icClueChartWidth} h={icClueChartHeight} /> */}
+            <ICClueChart w={icClueChartWidth} h={icClueChartHeight} />
           </div>
         </div>
         <div id="iright">
@@ -108,11 +108,11 @@ export default function Layout() {
           <div id="container-filter">
             <div id="nodelinkic">
               <ChartHeader chartName={"IP <——> Cert"} />
-              {/* <SkeletonChart w={skeletonChartWidth} h={skeletonChartHeight} /> */}
+              <SkeletonChart w={skeletonChartWidth} h={skeletonChartHeight} />
             </div>
             <div id="deleterelation">
               <ChartHeader chartName={"差异视图"} />
-              {/* <DifChart w={difChartWidth} h={difChartHeight} /> */}
+              <DifChart w={difChartWidth} h={difChartHeight} />
             </div>
             <div id="existingdomain">展示当前子图中domain情况</div>
           </div>
@@ -121,33 +121,33 @@ export default function Layout() {
       <div id="analyzegroup">
         <div id="infotable">
           <ChartHeader chartName={"团伙基本信息"} />
-          {/* <InfoList /> */}
+          <InfoList />
         </div>
         <div id="container-statistic">
           <ChartHeader chartName={"团伙网络信息"} />
           <div id="sta-node">
-            {/* <CombineTable
+            <CombineTable
               w={combineTableWidth}
               h={combineTableHeight}
               b="node"
-            /> */}
+            />
           </div>
           <div id="divider"></div>
           <div id="sta-link">
-            {/* <CombineTable
+            <CombineTable
               w={combineTableWidth}
               h={combineTableHeight}
               b="link"
-            /> */}
+            />
           </div>
         </div>
 
         <div id="assetandpath">
           <ChartHeader chartName={"核心资产与关键链路分析"} />
-          {/* <IndustryStackChart
+          <IndustryStackChart
             w={industryStackChartWidth}
             h={industryStackChartHeight}
-          /> */}
+          />
         </div>
         <div id="conclusion">
           <ChartHeader chartName={"团伙分析结果"} />

@@ -20,274 +20,267 @@ export default function DifChart({ w, h }) {
     draw();
   });
   let linksInfo = {
-    "nodes": [
+    nodes: [
       {
-        "numId": 3,
-        "id": "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
-        "name": "5.180.xxx.xxx",
-        "type": "IP",
-        "ICIndustry": [
+        numId: 3,
+        id: "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
+        name: "5.180.xxx.xxx",
+        type: "IP",
+        ICIndustry: [
           {
-            "industry": "ABCE",
-            "number": 26
+            industry: "ABCE",
+            number: 26,
           },
           {
-            "industry": "ABCEG",
-            "number": 1
+            industry: "ABCEG",
+            number: 1,
           },
           {
-            "industry": "B",
-            "number": 11
+            industry: "B",
+            number: 11,
           },
           {
-            "industry": "BC",
-            "number": 3
-          }
-        ]
+            industry: "BC",
+            number: 3,
+          },
+        ],
       },
       {
-        "numId": 4,
-        "id": "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
-        "name": "9ace6aae20",
-        "type": "Cert",
-        "ICIndustry": [
+        numId: 4,
+        id: "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
+        name: "9ace6aae20",
+        type: "Cert",
+        ICIndustry: [
           {
-            "industry": "ABCE",
-            "number": 87
-          }
-        ]
+            industry: "ABCE",
+            number: 87,
+          },
+        ],
       },
       {
-        "numId": 101,
-        "id": "Cert_9032204fc475b809ea02a4ffc7e682660892d9e9d23b7b1777d0b4f0e9a0a656",
-        "name": "9032204fc4",
-        "type": "Cert",
-        "ICIndustry": [
+        numId: 101,
+        id: "Cert_9032204fc475b809ea02a4ffc7e682660892d9e9d23b7b1777d0b4f0e9a0a656",
+        name: "9032204fc4",
+        type: "Cert",
+        ICIndustry: [
           {
-            "industry": "ABCE",
-            "number": 16
+            industry: "ABCE",
+            number: 16,
           },
           {
-            "industry": "ABCEG",
-            "number": 1
-          }
-        ]
+            industry: "ABCEG",
+            number: 1,
+          },
+        ],
       },
       {
-        "numId": 102,
-        "id": "IP_e000e83fd5fc8045d04b96af43f55ceb1005ec6e728aba4b066eaa1b47b11789",
-        "name": "164.155.xxx.xxx",
-        "type": "IP",
-        "ICIndustry": [
+        numId: 102,
+        id: "IP_e000e83fd5fc8045d04b96af43f55ceb1005ec6e728aba4b066eaa1b47b11789",
+        name: "164.155.xxx.xxx",
+        type: "IP",
+        ICIndustry: [
           {
-            "industry": "A",
-            "number": 1
+            industry: "A",
+            number: 1,
           },
           {
-            "industry": "ABCE",
-            "number": 2
+            industry: "ABCE",
+            number: 2,
           },
           {
-            "industry": "B",
-            "number": 105
-          }
-        ]
+            industry: "B",
+            number: 105,
+          },
+        ],
       },
       {
-        "numId": 112,
-        "id": "IP_cdcb3771d72a01e7845b212e74d1ca1b0e8384b79bad1da2f73c93959da5b3d2",
-        "name": "172.255.xxx.xxx",
-        "type": "IP",
-        "ICIndustry": [
+        numId: 112,
+        id: "IP_cdcb3771d72a01e7845b212e74d1ca1b0e8384b79bad1da2f73c93959da5b3d2",
+        name: "172.255.xxx.xxx",
+        type: "IP",
+        ICIndustry: [
           {
-            "industry": "ABCE",
-            "number": 1
+            industry: "ABCE",
+            number: 1,
           },
           {
-            "industry": "B",
-            "number": 18
+            industry: "B",
+            number: 18,
           },
           {
-            "industry": "BC",
-            "number": 1
+            industry: "BC",
+            number: 1,
           },
           {
-            "industry": "BG",
-            "number": 1
-          }
-        ]
+            industry: "BG",
+            number: 1,
+          },
+        ],
       },
       {
-        "numId": 289,
-        "id": "IP_1d3a1a167ca6eace5aa04de52459614885bdd88d044e93af3cf733ce581ebf47",
-        "name": "154.92.xxx.xxx",
-        "type": "IP",
-        "ICIndustry": [
+        numId: 289,
+        id: "IP_1d3a1a167ca6eace5aa04de52459614885bdd88d044e93af3cf733ce581ebf47",
+        name: "154.92.xxx.xxx",
+        type: "IP",
+        ICIndustry: [
           {
-            "industry": "AB",
-            "number": 2
+            industry: "AB",
+            number: 2,
           },
           {
-            "industry": "B",
-            "number": 1
-          }
-        ]
+            industry: "B",
+            number: 1,
+          },
+        ],
       },
       {
-        "numId": 35959,
-        "id": "IP_2ecbab579fa0523913c5b56ca5a02dda98f0cdc12153c79a81a93d2560cdf202",
-        "name": "23.108.xxx.xxx",
-        "type": "IP",
-        "ICIndustry": [
+        numId: 35959,
+        id: "IP_2ecbab579fa0523913c5b56ca5a02dda98f0cdc12153c79a81a93d2560cdf202",
+        name: "23.108.xxx.xxx",
+        type: "IP",
+        ICIndustry: [
           {
-            "industry": "B",
-            "number": 36
+            industry: "B",
+            number: 36,
           },
           {
-            "industry": "BC",
-            "number": 3
+            industry: "BC",
+            number: 3,
           },
           {
-            "industry": "BG",
-            "number": 2
+            industry: "BG",
+            number: 2,
           },
           {
-            "industry": "C",
-            "number": 1
+            industry: "C",
+            number: 1,
           },
           {
-            "industry": "G",
-            "number": 1
-          }
-        ]
+            industry: "G",
+            number: 1,
+          },
+        ],
       },
       {
-        "numId": 5719,
-        "id": "IP_7f8392f3c34ce8ad1c7fefb44b43b221218679f9ebf77d557cf86dcd7b4e57ca",
-        "name": "199.59.xxx.xxx",
-        "type": "IP",
-        "ICIndustry": [
+        numId: 5719,
+        id: "IP_7f8392f3c34ce8ad1c7fefb44b43b221218679f9ebf77d557cf86dcd7b4e57ca",
+        name: "199.59.xxx.xxx",
+        type: "IP",
+        ICIndustry: [
           {
-            "industry": "A",
-            "number": 3
+            industry: "A",
+            number: 3,
           },
           {
-            "industry": "ABCE",
-            "number": 2
+            industry: "ABCE",
+            number: 2,
           },
           {
-            "industry": "B",
-            "number": 6
+            industry: "B",
+            number: 6,
           },
           {
-            "industry": "C",
-            "number": 5
+            industry: "C",
+            number: 5,
           },
           {
-            "industry": "G",
-            "number": 1
-          }
-        ]
-      }
+            industry: "G",
+            number: 1,
+          },
+        ],
+      },
     ],
-    "links": [
+    links: [
       {
-        "source": "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
-        "target": "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
-        "linksNumId": [
-          3,
-          4
-        ]
+        source:
+          "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
+        target:
+          "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
+        linksNumId: [3, 4],
       },
       {
-        "source": "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
-        "target": "Cert_9032204fc475b809ea02a4ffc7e682660892d9e9d23b7b1777d0b4f0e9a0a656",
-        "linksNumId": [
-          3,
-          101
-        ]
+        source:
+          "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
+        target:
+          "Cert_9032204fc475b809ea02a4ffc7e682660892d9e9d23b7b1777d0b4f0e9a0a656",
+        linksNumId: [3, 101],
       },
       {
-        "source": "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
-        "target": "IP_e000e83fd5fc8045d04b96af43f55ceb1005ec6e728aba4b066eaa1b47b11789",
-        "linksNumId": [
-          3,
-          102
-        ]
+        source:
+          "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
+        target:
+          "IP_e000e83fd5fc8045d04b96af43f55ceb1005ec6e728aba4b066eaa1b47b11789",
+        linksNumId: [3, 102],
       },
       {
-        "source": "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
-        "target": "IP_7f8392f3c34ce8ad1c7fefb44b43b221218679f9ebf77d557cf86dcd7b4e57ca",
-        "linksNumId": [
-          3,
-          5719
-        ]
+        source:
+          "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
+        target:
+          "IP_7f8392f3c34ce8ad1c7fefb44b43b221218679f9ebf77d557cf86dcd7b4e57ca",
+        linksNumId: [3, 5719],
       },
       {
-        "source": "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
-        "target": "IP_2ecbab579fa0523913c5b56ca5a02dda98f0cdc12153c79a81a93d2560cdf202",
-        "linksNumId": [
-          3,
-          35959
-        ]
+        source:
+          "IP_37f7ed5739b43757ff23c712ae4d60d16615c59c0818bf5f2c91514c9c695845",
+        target:
+          "IP_2ecbab579fa0523913c5b56ca5a02dda98f0cdc12153c79a81a93d2560cdf202",
+        linksNumId: [3, 35959],
       },
       {
-        "source": "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
-        "target": "IP_e000e83fd5fc8045d04b96af43f55ceb1005ec6e728aba4b066eaa1b47b11789",
-        "linksNumId": [
-          4,
-          102
-        ]
+        source:
+          "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
+        target:
+          "IP_e000e83fd5fc8045d04b96af43f55ceb1005ec6e728aba4b066eaa1b47b11789",
+        linksNumId: [4, 102],
       },
       {
-        "source": "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
-        "target": "IP_7f8392f3c34ce8ad1c7fefb44b43b221218679f9ebf77d557cf86dcd7b4e57ca",
-        "linksNumId": [
-          4,
-          5719
-        ]
+        source:
+          "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
+        target:
+          "IP_7f8392f3c34ce8ad1c7fefb44b43b221218679f9ebf77d557cf86dcd7b4e57ca",
+        linksNumId: [4, 5719],
       },
       {
-        "source": "Cert_9032204fc475b809ea02a4ffc7e682660892d9e9d23b7b1777d0b4f0e9a0a656",
-        "target": "IP_cdcb3771d72a01e7845b212e74d1ca1b0e8384b79bad1da2f73c93959da5b3d2",
-        "linksNumId": [
-          101,
-          112
-        ]
-      }
-    ]
-  }
+        source:
+          "Cert_9032204fc475b809ea02a4ffc7e682660892d9e9d23b7b1777d0b4f0e9a0a656",
+        target:
+          "IP_cdcb3771d72a01e7845b212e74d1ca1b0e8384b79bad1da2f73c93959da5b3d2",
+        linksNumId: [101, 112],
+      },
+    ],
+  };
 
   useEffect(() => {
     getDifChartSds(linksInfo).then((res) => {
-      setData(res)
+      setData(res);
     });
-  }, [])
+  }, []);
   // 绘制结构图
   function draw() {
-    if (JSON.stringify(data) === '[]') return
-    let outerData = data[0]
-    let innerData = data[1]
+    if (JSON.stringify(data) === "[]") return;
+    let outerData = data[0];
+    let innerData = data[1];
     let radius = Math.min(svgWidth / 2, svgHeight / 2);
     function partition(data) {
-      return (d3.partition().size([2 * Math.PI, radius * radius])(
+      return d3.partition().size([2 * Math.PI, radius * radius])(
         d3
           .hierarchy(data)
-          .sum(d => d.value)
+          .sum((d) => d.value)
           .sort((a, b) => b.value - a.value)
-      ))
+      );
     }
-    let ICNodesPad = Math.PI * 2 / outerData.ICLinksNum / 10
-    let ICLinksPad = Math.PI * 2 / outerData.ICLinksNum / 50
-    let childrenPad = 1 / radius
-    let childrenLen = (Math.PI * 2
-      - ICNodesPad * outerData.startICNum
-      - ICLinksPad * (outerData.ICLinksNum + outerData.startICNum))
-      / (outerData.ICLinksNum * 3)
+    let ICNodesPad = (Math.PI * 2) / outerData.ICLinksNum / 10;
+    let ICLinksPad = (Math.PI * 2) / outerData.ICLinksNum / 50;
+    let childrenPad = 1 / radius;
+    let childrenLen =
+      (Math.PI * 2 -
+        ICNodesPad * outerData.startICNum -
+        ICLinksPad * (outerData.ICLinksNum + outerData.startICNum)) /
+      (outerData.ICLinksNum * 3);
     const root = partition(outerData);
-    let innerRadius = radius / 10 * 5
-    let radiusUse = radius / (10 * outerData.depthmax) * 4
-    let industryName = new Set()
+    let innerRadius = (radius / 10) * 5;
+    let radiusUse = (radius / (10 * outerData.depthmax)) * 4;
+    let industryName = new Set();
     let d3_category437 = [
       0xd3fe14, 0xfec7f8, 0x0b7b3e, 0x0bf0e9, 0xc203c8, 0xfd9b39, 0x888593,
       0x906407, 0x98ba7f, 0xfe6794, 0x10b0ff, 0xac7bff, 0xfee7c0, 0x964c63,
@@ -321,59 +314,56 @@ export default function DifChart({ w, h }) {
       0xd8a882, 0xb256f9, 0xb13323, 0x519b3b, 0xdd80de, 0xf1884b, 0x74b2fe,
       0xa0acd2, 0xd199b0, 0xf68392, 0x8ccaa0, 0x64d6cb, 0xe0f86a, 0x42707a,
       0x75671b, 0x796e87, 0x6d8075, 0x9b8a8d, 0xf04c71, 0x61bd29, 0xbcc18f,
-      0xfecd0f, 0x1e7ac9, 0x927261, 0xdc27cf, 0x979605, 0xec9c88,
-      0x8c48a3, 0x676769, 0x546e64, 0x8f63a2, 0xb35b2d, 0x7b8ca2, 0xb87188,
-      0x4a9bda, 0xeb7dab, 0xf6a602, 0xcab3fe, 0xddb8bb, 0x107959, 0x885973,
-      0x5e858e, 0xb15bad, 0xe107a7, 0x2f9dad, 0x4b9e83, 0xb992dc, 0x6bb0cb,
-      0xbdb363, 0xccd6e4, 0xa3ee94, 0x9ef718, 0xfbe1d9, 0xa428a5, 0x93514c,
-      0x487434, 0xe8f1b6, 0xd00938, 0xfb50e1, 0xfa85e1, 0x7cd40a, 0xf1ade1,
-      0xb1485d, 0x7f76d6, 0xd186b3, 0x90c25e, 0xb8c813, 0xa8c9de, 0x7d30fe,
-      0x815f2d, 0x737f3b, 0xc84486, 0x946cfe, 0xe55432, 0xa88674, 0xc17a47,
-      0xb98b91, 0xfc4bb3, 0xda7f5f, 0xdf920b, 0xb7bbba, 0x99e6d9, 0xa36170,
-      0xc742d8, 0x947f9d, 0xa37d93, 0x889072, 0x9b924c, 0x23b4bc, 0xe6a25f,
-      0x86df9c, 0xa7da6c, 0x3fee03, 0xeec9d8, 0xaafdcb, 0x7b9139, 0x92979c,
-      0x72788a, 0x994cff, 0xc85956, 0x7baa1a, 0xde72fe, 0xc7bad8, 0x85ebfe,
-      0x6e6089, 0x9b4d31, 0x297a1d, 0x9052c0, 0x5c75a5, 0x698eba, 0xd46222,
-      0x6da095, 0xb483bb, 0x04d183, 0x9bcdfe, 0x2ffe8c, 0x9d4279, 0xc909aa,
-      0x826cae, 0x77787c, 0xa96fb7, 0x858f87, 0xfd3b40, 0x7fab7b, 0x9e9edd,
-      0xbba3be, 0xf8b96c, 0x7be553, 0xc0e1ce, 0x516e88, 0xbe0e5f, 0x757c09,
-      0x4b8d5f, 0x38b448, 0xdf8780, 0xebb3a0, 0xced759, 0xf0ed7c, 0xe0eef1,
-      0x0969d2, 0x756446, 0x488ea8, 0x888450, 0x61979c, 0xa37ad6, 0xb48a54,
-      0x8193e5, 0xdd6d89, 0x8aa29d, 0xc679fe, 0xa4ac12, 0x75bbb3, 0x6ae2c1,
-      0xc4fda7, 0x606877, 0xb2409d, 0x5874c7, 0xbf492c, 0x4b88cd, 0xe14ec0,
-      0xb39da2, 0xfb8300, 0xd1b845, 0xc2d083, 0xc3caef, 0x967500, 0xc56399,
-      0xed5a05, 0xaadff6, 0x6685f4, 0x1da16f, 0xf28bff, 0xc9c9bf, 0xc7e2a9,
-      0x5bfce4, 0xe0e0bf, 0xe8e2e8, 0xddf2d8, 0x9108f8, 0x932dd2, 0xc03500,
-      0xaa3fbc, 0x547c79, 0x9f6045, 0x04897b, 0x966f32, 0xd83212, 0x039f27,
-      0xdf4280, 0xef206e, 0x0095f7, 0xa5890d, 0x9a8f7f, 0xbc839e, 0x88a23b,
-      0xe55aed, 0x51af9e,
-      0x5eaf82, 0x9e91fa, 0xf76c79, 0x99a869, 0xd2957d, 0xa2aca6, 0xe3959e,
-      0xadaefc, 0x5bd14e, 0xdf9ceb, 0xfe8fb1, 0x87ca80, 0xfc986d, 0x2ad3d9,
-      0xe8a8bb, 0xa7c79c, 0xa5c7cc, 0x7befb7, 0xb7e2e0, 0x85f57b, 0xf5d95b,
-      0xdbdbff, 0xfddcff, 0x6e56bb, 0x226fa8, 0x5b659c, 0x58a10f, 0xe46c52,
-      0x62abe2, 0xc4aa77, 0xb60e74, 0x087983, 0xa95703, 0x2a6efb, 0x427d92
+      0xfecd0f, 0x1e7ac9, 0x927261, 0xdc27cf, 0x979605, 0xec9c88, 0x8c48a3,
+      0x676769, 0x546e64, 0x8f63a2, 0xb35b2d, 0x7b8ca2, 0xb87188, 0x4a9bda,
+      0xeb7dab, 0xf6a602, 0xcab3fe, 0xddb8bb, 0x107959, 0x885973, 0x5e858e,
+      0xb15bad, 0xe107a7, 0x2f9dad, 0x4b9e83, 0xb992dc, 0x6bb0cb, 0xbdb363,
+      0xccd6e4, 0xa3ee94, 0x9ef718, 0xfbe1d9, 0xa428a5, 0x93514c, 0x487434,
+      0xe8f1b6, 0xd00938, 0xfb50e1, 0xfa85e1, 0x7cd40a, 0xf1ade1, 0xb1485d,
+      0x7f76d6, 0xd186b3, 0x90c25e, 0xb8c813, 0xa8c9de, 0x7d30fe, 0x815f2d,
+      0x737f3b, 0xc84486, 0x946cfe, 0xe55432, 0xa88674, 0xc17a47, 0xb98b91,
+      0xfc4bb3, 0xda7f5f, 0xdf920b, 0xb7bbba, 0x99e6d9, 0xa36170, 0xc742d8,
+      0x947f9d, 0xa37d93, 0x889072, 0x9b924c, 0x23b4bc, 0xe6a25f, 0x86df9c,
+      0xa7da6c, 0x3fee03, 0xeec9d8, 0xaafdcb, 0x7b9139, 0x92979c, 0x72788a,
+      0x994cff, 0xc85956, 0x7baa1a, 0xde72fe, 0xc7bad8, 0x85ebfe, 0x6e6089,
+      0x9b4d31, 0x297a1d, 0x9052c0, 0x5c75a5, 0x698eba, 0xd46222, 0x6da095,
+      0xb483bb, 0x04d183, 0x9bcdfe, 0x2ffe8c, 0x9d4279, 0xc909aa, 0x826cae,
+      0x77787c, 0xa96fb7, 0x858f87, 0xfd3b40, 0x7fab7b, 0x9e9edd, 0xbba3be,
+      0xf8b96c, 0x7be553, 0xc0e1ce, 0x516e88, 0xbe0e5f, 0x757c09, 0x4b8d5f,
+      0x38b448, 0xdf8780, 0xebb3a0, 0xced759, 0xf0ed7c, 0xe0eef1, 0x0969d2,
+      0x756446, 0x488ea8, 0x888450, 0x61979c, 0xa37ad6, 0xb48a54, 0x8193e5,
+      0xdd6d89, 0x8aa29d, 0xc679fe, 0xa4ac12, 0x75bbb3, 0x6ae2c1, 0xc4fda7,
+      0x606877, 0xb2409d, 0x5874c7, 0xbf492c, 0x4b88cd, 0xe14ec0, 0xb39da2,
+      0xfb8300, 0xd1b845, 0xc2d083, 0xc3caef, 0x967500, 0xc56399, 0xed5a05,
+      0xaadff6, 0x6685f4, 0x1da16f, 0xf28bff, 0xc9c9bf, 0xc7e2a9, 0x5bfce4,
+      0xe0e0bf, 0xe8e2e8, 0xddf2d8, 0x9108f8, 0x932dd2, 0xc03500, 0xaa3fbc,
+      0x547c79, 0x9f6045, 0x04897b, 0x966f32, 0xd83212, 0x039f27, 0xdf4280,
+      0xef206e, 0x0095f7, 0xa5890d, 0x9a8f7f, 0xbc839e, 0x88a23b, 0xe55aed,
+      0x51af9e, 0x5eaf82, 0x9e91fa, 0xf76c79, 0x99a869, 0xd2957d, 0xa2aca6,
+      0xe3959e, 0xadaefc, 0x5bd14e, 0xdf9ceb, 0xfe8fb1, 0x87ca80, 0xfc986d,
+      0x2ad3d9, 0xe8a8bb, 0xa7c79c, 0xa5c7cc, 0x7befb7, 0xb7e2e0, 0x85f57b,
+      0xf5d95b, 0xdbdbff, 0xfddcff, 0x6e56bb, 0x226fa8, 0x5b659c, 0x58a10f,
+      0xe46c52, 0x62abe2, 0xc4aa77, 0xb60e74, 0x087983, 0xa95703, 0x2a6efb,
+      0x427d92,
     ].map(d3_rgbString);
     function d3_rgbString(value) {
-      return d3.rgb(value >> 16, value >> 8 & 0xff, value & 0xff);
+      return d3.rgb(value >> 16, (value >> 8) & 0xff, value & 0xff);
     }
     for (let i of innerData["industryINLinks"]) {
-      industryName.add(i["industry"])
+      industryName.add(i["industry"]);
     }
     for (let i of innerData["industryINNodes"]) {
-      industryName.add(i["industry"])
+      industryName.add(i["industry"]);
     }
-    industryName = Array.from(industryName)
-    industryName.sort()
-    industryName.sort((a, b) => a.length - b.length)
-    let color = d3
-      .scaleOrdinal()
-      .domain(industryName)
-      .range(d3_category437)
+    industryName = Array.from(industryName);
+    industryName.sort();
+    industryName.sort((a, b) => a.length - b.length);
+    let color = d3.scaleOrdinal().domain(industryName).range(d3_category437);
     let svg = d3
       .select("#difference-chart")
       .append("svg")
-      .attr('width', svgWidth)
-      .attr('height', svgHeight);
+      .attr("width", svgWidth)
+      .attr("height", svgHeight);
 
     svg
       .attr("viewBox", `${-radius} ${-radius} ${svgWidth} ${svgWidth}`)
@@ -382,91 +372,106 @@ export default function DifChart({ w, h }) {
     // 绘制图例-------------------------------------------------------------------------------------
     svg
       .append("g")
-      .attr('class', 'bars')
-      .selectAll('rect')
+      .attr("class", "bars")
+      .selectAll("rect")
       .data(industryName)
       .enter()
-      .append('rect')
-      .attr("fill", d => color(d))
+      .append("rect")
+      .attr("fill", (d) => color(d))
       .attr("x", -radius + 20)
       .attr("y", (d, i) => {
-        return i * 30 + radius - industryName.length * 30
+        return i * 30 + radius - industryName.length * 30;
       })
       .attr("height", 20)
-      .attr("width", 50)
+      .attr("width", 50);
     svg
       .append("g")
       .selectAll("path")
       .data(industryName)
       .enter()
-      .append('text')
-      .attr('class', 'datatext')
-      .attr('text-anchor', 'middle')
-      .attr('transform', (d, i) => {
-        let x = -radius + 20 + 25
-        let y = i * 30 + radius - industryName.length * 30 + 15
-        return ` translate(${x},${y})`
+      .append("text")
+      .attr("class", "datatext")
+      .attr("text-anchor", "middle")
+      .attr("transform", (d, i) => {
+        let x = -radius + 20 + 25;
+        let y = i * 30 + radius - industryName.length * 30 + 15;
+        return ` translate(${x},${y})`;
       })
-      .text(d => {
-        return d
-      })
-
+      .text((d) => {
+        return d;
+      });
 
     // 绘制外部视图--------------------------------------------------------------------------------------
     let arc = d3
       .arc()
-      .startAngle(d => {
+      .startAngle((d) => {
         if (d.depth > 2) {
-          let startAngle = (d.data.nowICIndex - 0.5) * ICNodesPad
-            + (d.data.nowICLinksIndex + d.data.nowICIndex - 1) * ICLinksPad
-            + childrenPad
-            + childrenLen * ((d.data.nowICLinksIndex - 1) * 3 + d.data.index - 1)
-          return startAngle
-        }
-        else if (d.depth === 1) {
-          let startAngle = (d.data.startICNum + 0.5) * ICNodesPad
-            + (d.data.startICLinkNum + d.data.startICNum) * ICLinksPad
-            + (d.data.startICLinkNum * 3) * childrenLen
-          return startAngle
+          let startAngle =
+            (d.data.nowICIndex - 0.5) * ICNodesPad +
+            (d.data.nowICLinksIndex + d.data.nowICIndex - 1) * ICLinksPad +
+            childrenPad +
+            childrenLen * ((d.data.nowICLinksIndex - 1) * 3 + d.data.index - 1);
+          return startAngle;
+        } else if (d.depth === 1) {
+          let startAngle =
+            (d.data.startICNum + 0.5) * ICNodesPad +
+            (d.data.startICLinkNum + d.data.startICNum) * ICLinksPad +
+            d.data.startICLinkNum * 3 * childrenLen;
+          return startAngle;
         }
       })
-      .endAngle(d => {
+      .endAngle((d) => {
         if (d.depth > 2) {
-          let endAngle = (d.data.nowICIndex - 0.5) * ICNodesPad
-            + (d.data.nowICLinksIndex + d.data.nowICIndex - 1) * ICLinksPad
-            - childrenPad
-            + childrenLen * ((d.data.nowICLinksIndex - 1) * 3 + d.data.index)
-          return endAngle
-        }
-        else if (d.depth === 1) {
-          let endAngle = (d.data.startICNum + 0.5) * ICNodesPad
-            + (d.data.startICLinkNum + d.data.children.length + d.data.startICNum + 2) * ICLinksPad
-            + (d.data.startICLinkNum + d.data.children.length) * 3 * childrenLen
-          return endAngle
+          let endAngle =
+            (d.data.nowICIndex - 0.5) * ICNodesPad +
+            (d.data.nowICLinksIndex + d.data.nowICIndex - 1) * ICLinksPad -
+            childrenPad +
+            childrenLen * ((d.data.nowICLinksIndex - 1) * 3 + d.data.index);
+          return endAngle;
+        } else if (d.depth === 1) {
+          let endAngle =
+            (d.data.startICNum + 0.5) * ICNodesPad +
+            (d.data.startICLinkNum +
+              d.data.children.length +
+              d.data.startICNum +
+              2) *
+              ICLinksPad +
+            (d.data.startICLinkNum + d.data.children.length) * 3 * childrenLen;
+          return endAngle;
         }
       })
       .cornerRadius(5)
-      .innerRadius(d => {
+      .innerRadius((d) => {
         if (d.depth === 1) {
-          return innerRadius * 9 / 10
-        }
-        else if (d.depth > 2) {
-          return innerRadius * 19 / 20 + 1 + radiusUse * (root.data.depthmax / d.data.childrenLen) * (d.depth - 3)
+          return (innerRadius * 9) / 10;
+        } else if (d.depth > 2) {
+          return (
+            (innerRadius * 19) / 20 +
+            1 +
+            radiusUse *
+              (root.data.depthmax / d.data.childrenLen) *
+              (d.depth - 3)
+          );
         }
       })
-      .outerRadius(d => {
+      .outerRadius((d) => {
         if (d.depth === 1) {
-          return radiusUse * root.data.depthmax + innerRadius
+          return radiusUse * root.data.depthmax + innerRadius;
+        } else if (d.depth > 2) {
+          return (
+            radiusUse *
+              (root.data.depthmax / d.data.childrenLen) *
+              (d.depth - 2) +
+            (innerRadius * 19) / 20 -
+            1
+          );
         }
-        else if (d.depth > 2) {
-          return radiusUse * (root.data.depthmax / d.data.childrenLen) * (d.depth - 2) + innerRadius * 19 / 20 - 1
-        }
-      })
+      });
 
     let plainArc = svg
       .append("g")
       .selectAll("path")
-      .data(root.descendants().filter(d => d.depth !== 0))
+      .data(root.descendants().filter((d) => d.depth !== 0))
       .join("path")
       .attr("fill", "#ffffff")
       // .attr("fill", d => {
@@ -476,126 +481,173 @@ export default function DifChart({ w, h }) {
       //   return color(d.data.name)
       // })
       .attr("stroke", "black")
-      .attr("d", arc)
-      // .on("click", function(event, d, i){
-      //   let curIndex = d.data.nowICLinksIndex
-      //   plainArc.filter(d => d.data.nowICLinksIndex === curIndex)
-      //   .attr('opacity', 'red')
-      // })
+      .attr("d", arc);
+    // .on("click", function(event, d, i){
+    //   let curIndex = d.data.nowICLinksIndex
+    //   plainArc.filter(d => d.data.nowICLinksIndex === curIndex)
+    //   .attr('opacity', 'red')
+    // })
 
     let arc2 = d3
       .arc()
-      .startAngle(d => {
-        let startAngle = (d.data.nowICIndex - 0.5) * ICNodesPad
-          + (d.data.nowICLinksIndex + d.data.nowICIndex - 1) * ICLinksPad
-          + childrenPad
-          + childrenLen * ((d.data.nowICLinksIndex - 1) * 3 + d.data.index - 1)
-        return startAngle
+      .startAngle((d) => {
+        let startAngle =
+          (d.data.nowICIndex - 0.5) * ICNodesPad +
+          (d.data.nowICLinksIndex + d.data.nowICIndex - 1) * ICLinksPad +
+          childrenPad +
+          childrenLen * ((d.data.nowICLinksIndex - 1) * 3 + d.data.index - 1);
+        return startAngle;
       })
-      .endAngle(d => {
-        let endAngle = (d.data.nowICIndex - 0.5) * ICNodesPad
-          + (d.data.nowICLinksIndex + d.data.nowICIndex - 1) * ICLinksPad
-          - childrenPad
-          + childrenLen * ((d.data.nowICLinksIndex - 1) * 3 + d.data.index - 1 + d.data.prop)
-        return endAngle
+      .endAngle((d) => {
+        let endAngle =
+          (d.data.nowICIndex - 0.5) * ICNodesPad +
+          (d.data.nowICLinksIndex + d.data.nowICIndex - 1) * ICLinksPad -
+          childrenPad +
+          childrenLen *
+            ((d.data.nowICLinksIndex - 1) * 3 + d.data.index - 1 + d.data.prop);
+        return endAngle;
       })
       .cornerRadius(5)
-      .innerRadius(d => {
-        return innerRadius * 19 / 20 + 1 + radiusUse * (root.data.depthmax / d.data.childrenLen) * (d.depth - 3)
+      .innerRadius((d) => {
+        return (
+          (innerRadius * 19) / 20 +
+          1 +
+          radiusUse * (root.data.depthmax / d.data.childrenLen) * (d.depth - 3)
+        );
       })
-      .outerRadius(d => {
-        return radiusUse * (root.data.depthmax / d.data.childrenLen) * (d.depth - 2) + innerRadius * 19 / 20 - 1
-      })
+      .outerRadius((d) => {
+        return (
+          radiusUse *
+            (root.data.depthmax / d.data.childrenLen) *
+            (d.depth - 2) +
+          (innerRadius * 19) / 20 -
+          1
+        );
+      });
 
     let colorArcs = svg
       .append("g")
       .selectAll("path")
-      .data(root.descendants().filter(d => d.depth > 2 && d.data.prop > 0))
+      .data(root.descendants().filter((d) => d.depth > 2 && d.data.prop > 0))
       .join("path")
-      .attr("fill", d => color(d.data.name))
-      .attr("d", arc2)
-      // .on("click", function(event, d, i){
-      //   let curIndex = d.data.nowICLinksIndex
-      //   colorArcs.filter(d => d.data.nowICLinksIndex === curIndex)
-      //   .attr('stroke', 'red')
-      // })
+      .attr("fill", (d) => color(d.data.name))
+      .attr("d", arc2);
+    // .on("click", function(event, d, i){
+    //   let curIndex = d.data.nowICLinksIndex
+    //   colorArcs.filter(d => d.data.nowICLinksIndex === curIndex)
+    //   .attr('stroke', 'red')
+    // })
 
     svg
       .append("g")
-      .selectAll('datatext')
-      .data(root.descendants().filter(d => {
-        return d.depth > 0
-      }))
-      .join('text')
-      .attr('class', 'datatext')
-      .attr('text-anchor', 'middle')
-      .attr('transform', d => {
-        let x, y
+      .selectAll("datatext")
+      .data(
+        root.descendants().filter((d) => {
+          return d.depth > 0;
+        })
+      )
+      .join("text")
+      .attr("class", "datatext")
+      .attr("text-anchor", "middle")
+      .attr("transform", (d) => {
+        let x, y;
         if (d.depth === 1) {
-          x = (d.x0 + d.x1) / 2 * 180 / Math.PI
-          y = innerRadius * 9 / 10 + 2
+          x = (((d.x0 + d.x1) / 2) * 180) / Math.PI;
+          y = (innerRadius * 9) / 10 + 2;
           if (x >= 90 && x <= 270) {
-            y = y + 8
+            y = y + 8;
           }
-        }
-        else if (d.depth === 2) {
-          x = ((d.data.nowICNum - 0.5) * ICNodesPad
-            + (d.data.nowICLinksNum + d.data.nowICNum - 1) * ICLinksPad
-            + childrenLen * ((d.data.nowICLinksNum - 1) * 3 + 1.5))
-            * 180 / Math.PI
-          y = innerRadius + radiusUse * root.data.depthmax - 3
+        } else if (d.depth === 2) {
+          x =
+            (((d.data.nowICNum - 0.5) * ICNodesPad +
+              (d.data.nowICLinksNum + d.data.nowICNum - 1) * ICLinksPad +
+              childrenLen * ((d.data.nowICLinksNum - 1) * 3 + 1.5)) *
+              180) /
+            Math.PI;
+          y = innerRadius + radiusUse * root.data.depthmax - 3;
           if (x < 90 || x > 270) {
-            y = y - 8
+            y = y - 8;
           }
-        }
-        else {
-          x = ((d.data.nowICIndex - 0.5) * ICNodesPad
-            + (d.data.nowICLinksIndex + d.data.nowICIndex - 1) * ICLinksPad
-            + childrenLen * ((d.data.nowICLinksIndex - 1) * 3 + d.data.index - 0.5))
-            * 180 / Math.PI
-          y = innerRadius * 19 / 20 + radiusUse * (root.data.depthmax / d.data.childrenLen) * (d.depth - 2.5)
+        } else {
+          x =
+            (((d.data.nowICIndex - 0.5) * ICNodesPad +
+              (d.data.nowICLinksIndex + d.data.nowICIndex - 1) * ICLinksPad +
+              childrenLen *
+                ((d.data.nowICLinksIndex - 1) * 3 + d.data.index - 0.5)) *
+              180) /
+            Math.PI;
+          y =
+            (innerRadius * 19) / 20 +
+            radiusUse *
+              (root.data.depthmax / d.data.childrenLen) *
+              (d.depth - 2.5);
           if (x >= 90 && x <= 270) {
-            y = y + 6
-          }
-          else {
-            y = y - 6
+            y = y + 6;
+          } else {
+            y = y - 6;
           }
         }
-        return `rotate(${x - 90}) translate(${y},${0}) rotate(${(x < 90 || x > 270) ? 90 : 270})`
+        return `rotate(${x - 90}) translate(${y},${0}) rotate(${
+          x < 90 || x > 270 ? 90 : 270
+        })`;
       })
-      .text(d => {
+      .text((d) => {
         if (d.depth <= 2) {
-          return d.data.name
+          return d.data.name;
         }
-        return d.data.num
-      })
-
-
+        return d.data.num;
+      });
 
     // 绘制中间的玫瑰图-------------------------------------------------------------------------------------------------------------
-    let maxLength = Math.log(innerData["largetLength"] + 1)
-    let innerDataPad = Math.PI * 2 / (innerData["industryINLinks"].length + innerData["industryINNodes"].length - 2) / 50
-    let innerDataILPad = Math.PI * 2 / (innerData["industryINLinks"].length + innerData["industryINNodes"].length - 2) / 2
-    let innerDataAngle = (Math.PI * 2
-      - innerDataILPad * 2
-      - innerDataPad * (innerData["industryINLinks"].length + innerData["industryINNodes"].length - 2))
-      / (innerData["industryINLinks"].length + innerData["industryINNodes"].length)
-    innerRadius = innerRadius * 4 / 5
-    let arc3 = d3.arc()
+    let maxLength = Math.log(innerData["largetLength"] + 1);
+    let innerDataPad =
+      (Math.PI * 2) /
+      (innerData["industryINLinks"].length +
+        innerData["industryINNodes"].length -
+        2) /
+      50;
+    let innerDataILPad =
+      (Math.PI * 2) /
+      (innerData["industryINLinks"].length +
+        innerData["industryINNodes"].length -
+        2) /
+      2;
+    let innerDataAngle =
+      (Math.PI * 2 -
+        innerDataILPad * 2 -
+        innerDataPad *
+          (innerData["industryINLinks"].length +
+            innerData["industryINNodes"].length -
+            2)) /
+      (innerData["industryINLinks"].length +
+        innerData["industryINNodes"].length);
+    innerRadius = (innerRadius * 4) / 5;
+    let arc3 = d3
+      .arc()
       .startAngle((d, i) => {
         if (i == 0) {
-          return 0
+          return 0;
         }
-        return innerDataILPad + (innerDataPad + innerDataAngle) * (innerData["industryINLinks"].length) - innerDataPad
+        return (
+          innerDataILPad +
+          (innerDataPad + innerDataAngle) *
+            innerData["industryINLinks"].length -
+          innerDataPad
+        );
       })
       .endAngle((d, i) => {
         if (i == 0) {
-          return innerDataILPad + (innerDataPad + innerDataAngle) * (innerData["industryINLinks"].length) - innerDataPad
+          return (
+            innerDataILPad +
+            (innerDataPad + innerDataAngle) *
+              innerData["industryINLinks"].length -
+            innerDataPad
+          );
         }
-        return Math.PI * 2
+        return Math.PI * 2;
       })
       .innerRadius(0)
-      .outerRadius(innerRadius + innerRadius / 10)
+      .outerRadius(innerRadius + innerRadius / 10);
 
     svg
       .append("g")
@@ -605,59 +657,73 @@ export default function DifChart({ w, h }) {
       .append("path")
       .attr("d", arc3)
       .attr("fill", "#ffffff")
-      .attr("stroke", "black")
+      .attr("stroke", "black");
 
     svg
       .append("g")
       .selectAll("path")
       .data(["In ICLinks", "Not In ICLinks"])
       .enter()
-      .append('text')
-      .attr('class', 'datatext')
-      .attr('text-anchor', 'middle')
-      .attr('transform', (d, i) => {
-        let x = (innerDataILPad + (innerDataPad + innerDataAngle) * (innerData["industryINLinks"].length) - innerDataPad) * 90 / Math.PI + i * 180
-        let y = innerRadius + innerRadius / 10 - 20
-        return `rotate(${x - 90}) translate(${y},${0}) rotate(${(x < 90 || x > 270) ? 90 : 270})`
+      .append("text")
+      .attr("class", "datatext")
+      .attr("text-anchor", "middle")
+      .attr("transform", (d, i) => {
+        let x =
+          ((innerDataILPad +
+            (innerDataPad + innerDataAngle) *
+              innerData["industryINLinks"].length -
+            innerDataPad) *
+            90) /
+            Math.PI +
+          i * 180;
+        let y = innerRadius + innerRadius / 10 - 20;
+        return `rotate(${x - 90}) translate(${y},${0}) rotate(${
+          x < 90 || x > 270 ? 90 : 270
+        })`;
       })
-      .text(d => {
-        return d
-      })
+      .text((d) => {
+        return d;
+      });
 
     svg
       .append("g")
       .selectAll("path")
       .data(innerData["industryINLinks"])
       .enter()
-      .append('text')
-      .attr('class', 'datatext')
-      .attr('text-anchor', 'middle')
-      .attr('transform', (d, i) => {
-        let x = (innerDataILPad / 2 + (i + 0.5) * innerDataAngle + i * innerDataPad) * 180 / Math.PI
-        let y = innerRadius * Math.log(d.number + 1) / maxLength + 2
+      .append("text")
+      .attr("class", "datatext")
+      .attr("text-anchor", "middle")
+      .attr("transform", (d, i) => {
+        let x =
+          ((innerDataILPad / 2 +
+            (i + 0.5) * innerDataAngle +
+            i * innerDataPad) *
+            180) /
+          Math.PI;
+        let y = (innerRadius * Math.log(d.number + 1)) / maxLength + 2;
         if (x >= 90 && x <= 270) {
-          y = y + 8
+          y = y + 8;
         }
-        return `rotate(${x - 90}) translate(${y},${0}) rotate(${(x < 90 || x > 270) ? 90 : 270})`
+        return `rotate(${x - 90}) translate(${y},${0}) rotate(${
+          x < 90 || x > 270 ? 90 : 270
+        })`;
       })
-      .text(d => {
-        return d.number
-      })
+      .text((d) => {
+        return d.number;
+      });
 
-
-    let arc4 = d3.arc()
+    let arc4 = d3
+      .arc()
       .startAngle((d, i) => {
-        return innerDataILPad / 2 + i * innerDataAngle + i * innerDataPad
+        return innerDataILPad / 2 + i * innerDataAngle + i * innerDataPad;
       })
       .endAngle((d, i) => {
-        return innerDataILPad / 2 + (i + 1) * innerDataAngle + i * innerDataPad
+        return innerDataILPad / 2 + (i + 1) * innerDataAngle + i * innerDataPad;
       })
       .innerRadius(0)
-      .outerRadius(d => {
-        return innerRadius * Math.log(d.number + 1) / maxLength
-      })
-
-
+      .outerRadius((d) => {
+        return (innerRadius * Math.log(d.number + 1)) / maxLength;
+      });
 
     svg
       .append("g")
@@ -666,48 +732,55 @@ export default function DifChart({ w, h }) {
       .enter()
       .append("path")
       .attr("d", arc4)
-      .attr("fill", d => color(d.industry))
+      .attr("fill", (d) => color(d.industry));
 
     svg
       .append("g")
       .selectAll("path")
       .data(innerData["industryINLinks"])
       .enter()
-      .append('text')
-      .attr('class', 'datatext')
-      .attr('text-anchor', 'middle')
-      .attr('transform', (d, i) => {
-        let x = (innerDataILPad / 2
-          + (i + 0.5) * innerDataAngle
-          + i * innerDataPad)
-          * 180 / Math.PI
-        let y = innerRadius * Math.log(d.number + 1) / maxLength + 2
+      .append("text")
+      .attr("class", "datatext")
+      .attr("text-anchor", "middle")
+      .attr("transform", (d, i) => {
+        let x =
+          ((innerDataILPad / 2 +
+            (i + 0.5) * innerDataAngle +
+            i * innerDataPad) *
+            180) /
+          Math.PI;
+        let y = (innerRadius * Math.log(d.number + 1)) / maxLength + 2;
         if (x >= 90 && x <= 270) {
-          y = y + 8
+          y = y + 8;
         }
-        return `rotate(${x - 90}) translate(${y},${0}) rotate(${(x < 90 || x > 270) ? 90 : 270})`
+        return `rotate(${x - 90}) translate(${y},${0}) rotate(${
+          x < 90 || x > 270 ? 90 : 270
+        })`;
       })
-      .text(d => {
-        return d.number
-      })
+      .text((d) => {
+        return d.number;
+      });
 
-
-    let arc5 = d3.arc()
+    let arc5 = d3
+      .arc()
       .startAngle((d, i) => {
-        return innerDataILPad * 1.5
-          + (i + innerData["industryINLinks"].length) * innerDataAngle
-          + (i + innerData["industryINLinks"].length - 1) * innerDataPad
+        return (
+          innerDataILPad * 1.5 +
+          (i + innerData["industryINLinks"].length) * innerDataAngle +
+          (i + innerData["industryINLinks"].length - 1) * innerDataPad
+        );
       })
       .endAngle((d, i) => {
-        return innerDataILPad * 1.5
-          + (i + 1 + innerData["industryINLinks"].length) * innerDataAngle
-          + (i + innerData["industryINLinks"].length - 1) * innerDataPad
+        return (
+          innerDataILPad * 1.5 +
+          (i + 1 + innerData["industryINLinks"].length) * innerDataAngle +
+          (i + innerData["industryINLinks"].length - 1) * innerDataPad
+        );
       })
       .innerRadius(0)
-      .outerRadius(d => {
-        return innerRadius * Math.log(d.number + 1) / maxLength
-      })
-
+      .outerRadius((d) => {
+        return (innerRadius * Math.log(d.number + 1)) / maxLength;
+      });
 
     svg
       .append("g")
@@ -716,34 +789,35 @@ export default function DifChart({ w, h }) {
       .enter()
       .append("path")
       .attr("d", arc5)
-      .attr("fill", d => color(d.industry))
+      .attr("fill", (d) => color(d.industry));
 
     svg
       .append("g")
       .selectAll("path")
       .data(innerData["industryINNodes"])
       .enter()
-      .append('text')
-      .attr('class', 'datatext')
-      .attr('text-anchor', 'middle')
-      .attr('transform', (d, i) => {
-        let x = (innerDataILPad * 1.5
-          + (i + 0.5 + innerData["industryINNodes"].length) * innerDataAngle
-          + (i + innerData["industryINNodes"].length - 1) * innerDataPad)
-          * 180 / Math.PI
-        let y = innerRadius * Math.log(d.number + 1) / maxLength + 2
+      .append("text")
+      .attr("class", "datatext")
+      .attr("text-anchor", "middle")
+      .attr("transform", (d, i) => {
+        let x =
+          ((innerDataILPad * 1.5 +
+            (i + 0.5 + innerData["industryINNodes"].length) * innerDataAngle +
+            (i + innerData["industryINNodes"].length - 1) * innerDataPad) *
+            180) /
+          Math.PI;
+        let y = (innerRadius * Math.log(d.number + 1)) / maxLength + 2;
         if (x >= 90 && x <= 270) {
-          y = y + 8
+          y = y + 8;
         }
-        return `rotate(${x - 90}) translate(${y},${0}) rotate(${(x < 90 || x > 270) ? 90 : 270})`
+        return `rotate(${x - 90}) translate(${y},${0}) rotate(${
+          x < 90 || x > 270 ? 90 : 270
+        })`;
       })
-      .text(d => {
-        return d.number
-      })
-
-
+      .text((d) => {
+        return d.number;
+      });
   }
-
 
   return (
     <div
