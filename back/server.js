@@ -589,6 +589,7 @@ app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
   res.end();
 });
 
+
 // 主图所需要的数据
 app.post("/getMainChartSds", jsonParser, (req, res, next) => {
   const links = req.body.linksInfo["links"];
@@ -636,6 +637,9 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
   for (let i of nodes) {
     // 如果当前节点在IC链路中
     if (ICScreen[0].indexOf(i["numId"]) > -1) {
+      if (!nodesNumId.hasOwnProperty(i["numId"])) {
+        nodesNumId[k[0]] = []
+      }
       let nowNodeNodeInfo = {};
       let nowNodeLinksInfo = {};
       // 获取当前IC节点直接关联的所有节点，并删除已经在链路中的相关节点
@@ -774,7 +778,6 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
   res.send(sendData);
   res.end();
 });
-
 
 
 //获取差异图的数据
