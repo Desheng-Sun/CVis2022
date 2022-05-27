@@ -50,9 +50,10 @@ let nodeInfoJ = fs.readFileSync(
 nodeInfoJ = nodeInfoJ.split("\n");
 let nodeNumIdInfo = [];
 for (let i of nodeInfoJ) {
-  nodeNumIdInfo.push(i.split(","));
+  nodeNumIdInfo.push(
+    i.split(",").map(e => e.replace("\r", "")));
 }
-nodeNumIdInfo = nodeNumIdInfo.splice(1);
+nodeNumIdInfo = nodeNumIdInfo.splice(1, nodeNumIdInfo.length - 2);
 
 // 获取IC节点的黑灰产信息
 const ICIndustryJ = fs.readFileSync(nowPath + "ICIndustryInfo.json", "utf8");
@@ -81,18 +82,35 @@ const nodeICLinks = JSON.parse(nodeICLinksJ);
 
 
 // 获取视图的初始数据：node信息改为json文件
-app.get("/getInitialSds", (req, res, next) => {
-  let useNodeIdInfo = [];
-  for (let i of nodeNumIdInfo) {
-    useNodeIdInfo.push({
-      numId: i[0],
-      id: i[1],
-      name: i[2],
-      type: i[3],
-      industry: i[4],
-    });
+app.post("/getInitialSds", jsonParser, (req, res, next) => {
+  let type = req.body.type
+  let industry = req.body.industry
+  let id = req.body.id
+  if (id == undefined) {
+    id = ""
   }
-  res.send(useNodeIdInfo.slice(0, 15));
+  let useNodeIdInfo = [[], []]
+  let Challenge1Node = [479, 533, 2213, 2271, 912, 821, 969, 944, 891, 3863, 3115, 286, 371, 360, 212]
+  if (type == "" && industry == "" && id == "") {
+    for (let i of nodeNumIdInfo) {
+      if (Challenge1Node.indexOf(parseInt(i[0])) > -1) {
+        useNodeIdInfo[0].push(i[0])
+        useNodeIdInfo[1].push(i[1])
+      }
+    }
+  }
+  else {
+    for (let i of nodeNumIdInfo) {
+      if (i[3].toString() == type && i[4].toString() == industry && i[1].indexOf(id) > -1) {
+        useNodeIdInfo[0].push(i[0])
+        useNodeIdInfo[1].push(i[1])
+      }
+      if (useNodeIdInfo[0].length >= 15) {
+        break
+      }
+    }
+  }
+  res.send(useNodeIdInfo);
   res.end();
 });
 
@@ -277,6 +295,29 @@ function getNodesInICLinks(
   let allLinks = [];
   let listLinks = [];
   let listNode = [];
+  if (!nodeICLinks.hasOwnProperty(nowNodeNumId)) {
+    allLinks = {
+      id: 0,
+      nodesNum: 0,
+      WhoisName: 0,
+      WhoisEmail: 0,
+      WhoisPhone: 0,
+      pureDomain: 0,
+      dirtyDomain: 0,
+      numId: 0,
+      name: 0,
+      children: 0,
+      WhoisNameNum: 0,
+      WhoisEmailNum: 0,
+      WhoisPhoneNum: 0,
+      pureDomainNum: 0,
+      dirtyDomainNum: 0,
+      skipNum: 0,
+      text: "该节点不再任何含有黑灰产业的IC链路中"
+    };
+    return allLinks;
+  }
+
   // 获取当前节点所在的所有IC链路和单独的IC节点
   for (let i of nodeICLinks[nowNodeNumId]) {
     if (i instanceof Array) {
@@ -445,27 +486,6 @@ function getNodesInICLinks(
     allLinks.push(nowLinks);
   }
 
-  if (allLinks.length == 0) {
-    allLinks = {
-      id: 0,
-      nodesNum: 0,
-      WhoisName: 0,
-      WhoisEmail: 0,
-      WhoisPhone: 0,
-      pureDomain: 0,
-      dirtyDomain: 0,
-      numId: 0,
-      name: 0,
-      children: 0,
-      WhoisNameNum: 0,
-      WhoisEmailNum: 0,
-      WhoisPhoneNum: 0,
-      pureDomainNum: 0,
-      dirtyDomainNum: 0,
-      skipNum: 0,
-      text: "该节点不再任何含有黑灰产业的IC链路中"
-    };
-  }
   fs.writeFile(
     nowPath + "ic-clue-data/" + nowNodeNumId + ".json",
     JSON.stringify(allLinks),
@@ -703,7 +723,7 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
           nodesNumId[j[0]] = []
         }
         nodesNumId[j[0]].push([i["numId"]].toString());
-      }    
+      }
       for (j of nowData["links"]) {
         if (!linksList.hasOwnProperty([j[0], j[1], j[2]].toString())) {
           linksList[[j[0], j[1], j[2]].toString()] = []

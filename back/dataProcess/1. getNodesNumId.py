@@ -8,6 +8,7 @@ from os import link
 import os
 from re import T, X
 import sys
+from typing import Set
 from alive_progress import alive_bar
 import multiprocessing as mp
 import numpy as np
@@ -155,44 +156,53 @@ if __name__ == '__main__':
     # addNodeId()
     # 打开所有的节点
     nodeCsvW = pd.read_csv(
-        nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumId.csv", header=0)
+        nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv", header=0)
     
-    # 将industry进行修改，改成AB的形式
-    nodeCsvNow = []
+    # # 将industry进行修改，改成AB的形式
+    # nodeCsvNow = []
+    # for i in nodeCsvW.values:
+    #     nowIndustry = ast.literal_eval(i[-1])
+    #     nowIndustry.sort()
+    #     strnowIndustry = ""
+    #     for k in nowIndustry:
+    #         strnowIndustry += k
+    #     if(strnowIndustry == ""):
+    #         strnowIndustry = "  "
+    #     nodeCsvNow.append(np.array([i[0],i[1],i[2],i[3], strnowIndustry]))
+    # nodeCsvNow = pd.DataFrame(nodeCsvNow)
+    # nodeCsvNow.to_csv(nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv", index=None, header=["numId","id","name","type","industry"])
+
+    industryType = set()
     for i in nodeCsvW.values:
-        nowIndustry = ast.literal_eval(i[-1])
-        nowIndustry.sort()
-        strnowIndustry = ""
-        for k in nowIndustry:
-            strnowIndustry += k
-        if(strnowIndustry == ""):
-            strnowIndustry = "  "
-        nodeCsvNow.append(np.array([i[0],i[1],i[2],i[3], strnowIndustry]))
-    nodeCsvNow = pd.DataFrame(nodeCsvNow)
-    nodeCsvNow.to_csv(nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv", index=None, header=["numId","id","name","type","industry"])
+        industryType.add(i[-1])
+    industryType = list(industryType)
+    industryType.sort()
+    industryType.sort(key =lambda x:len(x))
+    print(industryType)
+
 
 
     #  根据Links中的NumID 获取每一个节点关联的Links 
-    linksCsvW = pd.read_csv(
-        nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/LinkNumId.csv", header=0)
-    nodesLinks = []
-    for i in nodeCsvW.values:
-        nodesLinks.append([])
-    for i in linksCsvW.values:
-        nodesLinks[i[1] - 1].append(i)
-        nodesLinks[i[2] - 1].append(i)
-    with open(nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/nodeLinksJson.json", "w", encoding="utf-8") as f:
-        json.dump(nodesLinks, f, ensure_ascii=False)
+    # linksCsvW = pd.read_csv(
+    #     nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/LinkNumId.csv", header=0)
+    # nodesLinks = []
+    # for i in nodeCsvW.values:
+    #     nodesLinks.append([])
+    # for i in linksCsvW.values:
+    #     nodesLinks[i[1] - 1].append(i)
+    #     nodesLinks[i[2] - 1].append(i)
+    # with open(nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/nodeLinksJson.json", "w", encoding="utf-8") as f:
+    #     json.dump(nodesLinks, f, ensure_ascii=False)
     
 
-    # 获取每一个IC节点连接的Domain的Industry信息
-    nodeCsvW = pd.read_csv(
-        nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv", header=0)
+    # # 获取每一个IC节点连接的Domain的Industry信息
+    # nodeCsvW = pd.read_csv(
+    #     nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv", header=0)
     
-    linkCsvW = open(
-        nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/nodeLinksJson.json", 'r', encoding='utf-8')
-    linksAll = json.load(linkCsvW)
-    linkCsvW.close()
-    ipNode = nodeCsvW[nodeCsvW["type"] == "IP"].values
-    certNode = nodeCsvW[nodeCsvW["type"] == "Cert"].values
-    nodeCsvW = nodeCsvW.values
+    # linkCsvW = open(
+    #     nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/nodeLinksJson.json", 'r', encoding='utf-8')
+    # linksAll = json.load(linkCsvW)
+    # linkCsvW.close()
+    # ipNode = nodeCsvW[nodeCsvW["type"] == "IP"].values
+    # certNode = nodeCsvW[nodeCsvW["type"] == "Cert"].values
+    # nodeCsvW = nodeCsvW.values
