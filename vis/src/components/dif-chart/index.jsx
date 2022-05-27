@@ -5,8 +5,8 @@ import { getDifChartSds } from "../../apis/api.js";
 import "./index.css";
 
 export default function DifChart({ w, h }) {
-  const [svgWidth, setSvgWidth] = useState(500);
-  const [svgHeight, setSvgHeight] = useState(500);
+  const [svgWidth, setSvgWidth] = useState(1000);
+  const [svgHeight, setSvgHeight] = useState(1000);
   const [data, setData] = useState([]);
   const [selectICLinks, setSelectICLinks] = useState("");
 
@@ -15,7 +15,7 @@ export default function DifChart({ w, h }) {
   //   setSvgWidth(w);
   // }, [w]);
   // useEffect(() => {
-  //   setSvgHeight(h);
+  //   setSvgHeight(h * 0.85);
   // }, [h]);
   useEffect(() => {
     draw();
@@ -73499,7 +73499,7 @@ export default function DifChart({ w, h }) {
 }
   useEffect(() => {
     getDifChartSds(linksInfo).then((res) => {
-      console.log(res);
+      console.log(res)
       setData(res);
     });
   }, []);
@@ -73619,7 +73619,7 @@ export default function DifChart({ w, h }) {
       .attr("height", svgHeight);
 
     svg
-      .attr("viewBox", `${-radius} ${-radius + 15} ${svgWidth} ${svgWidth}`)
+      .attr("viewBox", `${-radius} ${-radius} ${svgWidth} ${svgWidth}`)
       .style("max-width", `${svgWidth}px`)
       .style("font", "12px sans-serif");
 
@@ -74058,8 +74058,8 @@ export default function DifChart({ w, h }) {
       .attr("transform", (d, i) => {
         let x =
           ((innerDataILPad * 1.5 +
-            (i + 0.5 + innerData["industryInNodes"].length) * innerDataAngle +
-            (i + innerData["industryInNodes"].length - 1) * innerDataPad) *
+            (i + 0.5 + innerData["industryInLinks"].length) * innerDataAngle +
+            (i + innerData["industryInLinks"].length - 1) * innerDataPad) *
             180) /
           Math.PI;
         let y = (innerRadius * Math.log(d.number + 1)) / maxLength + 2;
@@ -74085,8 +74085,8 @@ export default function DifChart({ w, h }) {
 
   return (
     <div id="difference-chart">
-      <div id="diff-legend"></div>
-      <div id="diff-chart" style={{ width: svgWidth, height: svgHeight }}></div>
+      <div id="diff-legend" style={{ width: "100%", height: "5%" }}></div>
+      <div id="diff-chart" style={{ width: "100%", height: "95%" }}></div>
     </div>
   );
 }

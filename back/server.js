@@ -826,8 +826,8 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
     }
   }
   let industryInNodes = []
-  for(let i in industryINICNodes){
-    if(i == "  "){
+  for (let i in industryINICNodes) {
+    if (i == "  ") {
       continue
     }
     industryInNodes.push({
@@ -835,9 +835,11 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
       number: industryINICNodes[i]
     })
   }
+  industryInNodes.sort((a, b) => a["industry"] - b["industry"])
+  industryInNodes.sort((a, b) => a["industry"].length -b["industry"].length)
   let industryInLinks = []
-  for(let i in industryINICLinks){
-    if(i == "  "){
+  for (let i in industryINICLinks) {
+    if (i == "  ") {
       continue
     }
     industryInLinks.push({
@@ -845,6 +847,8 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
       number: industryINICLinks[i]
     })
   }
+  industryInLinks.sort((a, b) => a["industry"] - b["industry"])
+  industryInLinks.sort((a, b) => a["industry"].length -b["industry"].length)
   let ICIndustryInfo = {
     "largestLength": 0,
     "industryInNodes": industryInNodes,
@@ -853,10 +857,10 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
 
   // 获取最大值
   for (let i of industryInNodes) {
-    ICIndustryInfo["largestLength"] = Math.max(ICIndustryInfo["largestLength"], i.number)
+    ICIndustryInfo["largestLength"] = Math.max(ICIndustryInfo["largestLength"], i["number"])
   }
-  for (let i in industryInLinks) {
-    ICIndustryInfo["largestLength"] = Math.max(ICIndustryInfo["largestLength"], i.number)
+  for (let i of industryInLinks) {
+    ICIndustryInfo["largestLength"] = Math.max(ICIndustryInfo["largestLength"], i["number"])
   }
 
   // 获取每一个IC节点中黑灰产业类型的数量
@@ -900,11 +904,9 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
     "startICNum": 0,
     "children": []
   }
-  console.log(ICNodesIndustry)
-  console.log(ICLinksIndustry)
   let depthmax = 0
   for (let i of ICLinksSortKey) {
-    if(ICLinks[i].length == 0){
+    if (ICLinks[i].length == 0) {
       continue
     }
     let sourceICInfo = nodeNumIdInfo[parseInt(i) - 1]
@@ -936,7 +938,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
       let nowICDifIndustry2 = []
       let nowICDifIndustry3 = []
       for (let k of nowICIndustry) {
-        if(k == "  "){
+        if (k == "  ") {
           continue
         }
         let ICindustry1 = 0
@@ -951,24 +953,21 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
         if (ICLinksIndustry[ICLinksString].hasOwnProperty(k)) {
           ICindustry3 = ICLinksIndustry[ICLinksString][k]
         }
-        console.log(ICindustry1, ICindustry2, ICindustry3)
-        console.log(k)
-        lenMAxNow = Math.log(Math.max(ICindustry1, ICindustry2, ICindustry3) + 1)
-        console.log(lenMAxNow)
+        lenMAxNow = Math.sqrt(Math.max(ICindustry1, ICindustry2, ICindustry3))
         nowICDifIndustry1.push({
           "name": k,
           "num": ICindustry1,
-          "prop": Math.log(ICindustry1 + 1) / lenMAxNow
+          "prop": Math.sqrt(ICindustry1) / lenMAxNow
         })
         nowICDifIndustry2.push({
           "name": k,
           "num": ICindustry2,
-          "prop": Math.log(ICindustry2 + 1) / lenMAxNow
+          "prop": Math.sqrt(ICindustry2 ) / lenMAxNow
         })
         nowICDifIndustry3.push({
           "name": k,
           "num": ICindustry3,
-          "prop": Math.log(ICindustry3 + 1) / lenMAxNow
+          "prop": Math.sqrt(ICindustry3) / lenMAxNow
         })
       }
 
@@ -1071,7 +1070,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
     sendData["startICNum"] += 1
   }
 
-  // sendData["depthmax"] = depthmax
+  sendData["depthmax"] = depthmax
 
   res.send([sendData, ICIndustryInfo]);
   res.end()

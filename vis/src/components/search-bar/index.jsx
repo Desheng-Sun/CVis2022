@@ -16,31 +16,95 @@ export default function SearchBar() {
   useEffect(() => {
     if (selectType == undefined || selectIndustry == undefined) {
       getInitialSds("", "", "").then((res) => {
-        console.log(res)
+        console.log(res);
         setSelectContent(res);
       });
-    }
-    else {
-      getInitialSds(selectType, selectIndustry,selectId).then((res) => {
+    } else {
+      getInitialSds(selectType, selectIndustry, selectId).then((res) => {
         setSelectContent(res);
-        console.log(res)
+        console.log(res);
       });
     }
-  }, [selectType, selectIndustry,selectId]);
+  }, [selectType, selectIndustry, selectId]);
 
-  useEffect(() => {
-  }, [selectContent]);
+  useEffect(() => {}, [selectContent]);
 
-  let type = ["Domain", "IP", "Cert", "Whois_Name", "Whois_Phone", "Whois_Email", "IP_C", "ASN"]
-  let industry = ['  ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
-    'AB', 'AC', 'AD', 'AE', 'AG', 'AH', 'AI', 'BC', 'BE', 'BF', 'BG',
-    'BH', 'BI', 'CE', 'CG', 'CH', 'CI', 'FG', 'FI', 'GH', 'GI', 'HI',
-    'ABC', 'ABE', 'ABG', 'ABI', 'ACG', 'ACI', 'AGI', 'BCE', 'BCG',
-    'BCH', 'BCI', 'BFI', 'BGH', 'BGI', 'CGH', 'CGI', 'FGH', 'GHI',
-    'ABCD', 'ABCE', 'ABCG', 'ABCH', 'ABCI', 'ABGI', 'ACGI', 'BCGI',
-    'ABCDE', 'ABCEG', 'ABCFG', 'ABCGI', 'ABCGHI']
+  let type = [
+    "Domain",
+    "IP",
+    "Cert",
+    "Whois_Name",
+    "Whois_Phone",
+    "Whois_Email",
+    "IP_C",
+    "ASN",
+  ];
+  let industry = [
+    "  ",
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "AB",
+    "AC",
+    "AD",
+    "AE",
+    "AG",
+    "AH",
+    "AI",
+    "BC",
+    "BE",
+    "BF",
+    "BG",
+    "BH",
+    "BI",
+    "CE",
+    "CG",
+    "CH",
+    "CI",
+    "FG",
+    "FI",
+    "GH",
+    "GI",
+    "HI",
+    "ABC",
+    "ABE",
+    "ABG",
+    "ABI",
+    "ACG",
+    "ACI",
+    "AGI",
+    "BCE",
+    "BCG",
+    "BCH",
+    "BCI",
+    "BFI",
+    "BGH",
+    "BGI",
+    "CGH",
+    "CGI",
+    "FGH",
+    "GHI",
+    "ABCD",
+    "ABCE",
+    "ABCG",
+    "ABCH",
+    "ABCI",
+    "ABGI",
+    "ACGI",
+    "BCGI",
+    "ABCDE",
+    "ABCEG",
+    "ABCFG",
+    "ABCGI",
+    "ABCGHI",
+  ];
 
-  
   const changeType = (value) => {
     setSelectType(value);
   };
@@ -61,10 +125,9 @@ export default function SearchBar() {
     }
   };
 
-
   const changeId = (value, index) => {
-    console.log(value,index)
-    setSelectNumId(selectContent[0][index.key])
+    console.log(value, index);
+    setSelectNumId(selectContent[0][index.key]);
     if (value) {
       setSelectId(value);
     }
@@ -76,7 +139,7 @@ export default function SearchBar() {
   };
 
   const onSearchData = () => {
-    console.log(selectNumId, selectType)
+    console.log(selectNumId, selectType);
     PubSub.publish("getClueFromDense", {
       numId: selectNumId,
       Id: selectType,
@@ -84,7 +147,7 @@ export default function SearchBar() {
   };
   const onCleanData = () => {
     setSelectId(undefined);
-    setSelectNumId(undefined)
+    setSelectNumId(undefined);
     setSelectType(undefined);
     setSelectIndustry(undefined);
   };
