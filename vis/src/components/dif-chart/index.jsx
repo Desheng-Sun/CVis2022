@@ -8,6 +8,7 @@ export default function DifChart({ w, h }) {
   const [svgWidth, setSvgWidth] = useState(w);
   const [svgHeight, setSvgHeight] = useState(h);
   const [data, setData] = useState([]);
+  const [selectICLinks, setSelectICLinks] = useState("");
 
   // 随系统缩放修改画布大小
   useEffect(() => {
@@ -256,6 +257,7 @@ export default function DifChart({ w, h }) {
       setData(res);
     });
   }, []);
+  
   // 绘制结构图
   function draw() {
     if (JSON.stringify(data) === "[]") return;
@@ -265,6 +267,7 @@ export default function DifChart({ w, h }) {
     let outerData = data[0];
     let innerData = data[1];
     let radius = Math.min(svgWidth / 2, svgHeight / 2);
+    let selectICLInksNum = 0  
     function partition(data) {
       return d3.partition().size([2 * Math.PI, radius * radius])(
         d3
@@ -453,7 +456,7 @@ export default function DifChart({ w, h }) {
               d.data.children.length +
               d.data.startICNum +
               2) *
-              ICLinksPad +
+            ICLinksPad +
             (d.data.startICLinkNum + d.data.children.length) * 3 * childrenLen;
           return endAngle;
         }
@@ -467,8 +470,8 @@ export default function DifChart({ w, h }) {
             (innerRadius * 19) / 20 +
             1 +
             radiusUse *
-              (root.data.depthmax / d.data.childrenLen) *
-              (d.depth - 3)
+            (root.data.depthmax / d.data.childrenLen) *
+            (d.depth - 3)
           );
         }
       })
@@ -478,8 +481,8 @@ export default function DifChart({ w, h }) {
         } else if (d.depth > 2) {
           return (
             radiusUse *
-              (root.data.depthmax / d.data.childrenLen) *
-              (d.depth - 2) +
+            (root.data.depthmax / d.data.childrenLen) *
+            (d.depth - 2) +
             (innerRadius * 19) / 20 -
             1
           );
@@ -499,12 +502,10 @@ export default function DifChart({ w, h }) {
       //   return color(d.data.name)
       // })
       .attr("stroke", "black")
-      .attr("d", arc);
-    // .on("click", function(event, d, i){
-    //   let curIndex = d.data.nowICLinksIndex
-    //   plainArc.filter(d => d.data.nowICLinksIndex === curIndex)
-    //   .attr('opacity', 'red')
-    // })
+      .attr("d", arc)
+      .on("click", function (event, d, i) {
+        selectICLInksNum = d.data.nowICLinksIndex
+      })
 
     let arc2 = d3
       .arc()
@@ -522,7 +523,7 @@ export default function DifChart({ w, h }) {
           (d.data.nowICLinksIndex + d.data.nowICIndex - 1) * ICLinksPad -
           childrenPad +
           childrenLen *
-            ((d.data.nowICLinksIndex - 1) * 3 + d.data.index - 1 + d.data.prop);
+          ((d.data.nowICLinksIndex - 1) * 3 + d.data.index - 1 + d.data.prop);
         return endAngle;
       })
       .cornerRadius(5)
@@ -536,8 +537,8 @@ export default function DifChart({ w, h }) {
       .outerRadius((d) => {
         return (
           radiusUse *
-            (root.data.depthmax / d.data.childrenLen) *
-            (d.depth - 2) +
+          (root.data.depthmax / d.data.childrenLen) *
+          (d.depth - 2) +
           (innerRadius * 19) / 20 -
           1
         );
@@ -549,12 +550,10 @@ export default function DifChart({ w, h }) {
       .data(root.descendants().filter((d) => d.depth > 2 && d.data.prop > 0))
       .join("path")
       .attr("fill", (d) => color(d.data.name))
-      .attr("d", arc2);
-    // .on("click", function(event, d, i){
-    //   let curIndex = d.data.nowICLinksIndex
-    //   colorArcs.filter(d => d.data.nowICLinksIndex === curIndex)
-    //   .attr('stroke', 'red')
-    // })
+      .attr("d", arc2)
+      .on("click", function (event, d, i) {
+        selectICLInksNum = d.data.nowICLinksIndex
+      })
 
     svg
       .append("g")
@@ -590,23 +589,22 @@ export default function DifChart({ w, h }) {
             (((d.data.nowICIndex - 0.5) * ICNodesPad +
               (d.data.nowICLinksIndex + d.data.nowICIndex - 1) * ICLinksPad +
               childrenLen *
-                ((d.data.nowICLinksIndex - 1) * 3 + d.data.index - 0.5)) *
+              ((d.data.nowICLinksIndex - 1) * 3 + d.data.index - 0.5)) *
               180) /
             Math.PI;
           y =
             (innerRadius * 19) / 20 +
             radiusUse *
-              (root.data.depthmax / d.data.childrenLen) *
-              (d.depth - 2.5);
+            (root.data.depthmax / d.data.childrenLen) *
+            (d.depth - 2.5);
           if (x >= 90 && x <= 270) {
             y = y + 2;
           } else {
             y = y - 2;
           }
         }
-        return `rotate(${x - 90}) translate(${y},${0}) rotate(${
-          x < 90 || x > 270 ? 90 : 270
-        })`;
+        return `rotate(${x - 90}) translate(${y},${0}) rotate(${x < 90 || x > 270 ? 90 : 270
+          })`;
       })
       .text((d) => {
         if (d.depth <= 2) {
@@ -635,9 +633,9 @@ export default function DifChart({ w, h }) {
       (Math.PI * 2 -
         innerDataILPad * 2 -
         innerDataPad *
-          (innerData["industryINLinks"].length +
-            innerData["industryINNodes"].length -
-            2)) /
+        (innerData["industryINLinks"].length +
+          innerData["industryINNodes"].length -
+          2)) /
       (innerData["industryINLinks"].length +
         innerData["industryINNodes"].length);
     innerRadius = (innerRadius * 4) / 5;
@@ -650,7 +648,7 @@ export default function DifChart({ w, h }) {
         return (
           innerDataILPad +
           (innerDataPad + innerDataAngle) *
-            innerData["industryINLinks"].length -
+          innerData["industryINLinks"].length -
           innerDataPad
         );
       })
@@ -659,7 +657,7 @@ export default function DifChart({ w, h }) {
           return (
             innerDataILPad +
             (innerDataPad + innerDataAngle) *
-              innerData["industryINLinks"].length -
+            innerData["industryINLinks"].length -
             innerDataPad
           );
         }
@@ -688,15 +686,14 @@ export default function DifChart({ w, h }) {
         let x =
           ((innerDataILPad +
             (innerDataPad + innerDataAngle) *
-              innerData["industryINLinks"].length -
+            innerData["industryINLinks"].length -
             innerDataPad) *
             90) /
-            Math.PI +
+          Math.PI +
           i * 180;
         let y = innerRadius + innerRadius / 10 - 5;
-        return `rotate(${x - 90}) translate(${y},${0}) rotate(${
-          x < 90 || x > 270 ? 90 : 270
-        })`;
+        return `rotate(${x - 90}) translate(${y},${0}) rotate(${x < 90 || x > 270 ? 90 : 270
+          })`;
       })
       .text((d) => {
         return d;
@@ -720,9 +717,8 @@ export default function DifChart({ w, h }) {
         if (x >= 90 && x <= 270) {
           y = y + 8;
         }
-        return `rotate(${x - 90}) translate(${y},${0}) rotate(${
-          x < 90 || x > 270 ? 90 : 270
-        })`;
+        return `rotate(${x - 90}) translate(${y},${0}) rotate(${x < 90 || x > 270 ? 90 : 270
+          })`;
       })
       .text((d) => {
         return d.number;
@@ -769,9 +765,8 @@ export default function DifChart({ w, h }) {
         if (x >= 90 && x <= 270) {
           y = y + 8;
         }
-        return `rotate(${x - 90}) translate(${y},${0}) rotate(${
-          x < 90 || x > 270 ? 90 : 270
-        })`;
+        return `rotate(${x - 90}) translate(${y},${0}) rotate(${x < 90 || x > 270 ? 90 : 270
+          })`;
       })
       .text((d) => {
         return d.number;
@@ -825,13 +820,21 @@ export default function DifChart({ w, h }) {
         if (x >= 90 && x <= 270) {
           y = y + 8;
         }
-        return `rotate(${x - 90}) translate(${y},${0}) rotate(${
-          x < 90 || x > 270 ? 90 : 270
-        })`;
+        return `rotate(${x - 90}) translate(${y},${0}) rotate(${x < 90 || x > 270 ? 90 : 270
+          })`;
       })
       .text((d) => {
         return d.number;
       });
+      let nowNum = 0
+      for(let i of outerData["children"]){
+          for(let j of i["children"]){
+            nowNum += 1
+            if(nowNum == selectICLInksNum){
+              setSelectICLinks([i["numId"], j["numId"]].toString())
+            }
+          }
+      }
   }
 
   return (
