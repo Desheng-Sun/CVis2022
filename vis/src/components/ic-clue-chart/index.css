@@ -3,6 +3,10 @@
   position: relative;
 }
 
+#icclue-chart{
+  height:57.2vh
+}
+
 .icicle-viz svg {
   width: 100% !important;
 }

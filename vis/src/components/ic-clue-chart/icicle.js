@@ -164,8 +164,8 @@ export default Kapsule({
 
     // state.titleSvg = el.append('svg').attr('class', 'icicleTitleSvg')
     state.svg = el.append("svg").attr("class", "icicleSvg");
-    state.canvas = state.svg.append("g");
-    // .attr('transform', 'translate(0, 0)')
+    state.canvas = state.svg.append("g")
+      .attr('transform', 'translate(0, 0)')
 
     // tooltips
     state.tooltip = el

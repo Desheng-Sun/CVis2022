@@ -109,11 +109,19 @@ export default function SkeletonChart({ w, h }) {
     ].sort(); // 包含的所有产业类型
 
     d3.selectAll("div#skeleton-chart svg").remove();
+    d3.selectAll("div#skeleton-chart svg").remove();
+    d3.selectAll("div#skeleton-chart .skeleton-toolTip").remove();
+
+    var skeletonToolTip = d3
+      .select("#skeleton-chart")
+      .append("div")
+      .attr("class", "skeleton-toolTip");
+
     const svg = d3
       .select("#skeleton-chart")
       .append("svg")
       .attr("width", svgWidth)
-      .attr("height", svgHeight)
+      .attr("height", svgHeight * 0.99)
       .attr("viewBox", [0, 0, svgWidth, svgHeight]);
     var scaleFactor = 1.2, // 值为1表示紧连边缘的点
       margin = scaleFactor,
@@ -158,7 +166,6 @@ export default function SkeletonChart({ w, h }) {
 
     const nodeG = wrapper
       .append("g")
-      // .attr("class", "node-g")
       .selectAll("g")
       .data(nodes)
       .join("g")
@@ -169,10 +176,32 @@ export default function SkeletonChart({ w, h }) {
           .on("start", dragstarted)
           .on("drag", dragged)
           .on("end", dragended)
-      );
-    nodeG.append("title").text(function (d) {
-      return d.id;
-    });
+      )
+      .on("mouseover", function (event, d) {
+        console.log(d);
+        let htmlStr =
+          "<b>" +
+          "name: " +
+          "</b>" +
+          d.name +
+          "<br>" +
+          "<b>" +
+          "industry: " +
+          "</b>" +
+          d.ICIndustry.reduce(function (prev, curr) {
+            return prev + curr.industry + "(" + curr.number + ");";
+          }, "");
+
+        skeletonToolTip
+          .style("left", event.pageX + 10 + "px")
+          .style("top", event.pageY + "px")
+          .style("visibility", "visible")
+          .html(htmlStr);
+      })
+      .on("mouseout", function (event, d) {
+        skeletonToolTip.style("visibility", "hidden");
+      });
+
     var innerCirlceColor = { IP: "#ffd006", Cert: "#67bbd7" };
     nodeG
       .append("circle")
@@ -235,10 +264,9 @@ export default function SkeletonChart({ w, h }) {
                 currIndustryIndex.length !== 0 &&
                 currIndustryIndex.indexOf(j) !== -1
               ) {
-                console.log(industryType[j]);
                 return industryColor[j];
               }
-              return "white";
+              return "#eee";
             });
         }
       }
@@ -493,7 +521,5 @@ export default function SkeletonChart({ w, h }) {
     svg.call(lasso);
   }
 
-  return (
-    <div id="skeleton-chart" style={{ width: "100%", height: "100%" }}></div>
-  );
+  return <div id="skeleton-chart" style={{ width: "100%" }}></div>;
 }

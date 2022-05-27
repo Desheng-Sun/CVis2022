@@ -14,7 +14,7 @@ export default function DifChart({ w, h }) {
     setSvgWidth(w);
   }, [w]);
   useEffect(() => {
-    setSvgHeight(h);
+    setSvgHeight(h * 0.85);
   }, [h]);
   useEffect(() => {
     draw();
@@ -252,7 +252,6 @@ export default function DifChart({ w, h }) {
 
   useEffect(() => {
     getDifChartSds(linksInfo).then((res) => {
-      console.log(res);
       setData(res);
     });
   }, []);
@@ -370,7 +369,7 @@ export default function DifChart({ w, h }) {
       .attr("height", svgHeight);
 
     svg
-      .attr("viewBox", `${-radius} ${-radius + 15} ${svgWidth} ${svgWidth}`)
+      .attr("viewBox", `${-radius} ${-radius} ${svgWidth} ${svgWidth}`)
       .style("max-width", `${svgWidth}px`)
       .style("font", "12px sans-serif");
 
@@ -836,8 +835,8 @@ export default function DifChart({ w, h }) {
 
   return (
     <div id="difference-chart">
-      <div id="diff-legend"></div>
-      <div id="diff-chart" style={{ width: svgWidth, height: svgHeight }}></div>
+      <div id="diff-legend" style={{ width: "100%", height: "5%" }}></div>
+      <div id="diff-chart" style={{ width: "100%", height: "95%" }}></div>
     </div>
   );
 }

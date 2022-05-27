@@ -77,15 +77,16 @@ export default function ICClueChart({ w, h }) {
       .style("color", "black")
       .style("line-height", 1)
       .attr("text-align", "center");
+    console.log(data);
 
     for (let i = 0; i < data.length; i++) {
       let skipNum = data[i].skipNum + 1;
       icicleChart = Icicle()
         .orientation("lr")
         .width((svgWidth / 3) * skipNum + 10)
-        .height((svgHeight / data.length) * 0.94)
+        .height((svgHeight / data.length) * 0.97)
         .data(data[i])
-        .size("pureDomain")
+        .size("height")
         .tooltipContent((d, node) => {
           return `WhoisPhone: <i>${node.data.WhoisPhone}</i><br>
                   WhoisEmail: <i>${node.data.WhoisEmail}</i><br>
@@ -107,7 +108,7 @@ export default function ICClueChart({ w, h }) {
   }
 
   return (
-    <div id="icclue-chart" style={{ width: "95%", height: "100%" }}>
+    <div id="icclue-chart" style={{ width: "95%" }}>
       <div id="icclue-control">
         <div id="icclue-title"></div>
         <div id="control">
