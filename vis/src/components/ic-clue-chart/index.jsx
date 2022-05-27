@@ -51,12 +51,13 @@ export default function ICClueChart({ w, h }) {
     if (JSON.stringify(svgWidth) === "{}" || JSON.stringify(svgHeight) === "{}")
       return;
     d3.selectAll("#icclue-chart svg").remove();
+    d3.selectAll("#icclue-chart .icicle-viz").remove();
     var titleSvg = d3
       .select("#icclue-title")
       .append("svg")
       .attr("class", "icicleTitleSvg");
     var titleG = titleSvg
-      .style("width", svgWidth + "px")
+      .style("width", svgWidth * 0.95 + "px")
       .style("height", 20 + "px")
       .append("g")
       .attr("class", "icicleTitleG")
@@ -68,8 +69,8 @@ export default function ICClueChart({ w, h }) {
       .text((d) => d)
       .attr("x", (d, i) =>
         i === 0
-          ? `${((svgWidth - 20) / 6) * (i * 5 + 1.3)}`
-          : `${((svgWidth - 20) / 6) * (i * 2 + 1)}`
+          ? `${((svgWidth - 20) / 6) * (i * 5 + 1)}`
+          : `${((svgWidth - 20) / 6) * (i * 2 + 0.7)}`
       )
       .style("font-size", "12px")
       .style("font-weight", "bolder")
@@ -81,8 +82,8 @@ export default function ICClueChart({ w, h }) {
       let skipNum = data[i].skipNum + 1;
       icicleChart = Icicle()
         .orientation("lr")
-        .width((svgWidth / 3) * skipNum)
-        .height((svgHeight / data.length) * 0.95)
+        .width((svgWidth / 3) * skipNum + 10)
+        .height((svgHeight / data.length) * 0.94)
         .data(data[i])
         .size("pureDomain")
         .tooltipContent((d, node) => {
@@ -106,7 +107,7 @@ export default function ICClueChart({ w, h }) {
   }
 
   return (
-    <div id="icclue-chart" style={{ width: "100%", height: "100%" }}>
+    <div id="icclue-chart" style={{ width: "95%", height: "100%" }}>
       <div id="icclue-control">
         <div id="icclue-title"></div>
         <div id="control">

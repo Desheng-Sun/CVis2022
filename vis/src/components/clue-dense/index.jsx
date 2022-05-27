@@ -453,8 +453,8 @@ export default function ClueDense({ w, h }) {
     };
 
     const dimensions = {
-      width: svgWidth,
-      height: svgHeight * 0.94,
+      width: svgWidth*0.98,
+      height: svgHeight * 0.99,
       margin: {
         top: 20,
         right: 20,
@@ -547,7 +547,8 @@ export default function ClueDense({ w, h }) {
   }
 
   return (
-    <div id="clue-dense" style={{ width: "100%", height: "100%" }}>
+    // <div id="clue-dense" style={{ width: "100%", height: "100%" }}>
+    <div id="clue-dense" style={{ width: "100%" }}>
       <div
         id="clue-dense-control"
         style={{ width: "100%", height: "6%", padding: "1px" }}
@@ -582,12 +583,17 @@ export default function ClueDense({ w, h }) {
       </div>
       <div
         id="clue-dense-chart"
-        style={{ width: "100%", height: "94%", position: "relative" }}
+        style={{
+          width: "100%",
+          height: "94%",
+          position: "relative",
+          padding: "5px ",
+        }}
       >
         <canvas id="clue-dense-chart-shape"></canvas>
         <canvas
           id="clue-dense-chart-mouse"
-          style={{ position: "absolute", left: 0, top: 0 }}
+          style={{ position: "absolute", left: 6, top: 5 }}
         ></canvas>
       </div>
     </div>

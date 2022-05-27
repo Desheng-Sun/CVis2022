@@ -17,7 +17,7 @@ export default function SkeletonChart({ w, h }) {
   const [data, setData] = useState({});
   const [links, setLinks] = useState([]);
   const [nodes, setNodes] = useState([]);
-  const [selectedNode, setSelectedNode] = useState(undefined);
+  const [selectedNode, setSelectedNode] = useState([]);
   const [currIc, setCurrIc] = useState(undefined); // 当前已选择的ic
 
   // 随系统缩放修改画布大小
@@ -33,7 +33,6 @@ export default function SkeletonChart({ w, h }) {
   useEffect(() => {
     if (typeof currIc !== "undefined") {
       getSkeletonChartDataSds(currIc).then((res) => {
-        console.log("skeleton执行了", res);
         setData(res);
       });
     }
@@ -41,7 +40,7 @@ export default function SkeletonChart({ w, h }) {
 
   // 监听用户选择的节点
   useEffect(() => {
-    if (typeof selectedNode !== "undefined") {
+    if (selectedNode.length !== 0) {
       let returnRes = { nodes: [], links: [] };
       for (let i in linkedByIndex) {
         let source = i.split(",")[0];
@@ -58,8 +57,6 @@ export default function SkeletonChart({ w, h }) {
       for (let j of selectedNode) {
         returnRes["nodes"].push({ numId: j });
       }
-
-      console.log("returnRes", returnRes);
       PubSub.publish("skeletonSelect", returnRes);
     }
   }, [selectedNode]);
@@ -127,8 +124,6 @@ export default function SkeletonChart({ w, h }) {
           : arcWidth * (industryType.length - 1) + 5,
       linkStrength = undefined;
     const wrapper = svg.append("g").attr("transform", `translate(0, 0)`);
-    console.log(nodeRadius, arcWidth, combinationOrder, industryType);
-
     // create groups, links and nodes
     const groups = wrapper.append("g").attr("class", "groups");
     // 节点的右键事件
@@ -163,7 +158,7 @@ export default function SkeletonChart({ w, h }) {
 
     const nodeG = wrapper
       .append("g")
-      .attr("class", "nodeG")
+      // .attr("class", "node-g")
       .selectAll("g")
       .data(nodes)
       .join("g")
@@ -189,7 +184,7 @@ export default function SkeletonChart({ w, h }) {
 
     // 绘制每个节点的内部图
     const industryColor = {
-      0: "#c3e6a1",
+      0: "#b3efa7",
       1: "#e4657f",
       2: "#a17fda",
       3: "#ff9f6d",
@@ -207,40 +202,45 @@ export default function SkeletonChart({ w, h }) {
       .endAngle((i) => ((2 * Math.PI) / combinationOrder.length) * (i + 1) - 2)
       .cornerRadius(50)
       .padAngle(0.1);
+    nodeG.append("g").attr("class", "node-g");
 
-    for (let i = 0; i < combinationOrder.length; i++) {
-      let currInduYIndex = [],
-        first_flag = true;
-      for (var j = 0; j < industryType.length; j++) {
-        nodeG
-          .append("path")
-          .attr("d", arc(i, j))
-          .attr("stroke", "none")
-          .attr("fill", (d) => {
-            if (first_flag) {
-              for (let indus in d.ICIndustry) {
-                if (
-                  combinationOrder.indexOf(d.ICIndustry[indus]["industry"]) ===
-                  i
-                ) {
-                  // 当前产业与当前弧对应的产业一致
-                  let currIndu = d.ICIndustry[indus]["industry"]; // 当前产业集合，然后获取当前产业集合包含的子产业对应的径向索引
-                  currInduYIndex = currIndu
-                    .split("")
-                    .map((value) => industryType.indexOf(value));
-                  break;
+    for (let k = 0; k < nodes.length; k++) {
+      for (let i = 0; i < combinationOrder.length; i++) {
+        let currIndustryIndex = [],
+          first_flag = true;
+        for (var j = 0; j < industryType.length; j++) {
+          d3.select(d3.selectAll(".node-g")._groups[0][k])
+            .append("path")
+            .attr("d", arc(i, j))
+            .attr("stroke", "none")
+            .attr("fill", (d) => {
+              if (first_flag) {
+                for (let indus in d.ICIndustry) {
+                  if (
+                    combinationOrder.indexOf(
+                      d.ICIndustry[indus]["industry"]
+                    ) === i
+                  ) {
+                    // 当前产业与当前弧对应的产业一致
+                    let currIndu = d.ICIndustry[indus]["industry"]; // 当前产业集合，然后获取当前产业集合包含的子产业对应的径向索引
+                    currIndustryIndex = currIndu
+                      .split("")
+                      .map((value) => industryType.indexOf(value));
+                    break;
+                  }
                 }
               }
-            }
-            first_flag = false;
-            if (
-              currInduYIndex.length !== 0 &&
-              currInduYIndex.indexOf(j) !== -1
-            ) {
-              return industryColor[j];
-            }
-            return "white";
-          });
+              first_flag = false;
+              if (
+                currIndustryIndex.length !== 0 &&
+                currIndustryIndex.indexOf(j) !== -1
+              ) {
+                console.log(industryType[j]);
+                return industryColor[j];
+              }
+              return "white";
+            });
+        }
       }
     }
 
@@ -259,7 +259,6 @@ export default function SkeletonChart({ w, h }) {
           .strength(linkStrength)
       );
     } else {
-      // simulation.force('link', d3.forceLink().links(links).id(d => d.id));
       simulation.force(
         "link",
         d3
@@ -274,7 +273,6 @@ export default function SkeletonChart({ w, h }) {
       .force("collision", d3.forceCollide().radius(nodeRadius * 2));
     simulation.on("tick", tick);
     function tick() {
-      // nodeG.attr("transform", (d) => "translate(" + d.x + "," + d.y + ")");
       nodeG.attr(
         "transform",
         (d) =>

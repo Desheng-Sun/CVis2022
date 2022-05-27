@@ -158,7 +158,8 @@ export default Kapsule({
       .append("div")
       .attr("class", "icicle-viz")
       .style("padding-top", state.divTop + "px")
-      .style("left", state.divLeft + "px");
+      .style("left", state.divLeft + "px")
+      .style("width", state.width + 10 + "px");
     // const el = d3Select(domNode).attr("class", "icicle-viz")
 
     // state.titleSvg = el.append('svg').attr('class', 'icicleTitleSvg')
@@ -397,13 +398,13 @@ export default Kapsule({
         })
         .attr("height", (d) => {
           let height = 0;
-          height = `${y1(d) - y0(d) - 1}` > 0 ? `${y1(d) - y0(d) - 1}` : 0;
+          height = `${y1(d) - y0(d) - 1}` > 0 ? `${y1(d) - y0(d) - 1}` : 1;
 
           // height = y1(d) - y0(d);
           return height;
         })
         .attr("focusable", "true")
-        .on("dblclick", function (event, d) {})
+        .on("dblclick", function (event, d) { })
         .on("click", (ev, d) => {
           newCellG.selectAll("rect").attr("opacity", 1);
           ev.stopPropagation();
@@ -429,13 +430,12 @@ export default Kapsule({
           );
           state.tooltip.html(`
           <div class="tooltip-title">
-            ${
-              state.tooltipTitle
-                ? state.tooltipTitle(d.data, d)
-                : getNodeStack(d)
-                    .slice(state.excludeRoot ? 1 : 0)
-                    .map((d) => nameOf(d.data))
-                    .join(" &rarr; ")
+            ${state.tooltipTitle
+              ? state.tooltipTitle(d.data, d)
+              : getNodeStack(d)
+                .slice(state.excludeRoot ? 1 : 0)
+                .map((d) => nameOf(d.data))
+                .join(" &rarr; ")
             }
           </div>
           ${state.tooltipContent(d.data, d)}
@@ -491,7 +491,7 @@ export default Kapsule({
     newCellG
       .filter((d) => d.children === undefined && d.data.isInFirst)
       .append("circle")
-      .attr("cx", (d) => x1(d) - x0(d) - 1 + 10)
+      .attr("cx", (d) => x1(d) - x0(d) - 1 + 5)
       .attr("cy", (d) => (y1(d) - y0(d)) / 3 + 20)
       .attr("r", 2)
       .attr("fill", "red")
@@ -505,14 +505,13 @@ export default Kapsule({
         );
         state.tooltip.html(`
                 <div class="tooltip-title">
-                  ${
-                    state.tooltipTitle
-                      ? state.tooltipTitle(d.data, d)
-                      : getNodeStack(d)
-                          .slice(state.excludeRoot ? 1 : 0)
-                          .map((d) => nameOf(d.data))
-                          .join(" &rarr; ")
-                  }
+                  ${state.tooltipTitle
+            ? state.tooltipTitle(d.data, d)
+            : getNodeStack(d)
+              .slice(state.excludeRoot ? 1 : 0)
+              .map((d) => nameOf(d.data))
+              .join(" &rarr; ")
+          }
                 </div>
                 ${state.tooltipContent(d.data, d)}
               `);
@@ -539,10 +538,9 @@ export default Kapsule({
       .attr(
         "transform",
         (d) => `translate(
-          ${
-            state.orientation === "lr"
-              ? 4
-              : state.orientation === "rl"
+          ${state.orientation === "lr"
+            ? 4
+            : state.orientation === "rl"
               ? x1(d) - x0(d) - 4
               : 0
           },
@@ -582,10 +580,9 @@ export default Kapsule({
       .attr(
         "transform",
         (d) => `translate(
-          ${
-            state.orientation === "lr"
-              ? 4
-              : state.orientation === "rl"
+          ${state.orientation === "lr"
+            ? 4
+            : state.orientation === "rl"
               ? x1(d) - x0(d) - 4
               : (x1(d) - x0(d)) / 2
           },
@@ -609,8 +606,8 @@ export default Kapsule({
           state.orientation === "lr"
             ? "start"
             : state.orientation === "rl"
-            ? "end"
-            : "middle"
+              ? "end"
+              : "middle"
         )
         .text((d) => {
           if (!d.depth) return;
@@ -621,8 +618,8 @@ export default Kapsule({
           horiz
             ? LABELS_HEIGHT_OPACITY_SCALE((y1(d) - y0(d)) * zoomTr.k)
             : LABELS_WIDTH_OPACITY_SCALE(
-                ((x1(d) - x0(d)) * zoomTr.k) / nameOf(d.data).length
-              )
+              ((x1(d) - x0(d)) * zoomTr.k) / nameOf(d.data).length
+            )
         )
         // Scale labels inversely proportional
         .attrTween("transform", function () {
