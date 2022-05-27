@@ -6,7 +6,7 @@ import d3ContextMenu from "d3-context-menu";
 import PubSub from "pubsub-js";
 
 import "./index.css";
-import { icclue, getSkeletonChartDataSds } from "../../apis/api";
+import { getSkeletonChartDataSds } from "../../apis/api";
 
 const d3Lasso = lasso;
 var linkedByIndex = {};
@@ -17,10 +17,8 @@ export default function SkeletonChart({ w, h }) {
   const [data, setData] = useState({});
   const [links, setLinks] = useState([]);
   const [nodes, setNodes] = useState([]);
-  const [dataParam, setDataParam] = useState("");
-  const [selectedNode, setSelectedNode] = useState([]);
-  const [selectedNodeFirst, setSelectedNodeFirst] = useState(true);
-  const [currIc, setCurrIc] = useState(["3", "4", "101", "112"]); // 当前已选择的ic
+  const [selectedNode, setSelectedNode] = useState(undefined);
+  const [currIc, setCurrIc] = useState(undefined); // 当前已选择的ic
 
   // 随系统缩放修改画布大小
   useEffect(() => {
@@ -33,33 +31,42 @@ export default function SkeletonChart({ w, h }) {
   // 请求数据
   // 监听冰柱图选择的节点的变化
   useEffect(() => {
-    getSkeletonChartDataSds(currIc).then((res) => {
-      // console.log(res);
-      setData(res);
-    });
+    if (typeof currIc !== "undefined") {
+      getSkeletonChartDataSds(currIc).then((res) => {
+        console.log("skeleton执行了", res);
+        setData(res);
+      });
+    }
   }, [currIc]);
 
   // 监听用户选择的节点
   useEffect(() => {
-    if (!selectedNodeFirst) {
+    if (typeof selectedNode !== "undefined") {
       let returnRes = { nodes: [], links: [] };
       for (let i in linkedByIndex) {
         let source = i.split(",")[0];
         let target = i.split(",")[1];
-        if (selectedNode.includes(parseInt(source))  && selectedNode.includes(parseInt(target))) {
-          returnRes["links"].push({ linksNumId: [parseInt(source), parseInt(target)]});
+        if (
+          selectedNode.includes(parseInt(source)) &&
+          selectedNode.includes(parseInt(target))
+        ) {
+          returnRes["links"].push({
+            linksNumId: [parseInt(source), parseInt(target)],
+          });
         }
       }
       for (let j of selectedNode) {
         returnRes["nodes"].push({ numId: j });
       }
+
+      console.log("returnRes", returnRes);
       PubSub.publish("skeletonSelect", returnRes);
     }
-    setSelectedNodeFirst(false);
   }, [selectedNode]);
 
   useEffect(() => {
-    let tLink = [], tNodes = [];
+    let tLink = [],
+      tNodes = [];
     if (JSON.stringify(data) !== "{}") {
       for (let l of data.links) {
         tLink.push(l);
@@ -76,11 +83,12 @@ export default function SkeletonChart({ w, h }) {
   }, [data]);
 
   useEffect(() => {
-    if (nodes.length !== 0 && links.length !== 0) {
+    if (nodes.length !== 0) {
       drawChart();
     }
   }, [nodes, links]);
-
+  // 监听从冰柱图传来的参数
+  PubSub.unsubscribe("icicleSelect");
   PubSub.subscribe("icicleSelect", (msg, ic) => {
     setCurrIc(ic);
   });
@@ -91,9 +99,9 @@ export default function SkeletonChart({ w, h }) {
       let source = l["source"];
       let target = l["target"];
       let sourceNumId, targetNumId;
-      for(let n of nodes){
-        if(n.id === source) sourceNumId = n.numId
-        if(n.id === target) targetNumId = n.numId
+      for (let n of nodes) {
+        if (n.id === source) sourceNumId = n.numId;
+        if (n.id === target) targetNumId = n.numId;
       }
       let key = sourceNumId + "," + targetNumId;
       linkedByIndex[key] = 1;
@@ -110,12 +118,16 @@ export default function SkeletonChart({ w, h }) {
       .attr("width", svgWidth)
       .attr("height", svgHeight)
       .attr("viewBox", [0, 0, svgWidth, svgHeight]);
-    var displayGroupOnHover = false,
-      scaleFactor = 1.2, // 值为1表示紧连边缘的点
+    var scaleFactor = 1.2, // 值为1表示紧连边缘的点
       margin = scaleFactor,
-      nodeRadius = 10,
+      arcWidth = nodes.length <= 5 ? 8 : nodes.length <= 10 ? 5 : 3,
+      nodeRadius =
+        arcWidth * (industryType.length - 1) === 0
+          ? arcWidth + 5
+          : arcWidth * (industryType.length - 1) + 5,
       linkStrength = undefined;
     const wrapper = svg.append("g").attr("transform", `translate(0, 0)`);
+    console.log(nodeRadius, arcWidth, combinationOrder, industryType);
 
     // create groups, links and nodes
     const groups = wrapper.append("g").attr("class", "groups");
@@ -166,14 +178,14 @@ export default function SkeletonChart({ w, h }) {
     nodeG.append("title").text(function (d) {
       return d.id;
     });
-    var innerCirlceColor = ["#ffd006", "#67bbd7"];
+    var innerCirlceColor = { IP: "#ffd006", Cert: "#67bbd7" };
     nodeG
       .append("circle")
       .attr("r", 2)
       .attr("fill", "white")
       .attr("cx", 0)
       .attr("cy", 0)
-      .attr("fill", (d, index) => innerCirlceColor[index % 2]);
+      .attr("fill", (d) => innerCirlceColor[d.type]);
 
     // 绘制每个节点的内部图
     const industryColor = {
@@ -189,12 +201,12 @@ export default function SkeletonChart({ w, h }) {
     };
     const arc = d3
       .arc()
-      .innerRadius((i, j) => 2 + 2 * j)
-      .outerRadius((i, j) => 2 + 2 * (j + 1))
+      .innerRadius((i, j) => 2 + arcWidth * j)
+      .outerRadius((i, j) => 2 + arcWidth * (j + 1))
       .startAngle((i) => ((2 * Math.PI) / combinationOrder.length) * i - 2)
       .endAngle((i) => ((2 * Math.PI) / combinationOrder.length) * (i + 1) - 2)
-      .cornerRadius(60)
-      .padAngle(0.5);
+      .cornerRadius(50)
+      .padAngle(0.1);
 
     for (let i = 0; i < combinationOrder.length; i++) {
       let currInduYIndex = [],
@@ -208,7 +220,8 @@ export default function SkeletonChart({ w, h }) {
             if (first_flag) {
               for (let indus in d.ICIndustry) {
                 if (
-                  combinationOrder.indexOf(d.ICIndustry[indus]["industry"]) === i
+                  combinationOrder.indexOf(d.ICIndustry[indus]["industry"]) ===
+                  i
                 ) {
                   // 当前产业与当前弧对应的产业一致
                   let currIndu = d.ICIndustry[indus]["industry"]; // 当前产业集合，然后获取当前产业集合包含的子产业对应的径向索引
@@ -220,7 +233,10 @@ export default function SkeletonChart({ w, h }) {
               }
             }
             first_flag = false;
-            if (currInduYIndex.length !== 0 && currInduYIndex.indexOf(j) !== -1) {
+            if (
+              currInduYIndex.length !== 0 &&
+              currInduYIndex.indexOf(j) !== -1
+            ) {
               return industryColor[j];
             }
             return "white";
@@ -255,11 +271,27 @@ export default function SkeletonChart({ w, h }) {
     }
     simulation
       .force("center", d3.forceCenter(svgWidth / 2, svgHeight / 2))
-      .force("collision", d3.forceCollide().radius(19));
+      .force("collision", d3.forceCollide().radius(nodeRadius * 2));
     simulation.on("tick", tick);
     function tick() {
       // nodeG.attr("transform", (d) => "translate(" + d.x + "," + d.y + ")");
-      nodeG.attr("transform", (d) => "translate(" + (d.x < 10? d.x = 10 : d.x > (svgWidth - 10) ? d.x = svgWidth-10 : d.x) + "," + (d.y < 10? d.y = 10 : d.y > (svgHeight - 10) ? d.y = svgHeight-10 : d.y) + ")");
+      nodeG.attr(
+        "transform",
+        (d) =>
+          "translate(" +
+          (d.x < 2
+            ? (d.x = nodeRadius)
+            : d.x > svgWidth - nodeRadius
+            ? (d.x = svgWidth - nodeRadius)
+            : d.x) +
+          "," +
+          (d.y < nodeRadius
+            ? (d.y = nodeRadius)
+            : d.y > svgHeight - nodeRadius
+            ? (d.y = svgHeight - nodeRadius)
+            : d.y) +
+          ")"
+      );
       link
         .attr("x1", (d) => d.source.x)
         .attr("y1", (d) => d.source.y)
@@ -287,16 +319,19 @@ export default function SkeletonChart({ w, h }) {
       .attr("stroke", "grey")
       .attr("fill", "white")
       .attr("opacity", 0.5)
-      .on("contextmenu", d3ContextMenu(menu, {
-        position: function(d){
-          var elm = this;
-          var bounds = elm.getBoundingClientRect();
-          return {
-            top: bounds.top + bounds.height,
-            left: bounds.left
-          }
-        }
-      }));
+      .on(
+        "contextmenu",
+        d3ContextMenu(menu, {
+          position: function (d) {
+            var elm = this;
+            var bounds = elm.getBoundingClientRect();
+            return {
+              top: bounds.top + bounds.height,
+              left: bounds.left,
+            };
+          },
+        })
+      );
 
     //拖拽节点
     function dragstarted(evt, d) {
@@ -379,22 +414,22 @@ export default function SkeletonChart({ w, h }) {
     }
 
     // 视图缩放：缩放了就不会有选择
-    // let zoomHandler = d3
-    //   .zoom()
-    //   .on("zoom", zoomAction)
-    //   .filter(function (event) {
-    //     return !event.button && event.type !== "dblclick";
-    //   });
-    // function zoomAction(event) {
-    //   wrapper.attr(
-    //     "transform",
-    //     `translate(${event.transform.x}, ${event.transform.y})` +
-    //       "scale(" +
-    //       event.transform.k +
-    //       ")"
-    //     );
-    // }
-    // zoomHandler(svg);
+    let zoomHandler = d3
+      .zoom()
+      .on("zoom", zoomAction)
+      .filter(function (event) {
+        return !event.button && event.type !== "dblclick";
+      });
+    function zoomAction(event) {
+      wrapper.attr(
+        "transform",
+        `translate(${event.transform.x}, ${event.transform.y})` +
+          "scale(" +
+          event.transform.k +
+          ")"
+      );
+    }
+    zoomHandler(wrapper);
 
     // ----------------   LASSO STUFF . ----------------
     var lasso_start = function () {
@@ -438,12 +473,14 @@ export default function SkeletonChart({ w, h }) {
       if (groupIdArr.length !== 0) {
         let numIdArr = nodes
           .filter((d) => {
-            return groupIdArr.includes(parseInt(d.group))
+            return groupIdArr.includes(parseInt(d.group));
           })
           .map((d) => {
             return d.numId;
           });
-        setSelectedNode((selectedNode) => Array.from(new Set([...selectedNode, ...numIdArr])));
+        setSelectedNode((selectedNode) =>
+          Array.from(new Set([...selectedNode, ...numIdArr]))
+        );
       }
     };
 
@@ -455,7 +492,6 @@ export default function SkeletonChart({ w, h }) {
       .on("start", lasso_start)
       .on("draw", lasso_draw)
       .on("end", lasso_end);
-
     svg.call(lasso);
   }
 

@@ -72,34 +72,34 @@
   display: contents;
 }
 
-#mainLegend {
+#main-legend {
   position: absolute;
   width: 120px;
   top: 119px;
   background: #eee;
   cursor: pointer;
 }
-#legendHeader {
+#legend-header {
   width: 120px;
   padding-left: 9px;
   background: #eee;
 }
-#legendDivider {
+#legend-divider {
   width: 120px;
   height: 2px;
   background-color: #aaa;
 }
-#collapseLegendIcon svg {
+#collapse-legend-icon svg {
   background: #eee;
 }
 
-#collapseLegendIcon svg:hover {
+#collapse-legend-icon svg:hover {
   background: #ccc;
 }
-#expandLegendIcon svg {
+#expand-legend-icon svg {
   background: #eee;
 }
-#expandLegendIcon svg:hover {
+#expand-legend-icon svg:hover {
   background: #ccc;
 }
 

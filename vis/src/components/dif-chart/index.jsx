@@ -1,7 +1,8 @@
 import * as d3 from "d3";
+import { curveCatmullRomOpen } from "d3";
 import { useEffect, useState } from "react";
-import "../dif-chart/index.css";
 import { getDifChartSds } from "../../apis/api.js";
+import "./index.css";
 
 export default function DifChart({ w, h }) {
   const [svgWidth, setSvgWidth] = useState(w);
@@ -16,7 +17,6 @@ export default function DifChart({ w, h }) {
     setSvgHeight(h);
   }, [h]);
   useEffect(() => {
-    d3.selectAll("div#difference-chart svg").remove();
     draw();
   });
   let linksInfo = {
@@ -252,12 +252,16 @@ export default function DifChart({ w, h }) {
 
   useEffect(() => {
     getDifChartSds(linksInfo).then((res) => {
+      console.log(res);
       setData(res);
     });
   }, []);
   // 绘制结构图
   function draw() {
     if (JSON.stringify(data) === "[]") return;
+    d3.selectAll("#diff-legend svg").remove();
+    d3.selectAll("#diff-chart svg").remove();
+
     let outerData = data[0];
     let innerData = data[1];
     let radius = Math.min(svgWidth / 2, svgHeight / 2);
@@ -360,43 +364,57 @@ export default function DifChart({ w, h }) {
     industryName.sort((a, b) => a.length - b.length);
     let color = d3.scaleOrdinal().domain(industryName).range(d3_category437);
     let svg = d3
-      .select("#difference-chart")
+      .select("#diff-chart")
       .append("svg")
       .attr("width", svgWidth)
       .attr("height", svgHeight);
 
     svg
-      .attr("viewBox", `${-radius} ${-radius} ${svgWidth} ${svgWidth}`)
+      .attr("viewBox", `${-radius} ${-radius + 15} ${svgWidth} ${svgWidth}`)
       .style("max-width", `${svgWidth}px`)
       .style("font", "12px sans-serif");
+
+    let diffCHartWrapper = svg.append("g").attr("transform", "translate(0, 0)");
     // 绘制图例-------------------------------------------------------------------------------------
-    svg
+    let totalLetter = industryName.reduce(function (prev, curr) {
+      // 所有字符出现得总次数
+      return prev + curr.length;
+    }, 0);
+    let diffLegendSvg = d3
+      .select("#diff-legend")
+      .append("svg")
+      .attr("width", svgWidth)
+      .attr("height", "25px");
+    diffLegendSvg
       .append("g")
-      .attr("class", "bars")
+      .attr("class", "diff-legend")
       .selectAll("rect")
       .data(industryName)
-      .enter()
-      .append("rect")
+      .join("rect")
       .attr("fill", (d) => color(d))
-      .attr("x", -radius + 20)
-      .attr("y", (d, i) => {
-        return i * 30 + radius - industryName.length * 30;
+      .attr("x", (d, i) => {
+        let beforeLatter = 0;
+        for (let j = 0; j < i; j++) beforeLatter += industryName[j].length;
+        return ((svgWidth - 10) / totalLetter) * beforeLatter + 5;
       })
+      .attr("y", 2)
       .attr("height", 20)
-      .attr("width", 50);
-    svg
+      .attr("width", (d) => ((svgWidth - 10) / totalLetter) * d.length);
+    diffLegendSvg
       .append("g")
-      .selectAll("path")
+      .selectAll("text")
       .data(industryName)
-      .enter()
-      .append("text")
-      .attr("class", "datatext")
-      .attr("text-anchor", "middle")
-      .attr("transform", (d, i) => {
-        let x = -radius + 20 + 25;
-        let y = i * 30 + radius - industryName.length * 30 + 15;
-        return ` translate(${x},${y})`;
+      .join("text")
+      .attr("class", "legend-text")
+      .attr("width", (d, i) => ((svgWidth - 10) / totalLetter) * d.length)
+      .attr("x", (d, i) => {
+        let beforeLatter = 0;
+        for (let j = 0; j < i; j++) beforeLatter += industryName[j].length;
+        return (
+          ((svgWidth - 10) / totalLetter) * (beforeLatter + d.length / 2) + 5
+        );
       })
+      .attr("y", 15)
       .text((d) => {
         return d;
       });
@@ -468,7 +486,7 @@ export default function DifChart({ w, h }) {
         }
       });
 
-    let plainArc = svg
+    let plainArc = diffCHartWrapper
       .append("g")
       .selectAll("path")
       .data(root.descendants().filter((d) => d.depth !== 0))
@@ -525,7 +543,7 @@ export default function DifChart({ w, h }) {
         );
       });
 
-    let colorArcs = svg
+    let colorArcs = diffCHartWrapper
       .append("g")
       .selectAll("path")
       .data(root.descendants().filter((d) => d.depth > 2 && d.data.prop > 0))
@@ -540,20 +558,19 @@ export default function DifChart({ w, h }) {
 
     svg
       .append("g")
-      .selectAll("datatext")
+      .selectAll("text")
       .data(
         root.descendants().filter((d) => {
           return d.depth > 0;
         })
       )
       .join("text")
-      .attr("class", "datatext")
-      .attr("text-anchor", "middle")
+      .attr("class", "data-text")
       .attr("transform", (d) => {
         let x, y;
         if (d.depth === 1) {
           x = (((d.x0 + d.x1) / 2) * 180) / Math.PI;
-          y = (innerRadius * 9) / 10 + 2;
+          y = (innerRadius * 9) / 10 - 6;
           if (x >= 90 && x <= 270) {
             y = y + 8;
           }
@@ -564,9 +581,9 @@ export default function DifChart({ w, h }) {
               childrenLen * ((d.data.nowICLinksNum - 1) * 3 + 1.5)) *
               180) /
             Math.PI;
-          y = innerRadius + radiusUse * root.data.depthmax - 3;
+          y = innerRadius + radiusUse * root.data.depthmax + 8;
           if (x < 90 || x > 270) {
-            y = y - 8;
+            y = y - 5;
           }
         } else {
           x =
@@ -582,9 +599,9 @@ export default function DifChart({ w, h }) {
               (root.data.depthmax / d.data.childrenLen) *
               (d.depth - 2.5);
           if (x >= 90 && x <= 270) {
-            y = y + 6;
+            y = y + 2;
           } else {
-            y = y - 6;
+            y = y - 2;
           }
         }
         return `rotate(${x - 90}) translate(${y},${0}) rotate(${
@@ -596,7 +613,9 @@ export default function DifChart({ w, h }) {
           return d.data.name;
         }
         return d.data.num;
-      });
+        // return d.data.num !== 0 ? d.data.num : "";
+      })
+      .attr("z-index", 999);
 
     // 绘制中间的玫瑰图-------------------------------------------------------------------------------------------------------------
     let maxLength = Math.log(innerData["largetLength"] + 1);
@@ -625,7 +644,7 @@ export default function DifChart({ w, h }) {
     let arc3 = d3
       .arc()
       .startAngle((d, i) => {
-        if (i == 0) {
+        if (i === 0) {
           return 0;
         }
         return (
@@ -636,7 +655,7 @@ export default function DifChart({ w, h }) {
         );
       })
       .endAngle((d, i) => {
-        if (i == 0) {
+        if (i === 0) {
           return (
             innerDataILPad +
             (innerDataPad + innerDataAngle) *
@@ -649,7 +668,7 @@ export default function DifChart({ w, h }) {
       .innerRadius(0)
       .outerRadius(innerRadius + innerRadius / 10);
 
-    svg
+    diffCHartWrapper
       .append("g")
       .selectAll("path")
       .data(["1", "2"])
@@ -659,14 +678,12 @@ export default function DifChart({ w, h }) {
       .attr("fill", "#ffffff")
       .attr("stroke", "black");
 
-    svg
+    diffCHartWrapper
       .append("g")
-      .selectAll("path")
-      .data(["In ICLinks", "Not In ICLinks"])
-      .enter()
-      .append("text")
-      .attr("class", "datatext")
-      .attr("text-anchor", "middle")
+      .selectAll("text")
+      .data(["In", "Not In"])
+      .join("text")
+      .attr("class", "diff-left-right-text")
       .attr("transform", (d, i) => {
         let x =
           ((innerDataILPad +
@@ -676,23 +693,22 @@ export default function DifChart({ w, h }) {
             90) /
             Math.PI +
           i * 180;
-        let y = innerRadius + innerRadius / 10 - 20;
+        let y = innerRadius + innerRadius / 10 - 5;
         return `rotate(${x - 90}) translate(${y},${0}) rotate(${
           x < 90 || x > 270 ? 90 : 270
         })`;
       })
       .text((d) => {
         return d;
-      });
+      })
+      .attr("fill", "purple");
 
-    svg
+    diffCHartWrapper
       .append("g")
-      .selectAll("path")
+      .selectAll("text")
       .data(innerData["industryINLinks"])
-      .enter()
-      .append("text")
-      .attr("class", "datatext")
-      .attr("text-anchor", "middle")
+      .join("text")
+      .attr("class", "data-text")
       .attr("transform", (d, i) => {
         let x =
           ((innerDataILPad / 2 +
@@ -710,7 +726,8 @@ export default function DifChart({ w, h }) {
       })
       .text((d) => {
         return d.number;
-      });
+      })
+      .attr("fill", "red");
 
     let arc4 = d3
       .arc()
@@ -725,7 +742,7 @@ export default function DifChart({ w, h }) {
         return (innerRadius * Math.log(d.number + 1)) / maxLength;
       });
 
-    svg
+    diffCHartWrapper
       .append("g")
       .selectAll("path")
       .data(innerData["industryINLinks"])
@@ -734,14 +751,13 @@ export default function DifChart({ w, h }) {
       .attr("d", arc4)
       .attr("fill", (d) => color(d.industry));
 
-    svg
+    diffCHartWrapper
       .append("g")
       .selectAll("path")
       .data(innerData["industryINLinks"])
       .enter()
       .append("text")
-      .attr("class", "datatext")
-      .attr("text-anchor", "middle")
+      .attr("class", "data-text")
       .attr("transform", (d, i) => {
         let x =
           ((innerDataILPad / 2 +
@@ -782,7 +798,7 @@ export default function DifChart({ w, h }) {
         return (innerRadius * Math.log(d.number + 1)) / maxLength;
       });
 
-    svg
+    diffCHartWrapper
       .append("g")
       .selectAll("path")
       .data(innerData["industryINNodes"])
@@ -791,14 +807,13 @@ export default function DifChart({ w, h }) {
       .attr("d", arc5)
       .attr("fill", (d) => color(d.industry));
 
-    svg
+    diffCHartWrapper
       .append("g")
       .selectAll("path")
       .data(innerData["industryINNodes"])
       .enter()
       .append("text")
-      .attr("class", "datatext")
-      .attr("text-anchor", "middle")
+      .attr("class", "inner-radar-text")
       .attr("transform", (d, i) => {
         let x =
           ((innerDataILPad * 1.5 +
@@ -820,9 +835,9 @@ export default function DifChart({ w, h }) {
   }
 
   return (
-    <div
-      id="difference-chart"
-      style={{ width: svgWidth, height: svgHeight }}
-    ></div>
+    <div id="difference-chart">
+      <div id="diff-legend"></div>
+      <div id="diff-chart" style={{ width: svgWidth, height: svgHeight }}></div>
+    </div>
   );
 }

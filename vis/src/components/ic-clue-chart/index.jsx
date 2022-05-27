@@ -16,12 +16,8 @@ export default function ICClueChart({ w, h }) {
   const [svgHeight, setSvgHeight] = useState(h);
   const [data, setData] = useState({});
   const [dataParam, setDataParam] = useState("");
-  const [selectedIclcleNode, setSelectedIclcleNode] = useState([
-    "3",
-    "4",
-    "101",
-    "112",
-  ]);
+  const [selectedIclcleNode, setSelectedIclcleNode] = useState([]);
+  const [selectedIclcleNodeFirst, setSelectedIclcleNodeFirst] = useState(true);
   // const [icicleChart, setIcicleChart] = useState([])
 
   // cluedense点击后更新冰柱图
@@ -33,7 +29,10 @@ export default function ICClueChart({ w, h }) {
   });
   // 监听选择的节点的变化，如果变化了就传递给另一个组件
   useEffect(() => {
-    PubSub.publish("icicleSelect", selectedIclcleNode);
+    if (!selectedIclcleNodeFirst) {
+      PubSub.publish("icicleSelect", selectedIclcleNode);
+    }
+    setSelectedIclcleNodeFirst(false);
   }, [selectedIclcleNode]);
   // 随系统缩放修改画布大小
   useEffect(() => {
@@ -42,14 +41,6 @@ export default function ICClueChart({ w, h }) {
   useEffect(() => {
     setSvgHeight(h);
   }, [h]);
-
-  // 请求数据
-  useEffect(() => {
-    getIcClueData2Sds(10, "Domain").then((res) => {
-      console.log(res);
-      setData(res);
-    });
-  }, []);
 
   useEffect(() => {
     drawICClueChart();
