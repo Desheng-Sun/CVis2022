@@ -63,5 +63,4 @@ export default function SearchBar() {
         if (path.length == selectnodes.length - i) dropnodes.push(i)
     }
     g.removeNodesFrom(dropnodes);
-    console.log(g)
 }
