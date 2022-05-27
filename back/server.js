@@ -573,11 +573,12 @@ app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
 app.post("/getMainChartSds", jsonParser, (req, res, next) => {
   const links = req.body.linksInfo["links"];
   const nodes = req.body.linksInfo["nodes"];
-  
+
   let nowJSource = 0;
   let nowData = [];
-  let nodesNumId = new Set();
-  let linksList = new Set();
+  let nodesNumId = {};
+  let linksList = {};
+
   for (let i of links) {
     if (i["source"] != nowJSource) {
       let filedata = path.join(
@@ -590,12 +591,18 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
     for (let j of nowData) {
       if (j["end"][0] == i["linksNumId"][1]) {
         for (let k of j["nodes"]) {
-          nodesNumId.add(k[0]);
+          if (!nodesNumId.hasOwnProperty(k[0])) {
+            nodesNumId[k[0]] = []
+          }
+          nodesNumId[k[0]].push([i["linksNumId"][0], i["linksNumId"][1]].toString());
         }
 
         //只存储链路的类型、Source和Target
         for (let k of j["links"]) {
-          linksList.add([k[0], k[1], k[2]].toString());
+          if (!linksList.hasOwnProperty([k[0], k[1], k[2]].toString())) {
+            linksList[[k[0], k[1], k[2]].toString()] = []
+          }
+          linksList[[k[0], k[1], k[2]].toString()].push([i["linksNumId"][0], i["linksNumId"][1]].toString());
         }
         break;
       }
@@ -613,7 +620,7 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
       let nowNodeLinksInfo = {};
       // 获取当前IC节点直接关联的所有节点，并删除已经在链路中的相关节点
       let nowNodeNeighbor = ICNeighbor[i["numId"]].filter((e) => {
-        return !nodesNumId.has(e[0]);
+        return !nodesNumId.hasOwnProperty(e[0]);
       });
       // 针对这些节点进行分类
       for (let j of nowNodeNeighbor) {
@@ -661,8 +668,15 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
         }
         // 如果不是Domain类型，则直接存储该节点和对应的链路
         else {
-          nodesNumId.add(j[0]);
-          linksList.add([j[1][0], j[1][1], j[1][2]].toString());
+          if (!nodesNumId.hasOwnProperty(j[0])) {
+            nodesNumId[j[0]] = []
+          }
+          nodesNumId[j[0]].push([i["numId"]].toString());
+
+          if (!linksList.hasOwnProperty([j[1][0], j[1][1], j[1][2]].toString())) {
+            linksList[[j[1][0], j[1][1], j[1][2]].toString()] = []
+          }
+          linksList[[j[1][0], j[1][1], j[1][2]].toString()].push([i["numId"]].toString());
         }
       }
 
@@ -678,55 +692,70 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
   //针对每一个IC节点进行循环
   for (let i of nodes) {
     //如果当前节点不在IC链路中，即当前节点单独的IC节点
-    if (ICScreen[0].indexOf(i["numId"]) < 0) {
+    if (ICScreen[1].indexOf(i["numId"]) > -1) {
       filedata = path.join(
         __dirname,
         "data/ICAloneLinks/" + i["numId"] + ".json"
       );
       nowData = JSON.parse(fs.readFileSync(filedata, "utf-8"));
       for (j of nowData["nodes"]) {
-        nodesNumId.add(j[0]);
-      }
+        if (!nodesNumId.hasOwnProperty(j[0])) {
+          nodesNumId[j[0]] = []
+        }
+        nodesNumId[j[0]].push([i["numId"]].toString());
+      }    
       for (j of nowData["links"]) {
-        linksList.add([j[0], j[1], j[2]].toString());
+        if (!linksList.hasOwnProperty([j[0], j[1], j[2]].toString())) {
+          linksList[[j[0], j[1], j[2]].toString()] = []
+        }
+        linksList[[j[0], j[1], j[2]].toString()].push([i["numId"]].toString());
       }
     }
   }
 
   //针对所有的节点进行存储
-  for (let i of nodesNumId) {
-    let nowNodeInfo = nodeNumIdInfo[i - 1];
+  for (let i in nodesNumId) {
+    let nowNodeInfo = nodeNumIdInfo[parseInt(i) - 1];
     nowNodes.push({
       numId: parseInt(nowNodeInfo[0]),
       id: nowNodeInfo[1],
       name: nowNodeInfo[2],
       type: nowNodeInfo[3],
       industry: nowNodeInfo[4],
+      InICLinks: nodesNumId[i]
     });
   }
+
   //针对所有的链路进行存储
-  for (let i of linksList) {
+  for (let i in linksList) {
     i = i.split(",");
     nowLinks.push({
       relation: i[0],
       source: nodeNumIdInfo[parseInt(i[1]) - 1][1],
       target: nodeNumIdInfo[parseInt(i[2]) - 1][1],
       linksNumId: [parseInt(i[1]), parseInt(i[2])],
+      InICLinks: linksList[i]
     });
   }
+
   nowNodes.sort((a, b) => {
     return a["numId"] - b["numId"];
   });
+
   nowLinks.sort((a, b) => {
     return a["linksNumId"][0] - b["linksNumId"][0];
   });
+
   let sendData = {
     nodes: nowNodes,
     links: nowLinks,
   };
+
   res.send(sendData);
   res.end();
+
 });
+
 
 //获取差异图的数据
 app.post("/getDifChartSds", jsonParser, (req, res, next) => {

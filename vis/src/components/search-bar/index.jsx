@@ -4,21 +4,7 @@ import { Select, Button, Form } from "antd";
 import { getInitialSds } from "../../apis/api";
 
 const { Option } = Select;
-// var arr = [
-//   { id: "1", name: "ip1111111", type: "IP", industry: "A" },
-//   { id: "2", name: "ip113311", type: "IP", industry: "A" },
-//   { id: "3", name: "ip1311", type: "IP", industry: "A" },
-//   { id: "4", name: "ip1141", type: "IP", industry: "A,B" },
-//   { id: "5", name: "ip1231111", type: "Domain", industry: "A,C" },
-//   { id: "6", name: "ip1121111", type: "Domain", industry: "A" },
-//   { id: "7", name: "ip1115111", type: "Domain", industry: "A" },
-//   { id: "8", name: "ip1121111", type: "IP", industry: "A,C" },
-//   { id: "9", name: "ip1151111", type: "IP", industry: "A,D" },
-//   { id: "10", name: "ip1131111", type: "IP", industry: "A" },
-//   { id: "11", name: "ip51111", type: "IP", industry: "A" },
-//   { id: "12", name: "ip113111", type: "IP", industry: "A" },
-//   { id: "13", name: "ip1111311", type: "IP", industry: "A" },
-// ];
+
 export default function SearchBar() {
   const [selectId, setSelectId] = useState(undefined);
   const [selectName, setSelectName] = useState(undefined);
@@ -27,14 +13,12 @@ export default function SearchBar() {
   const [selectContent, setSelectContent] = useState([]);
 
   useEffect(() => {
-    console.log(1111);
     getInitialSds().then((res) => {
       setSelectContent(res);
     });
   }, []);
 
   useEffect(() => {
-    console.log(222);
     console.log(selectContent);
   }, [selectContent]);
 
@@ -58,11 +42,13 @@ export default function SearchBar() {
       setSelectContent(selectedidarr);
     }
   };
+  
   const searchId = (value) => {
     if (value) {
       setSelectId(value);
     }
   };
+
   const changeName = (value) => {
     setSelectName(value);
     if (value !== undefined) {
@@ -70,6 +56,7 @@ export default function SearchBar() {
       setSelectContent(selectednamearr);
     }
   };
+
   const searchName = (value) => {
     if (value) {
       setSelectName(value);
@@ -125,11 +112,11 @@ export default function SearchBar() {
           style={{ width: 100 }}
           value={selectId}
         >
-          {/* {getArrT(0).map((item, index) => (
+          {getArrT(0).map((item, index) => (
             <Option key={index} value={item}>
               {item}
             </Option>
-          ))} */}
+          ))}
         </Select>
         <Select
           allowClear
@@ -141,11 +128,11 @@ export default function SearchBar() {
           style={{ width: 100 }}
           value={selectName}
         >
-          {/* {getArrT(1).map((item, index) => (
+          {getArrT(1).map((item, index) => (
             <Option key={index} value={item}>
               {item}
             </Option>
-          ))} */}
+          ))}
         </Select>
         <Select
           allowClear
@@ -173,11 +160,11 @@ export default function SearchBar() {
           style={{ width: 100 }}
           value={selectIndustry}
         >
-          {/* {getArrT(3).map((item, index) => (
+          {getArrT(3).map((item, index) => (
             <Option key={index} value={item}>
               {item}
             </Option>
-          ))} */}
+          ))}
         </Select>
         <Button type="primary" onClick={onSearchData}>
           检索
