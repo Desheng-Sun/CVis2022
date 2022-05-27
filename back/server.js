@@ -573,6 +573,7 @@ app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
 app.post("/getMainChartSds", jsonParser, (req, res, next) => {
   const links = req.body.linksInfo["links"];
   const nodes = req.body.linksInfo["nodes"];
+  
   let nowJSource = 0;
   let nowData = [];
   let nodesNumId = new Set();

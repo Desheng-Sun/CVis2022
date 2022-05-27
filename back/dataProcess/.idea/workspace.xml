@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="dbe8f486-9b70-4c64-9ecf-41b903c5e517" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../../vis/public/json/cy-style.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../vis/public/json/cy-style.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../vis/src/components/sub-chart-cytoscape/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../../vis/src/components/sub-chart-cytoscape/index.jsx" afterDir="false" />
-    </list>
+    <list default="true" id="dbe8f486-9b70-4c64-9ecf-41b903c5e517" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -36,6 +33,7 @@
       <updated>1653457038033</updated>
       <workItem from="1653457059214" duration="104000" />
       <workItem from="1653551542666" duration="594000" />
+      <workItem from="1653630160093" duration="594000" />
     </task>
     <servers />
   </component>

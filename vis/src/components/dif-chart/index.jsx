@@ -370,9 +370,11 @@ export default function DifChart({ w, h }) {
       .attr("height", svgHeight);
 
     svg
-      .attr("viewBox", `${-radius} ${-radius} ${svgWidth} ${svgWidth}`)
+      .attr("viewBox", `${-radius} ${-radius + 15} ${svgWidth} ${svgWidth}`)
       .style("max-width", `${svgWidth}px`)
       .style("font", "12px sans-serif");
+
+    let diffCHartWrapper = svg.append("g").attr("transform", "translate(0, 0)");
     // 绘制图例-------------------------------------------------------------------------------------
     let totalLetter = industryName.reduce(function (prev, curr) {
       // 所有字符出现得总次数
@@ -484,7 +486,7 @@ export default function DifChart({ w, h }) {
         }
       });
 
-    let plainArc = svg
+    let plainArc = diffCHartWrapper
       .append("g")
       .selectAll("path")
       .data(root.descendants().filter((d) => d.depth !== 0))
@@ -541,7 +543,7 @@ export default function DifChart({ w, h }) {
         );
       });
 
-    let colorArcs = svg
+    let colorArcs = diffCHartWrapper
       .append("g")
       .selectAll("path")
       .data(root.descendants().filter((d) => d.depth > 2 && d.data.prop > 0))
@@ -666,7 +668,7 @@ export default function DifChart({ w, h }) {
       .innerRadius(0)
       .outerRadius(innerRadius + innerRadius / 10);
 
-    svg
+    diffCHartWrapper
       .append("g")
       .selectAll("path")
       .data(["1", "2"])
@@ -676,7 +678,7 @@ export default function DifChart({ w, h }) {
       .attr("fill", "#ffffff")
       .attr("stroke", "black");
 
-    svg
+    diffCHartWrapper
       .append("g")
       .selectAll("text")
       .data(["In", "Not In"])
@@ -701,7 +703,7 @@ export default function DifChart({ w, h }) {
       })
       .attr("fill", "purple");
 
-    svg
+    diffCHartWrapper
       .append("g")
       .selectAll("text")
       .data(innerData["industryINLinks"])
@@ -740,7 +742,7 @@ export default function DifChart({ w, h }) {
         return (innerRadius * Math.log(d.number + 1)) / maxLength;
       });
 
-    svg
+    diffCHartWrapper
       .append("g")
       .selectAll("path")
       .data(innerData["industryINLinks"])
@@ -749,7 +751,7 @@ export default function DifChart({ w, h }) {
       .attr("d", arc4)
       .attr("fill", (d) => color(d.industry));
 
-    svg
+    diffCHartWrapper
       .append("g")
       .selectAll("path")
       .data(innerData["industryINLinks"])
@@ -796,7 +798,7 @@ export default function DifChart({ w, h }) {
         return (innerRadius * Math.log(d.number + 1)) / maxLength;
       });
 
-    svg
+    diffCHartWrapper
       .append("g")
       .selectAll("path")
       .data(innerData["industryINNodes"])
@@ -805,7 +807,7 @@ export default function DifChart({ w, h }) {
       .attr("d", arc5)
       .attr("fill", (d) => color(d.industry));
 
-    svg
+    diffCHartWrapper
       .append("g")
       .selectAll("path")
       .data(innerData["industryINNodes"])

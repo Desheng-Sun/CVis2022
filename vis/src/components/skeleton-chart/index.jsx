@@ -6,7 +6,7 @@ import d3ContextMenu from "d3-context-menu";
 import PubSub from "pubsub-js";
 
 import "./index.css";
-import { icclue, getSkeletonChartDataSds } from "../../apis/api";
+import { getSkeletonChartDataSds } from "../../apis/api";
 
 const d3Lasso = lasso;
 var linkedByIndex = {};
@@ -17,10 +17,8 @@ export default function SkeletonChart({ w, h }) {
   const [data, setData] = useState({});
   const [links, setLinks] = useState([]);
   const [nodes, setNodes] = useState([]);
-  const [dataParam, setDataParam] = useState("");
-  const [selectedNode, setSelectedNode] = useState([]);
-  const [selectedNodeFirst, setSelectedNodeFirst] = useState(true);
-  const [currIc, setCurrIc] = useState(["3", "4", "101", "112"]); // 当前已选择的ic
+  const [selectedNode, setSelectedNode] = useState(undefined);
+  const [currIc, setCurrIc] = useState(undefined); // 当前已选择的ic
 
   // 随系统缩放修改画布大小
   useEffect(() => {
@@ -33,15 +31,17 @@ export default function SkeletonChart({ w, h }) {
   // 请求数据
   // 监听冰柱图选择的节点的变化
   useEffect(() => {
-    getSkeletonChartDataSds(currIc).then((res) => {
-      // console.log(res);
-      setData(res);
-    });
+    if (typeof currIc !== "undefined") {
+      getSkeletonChartDataSds(currIc).then((res) => {
+        console.log("skeleton执行了", res);
+        setData(res);
+      });
+    }
   }, [currIc]);
 
   // 监听用户选择的节点
   useEffect(() => {
-    if (!selectedNodeFirst) {
+    if (typeof selectedNode !== "undefined") {
       let returnRes = { nodes: [], links: [] };
       for (let i in linkedByIndex) {
         let source = i.split(",")[0];
@@ -59,9 +59,9 @@ export default function SkeletonChart({ w, h }) {
         returnRes["nodes"].push({ numId: j });
       }
 
+      console.log("returnRes", returnRes);
       PubSub.publish("skeletonSelect", returnRes);
     }
-    setSelectedNodeFirst(false);
   }, [selectedNode]);
 
   useEffect(() => {
@@ -83,10 +83,11 @@ export default function SkeletonChart({ w, h }) {
   }, [data]);
 
   useEffect(() => {
-    if (nodes.length !== 0 && links.length !== 0) {
+    if (nodes.length !== 0) {
       drawChart();
     }
   }, [nodes, links]);
+  // 监听从冰柱图传来的参数
   PubSub.unsubscribe("icicleSelect");
   PubSub.subscribe("icicleSelect", (msg, ic) => {
     setCurrIc(ic);
@@ -119,10 +120,14 @@ export default function SkeletonChart({ w, h }) {
       .attr("viewBox", [0, 0, svgWidth, svgHeight]);
     var scaleFactor = 1.2, // 值为1表示紧连边缘的点
       margin = scaleFactor,
-      arcWidth = nodes.length <= 5 ? 4 : 2,
-      nodeRadius = arcWidth * (industryType.length - 1),
+      arcWidth = nodes.length <= 5 ? 8 : nodes.length <= 10 ? 5 : 3,
+      nodeRadius =
+        arcWidth * (industryType.length - 1) === 0
+          ? arcWidth + 5
+          : arcWidth * (industryType.length - 1) + 5,
       linkStrength = undefined;
     const wrapper = svg.append("g").attr("transform", `translate(0, 0)`);
+    console.log(nodeRadius, arcWidth, combinationOrder, industryType);
 
     // create groups, links and nodes
     const groups = wrapper.append("g").attr("class", "groups");
@@ -173,14 +178,14 @@ export default function SkeletonChart({ w, h }) {
     nodeG.append("title").text(function (d) {
       return d.id;
     });
-    var innerCirlceColor = ["#ffd006", "#67bbd7"];
+    var innerCirlceColor = { IP: "#ffd006", Cert: "#67bbd7" };
     nodeG
       .append("circle")
       .attr("r", 2)
       .attr("fill", "white")
       .attr("cx", 0)
       .attr("cy", 0)
-      .attr("fill", (d, index) => innerCirlceColor[index % 2]);
+      .attr("fill", (d) => innerCirlceColor[d.type]);
 
     // 绘制每个节点的内部图
     const industryColor = {

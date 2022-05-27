@@ -2683,5 +2683,8 @@ export default function DetailList({ w, h, divname, dataparam }) {
       ${x.toLocaleString("en")}
     </div>`;
   }
-  return <></>;
+  return (
+    <>
+    </>
+  );
 }
