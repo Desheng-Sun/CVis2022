@@ -151,6 +151,7 @@ function getIPCertLinksInSkip2(
       numId: nowNodesInfo[0],
       name: nowNodesInfo[2],
       children: [],
+      height: 1,
       WhoisNameNum: nowNodeLinkInfo[3],
       WhoisEmailNum: nowNodeLinkInfo[4],
       WhoisPhoneNum: nowNodeLinkInfo[5],
@@ -186,6 +187,7 @@ function getIPCertLinksInSkip2(
       numId: nowNodesInfo[0],
       name: nowNodesInfo[2],
       children: [],
+      height: 1,
     };
     //针对第0层数据的链路添加第一层数据
     for (let j of ICLinksInfo[nowNodeNumId]) {
@@ -201,6 +203,7 @@ function getIPCertLinksInSkip2(
         numId: nowNodesInfo[0],
         name: nowNodesInfo[2],
         children: [],
+        height: 1,
       });
       // 数据信息更新
       WhoisName = Math.max(WhoisName, j[5]);
@@ -234,6 +237,7 @@ function getIPCertLinksInSkip2(
           name: nowNodesInfo[2],
           isInFirst: isInFirst,
           children: [],
+          height: 1,
         });
         WhoisName = Math.max(WhoisName, k[5]);
         WhoisEmail = Math.max(WhoisEmail, k[6]);
@@ -261,6 +265,7 @@ function getIPCertLinksInSkip2(
       numId: nowNodeNumId,
       name: 0,
       children: 0,
+      height: 1,
       WhoisNameNum: 0,
       WhoisEmailNum: 0,
       WhoisPhoneNum: 0,
@@ -307,6 +312,7 @@ function getNodesInICLinks(
       numId: 0,
       name: 0,
       children: 0,
+      height: 1,
       WhoisNameNum: 0,
       WhoisEmailNum: 0,
       WhoisPhoneNum: 0,
@@ -376,6 +382,7 @@ function getNodesInICLinks(
         numId: nowNodesInfo[0],
         name: nowNodesInfo[2],
         children: [],
+        height: 1,
       };
       //针对第0层数据的链路添加第一层数据
       for (let j of ICLinksInfo[i[0]]) {
@@ -399,6 +406,7 @@ function getNodesInICLinks(
           numId: nowNodesInfo[0],
           name: nowNodesInfo[2],
           children: [],
+          height: 1,
         });
         WhoisName = Math.max(WhoisName, j[5]);
         WhoisPhone = Math.max(WhoisPhone, j[6]);
@@ -440,6 +448,7 @@ function getNodesInICLinks(
             name: nowNodesInfo[2],
             isInFirst: isInFirst,
             children: [],
+            height: 1,
           });
           WhoisName = Math.max(WhoisName, k[5]);
           WhoisPhone = Math.max(WhoisPhone, k[6]);
@@ -476,6 +485,7 @@ function getNodesInICLinks(
       numId: nowNodesInfo[0],
       name: nowNodesInfo[2],
       children: [],
+      height: 1,
       WhoisNameNum: nowNodeLinkInfo[3],
       WhoisEmailNum: nowNodeLinkInfo[4],
       WhoisPhoneNum: nowNodeLinkInfo[5],
@@ -589,6 +599,7 @@ app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
   res.end();
 });
 
+
 // 主图所需要的数据
 app.post("/getMainChartSds", jsonParser, (req, res, next) => {
   const links = req.body.linksInfo["links"];
@@ -636,6 +647,9 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
   for (let i of nodes) {
     // 如果当前节点在IC链路中
     if (ICScreen[0].indexOf(i["numId"]) > -1) {
+      if (!nodesNumId.hasOwnProperty(i["numId"])) {
+        nodesNumId[i["numId"]] = []
+      }
       let nowNodeNodeInfo = {};
       let nowNodeLinksInfo = {};
       // 获取当前IC节点直接关联的所有节点，并删除已经在链路中的相关节点
@@ -776,7 +790,6 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
 });
 
 
-
 //获取差异图的数据
 app.post("/getDifChartSds", jsonParser, (req, res, next) => {
   const nodes = req.body.linksInfo["nodes"];
@@ -836,7 +849,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
     })
   }
   industryInNodes.sort((a, b) => a["industry"] - b["industry"])
-  industryInNodes.sort((a, b) => a["industry"].length -b["industry"].length)
+  industryInNodes.sort((a, b) => a["industry"].length - b["industry"].length)
   let industryInLinks = []
   for (let i in industryINICLinks) {
     if (i == "  ") {
@@ -848,7 +861,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
     })
   }
   industryInLinks.sort((a, b) => a["industry"] - b["industry"])
-  industryInLinks.sort((a, b) => a["industry"].length -b["industry"].length)
+  industryInLinks.sort((a, b) => a["industry"].length - b["industry"].length)
   let ICIndustryInfo = {
     "largestLength": 0,
     "industryInNodes": industryInNodes,
@@ -962,7 +975,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
         nowICDifIndustry2.push({
           "name": k,
           "num": ICindustry2,
-          "prop": Math.sqrt(ICindustry2 ) / lenMAxNow
+          "prop": Math.sqrt(ICindustry2) / lenMAxNow
         })
         nowICDifIndustry3.push({
           "name": k,
