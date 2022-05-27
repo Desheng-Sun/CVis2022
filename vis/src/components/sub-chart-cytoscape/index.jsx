@@ -115,7 +115,7 @@ export default function SubChartCytoscape({ w, h }) {
   const [rollback, setRollback] = useState(false);
   const [layoutFlag, setLayoutFlag] = useState(false);
   const [arrowFlag, setArrowFlag] = useState(false);
-  const [fromtableNode, setFromtableNode] = useState([]);
+  const [fromTableNode, setfromTableNode] = useState([]);
   const [fromTableLink, setFromTableLink] = useState([]);
   const [fromIndustryStackNode, setFromIndustryStackNode] = useState("");
   const [data, setData] = useState({ nodes: [], links: [] });
@@ -255,7 +255,7 @@ export default function SubChartCytoscape({ w, h }) {
   // 从table中传入数据进行高亮
   PubSub.unsubscribe("tableToMainNodeDt");
   PubSub.subscribe("tableToMainNodeDt", (msg, nodeData) => {
-    setFromtableNode(nodeData);
+    setfromTableNode(nodeData);
   });
   PubSub.unsubscribe("tableToMainLinkDt");
   PubSub.subscribe("tableToMainLinkDt", (msg, linkData) => {
@@ -263,14 +263,14 @@ export default function SubChartCytoscape({ w, h }) {
   });
   useEffect(() => {
     if (cy) cy.nodes().removeClass("tablehighlightNode");
-    if (fromtableNode.length !== 0) {
+    if (fromTableNode.length !== 0) {
       cy.nodes().forEach((ele) => {
-        if (fromtableNode.includes(parseInt(ele.json().data["numId"]))) {
+        if (fromTableNode.includes(parseInt(ele.json().data["numId"]))) {
           ele.addClass("tablehighlightNode");
         }
       });
     }
-  }, [fromtableNode]);
+  }, [fromTableNode]);
 
   useEffect(() => {
     if (cy) cy.edges().removeClass("tablehighlightLink");
@@ -286,7 +286,7 @@ export default function SubChartCytoscape({ w, h }) {
         }
       });
     }
-  });
+  }, [fromTableLink]);
 
   // 从industry stack中传入数据进行高亮显示
   PubSub.unsubscribe("industryStackToMainDt");
@@ -340,6 +340,7 @@ export default function SubChartCytoscape({ w, h }) {
     const links = data.links.map((d) => ({ data: { ...d } }));
 
     d3.selectAll("#main-chart div").remove();
+    d3.selectAll("div#main-container .mainToolTip").remove();
     // 初始化图
     Promise.all([
       fetch("./json/cy-style.json").then(function (res) {
@@ -376,8 +377,6 @@ export default function SubChartCytoscape({ w, h }) {
       };
       stylesJson.push(newStyleArr);
       stylesJson.push(domainNOdeStyle);
-
-      console.log(nodes, links);
 
       cy = window.cy = cytoscape({
         container: document.getElementById("main-chart"),
