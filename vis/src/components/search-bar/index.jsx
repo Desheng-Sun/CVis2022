@@ -2,60 +2,71 @@ import React, { useEffect, useState } from "react";
 import * as d3 from "d3";
 import { Select, Button, Form } from "antd";
 import { getInitialSds } from "../../apis/api";
+import PubSub from "pubsub-js";
 
 const { Option } = Select;
-// var arr = [
-//   { id: "1", name: "ip1111111", type: "IP", industry: "A" },
-//   { id: "2", name: "ip113311", type: "IP", industry: "A" },
-//   { id: "3", name: "ip1311", type: "IP", industry: "A" },
-//   { id: "4", name: "ip1141", type: "IP", industry: "A,B" },
-//   { id: "5", name: "ip1231111", type: "Domain", industry: "A,C" },
-//   { id: "6", name: "ip1121111", type: "Domain", industry: "A" },
-//   { id: "7", name: "ip1115111", type: "Domain", industry: "A" },
-//   { id: "8", name: "ip1121111", type: "IP", industry: "A,C" },
-//   { id: "9", name: "ip1151111", type: "IP", industry: "A,D" },
-//   { id: "10", name: "ip1131111", type: "IP", industry: "A" },
-//   { id: "11", name: "ip51111", type: "IP", industry: "A" },
-//   { id: "12", name: "ip113111", type: "IP", industry: "A" },
-//   { id: "13", name: "ip1111311", type: "IP", industry: "A" },
-// ];
+
 export default function SearchBar() {
   const [selectId, setSelectId] = useState(undefined);
-  const [selectName, setSelectName] = useState(undefined);
+  const [selectNumId, setSelectNumId] = useState(undefined);
   const [selectType, setSelectType] = useState(undefined);
   const [selectIndustry, setSelectIndustry] = useState(undefined);
-  const [selectContent, setSelectContent] = useState([]);
+  const [selectContent, setSelectContent] = useState([[], []]);
 
   useEffect(() => {
-    console.log(1111);
-    getInitialSds().then((res) => {
-      setSelectContent(res);
-    });
-  }, []);
+    if (selectType == undefined || selectIndustry == undefined) {
+      getInitialSds("", "", "").then((res) => {
+        console.log(res)
+        setSelectContent(res);
+      });
+    }
+    else {
+      getInitialSds(selectType, selectIndustry,selectId).then((res) => {
+        setSelectContent(res);
+        console.log(res)
+      });
+    }
+  }, [selectType, selectIndustry,selectId]);
 
   useEffect(() => {
-    console.log(222);
-    console.log(selectContent);
   }, [selectContent]);
 
-  function getArrT(value) {
-    let arrT = {};
-    if (selectContent.length != 0) {
-      Object.keys(selectContent[0]).forEach((k) => {
-        arrT[k] = selectContent.map((o) => o[k]);
-      });
-      let arrTT = [arrT.id, arrT.name, arrT.type, arrT.industry];
-      return Array.from(new Set(arrTT[value]));
-    } else {
-      return [];
-    }
-  }
+  let type = ["Domain", "IP", "Cert", "Whois_Name", "Whois_Phone", "Whois_Email", "IP_C", "ASN"]
+  let industry = ['  ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
+    'AB', 'AC', 'AD', 'AE', 'AG', 'AH', 'AI', 'BC', 'BE', 'BF', 'BG',
+    'BH', 'BI', 'CE', 'CG', 'CH', 'CI', 'FG', 'FI', 'GH', 'GI', 'HI',
+    'ABC', 'ABE', 'ABG', 'ABI', 'ACG', 'ACI', 'AGI', 'BCE', 'BCG',
+    'BCH', 'BCI', 'BFI', 'BGH', 'BGI', 'CGH', 'CGI', 'FGH', 'GHI',
+    'ABCD', 'ABCE', 'ABCG', 'ABCH', 'ABCI', 'ABGI', 'ACGI', 'BCGI',
+    'ABCDE', 'ABCEG', 'ABCFG', 'ABCGI', 'ABCGHI']
 
-  const changeId = (value) => {
-    setSelectId(value);
-    if (value !== undefined) {
-      let selectedidarr = selectContent.filter((item) => item.id === value);
-      setSelectContent(selectedidarr);
+  
+  const changeType = (value) => {
+    setSelectType(value);
+  };
+
+  const searchType = (value) => {
+    if (value) {
+      setSelectType(value);
+    }
+  };
+
+  const changeIndustry = (value) => {
+    setSelectIndustry(value);
+  };
+
+  const searchIndustry = (value) => {
+    if (value) {
+      setSelectIndustry(value);
+    }
+  };
+
+
+  const changeId = (value, index) => {
+    console.log(value,index)
+    setSelectNumId(selectContent[0][index.key])
+    if (value) {
+      setSelectId(value);
     }
   };
   const searchId = (value) => {
@@ -63,90 +74,23 @@ export default function SearchBar() {
       setSelectId(value);
     }
   };
-  const changeName = (value) => {
-    setSelectName(value);
-    if (value !== undefined) {
-      let selectednamearr = selectContent.filter((item) => item.name === value);
-      setSelectContent(selectednamearr);
-    }
-  };
-  const searchName = (value) => {
-    if (value) {
-      setSelectName(value);
-    }
-  };
-  const changeType = (value) => {
-    setSelectType(value);
-    if (value !== undefined) {
-      let selectedtypearr = selectContent.filter((item) => item.type === value);
-      setSelectContent(selectedtypearr);
-    }
-  };
-  const searchType = (value) => {
-    if (value) {
-      setSelectType(value);
-    }
-  };
-  const changeIndustry = (value) => {
-    setSelectIndustry(value);
-    if (value !== undefined) {
-      let selectedindustryarr = selectContent.filter(
-        (item) => item.industry === value
-      );
-      setSelectContent(selectedindustryarr);
-    }
-  };
-  const searchIndustry = (value) => {
-    if (value) {
-      setSelectIndustry(value);
-    }
-  };
 
   const onSearchData = () => {
-    console.log(selectId, selectName, selectType, selectIndustry);
+    console.log(selectNumId, selectType)
+    PubSub.publish("getClueFromDense", {
+      numId: selectNumId,
+      Id: selectType,
+    });
   };
-
   const onCleanData = () => {
     setSelectId(undefined);
-    setSelectName(undefined);
+    setSelectNumId(undefined)
     setSelectType(undefined);
     setSelectIndustry(undefined);
-    // setselectContent(arr)
   };
   return (
     <div style={{ paddingTop: "15px" }}>
       <Form.Item>
-        <Select
-          showArrow
-          placeholder="id"
-          onChange={changeId}
-          onSearch={searchId}
-          showSearch
-          style={{ width: 100 }}
-          value={selectId}
-        >
-          {/* {getArrT(0).map((item, index) => (
-            <Option key={index} value={item}>
-              {item}
-            </Option>
-          ))} */}
-        </Select>
-        <Select
-          allowClear
-          showArrow
-          placeholder="name"
-          onChange={changeName}
-          onSearch={searchName}
-          showSearch
-          style={{ width: 100 }}
-          value={selectName}
-        >
-          {/* {getArrT(1).map((item, index) => (
-            <Option key={index} value={item}>
-              {item}
-            </Option>
-          ))} */}
-        </Select>
         <Select
           allowClear
           showArrow
@@ -157,7 +101,7 @@ export default function SearchBar() {
           style={{ width: 100 }}
           value={selectType}
         >
-          {getArrT(2).map((item, index) => (
+          {type.map((item, index) => (
             <Option key={index} value={item}>
               {item}
             </Option>
@@ -173,11 +117,26 @@ export default function SearchBar() {
           style={{ width: 100 }}
           value={selectIndustry}
         >
-          {/* {getArrT(3).map((item, index) => (
+          {industry.map((item, index) => (
             <Option key={index} value={item}>
               {item}
             </Option>
-          ))} */}
+          ))}
+        </Select>
+        <Select
+          showArrow
+          placeholder="id"
+          onChange={changeId}
+          onSearch={searchId}
+          showSearch
+          style={{ width: 200 }}
+          value={selectId}
+        >
+          {selectContent[1].map((item, index) => (
+            <Option key={index} value={item}>
+              {item}
+            </Option>
+          ))}
         </Select>
         <Button type="primary" onClick={onSearchData}>
           检索

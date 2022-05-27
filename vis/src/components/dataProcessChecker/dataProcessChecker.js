@@ -5689,11 +5689,11 @@ export default function DataProcessChecker() {
   //   });
   // }, [])
 
-  // useEffect(() => {
-  //   getMainChartSds(linksInfo).then((res) => {
-  //     console.log(res)
-  //   });
-  // }, [])
+  useEffect(() => {
+    getMainChartSds(linksInfo).then((res) => {
+      console.log(res)
+    });
+  }, [])
 
   // useEffect(() => {
   //   getDifChartSds(linksInfo).then((res) => {

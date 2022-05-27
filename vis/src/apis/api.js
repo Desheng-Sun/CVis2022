@@ -22,8 +22,12 @@ export function getDetailListData() {
 }
 
 //孙德晟判断代码是否正确的接口
-export function getInitialSds() {
-  return get("/getInitialSds");
+export function getInitialSds(type, industry, id) {
+  return post("/getInitialSds", {
+    type: type,
+    industry: industry,
+    id: id
+  });
 }
 
 export function getIcClueDataSds(numId, type) {
