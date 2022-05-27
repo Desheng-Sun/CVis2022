@@ -114,6 +114,7 @@ app.post("/getInitialSds", jsonParser, (req, res, next) => {
   res.end();
 });
 
+
 // 获取筛选后的IC节点的信息
 app.post("/getClueDenseDataSds", jsonParser, (req, res, next) => {
   let filepath = path.join(__dirname, "data/ICDomainInfo.json");
@@ -137,7 +138,6 @@ function getIPCertLinksInSkip2(
   nodeNumIdInfo
 ) {
   let allLinks = {};
-  console.log(nowNodeNumId)
   if (ICScreen[1].indexOf(nowNodeNumId) > -1) {
     nowNodeLinkInfo = ICAloneInfo[i];
     allLinks = {
@@ -151,6 +151,7 @@ function getIPCertLinksInSkip2(
       numId: nowNodesInfo[0],
       name: nowNodesInfo[2],
       children: [],
+      height: 1,
       WhoisNameNum: nowNodeLinkInfo[3],
       WhoisEmailNum: nowNodeLinkInfo[4],
       WhoisPhoneNum: nowNodeLinkInfo[5],
@@ -186,6 +187,7 @@ function getIPCertLinksInSkip2(
       numId: nowNodesInfo[0],
       name: nowNodesInfo[2],
       children: [],
+      height: 1,
     };
     //针对第0层数据的链路添加第一层数据
     for (let j of ICLinksInfo[nowNodeNumId]) {
@@ -201,6 +203,7 @@ function getIPCertLinksInSkip2(
         numId: nowNodesInfo[0],
         name: nowNodesInfo[2],
         children: [],
+        height: 1,
       });
       // 数据信息更新
       WhoisName = Math.max(WhoisName, j[5]);
@@ -234,6 +237,7 @@ function getIPCertLinksInSkip2(
           name: nowNodesInfo[2],
           isInFirst: isInFirst,
           children: [],
+          height: 1,
         });
         WhoisName = Math.max(WhoisName, k[5]);
         WhoisEmail = Math.max(WhoisEmail, k[6]);
@@ -267,6 +271,7 @@ function getIPCertLinksInSkip2(
       pureDomainNum: 0,
       dirtyDomainNum: 0,
       skipNum: 0,
+      height: 1,
       text: "该IC节点在三跳内不存在任何含有黑灰产业的节点，是一个孤立节点"
     };
   }
@@ -312,12 +317,13 @@ function getNodesInICLinks(
       WhoisPhoneNum: 0,
       pureDomainNum: 0,
       dirtyDomainNum: 0,
+      height: 1,
       skipNum: 0,
       text: "该节点不再任何含有黑灰产业的IC链路中"
     };
     return allLinks;
   }
-
+  console.log(nodeICLinks[nowNodeNumId])
   // 获取当前节点所在的所有IC链路和单独的IC节点
   for (let i of nodeICLinks[nowNodeNumId]) {
     if (i instanceof Array) {
@@ -373,6 +379,7 @@ function getNodesInICLinks(
         WhoisEmail: 0,
         pureDomain: 0,
         dirtyDomain: 0,
+        height: 1,
         numId: nowNodesInfo[0],
         name: nowNodesInfo[2],
         children: [],
@@ -398,6 +405,7 @@ function getNodesInICLinks(
           dirtyDomain: j[4],
           numId: nowNodesInfo[0],
           name: nowNodesInfo[2],
+          height: 1,
           children: [],
         });
         WhoisName = Math.max(WhoisName, j[5]);
@@ -439,6 +447,7 @@ function getNodesInICLinks(
             numId: nowNodesInfo[0],
             name: nowNodesInfo[2],
             isInFirst: isInFirst,
+            height: 1,
             children: [],
           });
           WhoisName = Math.max(WhoisName, k[5]);
@@ -476,6 +485,7 @@ function getNodesInICLinks(
       numId: nowNodesInfo[0],
       name: nowNodesInfo[2],
       children: [],
+      height: 1,
       WhoisNameNum: nowNodeLinkInfo[3],
       WhoisEmailNum: nowNodeLinkInfo[4],
       WhoisPhoneNum: nowNodeLinkInfo[5],
@@ -496,6 +506,7 @@ function getNodesInICLinks(
       }
     }
   );
+  console.log(allLinks)
   return allLinks;
 }
 
@@ -806,9 +817,6 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
     }
     else if (ICScreen[0].indexOf(i["numId"]) > -1) {
       for (let j of ICNeighbor[i["numId"]]) {
-        if (j[0] == "AB") {
-          console.log(i["numId"], j)
-        }
         industryINICNodes.add(j[0])
       }
     }
