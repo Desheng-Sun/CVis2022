@@ -151,6 +151,7 @@ function getIPCertLinksInSkip2(
       numId: nowNodesInfo[0],
       name: nowNodesInfo[2],
       children: [],
+      height:1,
       WhoisNameNum: nowNodeLinkInfo[3],
       WhoisEmailNum: nowNodeLinkInfo[4],
       WhoisPhoneNum: nowNodeLinkInfo[5],
@@ -186,6 +187,7 @@ function getIPCertLinksInSkip2(
       numId: nowNodesInfo[0],
       name: nowNodesInfo[2],
       children: [],
+      height:1,
     };
     //针对第0层数据的链路添加第一层数据
     for (let j of ICLinksInfo[nowNodeNumId]) {
@@ -201,6 +203,7 @@ function getIPCertLinksInSkip2(
         numId: nowNodesInfo[0],
         name: nowNodesInfo[2],
         children: [],
+        height:1,
       });
       // 数据信息更新
       WhoisName = Math.max(WhoisName, j[5]);
@@ -234,6 +237,7 @@ function getIPCertLinksInSkip2(
           name: nowNodesInfo[2],
           isInFirst: isInFirst,
           children: [],
+          height:1,
         });
         WhoisName = Math.max(WhoisName, k[5]);
         WhoisEmail = Math.max(WhoisEmail, k[6]);
@@ -261,6 +265,7 @@ function getIPCertLinksInSkip2(
       numId: nowNodeNumId,
       name: 0,
       children: 0,
+      height:1,
       WhoisNameNum: 0,
       WhoisEmailNum: 0,
       WhoisPhoneNum: 0,
@@ -307,6 +312,7 @@ function getNodesInICLinks(
       numId: 0,
       name: 0,
       children: 0,
+      height:1,
       WhoisNameNum: 0,
       WhoisEmailNum: 0,
       WhoisPhoneNum: 0,
@@ -376,6 +382,7 @@ function getNodesInICLinks(
         numId: nowNodesInfo[0],
         name: nowNodesInfo[2],
         children: [],
+        height:1,
       };
       //针对第0层数据的链路添加第一层数据
       for (let j of ICLinksInfo[i[0]]) {
@@ -399,6 +406,7 @@ function getNodesInICLinks(
           numId: nowNodesInfo[0],
           name: nowNodesInfo[2],
           children: [],
+          height:1,
         });
         WhoisName = Math.max(WhoisName, j[5]);
         WhoisPhone = Math.max(WhoisPhone, j[6]);
@@ -440,6 +448,7 @@ function getNodesInICLinks(
             name: nowNodesInfo[2],
             isInFirst: isInFirst,
             children: [],
+            height:1,
           });
           WhoisName = Math.max(WhoisName, k[5]);
           WhoisPhone = Math.max(WhoisPhone, k[6]);

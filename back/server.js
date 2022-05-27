@@ -655,7 +655,7 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
               name: nowNodeInfo[2],
               type: nowNodeInfo[3],
               industry: nowNodeInfo[4],
-              InICLinks: i["numId"],
+              InICLinks: [i["numId"].toString()],
               childrenNum: 0,
               children: [],
             };
@@ -825,19 +825,38 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
       }
     }
   }
-
+  let industryInNodes = []
+  for(let i in industryINICNodes){
+    if(i == "  "){
+      continue
+    }
+    industryInNodes.push({
+      industry: i,
+      number: industryINICNodes[i]
+    })
+  }
+  let industryInLinks = []
+  for(let i in industryINICLinks){
+    if(i == "  "){
+      continue
+    }
+    industryInLinks.push({
+      industry: i,
+      number: industryINICLinks[i]
+    })
+  }
   let ICIndustryInfo = {
     "largestLength": 0,
-    "industryInNodes": industryINICNodes,
-    "industryInLinks": industryINICLinks
+    "industryInNodes": industryInNodes,
+    "industryInLinks": industryInLinks
   }
 
   // 获取最大值
-  for (let i in industryINICNodes) {
-    ICIndustryInfo["largestLength"] = Math.max(ICIndustryInfo["largestLength"], industryINICNodes[i])
+  for (let i of industryInNodes) {
+    ICIndustryInfo["largestLength"] = Math.max(ICIndustryInfo["largestLength"], i.number)
   }
-  for (let i in industryINICLinks) {
-    ICIndustryInfo["largestLength"] = Math.max(ICIndustryInfo["largestLength"], industryINICLinks[i])
+  for (let i in industryInLinks) {
+    ICIndustryInfo["largestLength"] = Math.max(ICIndustryInfo["largestLength"], i.number)
   }
 
   // 获取每一个IC节点中黑灰产业类型的数量
@@ -864,15 +883,16 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
     if (!ICLinks.hasOwnProperty(nowICLinks[0])) {
       ICLinks[nowICLinks[0]] = []
     }
-    ICLinks[nowICLinks[0]].push(nowICLinks)
+    ICLinks[nowICLinks[0]].push(nowICLinks.toString())
     if (!ICLinks.hasOwnProperty(nowICLinks[1])) {
       ICLinks[nowICLinks[1]] = []
     }
-    ICLinks[nowICLinks[1]].push(nowICLinks)
+    ICLinks[nowICLinks[1]].push(nowICLinks.toString())
   }
-  let ICLinksSortKey = Object.keys(ICLinksSortKey).sort(function (a, b) {
-    return ICLinksSortKey[a].length - ICLinksSortKey[b].length
+  let ICLinksSortKey = Object.keys(ICLinks).sort(function (a, b) {
+    return ICLinks[b].length - ICLinks[a].length
   })
+
   let sendData = {
     "name": "root",
     "depthmax": 0,
@@ -880,9 +900,14 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
     "startICNum": 0,
     "children": []
   }
+  console.log(ICNodesIndustry)
+  console.log(ICLinksIndustry)
   let depthmax = 0
   for (let i of ICLinksSortKey) {
-    let sourceICInfo = nodeNumIdInfo[parseInt(i - 1)]
+    if(ICLinks[i].length == 0){
+      continue
+    }
+    let sourceICInfo = nodeNumIdInfo[parseInt(i) - 1]
     let nowICDifData = {
       "numId": sourceICInfo[0],
       "id": sourceICInfo[1],
@@ -892,7 +917,8 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
       "startICLinkNum": sendData["ICLinksNum"],
       "children": []
     }
-    for (let j of ICLinks[i]) {
+    for (let ICLinksString of ICLinks[i]) {
+      j = ICLinksString.split(",")
       let nowICIndustry = new Set()
       for (let k in ICNodesIndustry[j[0]]) {
         nowICIndustry.add(k)
@@ -900,7 +926,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
       for (let k in ICNodesIndustry[j[1]]) {
         nowICIndustry.add(k)
       }
-      for (let k in ICLinksIndustry[j.toString()]) {
+      for (let k in ICLinksIndustry[ICLinksString]) {
         nowICIndustry.add(k)
       }
       nowICIndustry = Array.from(nowICIndustry)
@@ -910,19 +936,25 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
       let nowICDifIndustry2 = []
       let nowICDifIndustry3 = []
       for (let k of nowICIndustry) {
+        if(k == "  "){
+          continue
+        }
         let ICindustry1 = 0
         let ICindustry2 = 0
         let ICindustry3 = 0
         if (ICNodesIndustry[j[0]].hasOwnProperty(k)) {
-          ICindustry1 = ICNodesIndustry[j[0][k]]
+          ICindustry1 = ICNodesIndustry[j[0]][k]
         }
         if (ICNodesIndustry[j[1]].hasOwnProperty(k)) {
-          ICindustry2 = ICNodesIndustry[j[1][k]]
+          ICindustry2 = ICNodesIndustry[j[1]][k]
         }
-        if (ICLinksIndustry[j.toString()].hasOwnProperty(k)) {
-          ICindustry3 = ICLinksIndustry[j.toString()][k]
+        if (ICLinksIndustry[ICLinksString].hasOwnProperty(k)) {
+          ICindustry3 = ICLinksIndustry[ICLinksString][k]
         }
-        lenMAxNow = Math.log(Math.max(ICindustry1, ICindustry2, ICindustry3))
+        console.log(ICindustry1, ICindustry2, ICindustry3)
+        console.log(k)
+        lenMAxNow = Math.log(Math.max(ICindustry1, ICindustry2, ICindustry3) + 1)
+        console.log(lenMAxNow)
         nowICDifIndustry1.push({
           "name": k,
           "num": ICindustry1,
@@ -1006,31 +1038,33 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
       }
       depthmax = Math.max(nowICDifIndustry1.length, depthmax)
       //添加数据，并删除对应IC节点的该条数据
-      if (nowLink[0] == listLinks[i]["numId"]) {
+      if (j[0] == i) {
+        let targerNodeInfo = nodeNumIdInfo[parseInt(j[1]) - 1]
         nowICDifData["children"].push({
-          "numId": listLinks[nowLink[1]]["numId"],
-          "id": listLinks[nowLink[1]]["id"],
-          "name": listLinks[nowLink[1]]["name"],
-          "type": listLinks[nowLink[1]]["type"],
+          "numId": targerNodeInfo[0],
+          "id": targerNodeInfo[1],
+          "name": targerNodeInfo[2],
+          "type": targerNodeInfo[3],
           "nowICLinksNum": sendData["ICLinksNum"] + 1,
           "nowICNum": sendData["startICNum"] + 1,
           "children": nowICDifIndustry
         })
         sendData["ICLinksNum"] += 1
-        listLinks[nowLink[1]]["ICLinks"] = listLinks[nowLink[1]]["ICLinks"].filter(e => e != j)
+        ICLinks[j[1]] = ICLinks[j[1]].filter(e => e != ICLinksString)
       }
       else {
+        let targerNodeInfo = nodeNumIdInfo[parseInt(j[0]) - 1]
         nowICDifData["children"].push({
-          "numId": listLinks[nowLink[0]]["numId"],
-          "id": listLinks[nowLink[0]]["id"],
-          "name": listLinks[nowLink[0]]["name"],
-          "type": listLinks[nowLink[0]]["type"],
+          "numId": targerNodeInfo[0],
+          "id": targerNodeInfo[1],
+          "name": targerNodeInfo[2],
+          "type": targerNodeInfo[3],
           "nowICLinksNum": sendData["ICLinksNum"] + 1,
           "nowICNum": sendData["startICNum"] + 1,
           "children": nowICDifIndustry
         })
         sendData["ICLinksNum"] += 1
-        listLinks[nowLink[0]]["ICLinks"] = listLinks[nowLink[0]]["ICLinks"].filter(e => e != j)
+        ICLinks[j[0]] = ICLinks[j[0]].filter(e => e != ICLinksString)
       }
     }
     sendData["children"].push(nowICDifData)
