@@ -45,16 +45,16 @@ var layoutOptionDict = {
     avoidOverlap: true,
     springLength: 10,
     mass: 7,
-    animateFilter: function (node, i) {
-      return true;
-    }, // 决定是否节点的位置应该被渲染
-    concentric: function (node) {
-      return node.degree();
-    },
+    // animateFilter: function (node, i) {
+    //   return true;
+    // }, // 决定是否节点的位置应该被渲染
+    // concentric: function (node) {
+    //   return node.degree();
+    // },
   },
   concentric: {
     name: "concentric",
-    // fit: true, // whether to fit to viewport
+    // fit: false, // whether to fit to viewport
     animate: true, // whether to transition the node positions
     avoidOverlap: true,
     minNodeSpace: 1,
@@ -70,13 +70,13 @@ var layoutOptionDict = {
   },
   dagre: {
     name: "dagre",
-    fit: true, // whether to fit to viewport
+    fit: false, // whether to fit to viewport
     animate: true, // whether to transition the node positions
     avoidOverlap: true,
   },
   coseBilkent: {
     name: "cose-bilkent",
-    fit: true,
+    fit: false,
     animate: true,
     randomize: false,
     avoidOverlap: true,
@@ -88,7 +88,7 @@ var layoutOptionDict = {
   },
   fcose: {
     name: "fcose",
-    fit: true,
+    fit: false,
     quality: "default",
     animate: true,
     randomize: true,
@@ -122,7 +122,7 @@ export default function MainView({ w, h }) {
 
   // 给其他组件的数据
   const [resData, setResData] = useState({ nodes: [], links: [] }); // 右侧表格和子弹图的所有数据
-  const [doaminStatistic, setDoaminStatistic] = useState([]); // 下方图的数据
+  const [difChartInput, setDifChartInput] = useState({ nodes: [], links: [] }); // 当前主图中的点和边 改变时更新DifChart视图
 
   // 随系统缩放修改画布大小
   useEffect(() => {
@@ -139,7 +139,7 @@ export default function MainView({ w, h }) {
       var j = cy.getElementById(searchNodebyId);
       cy.center(j); // 将被搜索元素居中
       j.addClass("searched");
-      
+
       // cy.getElementById(searchNodebyId).style({
       //   // 高亮显示被选中节点
       //   "background-color": "#ffff00",
@@ -163,6 +163,13 @@ export default function MainView({ w, h }) {
     }
     setFilterFlag(false);
   }, [filterFlag]);
+
+  // 监听主图中节点数据是否变化，如果变化，更新DifChart
+  useEffect(() => {
+    if (difChartInput.nodes.length !== 0 || difChartInput.links.length !== 0) {
+      PubSub.publish("updateDifChart", difChartInput);
+    }
+  }, [difChartInput]);
 
   // 监听是否选择当前数据为一个团伙
   useEffect(() => {
@@ -219,6 +226,8 @@ export default function MainView({ w, h }) {
   useEffect(() => {
     if (undoOut) {
       ur.undo();
+
+      getDataForDifChart();
     }
     setUndoOut(false);
   }, [undoOut]);
@@ -227,6 +236,7 @@ export default function MainView({ w, h }) {
   useEffect(() => {
     if (redoIn) {
       ur.redo();
+      getDataForDifChart();
     }
     setRedoIn(false);
   }, [redoIn]);
@@ -235,6 +245,7 @@ export default function MainView({ w, h }) {
   useEffect(() => {
     if (rollback) {
       ur.undoAll();
+      getDataForDifChart();
     }
     setRollback(false);
   }, [rollback]);
@@ -248,13 +259,6 @@ export default function MainView({ w, h }) {
       cy.edges().removeClass("arrow");
     }
   }, [arrowFlag]);
-
-  // 用于domain统计图的传出数据
-  useEffect(() => {
-    if (doaminStatistic.length !== 0) {
-      console.log(doaminStatistic);
-    }
-  }, [doaminStatistic]);
 
   // 从table中传入数据进行高亮
   PubSub.unsubscribe("tableToMainNodeDt");
@@ -324,6 +328,7 @@ export default function MainView({ w, h }) {
     } else {
       getMainChartSds(dataParam).then((res) => {
         setData(res);
+        setDifChartInput(res);
       });
     }
   }, [dataParam]);
@@ -358,23 +363,88 @@ export default function MainView({ w, h }) {
           },
         },
       };
+
       let domainNodeStyle = {
         selector: 'node[type="Domain"]',
         style: {
-          "background-color": "#fff",
-          "background-image": function (ele) {
-            return (
-              "url('./images/Domain/" +
-              ele.json().data["industry"].toLowerCase().replace("\r", "") +
-              ".png')"
-            );
+          "pie-size": "100%",
+          "pie-1-background-color": "#2978b4",
+          "pie-1-background-size": function (ele, curIndustry = "A") {
+            if (ele.data("industry").trim() === "") return "0";
+            let curIndustryArr = ele.data("industry").split("");
+            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
+            return "0";
           },
-          "background-fit": "contain",
+          "pie-2-background-color": "#f9bf6f",
+          "pie-2-background-size": function (ele, curIndustry = "B") {
+            if (ele.data("industry").trim() === "") return "0";
+            let curIndustryArr = ele.data("industry").split("");
+            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
+            return "0";
+          },
+          "pie-3-background-color": "#ff756a",
+          "pie-3-background-size": function (ele, curIndustry = "C") {
+            if (ele.data("industry").trim() === "") return "0";
+            let curIndustryArr = ele.data("industry").split("");
+            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
+            return "0";
+          },
+          "pie-4-background-color": "#E8747C",
+          "pie-4-background-size": function (ele, curIndustry = "D") {
+            if (ele.data("industry").trim() === "") return "0";
+            let curIndustryArr = ele.data("industry").split("");
+            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
+            return "0";
+          },
+          "pie-5-background-color": "#2978b4",
+          "pie-5-background-size": function (ele, curIndustry = "E") {
+            if (ele.data("industry").trim() === "") return "0";
+            let curIndustryArr = ele.data("industry").split("");
+            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
+            return "0";
+          },
+          "pie-6-background-color": "#a6cee3",
+          "pie-6-background-size": function (ele, curIndustry = "F") {
+            if (ele.data("industry").trim() === "") return "0";
+            let curIndustryArr = ele.data("industry").split("");
+            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
+            return "0";
+          },
+          "pie-7-background-color": "#e53f32",
+          "pie-7-background-size": function (ele, curIndustry = "G") {
+            if (ele.data("industry").trim() === "") return "0";
+            let curIndustryArr = ele.data("industry").split("");
+            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
+            return "0";
+          },
+          "pie-8-background-color": "#f9b4ae",
+          "pie-8-background-size": function (ele, curIndustry = "H") {
+            if (ele.data("industry").trim() === "") return "0";
+            let curIndustryArr = ele.data("industry").split("");
+            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
+            return "0";
+          },
+          "pie-9-background-color": "#f5f440",
+          "pie-9-background-size": function (ele, curIndustry = "I") {
+            if (ele.data("industry").trim() === "") return "0";
+            let curIndustryArr = ele.data("industry").split("");
+            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
+            return "0";
+          },
         },
       };
       stylesJson.push(newStyleArr);
-      // stylesJson.push(domainNodeStyle);
-      cy = window.cy = cytoscape({
+      stylesJson.push(domainNodeStyle);
+      cy = cytoscape({
         container: document.getElementById("main-chart"),
         elements: {
           nodes: nodes,
@@ -390,13 +460,14 @@ export default function MainView({ w, h }) {
         thumbnailLiveFramerate: false, // max thumbnail's updates per second. Set false to disable
         dblClickDelay: 200, // milliseconds
         removeCustomContainer: false, // destroy the container specified by user on plugin destroy
-        rerenderDelay: 100, // ms to throttle rerender updates to the panzoom for performance
+        // rerenderDelay: 100, // ms to throttle rerender updates to the panzoom for performance
       };
       cy.navigator(defaults);
 
       layoutOption = layoutOptionDict[chartLayout];
       layout = cy.layout(layoutOption);
       layout.run();
+
       // cy.boxSelectionEnabled(true); // 设置支持框选操作，如果同时启用平移，用户必须按住shift、control、alt或command中的一个来启动框选择
       urOption = {
         isDebug: true,
@@ -410,11 +481,19 @@ export default function MainView({ w, h }) {
         if (e.which === 46) {
           // 按删除键
           var selecteds = cy.$(":selected");
-          if (selecteds.length > 0) ur.do("remove", selecteds);
+          if (selecteds.length > 0) {
+            ur.do("remove", selecteds);
+            getDataForDifChart();
+          }
         }
         if (e.ctrlKey && e.target.nodeName === "BODY")
-          if (e.which === 90) ur.undo();
-          else if (e.which === 89) ur.redo();
+          if (e.which === 90) {
+            ur.undo();
+            getDataForDifChart();
+          } else if (e.which === 89) {
+            ur.redo();
+            getDataForDifChart();
+          }
       });
 
       var maintoolTip = d3
@@ -439,19 +518,16 @@ export default function MainView({ w, h }) {
             "<b>" +
             "id: " +
             "</b>" +
-            "id: " +
             curNOdeData.id +
             "<br>" +
             "<b>" +
-            "id: " +
-            "</b>" +
             "name: " +
+            "</b>" +
             curNOdeData.name +
             "<br>" +
             "<b>" +
-            "id: " +
-            "</b>" +
             "industry: " +
+            "</b>" +
             curNOdeData.industry;
         else
           htmlText =
@@ -461,9 +537,8 @@ export default function MainView({ w, h }) {
             curNOdeData.id +
             "<br>" +
             "<b>" +
-            "id: " +
+            "name: " +
             "</b>" +
-            "name" +
             curNOdeData.name;
         maintoolTip
           .style("left", e.renderedPosition.x + 610 + "px")
@@ -489,7 +564,7 @@ export default function MainView({ w, h }) {
             id: "select-self-neigh",
             content: "选中节点",
             tooltipText: "选中当前节点和邻居节点",
-            selector: "element",
+            selector: "node",
             onClickFunction: function (e) {
               let n = e.target;
               let curNodeId = n.id();
@@ -522,10 +597,36 @@ export default function MainView({ w, h }) {
               setDoaminStatistic([...t]); // 获取选择的所有数据
             },
           },
+          {
+            id: "copy-self",
+            content: "复制id",
+            tooltipText: "复制id",
+            selector: "node",
+            onClickFunction: function (e) {
+              let currId = e.target.json().data["id"];
+              document.execCommand("Copy", true, currId);
+              const temp_input = document.createElement("input");
+              document.body.appendChild(temp_input);
+              temp_input.setAttribute("value", currId);
+              temp_input.select();
+              if (document.execCommand("copy")) {
+                document.execCommand("copy");
+              }
+              document.body.removeChild(temp_input);
+            },
+          },
         ],
       };
       cy.contextMenus(menuOptions);
     });
+
+    function domainPieStyle(ele, curIndustry) {
+      if (ele.data("industry").trim() === "") return "0";
+      let curIndustryArr = ele.data("industry").split("");
+      let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+      if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
+      return "0";
+    }
   }
 
   // 绘制控制面板
@@ -739,6 +840,66 @@ export default function MainView({ w, h }) {
       return ele.json().data;
     });
     setResData({ nodes: [...nodes], links: [...links] });
+  }
+
+  function getDataForDifChart() {
+    let currICNodes = cy.nodes().filter((ele, index) => {
+      return ele.data("type") === "IP" || ele.data("type") === "Cert";
+    });
+    currICNodes = currICNodes.map((item, index) => {
+      return item.data("numId");
+    });
+    console.log("currICNodes", currICNodes);
+
+    let graphnodes, graphlinks;
+    graphnodes = cy.nodes().map(function (ele, i) {
+      let inICLinks = data.nodes.filter((item, index) => {
+        return item["id"] === ele.data("id");
+      });
+      inICLinks = inICLinks[0]["InICLinks"];
+
+      let inICLinksAfterDelete = []; // 删除后的ICLinks
+
+      inICLinks.forEach((item, index) => {
+        let l = item.split(",");
+        let s, t;
+        if (l.length === 2) {
+          //  "1,1"
+          s = l[0]; // 取该链路的source
+          t = l[1]; // 取该链路的target
+
+          if (
+            currICNodes.includes(parseInt(s)) &&
+            currICNodes.includes(parseInt(t))
+          ) {
+            inICLinksAfterDelete.push(item);
+          }
+          // else if (
+          //   !currICNodes.includes(parseInt(s)) &&
+          //   currICNodes.includes(parseInt(t))
+          // ) {
+          //   inICLinksAfterDelete.push(t);
+          // } else if (
+          //   !currICNodes.includes(parseInt(t)) &&
+          //   currICNodes.includes(parseInt(s))
+          // ) {
+          //   inICLinksAfterDelete.push(s);
+          // }
+        } else if (l.length === 1) {
+          s = l[0];
+          if (currICNodes.includes(parseInt(s))) {
+            inICLinksAfterDelete.push(item);
+          }
+        }
+      });
+      ele.data("InICLinks", inICLinksAfterDelete);
+      return ele.json().data;
+    });
+    graphlinks = cy.edges().map(function (ele, i) {
+      return ele.json().data;
+    });
+
+    setDifChartInput({ nodes: [...graphnodes], links: [...graphlinks] });
   }
 
   function drawLegend() {

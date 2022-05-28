@@ -115,7 +115,6 @@ export default function Layout() {
               <ChartHeader chartName={"差异视图"} />
               <DifChart w={difChartWidth} h={difChartHeight} />
             </div>
-            <div id="existingdomain">展示当前子图中domain情况</div>
           </div>
         </div>
       </div>
