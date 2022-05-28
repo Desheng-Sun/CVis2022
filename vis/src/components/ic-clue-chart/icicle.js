@@ -368,23 +368,6 @@ export default Kapsule({
           // return pureDomainColorCompute(pureDomainLinearColor(d.data.pureDomain))   // 映射纯净的Domian
         })
         .attr("width", (d) => {
-          // let singleWidth = (x1(d) - x0(d) - 1)/3;
-          // var linearWidth;
-          // if(i == 1){
-          //   linearWidth = d3.scaleLinear()
-          //   .domain([0, state.data['DirtyDomainNum']])
-          //   .range([0, singleWidth])
-          //   if(!d.depth){
-          //     return linearWidth(d.data.pureDomain)
-          //   }
-          //   return linearWidth(d.data.dirtyDomain)
-          // }else if(i == 2){
-          //   linearWidth = d3.scaleLinear()
-          //   .domain([0, state.data['pureDomainNum']])
-          //   .range([0, singleWidth]);
-          //   return linearWidth(d.data.pureDomain)
-          // }
-          // return `${(x1(d) - x0(d)) - 1}`/3
           if (!d.depth) {
             if (i == 0) return 0;
             return `${x1(d) - x0(d) - 1}` / 3;
@@ -410,17 +393,6 @@ export default Kapsule({
           ev.stopPropagation();
           (state.onClick || this.zoomToNode)(d.data);
         })
-        // .on('click', function(ev, d){
-        //   newCellG.selectAll('rect').attr('opacity', 1)
-        //   // 高亮同一个点
-        //   // let currNumId = d.data.numId
-        //   // newCellG.filter(function(event, d){
-        //   //       let cur = d3.select(this).select('rect').attr('numId');
-        //   //         return currNumId != cur
-        //   //       })
-        //   //       .selectAll('rect')
-        //   //       .attr('opacity', 0)
-        // })
         .on("mouseover", function (ev, d) {
           ev.stopPropagation();
           state.onHover && state.onHover(d.data);
@@ -449,8 +421,6 @@ export default Kapsule({
               return currNumId == cur;
             })
             .selectAll("rect")
-            //  .attr('stroke', '#e81123')
-            //  .attr('fill', 'yellow')
             .attr("opacity", 1);
         })
         .on("mouseout", function () {
@@ -461,21 +431,52 @@ export default Kapsule({
             .attr("opacity", 1);
         })
         .on("contextmenu", function (event, d) {
-          event.preventDefault(); // 阻止浏览器默认事件
           let currNumId = d.data.numId; // 当前选中节点的numId
+          event.preventDefault(); // 阻止浏览器默认事件
           if (!event.ctrlKey) {
-            // 不按Ctrl键选中
-            if (!selectedIclcleNode.includes(currNumId))
+            if (d.depth === 0) {
+              d3.selectAll('.icicleSvg rect').classed("selectedIclcle", true)   // 选中第0层，选中所有的数据
+              d3.selectAll('.selectedIclcle').each((d, index) => {
+                let eachNumId = d.data.numId
+                if (!selectedIclcleNode.includes(eachNumId)) {
+                  selectedIclcleNode.push(eachNumId);
+                }
+              });
+              selectedIclcleNode = Array.from(new Set(selectedIclcleNode))
+            } else if (d.depth === 1) {    // 选中第二层
               selectedIclcleNode.push(currNumId);
-            newCellG
-              .filter(function (event, d) {
-                let cur = d3.select(this).select("rect").attr("numId");
-                return currNumId == cur;
+
+              d3.select(this).classed("selectedIclcle", true)
+              let childrenNode = d3.select(this)._groups[0][0].__data__.children
+
+              childrenNode.forEach((d) => {
+                let eachNumId = d.data.numId
+                if (!selectedIclcleNode.includes(eachNumId)) {
+                  selectedIclcleNode.push(eachNumId);
+                }
               })
-              .selectAll("rect")
-              .classed("selectedIclcle", true);
+              selectedIclcleNode = Array.from(new Set(selectedIclcleNode))
+              newCellG
+                .filter(function (event, d) {
+                  let cur = d3.select(this).select("rect").attr("numId");   // 找到当前的numId对应的数据
+                  return selectedIclcleNode.includes(cur);
+                })
+                .selectAll("rect")
+                .classed("selectedIclcle", true);
+            } else {
+              let currNumId = d.data.numId; // 当前选中节点的numId
+              if (!selectedIclcleNode.includes(currNumId))
+                selectedIclcleNode.push(currNumId);
+              newCellG
+                .filter(function (event, d) {
+                  let cur = d3.select(this).select("rect").attr("numId");   // 找到当前的numId对应的数据
+                  return currNumId == cur;
+                })
+                .selectAll("rect")
+                .classed("selectedIclcle", true);
+            }
           } else {
-            // 按下Ctrl键选中
+            // 按下Ctrl键不选中
             let temp = selectedIclcleNode.filter((d) => d != currNumId); // 过滤掉被删除的节点
             selectedIclcleNode = [...temp];
             newCellG
@@ -486,6 +487,8 @@ export default Kapsule({
               .selectAll("rect")
               .classed("selectedIclcle", false);
           }
+
+          console.log(selectedIclcleNode);
         });
     }
     newCellG
