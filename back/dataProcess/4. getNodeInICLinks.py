@@ -1,5 +1,6 @@
 import json
 import os
+from traceback import print_tb
 from alive_progress import alive_bar
 import multiprocessing as mp
 import pandas as pd
@@ -10,21 +11,76 @@ def getNodesInICLinks(nodesInIClinks, ICScreen, nodePath, nowPath):
     with alive_bar(len(ICScreen)) as bar:
         # 获取每一个节点所在的IC链路或其所在的单独的IC节点NumID
         for i in ICScreen:
-            nodeLinksInfoJ = open(nowPath + nodePath +
-                                  str(i) + ".json", "r", encoding="utf-8")
-            nodeLinksInfo = json.load(nodeLinksInfoJ)
             if(nodePath == "ICScreenLinks/"):
+                nodeLinksInfoJ = open(nowPath + nodePath +
+                                      str(i) + ".json", "r", encoding="utf-8")
+                nodeLinksInfo = json.load(nodeLinksInfoJ)
                 for j in nodeLinksInfo:
                     for k in j["nodes"]:
                         nodesInIClinks[str(k[0])][0].append(
                             [j["begin"][0], j["end"][0]])
-            
+
             nodeLinksInfoJ = open(nowPath + "ICLinks/" +
                                   str(i) + ".json", "r", encoding="utf-8")
+            nodeLinksInfo = json.load(nodeLinksInfoJ)
             for j in nodeLinksInfo["nodes"]:
                 nodesInIClinks[str(j[0])][1].append(i)
             bar()
         return nodesInIClinks
+
+
+def getAllNodeALinksINICLinks(ICAloneNodes, nowNodes, nowPath, nodeCsvW):
+    for i in nowNodes:
+        if(len(ICAloneNodes[str(i)]["nodesNumId"]) == 1):
+            with open(nowPath + "ICAloneLinks/" + str(i) + ".json", "w", encoding="utf-8") as f:
+                json.dump(ICAloneNodes[str(i)], f, ensure_ascii=False)
+            continue
+        nodeLinksInfoJ = open(nowPath + "ICLinks/" +
+                                str(i) + ".json", "r", encoding="utf-8")
+        nodeLinksInfo = json.load(nodeLinksInfoJ)
+        aj = open(nowPath + "ICScreenLinks2/" + str(i) +
+                    ".json", "r", encoding="utf-8")
+        a = json.load(aj)
+        useNode = set()
+        useNode.add(str(i))
+        for j in nodeLinksInfo["links"]:
+            if(str(j[1]) in ICAloneNodes[str(i)]["nodesNumId"] and str(j[2]) in ICAloneNodes[str(i)]["nodesNumId"]):
+                if(j[0] != "r_cert" or j[0] != "r_dns_a"):
+                    useNode.add(str(j[1]))
+                    useNode.add(str(j[2]))
+        InICLinksNodes = list(
+            set(ICAloneNodes[str(i)]["nodesNumId"]).difference(useNode))
+        for j in InICLinksNodes:
+            nowNodesLinks = {}
+            for k in nodeLinksInfo["links"]:
+                if(k[0] == "r_cert" or j[0] == "r_dns_a"):
+                    continue
+                if(k[1] == int(j)):
+                    nowNodesLinks[str(k[2])] = [k[0], k[1], k[2]]
+                elif(k[2] == int(j)):
+                    nowNodesLinks[str(k[1])] = [k[0], k[1], k[2]]
+            for k in range(len(a)):
+                for l in a[k]["nodes"]:
+                    if(str(l[0]) in nowNodesLinks):
+                        a[k]["nodes"].append(list(nodeCsvW[int(j) - 1]))
+                        a[k]["links"].append(nowNodesLinks[str(l[0])])
+                        a[k]["nodeNum"] += 1
+                        if(nodeCsvW[int(j) - 1][3] == "Domain"):
+                            a[k]["domainNum"] += 1
+                        if(nodeCsvW[int(j) - 1][-1] != "  "):
+                            a[k]["industryNum"] += 1
+
+        with open(nowPath + "ICScreenLinks/" + str(i) +".json", "w", encoding="utf-8") as f:
+            json.dump(a, f, ensure_ascii= False)
+
+        useNode = list(useNode)
+        for j in nodeLinksInfo["links"]:
+            if(str(j[1]) in useNode and str(j[2]) in useNode):
+                ICAloneNodes[str(i)]["links"].append([j[0], j[1], j[2]])
+        for j in useNode:
+            ICAloneNodes[str(i)]["nodes"].append(list(nodeCsvW[int(j) - 1]))
+        with open(nowPath + "ICAloneLinks/" + str(i) + ".json", "w", encoding="utf-8") as f:
+            json.dump(ICAloneNodes[str(i)], f, ensure_ascii=False)
 
 
 def getICLinksInfo(coreList, nowPath, nodes):
@@ -178,68 +234,113 @@ if __name__ == '__main__':
     # 打开所有的节点
     nodeCsvW = pd.read_csv(
         nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv", header=0)
+
+    ipNode = nodeCsvW[nodeCsvW["type"] == "IP"].values
+    certNode = nodeCsvW[nodeCsvW["type"] == "Cert"].values
     nodeCsvW = nodeCsvW.values
     nodesInIClinks = {}
     for i in nodeCsvW:
-        nodesInIClinks[str(i[0])] = [[],[]]
+        nodesInIClinks[str(i[0])] = [[], []]
     ICScreenJ = open(nowPath + "ICScreen.json", "r", encoding="utf-8")
     ICScreen = json.load(ICScreenJ)
-    nodesInIClinks = getNodesInICLinks(
-        nodesInIClinks, ICScreen[0], "ICScreenLinks/", nowPath)
-    nodesInIClinks = getNodesInICLinks(
-        nodesInIClinks, ICScreen[1], "ICLinks/", nowPath)
+    # nodesInIClinks = getNodesInICLinks(
+    #     nodesInIClinks, ICScreen[0], "ICScreenLinks/", nowPath)
+    # nodesInIClinks = getNodesInICLinks(
+    #     nodesInIClinks, ICScreen[1], "ICLinks/", nowPath)
 
+    # with alive_bar(len(nodesInIClinks)) as bar:
+    #     for i in nodeCsvW:
+    #         j = str(i[0])
+    #         if(len(nodesInIClinks[j][0]) == 0 and len(nodesInIClinks[j][1]) == 0):
+    #             nodesInIClinks.pop(j)
+    #         bar()
+    
+    # for i in ipNode:
+    #     if(str(i[0]) in nodesInIClinks):
+    #         nodesInIClinks.pop(str(i[0]))
+    # for i in certNode:
+    #     if(str(i[0]) in nodesInIClinks):
+    #         nodesInIClinks.pop(str(i[0]))
+
+    # with alive_bar(len(nodesInIClinks)) as bar:
+    #     for i in nodesInIClinks:
+    #         inLinksSet = set()
+    #         for j in nodesInIClinks[i][0]:
+    #             inLinksSet.add(j[0])
+    #             inLinksSet.add(j[1])
+    #         nodesInIClinks[i][1] = list(
+    #             set(nodesInIClinks[i][1]).difference(inLinksSet))
+    #         bar()
+
+    # with open(nowPath + "nodeICLinks.json", "w", encoding="utf-8") as f:
+    #     json.dump(nodesInIClinks, f, ensure_ascii=False)
+
+    with open(nowPath + "nodeICLinks.json", "r", encoding="utf-8") as f:
+        nodesInIClinks = json.load(f)
+    ICAloneNodes = {}
+    for i in ICScreen[0]:
+        ICAloneNodes[str(i)] = {
+            "nodesNumId": [str(i)],
+            "nodes": [],
+            "links": []
+        }
+    for i in ICScreen[1]:
+        ICAloneNodes[str(i)] = {
+            "nodesNumId": [str(i)],
+            "nodes": [],
+            "links": []
+        }
     with alive_bar(len(nodesInIClinks)) as bar:
         for i in nodesInIClinks:
-            inLinksSet = set()
-            for j in nodesInIClinks[i][0]:
-                inLinksSet.add(j[0])
-                inLinksSet.add(j[1])
-    with open(nowPath + "nodeICLinks.json", "w", encoding="utf-8") as f:
-        json.dump(nodesInIClinks, f, ensure_ascii=False)
+            for j in nodesInIClinks[i][1]:
+                ICAloneNodes[str(j)]["nodesNumId"].append(str(i))
+            bar()
+    print(ICAloneNodes["523"])
+    
+    pool = mp.Pool(processes=12)
+    numLen = int(len(ICScreen[0]) / 12)
+    for i in range(12):
+        nodeListNum = (i + 1) * numLen
+        if(i == 11):
+            nodeListNum = None
+        pool.apply_async(getAllNodeALinksINICLinks, args=(
+            ICAloneNodes, ICScreen[0][i * numLen: nodeListNum], nowPath, nodeCsvW))
+        print(i, i + 1, i * numLen, nodeListNum)
+    pool.close()
+    pool.join()
 
-    # with open(nowPath + "nodesInICLinks.json", "r", encoding="utf-8") as f:
-    #     nodesInIClinks = json.load(f)
-    #     for i in nodesInIClinks:
-    #         nowType = []
-    #         linksType = set()
-    #         if(nodeCsvW[int(i) - 1][3] == "Domain"):
-    #             for j in nodesInIClinks[i]:
-    #                 linksType.add(type(j))
-    #                 if(len(linksType) > 1):
-    #                     print(nodesInIClinks[i])
-    #                     break
+    # getICLinksInfo(0, nowPath, ICScreen[0][0: 2])
 
-    # # getICLinksInfo(0, nowPath, ICScreen[0][0: 2])
+    pool = mp.Pool(processes=12)
+    numLen = int(len(ICScreen[0]) / 12)
+    for i in range(12):
+        nodeListNum = (i + 1) * numLen
+        if(i == 11):
+            nodeListNum = None
+        pool.apply_async(getICLinksInfo, args=(
+            i, nowPath, ICScreen[0][i * numLen: nodeListNum]))
+        print(i, i + 1, i * numLen, nodeListNum)
+    pool.close()
+    pool.join()
 
-    # pool = mp.Pool(processes=12)
-    # numLen = int(len(ICScreen[0]) / 12)
-    # for i in range(12):
-    #     nodeListNum = (i + 1) * numLen
-    #     if(i == 11):
-    #         nodeListNum = None
-    #     pool.apply_async(getICLinksInfo, args=(
-    #         i, nowPath, ICScreen[0][i * numLen: nodeListNum]))
-    #     print(i, i + 1, i * numLen, nodeListNum)
-    # pool.close()
-    # pool.join()
+    # 将所有数据进行合并
+    print("将所有数据进行合并----------------------------------------------")
+    mergeNodesNeighbourInfop()
 
-    # # 将所有数据进行合并
-    # print("将所有数据进行合并----------------------------------------------")
-    # mergeNodesNeighbourInfop()
+    useNode = ICScreen[0]
+    useNode.extend(ICScreen[1])
+    pool = mp.Pool(processes=12)
+    numLen = int(len(useNode) / 12)
+    for i in range(12):
+        nodeListNum = (i + 1) * numLen
+        if(i == 11):
+            nodeListNum = None
+        pool.apply_async(getNodesAloneInfo, args=(
+            i, nowPath, useNode[i * numLen: nodeListNum]))
+        print(i, i + 1, i * numLen, nodeListNum)
+    pool.close()
+    pool.join()
 
-    # pool = mp.Pool(processes=12)
-    # numLen = int(len(ICScreen[1]) / 12)
-    # for i in range(12):
-    #     nodeListNum = (i + 1) * numLen
-    #     if(i == 11):
-    #         nodeListNum = None
-    #     pool.apply_async(getNodesAloneInfo, args=(
-    #         i, nowPath, ICScreen[1][i * numLen: nodeListNum]))
-    #     print(i, i + 1, i * numLen, nodeListNum)
-    # pool.close()
-    # pool.join()
-
-    # # 将所有数据进行合并
-    # print("将所有数据进行合并----------------------------------------------")
-    # mergeNodesAlone()
+    # 将所有数据进行合并
+    print("将所有数据进行合并----------------------------------------------")
+    mergeNodesAlone()
