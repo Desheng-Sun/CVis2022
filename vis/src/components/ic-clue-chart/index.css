@@ -54,8 +54,8 @@
 }
 
 .icicleSvg .selectedIclcle {
-  fill: #404041;
-  /* opacity: 0.5; */
+  /* fill: #404041; */
+  opacity: 0.2;
 }
 
 #icclue-control {
