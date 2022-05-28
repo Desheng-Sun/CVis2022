@@ -18,6 +18,7 @@ export default function SkeletonChart({ w, h }) {
   const [links, setLinks] = useState([]);
   const [nodes, setNodes] = useState([]);
   const [selectedNode, setSelectedNode] = useState([]);
+  const [selectedNodeFirst, setSelectedNodeFirst] = useState(true);
   const [currIc, setCurrIc] = useState(undefined); // 当前已选择的ic
 
   // 随系统缩放修改画布大小
@@ -40,7 +41,7 @@ export default function SkeletonChart({ w, h }) {
 
   // 监听用户选择的节点
   useEffect(() => {
-    if (selectedNode.length !== 0) {
+    if (!selectedNodeFirst) {
       let returnRes = { nodes: [], links: [] };
       for (let i in linkedByIndex) {
         let source = i.split(",")[0];
@@ -59,6 +60,7 @@ export default function SkeletonChart({ w, h }) {
       }
       PubSub.publish("skeletonSelect", returnRes);
     }
+    setSelectedNodeFirst(false);
   }, [selectedNode]);
 
   useEffect(() => {
@@ -72,7 +74,10 @@ export default function SkeletonChart({ w, h }) {
         for (let item in data.nodes[n].ICIndustry) {
           combinationOrderSet.add(data.nodes[n].ICIndustry[item]["industry"]);
         }
-        tNodes.push({ ...data.nodes[n], group: parseInt(n) });
+        tNodes.push({
+          ...data.nodes[n],
+          group: parseInt(data.nodes[n]["numId"]),
+        });
       }
       setLinks([...tLink]);
       setNodes([...tNodes]);
@@ -125,11 +130,11 @@ export default function SkeletonChart({ w, h }) {
       .attr("viewBox", [0, 0, svgWidth, svgHeight]);
     var scaleFactor = 1.2, // 值为1表示紧连边缘的点
       margin = scaleFactor,
-      arcWidth = nodes.length <= 5 ? 8 : nodes.length <= 10 ? 5 : 3,
+      arcWidth = nodes.length <= 5 ? 6 : nodes.length <= 10 ? 4 : 2,
       nodeRadius =
         arcWidth * (industryType.length - 1) === 0
           ? arcWidth + 5
-          : arcWidth * (industryType.length - 1) + 5,
+          : arcWidth * (industryType.length + 1),
       linkStrength = undefined;
     const wrapper = svg.append("g").attr("transform", `translate(0, 0)`);
     // create groups, links and nodes
@@ -148,7 +153,6 @@ export default function SkeletonChart({ w, h }) {
           let numId = nodes
             .filter((d) => d.group === groupId)
             .map((d) => d.numId)[0];
-
           setSelectedNode((selectedNode) =>
             selectedNode.filter((d) => d !== numId)
           );
@@ -341,9 +345,19 @@ export default function SkeletonChart({ w, h }) {
       .attr("class", "path_placeholder")
       .attr("groupId", (d) => d)
       .append("path")
-      .attr("class", "group-background")
+      .attr("class", (d) => {
+        if (selectedNode.includes(d)) {
+          return "selected";
+        }
+        return "group-background";
+      })
       .attr("stroke", "grey")
-      .attr("fill", "white")
+      .attr("fill", (d) => {
+        if (selectedNode.includes(d)) {
+          return "#b3efa7";
+        }
+        return "white";
+      })
       .attr("opacity", 0.5)
       .on(
         "contextmenu",

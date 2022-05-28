@@ -461,13 +461,15 @@ export default Kapsule({
 
               d3.select(this).classed("selectedIclcle", true)
               let childrenNode = d3.select(this)._groups[0][0].__data__.children
-
-              childrenNode.forEach((d) => {
-                let eachNumId = d.data.numId
-                if (!selectedIclcleNode.includes(eachNumId)) {
-                  selectedIclcleNode.push(eachNumId);
-                }
-              })
+              if (childrenNode != undefined) {
+                childrenNode.forEach((d) => {
+                  let eachNumId = d.data.numId
+                  if (!selectedIclcleNode.includes(eachNumId)) {
+                    selectedIclcleNode.push(eachNumId);
+                  }
+                })
+              }
+              console.log(childrenNode);
               selectedIclcleNode = Array.from(new Set(selectedIclcleNode))
               newCellG
                 .filter(function (event, d) {
