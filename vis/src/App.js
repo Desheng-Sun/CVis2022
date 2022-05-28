@@ -12,13 +12,10 @@ import BulletChart from "./components/bullet-chart"; // 分析团伙板块 - 展
 import ArcDiagram from "./components/arc-diagram"; // 分析团伙板块 - 展示每种边的连线与数量
 import DetailList from "./components/detail-list"; // 分析团伙板块 - 表格展示单条边和点的信息
 import MainView from "./components/main-view";
-// import SubChart2 from "./components/sub-chart2";
-import SubChartCanvas from "./components/sub-chart-canvas";
 import SubChartForceGraph from "./components/sub-chart-force-graph";
 import SkeletonChart from "./components/skeleton-chart";
 import ICClueChart from "./components/ic-clue-chart";
 import DifChart from "./components/dif-chart";
-import SubChartCytoscape from "./components/sub-chart-cytoscape";
 import DataProcessChecker from "./components/dataProcessChecker/dataProcessChecker";
 import SearchBar from "./components/search-bar";
 import CombineTable from "./components/combine-table";
@@ -33,12 +30,6 @@ function App() {
     <div className="App">
       <Routes>
         <Route key="layout" path="/" element={<Layout />} />
-        {/* <Route key="subchart2" path="/subchart2" element={<SubChart2 />} /> */}
-        {/* <Route
-          key="subchartcanvas"
-          path="/subchartcanvas"
-          element={<SubChartCanvas />}
-        /> */}
         {/* <Route
           key="subchartforcegraph"
           path="/subchartforcegraph"
@@ -64,9 +55,9 @@ function App() {
         />
         <Route key="difchart" path="/difchart" element={<DifChart />} />
         <Route
-          key="subchartcytoscape"
-          path="/subchartcytoscape"
-          element={<SubChartCytoscape />}
+          key="mainview"
+          path="/mainview"
+          element={<MainView />}
         />
         <Route key="detaillist" path="/detaillist" element={<DetailList />} />
         <Route key="checker" path="/checker" element={<DataProcessChecker />} />

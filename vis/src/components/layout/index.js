@@ -8,7 +8,7 @@ import ICClueChart from "../ic-clue-chart";
 import SkeletonChart from "../skeleton-chart";
 import SearchBar from "../search-bar";
 import CombineTable from "../combine-table";
-import MainChartCytoscape from "../sub-chart-cytoscape";
+import MainView from "../main-view";
 import ConclusionText from "../conclusion-text";
 import IndustryStackChart from "../industry-stack-chart";
 import ClueDense from "../clue-dense";
@@ -103,7 +103,7 @@ export default function Layout() {
           <div id="container-mainmap">
             <div id="mainmap">
               <ChartHeader chartName={"黑灰产网络资产图"} />
-              <MainChartCytoscape w={mainChartWidth} h={mainChartHeight} />
+              <MainView w={mainChartWidth} h={mainChartHeight} />
             </div>
           </div>
           <div id="container-filter">
