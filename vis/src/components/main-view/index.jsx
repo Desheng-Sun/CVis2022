@@ -122,7 +122,7 @@ export default function MainView({ w, h }) {
 
   // 给其他组件的数据
   const [resData, setResData] = useState({ nodes: [], links: [] }); // 右侧表格和子弹图的所有数据
-  const [doaminStatistic, setDoaminStatistic] = useState([]); // 下方图的数据
+  const [difChartInput, setDifChartInput] = useState({ nodes: [], links: [] }); // 当前主图中的点和边 改变时更新DifChart视图
 
   // 随系统缩放修改画布大小
   useEffect(() => {
@@ -139,7 +139,7 @@ export default function MainView({ w, h }) {
       var j = cy.getElementById(searchNodebyId);
       cy.center(j); // 将被搜索元素居中
       j.addClass("searched");
-      
+
       // cy.getElementById(searchNodebyId).style({
       //   // 高亮显示被选中节点
       //   "background-color": "#ffff00",
@@ -163,6 +163,13 @@ export default function MainView({ w, h }) {
     }
     setFilterFlag(false);
   }, [filterFlag]);
+
+  // 监听主图中节点数据是否变化，如果变化，更新DifChart
+  useEffect(() => {
+    if (difChartInput.nodes.length !== 0 || difChartInput.links.length !== 0) {
+      PubSub.publish("updateDifChart", difChartInput);
+    }
+  }, [difChartInput]);
 
   // 监听是否选择当前数据为一个团伙
   useEffect(() => {
@@ -219,6 +226,8 @@ export default function MainView({ w, h }) {
   useEffect(() => {
     if (undoOut) {
       ur.undo();
+
+      getDataForDifChart();
     }
     setUndoOut(false);
   }, [undoOut]);
@@ -227,6 +236,7 @@ export default function MainView({ w, h }) {
   useEffect(() => {
     if (redoIn) {
       ur.redo();
+      getDataForDifChart();
     }
     setRedoIn(false);
   }, [redoIn]);
@@ -235,6 +245,7 @@ export default function MainView({ w, h }) {
   useEffect(() => {
     if (rollback) {
       ur.undoAll();
+      getDataForDifChart();
     }
     setRollback(false);
   }, [rollback]);
@@ -248,13 +259,6 @@ export default function MainView({ w, h }) {
       cy.edges().removeClass("arrow");
     }
   }, [arrowFlag]);
-
-  // 用于domain统计图的传出数据
-  useEffect(() => {
-    if (doaminStatistic.length !== 0) {
-      console.log(doaminStatistic);
-    }
-  }, [doaminStatistic]);
 
   // 从table中传入数据进行高亮
   PubSub.unsubscribe("tableToMainNodeDt");
@@ -324,6 +328,7 @@ export default function MainView({ w, h }) {
     } else {
       getMainChartSds(dataParam).then((res) => {
         setData(res);
+        setDifChartInput(res);
       });
     }
   }, [dataParam]);
@@ -410,11 +415,19 @@ export default function MainView({ w, h }) {
         if (e.which === 46) {
           // 按删除键
           var selecteds = cy.$(":selected");
-          if (selecteds.length > 0) ur.do("remove", selecteds);
+          if (selecteds.length > 0) {
+            ur.do("remove", selecteds);
+            getDataForDifChart();
+          }
         }
         if (e.ctrlKey && e.target.nodeName === "BODY")
-          if (e.which === 90) ur.undo();
-          else if (e.which === 89) ur.redo();
+          if (e.which === 90) {
+            ur.undo();
+            getDataForDifChart();
+          } else if (e.which === 89) {
+            ur.redo();
+            getDataForDifChart();
+          }
       });
 
       var maintoolTip = d3
@@ -508,20 +521,20 @@ export default function MainView({ w, h }) {
               cy.getElementById(curNodeId).neighborhood().select();
             },
           },
-          {
-            id: "select-analyze",
-            content: "统计分析",
-            tooltipText: "统计分析",
-            selector: "node",
-            onClickFunction: function (e) {
-              let selection = cy.$(":selected");
-              let t = selection.map((n) => n.json().data);
-              let nodes = selection.nodes().map((ele) => ele.json().data);
-              let links = selection.edges().map((ele) => ele.json().data);
-              setResData({ nodes: [...nodes], links: [...links] });
-              setDoaminStatistic([...t]); // 获取选择的所有数据
-            },
-          },
+          // {
+          //   id: "select-analyze",
+          //   content: "统计分析",
+          //   tooltipText: "统计分析",
+          //   selector: "node",
+          //   onClickFunction: function (e) {
+          //     let selection = cy.$(":selected");
+          //     let t = selection.map((n) => n.json().data);
+          //     let nodes = selection.nodes().map((ele) => ele.json().data);
+          //     let links = selection.edges().map((ele) => ele.json().data);
+          //     setResData({ nodes: [...nodes], links: [...links] });
+          //     setDoaminStatistic([...t]); // 获取选择的所有数据
+          //   },
+          // },
         ],
       };
       cy.contextMenus(menuOptions);
@@ -739,6 +752,66 @@ export default function MainView({ w, h }) {
       return ele.json().data;
     });
     setResData({ nodes: [...nodes], links: [...links] });
+  }
+
+  function getDataForDifChart() {
+    let currICNodes = cy.nodes().filter((ele, index) => {
+      return ele.data("type") === "IP" || ele.data("type") === "Cert";
+    });
+    currICNodes = currICNodes.map((item, index) => {
+      return item.data("numId");
+    });
+    console.log("currICNodes", currICNodes);
+
+    let graphnodes, graphlinks;
+    graphnodes = cy.nodes().map(function (ele, i) {
+      let inICLinks = data.nodes.filter((item, index) => {
+        return item["id"] === ele.data("id");
+      });
+      inICLinks = inICLinks[0]["InICLinks"];
+
+      let inICLinksAfterDelete = []; // 删除后的ICLinks
+
+      inICLinks.forEach((item, index) => {
+        let l = item.split(",");
+        let s, t;
+        if (l.length === 2) {
+          //  "1,1"
+          s = l[0]; // 取该链路的source
+          t = l[1]; // 取该链路的target
+
+          if (
+            currICNodes.includes(parseInt(s)) &&
+            currICNodes.includes(parseInt(t))
+          ) {
+            inICLinksAfterDelete.push(item);
+          }
+          // else if (
+          //   !currICNodes.includes(parseInt(s)) &&
+          //   currICNodes.includes(parseInt(t))
+          // ) {
+          //   inICLinksAfterDelete.push(t);
+          // } else if (
+          //   !currICNodes.includes(parseInt(t)) &&
+          //   currICNodes.includes(parseInt(s))
+          // ) {
+          //   inICLinksAfterDelete.push(s);
+          // }
+        } else if (l.length === 1) {
+          s = l[0];
+          if (currICNodes.includes(parseInt(s))) {
+            inICLinksAfterDelete.push(item);
+          }
+        }
+      });
+      ele.data("InICLinks", inICLinksAfterDelete);
+      return ele.json().data;
+    });
+    graphlinks = cy.edges().map(function (ele, i) {
+      return ele.json().data;
+    });
+
+    setDifChartInput({ nodes: [...graphnodes], links: [...graphlinks] });
   }
 
   function drawLegend() {

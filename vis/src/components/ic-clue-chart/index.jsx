@@ -77,7 +77,7 @@ export default function ICClueChart({ w, h }) {
       .style("color", "black")
       .style("line-height", 1)
       .attr("text-align", "center");
-    console.log(data);
+    // console.log(data);
 
     for (let i = 0; i < data.length; i++) {
       let skipNum = data[i].skipNum + 1;

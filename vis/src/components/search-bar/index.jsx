@@ -18,22 +18,19 @@ export default function SearchBar() {
       getInitialSds(selectType, selectIndustry, selectId).then((res) => {
         setSelectContent(res);
       });
-    }
-    else if (selectType == undefined || selectIndustry == undefined) {
+    } else if (selectType == undefined || selectIndustry == undefined) {
       getInitialSds("", "", selectId).then((res) => {
-        console.log(res)
+        // console.log(res)
         setSelectContent(res);
       });
-    }
-    else {
+    } else {
       getInitialSds(selectType, selectIndustry, selectId).then((res) => {
         setSelectContent(res);
       });
     }
   }, [selectType, selectIndustry, selectId]);
 
-  useEffect(() => { }, [selectContent]);
-
+  useEffect(() => {}, [selectContent]);
 
   let type = [
     "Domain",
@@ -111,7 +108,6 @@ export default function SearchBar() {
     "ABCGHI",
   ];
 
-
   const changeType = (value) => {
     setSelectType(value);
   };
@@ -149,7 +145,7 @@ export default function SearchBar() {
   };
 
   const onSearchData = () => {
-    console.log(selectNumId, selectType)
+    console.log(selectNumId, selectType);
     PubSub.publish("getClueFromDense", {
       numId: selectNumId,
       Id: selectType,
