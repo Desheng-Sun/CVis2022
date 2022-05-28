@@ -1,11 +1,5 @@
 [
   {
-    "selector": "node",
-    "style": {
-      "background-color": "purple"
-    }
-  },
-  {
     "selector": "edge",
     "style": {
       "opacity": 0.6

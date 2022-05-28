@@ -583,20 +583,20 @@ export default function MainView({ w, h }) {
               cy.getElementById(curNodeId).neighborhood().select();
             },
           },
-          {
-            id: "select-analyze",
-            content: "统计分析",
-            tooltipText: "统计分析",
-            selector: "node",
-            onClickFunction: function (e) {
-              let selection = cy.$(":selected");
-              let t = selection.map((n) => n.json().data);
-              let nodes = selection.nodes().map((ele) => ele.json().data);
-              let links = selection.edges().map((ele) => ele.json().data);
-              setResData({ nodes: [...nodes], links: [...links] });
-              setDoaminStatistic([...t]); // 获取选择的所有数据
-            },
-          },
+          // {
+          //   id: "select-analyze",
+          //   content: "统计分析",
+          //   tooltipText: "统计分析",
+          //   selector: "node",
+          //   onClickFunction: function (e) {
+          //     let selection = cy.$(":selected");
+          //     let t = selection.map((n) => n.json().data);
+          //     let nodes = selection.nodes().map((ele) => ele.json().data);
+          //     let links = selection.edges().map((ele) => ele.json().data);
+          //     setResData({ nodes: [...nodes], links: [...links] });
+          //     setDoaminStatistic([...t]); // 获取选择的所有数据
+          //   },
+          // },
           {
             id: "copy-self",
             content: "复制id",
