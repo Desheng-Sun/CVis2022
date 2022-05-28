@@ -19,7 +19,7 @@ export default function DifChart({ w, h }) {
   }, [h]);
   useEffect(() => {
     draw();
-  });
+  }, [data]);
   let linksInfo = {
     nodes: [
       {
@@ -68321,13 +68321,15 @@ export default function DifChart({ w, h }) {
       .join("rect")
       .attr("fill", (d) => color(d))
       .attr("x", (d, i) => {
-        let beforeLatter = 0;
-        for (let j = 0; j < i; j++) beforeLatter += industryName[j].length;
-        return ((svgWidth - 10) / totalLetter) * beforeLatter + 5;
+        return ((svgWidth - 10) / industryName.length) * i;
+        // let beforeLatter = 0;
+        // for (let j = 0; j < i; j++) beforeLatter += industryName[j].length;
+        // return ((svgWidth - 10) / totalLetter) * beforeLatter + 5;
       })
       .attr("y", 2)
       .attr("height", 20)
-      .attr("width", (d) => ((svgWidth - 10) / totalLetter) * d.length);
+      .attr("width", (svgWidth - 10) / industryName.length);
+    // .attr("width", (d) => ((svgWidth - 10) / totalLetter) * d.length);
     diffLegendSvg
       .append("g")
       .selectAll("text")
@@ -68336,11 +68338,12 @@ export default function DifChart({ w, h }) {
       .attr("class", "legend-text")
       .attr("width", (d, i) => ((svgWidth - 10) / totalLetter) * d.length)
       .attr("x", (d, i) => {
-        let beforeLatter = 0;
-        for (let j = 0; j < i; j++) beforeLatter += industryName[j].length;
-        return (
-          ((svgWidth - 10) / totalLetter) * (beforeLatter + d.length / 2) + 5
-        );
+        return ((svgWidth - 10) / industryName.length) * (i + 0.5);
+        // let beforeLatter = 0;
+        // for (let j = 0; j < i; j++) beforeLatter += industryName[j].length;
+        // return (
+        //   ((svgWidth - 10) / totalLetter) * (beforeLatter + d.length / 2) + 5
+        // );
       })
       .attr("y", 15)
       .text((d) => {
