@@ -70,7 +70,7 @@
     "selector": "node[type=\"Domain\"]",
     "style": {
       "width": 100,
-      "height":100
+      "height": 100
     }
   },
   {
@@ -182,6 +182,13 @@
     "selector": "edge[relation=\"r_cert_chain\"]",
     "style": {
       "line-color": "#f9b4ae"
+    }
+  },
+  {
+    "selector": "node.searched",
+    "style": {
+      "border-color": "#f5f440",
+      "border-width": "3px"
     }
   },
   {
