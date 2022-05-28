@@ -45,16 +45,16 @@ var layoutOptionDict = {
     avoidOverlap: true,
     springLength: 10,
     mass: 7,
-    animateFilter: function (node, i) {
-      return true;
-    }, // 决定是否节点的位置应该被渲染
-    concentric: function (node) {
-      return node.degree();
-    },
+    // animateFilter: function (node, i) {
+    //   return true;
+    // }, // 决定是否节点的位置应该被渲染
+    // concentric: function (node) {
+    //   return node.degree();
+    // },
   },
   concentric: {
     name: "concentric",
-    // fit: true, // whether to fit to viewport
+    // fit: false, // whether to fit to viewport
     animate: true, // whether to transition the node positions
     avoidOverlap: true,
     minNodeSpace: 1,
@@ -70,13 +70,13 @@ var layoutOptionDict = {
   },
   dagre: {
     name: "dagre",
-    fit: true, // whether to fit to viewport
+    fit: false, // whether to fit to viewport
     animate: true, // whether to transition the node positions
     avoidOverlap: true,
   },
   coseBilkent: {
     name: "cose-bilkent",
-    fit: true,
+    fit: false,
     animate: true,
     randomize: false,
     avoidOverlap: true,
@@ -88,7 +88,7 @@ var layoutOptionDict = {
   },
   fcose: {
     name: "fcose",
-    fit: true,
+    fit: false,
     quality: "default",
     animate: true,
     randomize: true,
@@ -139,7 +139,7 @@ export default function MainView({ w, h }) {
       var j = cy.getElementById(searchNodebyId);
       cy.center(j); // 将被搜索元素居中
       j.addClass("searched");
-      
+
       // cy.getElementById(searchNodebyId).style({
       //   // 高亮显示被选中节点
       //   "background-color": "#ffff00",
@@ -319,13 +319,301 @@ export default function MainView({ w, h }) {
 
   // 请求数据并初始化图形
   useEffect(() => {
-    if (dataParam === "") {
-      setData({ nodes: [], links: [] });
-    } else {
-      getMainChartSds(dataParam).then((res) => {
-        setData(res);
-      });
-    }
+    // if (dataParam === "") {
+    //   setData({ nodes: [], links: [] });
+    // } else {
+    //   getMainChartSds(dataParam).then((res) => {
+    //     console.log(res);
+    //     setData(res);
+    //   });
+    // }
+
+    let dt = {
+      nodes: [
+        {
+          numId: 100,
+          id: "Cert_a91593a45b6eceaae2a0478cc243543184d325720bc3f19f91982450b6af57e2",
+          name: "a91593a45b",
+          type: "Cert",
+          industry: "  ",
+          InICLinks: ["7490"],
+        },
+        {
+          numId: 7490,
+          id: "Cert_7ca0c8d673187b11ce8c310cfde290b3a0459a945e10d9c162b24261e8132f17",
+          name: "7ca0c8d673",
+          type: "Cert",
+          industry: " ",
+          InICLinks: ["7490,242427"],
+        },
+        {
+          numId: 21116,
+          id: "ASN_e7801170e7f7718955c054ab9bc821b57e1c798b29b73f3b3507488d320d30be",
+          name: "AS_e7801170e7",
+          type: "ASN",
+          industry: "  ",
+          InICLinks: ["242427"],
+        },
+        {
+          numId: 39019,
+          id: "Domain_547e957fd2ebec14d5848867e05e96c84848cd73a7154a1dd5544a28be2c03f6",
+          name: "547e957fd2.com",
+          type: "Domain",
+          industry: "  ",
+          InICLinks: ["7490,242427"],
+        },
+        {
+          numId: 242406,
+          id: "Domain_a53a9dab4fc9ff96dc3f4b41e854dad0c2068bcccfa481f2bdaefcfd73bbd552",
+          name: "a53a9dab4f.com",
+          type: "Domain",
+          industry: "A",
+          InICLinks: ["7490,242427"],
+        },
+        {
+          numId: 242427,
+          id: "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
+          name: "103.150.xxx.xxx",
+          type: "IP",
+          industry: "  ",
+          InICLinks: ["7490,242427"],
+        },
+        {
+          numId: 1061263,
+          id: "ASN_aa137a10cc0a23589694f2c6ed59e65525b862231f7dad45031ecad70af6a089",
+          name: "AS_aa137a10cc",
+          type: "ASN",
+          industry: "  ",
+          InICLinks: ["242427"],
+        },
+        {
+          numId: 1061267,
+          id: "ASN_2d502e09bf7e1863f9a311d60a42fcdc860406c63c75c0316ea910b1cd189adf",
+          name: "AS_2d502e09bf",
+          type: "ASN",
+          industry: "E",
+          InICLinks: ["242427"],
+        },
+        {
+          numId: 1061275,
+          id: "IP_CIDR_38e0947813c6042c2b5b752285b19165bd55796f7f95795410b5e27ad10bb722",
+          name: "103.150.xxx.0/24",
+          type: "IP_C",
+          industry: "B",
+          InICLinks: ["242427"],
+        },
+        {
+          numId: 1061283,
+          id: "Domain_54c88be5b237be401b204ea0f56054df811e28a29da198dfa7795c9508fc0b89",
+          name: "54c88be5b2.com",
+          type: "Domain",
+          industry: "A",
+          InICLinks: ["242427"],
+          childrenNum: 2,
+          children: [
+            {
+              numId: 1061283,
+              id: "Domain_54c88be5b237be401b204ea0f56054df811e28a29da198dfa7795c9508fc0b89",
+              name: "54c88be5b2.com",
+              type: "Domain",
+              industry: "A",
+            },
+            {
+              numId: 1061307,
+              id: "Domain_d43873cb3b5ead7eaf5ff319084cd3a7b6b01974ba1924725ee3f1fc6fc22f4d",
+              name: "d43873cb3b.com",
+              type: "Domain",
+              industry: "A",
+            },
+          ],
+        },
+        {
+          numId: 1061290,
+          id: "Domain_ef78a6b6a45b0423d1df3a99cf69b104aa37cf819b49fe58e9acb4ec7b8a5894",
+          name: "ef78a6b6a4.com",
+          type: "Domain",
+          industry: "ABC",
+          InICLinks: ["242427"],
+          childrenNum: 1,
+          children: [
+            {
+              numId: 1061290,
+              id: "Domain_ef78a6b6a45b0423d1df3a99cf69b104aa37cf819b49fe58e9acb4ec7b8a5894",
+              name: "ef78a6b6a4.com",
+              type: "Domain",
+              industry: "  ",
+            },
+          ],
+        },
+        {
+          numId: 1061298,
+          id: "Domain_7576404d8ed099e631e85748a29e25cca9807502843bb854ed9e7e6e9c817065",
+          name: "7576404d8e.com",
+          type: "Domain",
+          industry: "I",
+          InICLinks: ["242427"],
+          childrenNum: 1,
+          children: [
+            {
+              numId: 1061298,
+              id: "Domain_7576404d8ed099e631e85748a29e25cca9807502843bb854ed9e7e6e9c817065",
+              name: "7576404d8e.com",
+              type: "Domain",
+              industry: "AG",
+            },
+          ],
+        },
+      ],
+      links: [
+        {
+          relation: "r_cert_chain",
+          source:
+            "Cert_7ca0c8d673187b11ce8c310cfde290b3a0459a945e10d9c162b24261e8132f17",
+          target:
+            "Cert_a91593a45b6eceaae2a0478cc243543184d325720bc3f19f91982450b6af57e2",
+          linksNumId: [7490, 100],
+          InICLinks: ["7490"],
+        },
+        {
+          relation: "r_dns_a",
+          source:
+            "Domain_547e957fd2ebec14d5848867e05e96c84848cd73a7154a1dd5544a28be2c03f6",
+          target:
+            "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
+          linksNumId: [39019, 242427],
+          InICLinks: ["7490,242427"],
+        },
+        {
+          relation: "r_cert",
+          source:
+            "Domain_547e957fd2ebec14d5848867e05e96c84848cd73a7154a1dd5544a28be2c03f6",
+          target:
+            "Cert_7ca0c8d673187b11ce8c310cfde290b3a0459a945e10d9c162b24261e8132f17",
+          linksNumId: [39019, 7490],
+          InICLinks: ["7490,242427"],
+        },
+        {
+          relation: "r_subdomain",
+          source:
+            "Domain_547e957fd2ebec14d5848867e05e96c84848cd73a7154a1dd5544a28be2c03f6",
+          target:
+            "Domain_a53a9dab4fc9ff96dc3f4b41e854dad0c2068bcccfa481f2bdaefcfd73bbd552",
+          linksNumId: [39019, 242406],
+          InICLinks: ["7490,242427"],
+        },
+        {
+          relation: "r_dns_a",
+          source:
+            "Domain_a53a9dab4fc9ff96dc3f4b41e854dad0c2068bcccfa481f2bdaefcfd73bbd552",
+          target:
+            "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
+          linksNumId: [242406, 242427],
+          InICLinks: ["7490,242427"],
+        },
+        {
+          relation: "r_asn",
+          source:
+            "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
+          target:
+            "ASN_e7801170e7f7718955c054ab9bc821b57e1c798b29b73f3b3507488d320d30be",
+          linksNumId: [242427, 21116],
+          InICLinks: ["242427"],
+        },
+        {
+          relation: "r_asn",
+          source:
+            "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
+          target:
+            "ASN_aa137a10cc0a23589694f2c6ed59e65525b862231f7dad45031ecad70af6a089",
+          linksNumId: [242427, 1061263],
+          InICLinks: ["242427"],
+        },
+        {
+          relation: "r_asn",
+          source:
+            "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
+          target:
+            "ASN_2d502e09bf7e1863f9a311d60a42fcdc860406c63c75c0316ea910b1cd189adf",
+          linksNumId: [242427, 1061267],
+          InICLinks: ["242427"],
+        },
+        {
+          relation: "r_cidr",
+          source:
+            "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
+          target:
+            "IP_CIDR_38e0947813c6042c2b5b752285b19165bd55796f7f95795410b5e27ad10bb722",
+          linksNumId: [242427, 1061275],
+          InICLinks: ["242427"],
+        },
+        {
+          relation: "r_dns_a",
+          source:
+            "Domain_54c88be5b237be401b204ea0f56054df811e28a29da198dfa7795c9508fc0b89",
+          target:
+            "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
+          linksNumId: [1061283, 242427],
+          childrenNum: 2,
+          children: [
+            {
+              relation: "r_dns_a",
+              source:
+                "Domain_54c88be5b237be401b204ea0f56054df811e28a29da198dfa7795c9508fc0b89",
+              target:
+                "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
+              linksNumId: [1061283, 242427],
+            },
+            {
+              relation: "r_dns_a",
+              source:
+                "Domain_d43873cb3b5ead7eaf5ff319084cd3a7b6b01974ba1924725ee3f1fc6fc22f4d",
+              target:
+                "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
+              linksNumId: [1061307, 242427],
+            },
+          ],
+        },
+        {
+          relation: "r_dns_a",
+          source:
+            "Domain_ef78a6b6a45b0423d1df3a99cf69b104aa37cf819b49fe58e9acb4ec7b8a5894",
+          target:
+            "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
+          linksNumId: [1061290, 242427],
+          childrenNum: 1,
+          children: [
+            {
+              relation: "r_dns_a",
+              source:
+                "Domain_ef78a6b6a45b0423d1df3a99cf69b104aa37cf819b49fe58e9acb4ec7b8a5894",
+              target:
+                "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
+              linksNumId: [1061290, 242427],
+            },
+          ],
+        },
+        {
+          relation: "r_dns_a",
+          source:
+            "Domain_7576404d8ed099e631e85748a29e25cca9807502843bb854ed9e7e6e9c817065",
+          target:
+            "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
+          linksNumId: [1061298, 242427],
+          childrenNum: 1,
+          children: [
+            {
+              relation: "r_dns_a",
+              source:
+                "Domain_7576404d8ed099e631e85748a29e25cca9807502843bb854ed9e7e6e9c817065",
+              target:
+                "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
+              linksNumId: [1061298, 242427],
+            },
+          ],
+        },
+      ],
+    };
+    setData(dt);
   }, [dataParam]);
   // 处理节点的搜索事件
   useEffect(() => {
@@ -358,23 +646,88 @@ export default function MainView({ w, h }) {
           },
         },
       };
+
       let domainNodeStyle = {
         selector: 'node[type="Domain"]',
         style: {
-          "background-color": "#fff",
-          "background-image": function (ele) {
-            return (
-              "url('./images/Domain/" +
-              ele.json().data["industry"].toLowerCase().replace("\r", "") +
-              ".png')"
-            );
+          "pie-size": "100%",
+          "pie-1-background-color": "#2978b4",
+          "pie-1-background-size": function (ele, curIndustry = "A") {
+            if (ele.data("industry").trim() === "") return "0";
+            let curIndustryArr = ele.data("industry").split("");
+            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
+            return "0";
           },
-          "background-fit": "contain",
+          "pie-2-background-color": "#f9bf6f",
+          "pie-2-background-size": function (ele, curIndustry = "B") {
+            if (ele.data("industry").trim() === "") return "0";
+            let curIndustryArr = ele.data("industry").split("");
+            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
+            return "0";
+          },
+          "pie-3-background-color": "#ff756a",
+          "pie-3-background-size": function (ele, curIndustry = "C") {
+            if (ele.data("industry").trim() === "") return "0";
+            let curIndustryArr = ele.data("industry").split("");
+            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
+            return "0";
+          },
+          "pie-4-background-color": "#E8747C",
+          "pie-4-background-size": function (ele, curIndustry = "D") {
+            if (ele.data("industry").trim() === "") return "0";
+            let curIndustryArr = ele.data("industry").split("");
+            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
+            return "0";
+          },
+          "pie-5-background-color": "#2978b4",
+          "pie-5-background-size": function (ele, curIndustry = "E") {
+            if (ele.data("industry").trim() === "") return "0";
+            let curIndustryArr = ele.data("industry").split("");
+            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
+            return "0";
+          },
+          "pie-6-background-color": "#a6cee3",
+          "pie-6-background-size": function (ele, curIndustry = "F") {
+            if (ele.data("industry").trim() === "") return "0";
+            let curIndustryArr = ele.data("industry").split("");
+            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
+            return "0";
+          },
+          "pie-7-background-color": "#e53f32",
+          "pie-7-background-size": function (ele, curIndustry = "G") {
+            if (ele.data("industry").trim() === "") return "0";
+            let curIndustryArr = ele.data("industry").split("");
+            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
+            return "0";
+          },
+          "pie-8-background-color": "#f9b4ae",
+          "pie-8-background-size": function (ele, curIndustry = "H") {
+            if (ele.data("industry").trim() === "") return "0";
+            let curIndustryArr = ele.data("industry").split("");
+            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
+            return "0";
+          },
+          "pie-9-background-color": "#f5f440",
+          "pie-9-background-size": function (ele, curIndustry = "I") {
+            if (ele.data("industry").trim() === "") return "0";
+            let curIndustryArr = ele.data("industry").split("");
+            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
+            return "0";
+          },
         },
       };
       stylesJson.push(newStyleArr);
-      // stylesJson.push(domainNodeStyle);
-      cy = window.cy = cytoscape({
+      stylesJson.push(domainNodeStyle);
+      cy = cytoscape({
         container: document.getElementById("main-chart"),
         elements: {
           nodes: nodes,
@@ -390,13 +743,14 @@ export default function MainView({ w, h }) {
         thumbnailLiveFramerate: false, // max thumbnail's updates per second. Set false to disable
         dblClickDelay: 200, // milliseconds
         removeCustomContainer: false, // destroy the container specified by user on plugin destroy
-        rerenderDelay: 100, // ms to throttle rerender updates to the panzoom for performance
+        // rerenderDelay: 100, // ms to throttle rerender updates to the panzoom for performance
       };
       cy.navigator(defaults);
 
       layoutOption = layoutOptionDict[chartLayout];
       layout = cy.layout(layoutOption);
       layout.run();
+
       // cy.boxSelectionEnabled(true); // 设置支持框选操作，如果同时启用平移，用户必须按住shift、control、alt或command中的一个来启动框选择
       urOption = {
         isDebug: true,
@@ -439,19 +793,16 @@ export default function MainView({ w, h }) {
             "<b>" +
             "id: " +
             "</b>" +
-            "id: " +
             curNOdeData.id +
             "<br>" +
             "<b>" +
-            "id: " +
-            "</b>" +
             "name: " +
+            "</b>" +
             curNOdeData.name +
             "<br>" +
             "<b>" +
-            "id: " +
-            "</b>" +
             "industry: " +
+            "</b>" +
             curNOdeData.industry;
         else
           htmlText =
@@ -461,9 +812,8 @@ export default function MainView({ w, h }) {
             curNOdeData.id +
             "<br>" +
             "<b>" +
-            "id: " +
+            "name: " +
             "</b>" +
-            "name" +
             curNOdeData.name;
         maintoolTip
           .style("left", e.renderedPosition.x + 610 + "px")
@@ -489,7 +839,7 @@ export default function MainView({ w, h }) {
             id: "select-self-neigh",
             content: "选中节点",
             tooltipText: "选中当前节点和邻居节点",
-            selector: "element",
+            selector: "node",
             onClickFunction: function (e) {
               let n = e.target;
               let curNodeId = n.id();
@@ -522,10 +872,36 @@ export default function MainView({ w, h }) {
               setDoaminStatistic([...t]); // 获取选择的所有数据
             },
           },
+          {
+            id: "copy-self",
+            content: "复制id",
+            tooltipText: "复制id",
+            selector: "node",
+            onClickFunction: function (e) {
+              let currId = e.target.json().data["id"];
+              document.execCommand("Copy", true, currId);
+              const temp_input = document.createElement("input");
+              document.body.appendChild(temp_input);
+              temp_input.setAttribute("value", currId);
+              temp_input.select();
+              if (document.execCommand("copy")) {
+                document.execCommand("copy");
+              }
+              document.body.removeChild(temp_input);
+            },
+          },
         ],
       };
       cy.contextMenus(menuOptions);
     });
+
+    function domainPieStyle(ele, curIndustry) {
+      if (ele.data("industry").trim() === "") return "0";
+      let curIndustryArr = ele.data("industry").split("");
+      let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+      if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
+      return "0";
+    }
   }
 
   // 绘制控制面板
