@@ -1,11 +1,5 @@
 [
   {
-    "selector": "node",
-    "style": {
-      "background-color": "purple"
-    }
-  },
-  {
     "selector": "edge",
     "style": {
       "opacity": 0.6
@@ -102,7 +96,7 @@
   {
     "selector": "node[type=\"IP\"]",
     "style": {
-      "background-color": "#7fc97f"
+      "background-color": "#33a02c"
     }
   },
   {
