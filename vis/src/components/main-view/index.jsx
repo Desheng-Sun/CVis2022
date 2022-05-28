@@ -122,7 +122,7 @@ export default function MainView({ w, h }) {
 
   // 给其他组件的数据
   const [resData, setResData] = useState({ nodes: [], links: [] }); // 右侧表格和子弹图的所有数据
-  const [doaminStatistic, setDoaminStatistic] = useState([]); // 下方图的数据
+  const [difChartInput, setDifChartInput] = useState({ nodes: [], links: [] }); // 当前主图中的点和边 改变时更新DifChart视图
 
   // 随系统缩放修改画布大小
   useEffect(() => {
@@ -163,6 +163,13 @@ export default function MainView({ w, h }) {
     }
     setFilterFlag(false);
   }, [filterFlag]);
+
+  // 监听主图中节点数据是否变化，如果变化，更新DifChart
+  useEffect(() => {
+    if (difChartInput.nodes.length !== 0 || difChartInput.links.length !== 0) {
+      PubSub.publish("updateDifChart", difChartInput);
+    }
+  }, [difChartInput]);
 
   // 监听是否选择当前数据为一个团伙
   useEffect(() => {
@@ -219,6 +226,8 @@ export default function MainView({ w, h }) {
   useEffect(() => {
     if (undoOut) {
       ur.undo();
+
+      getDataForDifChart();
     }
     setUndoOut(false);
   }, [undoOut]);
@@ -227,6 +236,7 @@ export default function MainView({ w, h }) {
   useEffect(() => {
     if (redoIn) {
       ur.redo();
+      getDataForDifChart();
     }
     setRedoIn(false);
   }, [redoIn]);
@@ -235,6 +245,7 @@ export default function MainView({ w, h }) {
   useEffect(() => {
     if (rollback) {
       ur.undoAll();
+      getDataForDifChart();
     }
     setRollback(false);
   }, [rollback]);
@@ -248,13 +259,6 @@ export default function MainView({ w, h }) {
       cy.edges().removeClass("arrow");
     }
   }, [arrowFlag]);
-
-  // 用于domain统计图的传出数据
-  useEffect(() => {
-    if (doaminStatistic.length !== 0) {
-      console.log(doaminStatistic);
-    }
-  }, [doaminStatistic]);
 
   // 从table中传入数据进行高亮
   PubSub.unsubscribe("tableToMainNodeDt");
@@ -319,301 +323,14 @@ export default function MainView({ w, h }) {
 
   // 请求数据并初始化图形
   useEffect(() => {
-    // if (dataParam === "") {
-    //   setData({ nodes: [], links: [] });
-    // } else {
-    //   getMainChartSds(dataParam).then((res) => {
-    //     console.log(res);
-    //     setData(res);
-    //   });
-    // }
-
-    let dt = {
-      nodes: [
-        {
-          numId: 100,
-          id: "Cert_a91593a45b6eceaae2a0478cc243543184d325720bc3f19f91982450b6af57e2",
-          name: "a91593a45b",
-          type: "Cert",
-          industry: "  ",
-          InICLinks: ["7490"],
-        },
-        {
-          numId: 7490,
-          id: "Cert_7ca0c8d673187b11ce8c310cfde290b3a0459a945e10d9c162b24261e8132f17",
-          name: "7ca0c8d673",
-          type: "Cert",
-          industry: " ",
-          InICLinks: ["7490,242427"],
-        },
-        {
-          numId: 21116,
-          id: "ASN_e7801170e7f7718955c054ab9bc821b57e1c798b29b73f3b3507488d320d30be",
-          name: "AS_e7801170e7",
-          type: "ASN",
-          industry: "  ",
-          InICLinks: ["242427"],
-        },
-        {
-          numId: 39019,
-          id: "Domain_547e957fd2ebec14d5848867e05e96c84848cd73a7154a1dd5544a28be2c03f6",
-          name: "547e957fd2.com",
-          type: "Domain",
-          industry: "  ",
-          InICLinks: ["7490,242427"],
-        },
-        {
-          numId: 242406,
-          id: "Domain_a53a9dab4fc9ff96dc3f4b41e854dad0c2068bcccfa481f2bdaefcfd73bbd552",
-          name: "a53a9dab4f.com",
-          type: "Domain",
-          industry: "A",
-          InICLinks: ["7490,242427"],
-        },
-        {
-          numId: 242427,
-          id: "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
-          name: "103.150.xxx.xxx",
-          type: "IP",
-          industry: "  ",
-          InICLinks: ["7490,242427"],
-        },
-        {
-          numId: 1061263,
-          id: "ASN_aa137a10cc0a23589694f2c6ed59e65525b862231f7dad45031ecad70af6a089",
-          name: "AS_aa137a10cc",
-          type: "ASN",
-          industry: "  ",
-          InICLinks: ["242427"],
-        },
-        {
-          numId: 1061267,
-          id: "ASN_2d502e09bf7e1863f9a311d60a42fcdc860406c63c75c0316ea910b1cd189adf",
-          name: "AS_2d502e09bf",
-          type: "ASN",
-          industry: "E",
-          InICLinks: ["242427"],
-        },
-        {
-          numId: 1061275,
-          id: "IP_CIDR_38e0947813c6042c2b5b752285b19165bd55796f7f95795410b5e27ad10bb722",
-          name: "103.150.xxx.0/24",
-          type: "IP_C",
-          industry: "B",
-          InICLinks: ["242427"],
-        },
-        {
-          numId: 1061283,
-          id: "Domain_54c88be5b237be401b204ea0f56054df811e28a29da198dfa7795c9508fc0b89",
-          name: "54c88be5b2.com",
-          type: "Domain",
-          industry: "A",
-          InICLinks: ["242427"],
-          childrenNum: 2,
-          children: [
-            {
-              numId: 1061283,
-              id: "Domain_54c88be5b237be401b204ea0f56054df811e28a29da198dfa7795c9508fc0b89",
-              name: "54c88be5b2.com",
-              type: "Domain",
-              industry: "A",
-            },
-            {
-              numId: 1061307,
-              id: "Domain_d43873cb3b5ead7eaf5ff319084cd3a7b6b01974ba1924725ee3f1fc6fc22f4d",
-              name: "d43873cb3b.com",
-              type: "Domain",
-              industry: "A",
-            },
-          ],
-        },
-        {
-          numId: 1061290,
-          id: "Domain_ef78a6b6a45b0423d1df3a99cf69b104aa37cf819b49fe58e9acb4ec7b8a5894",
-          name: "ef78a6b6a4.com",
-          type: "Domain",
-          industry: "ABC",
-          InICLinks: ["242427"],
-          childrenNum: 1,
-          children: [
-            {
-              numId: 1061290,
-              id: "Domain_ef78a6b6a45b0423d1df3a99cf69b104aa37cf819b49fe58e9acb4ec7b8a5894",
-              name: "ef78a6b6a4.com",
-              type: "Domain",
-              industry: "  ",
-            },
-          ],
-        },
-        {
-          numId: 1061298,
-          id: "Domain_7576404d8ed099e631e85748a29e25cca9807502843bb854ed9e7e6e9c817065",
-          name: "7576404d8e.com",
-          type: "Domain",
-          industry: "I",
-          InICLinks: ["242427"],
-          childrenNum: 1,
-          children: [
-            {
-              numId: 1061298,
-              id: "Domain_7576404d8ed099e631e85748a29e25cca9807502843bb854ed9e7e6e9c817065",
-              name: "7576404d8e.com",
-              type: "Domain",
-              industry: "AG",
-            },
-          ],
-        },
-      ],
-      links: [
-        {
-          relation: "r_cert_chain",
-          source:
-            "Cert_7ca0c8d673187b11ce8c310cfde290b3a0459a945e10d9c162b24261e8132f17",
-          target:
-            "Cert_a91593a45b6eceaae2a0478cc243543184d325720bc3f19f91982450b6af57e2",
-          linksNumId: [7490, 100],
-          InICLinks: ["7490"],
-        },
-        {
-          relation: "r_dns_a",
-          source:
-            "Domain_547e957fd2ebec14d5848867e05e96c84848cd73a7154a1dd5544a28be2c03f6",
-          target:
-            "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
-          linksNumId: [39019, 242427],
-          InICLinks: ["7490,242427"],
-        },
-        {
-          relation: "r_cert",
-          source:
-            "Domain_547e957fd2ebec14d5848867e05e96c84848cd73a7154a1dd5544a28be2c03f6",
-          target:
-            "Cert_7ca0c8d673187b11ce8c310cfde290b3a0459a945e10d9c162b24261e8132f17",
-          linksNumId: [39019, 7490],
-          InICLinks: ["7490,242427"],
-        },
-        {
-          relation: "r_subdomain",
-          source:
-            "Domain_547e957fd2ebec14d5848867e05e96c84848cd73a7154a1dd5544a28be2c03f6",
-          target:
-            "Domain_a53a9dab4fc9ff96dc3f4b41e854dad0c2068bcccfa481f2bdaefcfd73bbd552",
-          linksNumId: [39019, 242406],
-          InICLinks: ["7490,242427"],
-        },
-        {
-          relation: "r_dns_a",
-          source:
-            "Domain_a53a9dab4fc9ff96dc3f4b41e854dad0c2068bcccfa481f2bdaefcfd73bbd552",
-          target:
-            "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
-          linksNumId: [242406, 242427],
-          InICLinks: ["7490,242427"],
-        },
-        {
-          relation: "r_asn",
-          source:
-            "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
-          target:
-            "ASN_e7801170e7f7718955c054ab9bc821b57e1c798b29b73f3b3507488d320d30be",
-          linksNumId: [242427, 21116],
-          InICLinks: ["242427"],
-        },
-        {
-          relation: "r_asn",
-          source:
-            "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
-          target:
-            "ASN_aa137a10cc0a23589694f2c6ed59e65525b862231f7dad45031ecad70af6a089",
-          linksNumId: [242427, 1061263],
-          InICLinks: ["242427"],
-        },
-        {
-          relation: "r_asn",
-          source:
-            "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
-          target:
-            "ASN_2d502e09bf7e1863f9a311d60a42fcdc860406c63c75c0316ea910b1cd189adf",
-          linksNumId: [242427, 1061267],
-          InICLinks: ["242427"],
-        },
-        {
-          relation: "r_cidr",
-          source:
-            "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
-          target:
-            "IP_CIDR_38e0947813c6042c2b5b752285b19165bd55796f7f95795410b5e27ad10bb722",
-          linksNumId: [242427, 1061275],
-          InICLinks: ["242427"],
-        },
-        {
-          relation: "r_dns_a",
-          source:
-            "Domain_54c88be5b237be401b204ea0f56054df811e28a29da198dfa7795c9508fc0b89",
-          target:
-            "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
-          linksNumId: [1061283, 242427],
-          childrenNum: 2,
-          children: [
-            {
-              relation: "r_dns_a",
-              source:
-                "Domain_54c88be5b237be401b204ea0f56054df811e28a29da198dfa7795c9508fc0b89",
-              target:
-                "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
-              linksNumId: [1061283, 242427],
-            },
-            {
-              relation: "r_dns_a",
-              source:
-                "Domain_d43873cb3b5ead7eaf5ff319084cd3a7b6b01974ba1924725ee3f1fc6fc22f4d",
-              target:
-                "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
-              linksNumId: [1061307, 242427],
-            },
-          ],
-        },
-        {
-          relation: "r_dns_a",
-          source:
-            "Domain_ef78a6b6a45b0423d1df3a99cf69b104aa37cf819b49fe58e9acb4ec7b8a5894",
-          target:
-            "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
-          linksNumId: [1061290, 242427],
-          childrenNum: 1,
-          children: [
-            {
-              relation: "r_dns_a",
-              source:
-                "Domain_ef78a6b6a45b0423d1df3a99cf69b104aa37cf819b49fe58e9acb4ec7b8a5894",
-              target:
-                "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
-              linksNumId: [1061290, 242427],
-            },
-          ],
-        },
-        {
-          relation: "r_dns_a",
-          source:
-            "Domain_7576404d8ed099e631e85748a29e25cca9807502843bb854ed9e7e6e9c817065",
-          target:
-            "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
-          linksNumId: [1061298, 242427],
-          childrenNum: 1,
-          children: [
-            {
-              relation: "r_dns_a",
-              source:
-                "Domain_7576404d8ed099e631e85748a29e25cca9807502843bb854ed9e7e6e9c817065",
-              target:
-                "IP_d532f02fd796718abf003b064aca9a39b3c16b7184058c30225e2c844334f5fd",
-              linksNumId: [1061298, 242427],
-            },
-          ],
-        },
-      ],
-    };
-    setData(dt);
+    if (dataParam === "") {
+      setData({ nodes: [], links: [] });
+    } else {
+      getMainChartSds(dataParam).then((res) => {
+        setData(res);
+        setDifChartInput(res);
+      });
+    }
   }, [dataParam]);
   // 处理节点的搜索事件
   useEffect(() => {
@@ -764,11 +481,19 @@ export default function MainView({ w, h }) {
         if (e.which === 46) {
           // 按删除键
           var selecteds = cy.$(":selected");
-          if (selecteds.length > 0) ur.do("remove", selecteds);
+          if (selecteds.length > 0) {
+            ur.do("remove", selecteds);
+            getDataForDifChart();
+          }
         }
         if (e.ctrlKey && e.target.nodeName === "BODY")
-          if (e.which === 90) ur.undo();
-          else if (e.which === 89) ur.redo();
+          if (e.which === 90) {
+            ur.undo();
+            getDataForDifChart();
+          } else if (e.which === 89) {
+            ur.redo();
+            getDataForDifChart();
+          }
       });
 
       var maintoolTip = d3
@@ -1115,6 +840,66 @@ export default function MainView({ w, h }) {
       return ele.json().data;
     });
     setResData({ nodes: [...nodes], links: [...links] });
+  }
+
+  function getDataForDifChart() {
+    let currICNodes = cy.nodes().filter((ele, index) => {
+      return ele.data("type") === "IP" || ele.data("type") === "Cert";
+    });
+    currICNodes = currICNodes.map((item, index) => {
+      return item.data("numId");
+    });
+    console.log("currICNodes", currICNodes);
+
+    let graphnodes, graphlinks;
+    graphnodes = cy.nodes().map(function (ele, i) {
+      let inICLinks = data.nodes.filter((item, index) => {
+        return item["id"] === ele.data("id");
+      });
+      inICLinks = inICLinks[0]["InICLinks"];
+
+      let inICLinksAfterDelete = []; // 删除后的ICLinks
+
+      inICLinks.forEach((item, index) => {
+        let l = item.split(",");
+        let s, t;
+        if (l.length === 2) {
+          //  "1,1"
+          s = l[0]; // 取该链路的source
+          t = l[1]; // 取该链路的target
+
+          if (
+            currICNodes.includes(parseInt(s)) &&
+            currICNodes.includes(parseInt(t))
+          ) {
+            inICLinksAfterDelete.push(item);
+          }
+          // else if (
+          //   !currICNodes.includes(parseInt(s)) &&
+          //   currICNodes.includes(parseInt(t))
+          // ) {
+          //   inICLinksAfterDelete.push(t);
+          // } else if (
+          //   !currICNodes.includes(parseInt(t)) &&
+          //   currICNodes.includes(parseInt(s))
+          // ) {
+          //   inICLinksAfterDelete.push(s);
+          // }
+        } else if (l.length === 1) {
+          s = l[0];
+          if (currICNodes.includes(parseInt(s))) {
+            inICLinksAfterDelete.push(item);
+          }
+        }
+      });
+      ele.data("InICLinks", inICLinksAfterDelete);
+      return ele.json().data;
+    });
+    graphlinks = cy.edges().map(function (ele, i) {
+      return ele.json().data;
+    });
+
+    setDifChartInput({ nodes: [...graphnodes], links: [...graphlinks] });
   }
 
   function drawLegend() {

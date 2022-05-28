@@ -11,18 +11,21 @@ export default function SearchBar() {
   const [selectNumId, setSelectNumId] = useState(undefined);
   const [selectType, setSelectType] = useState(undefined);
   const [selectIndustry, setSelectIndustry] = useState(undefined);
-  const [selectContent, setSelectContent] = useState([[], []]);
+  const [selectContent, setSelectContent] = useState([[], [], [], []]);
 
   useEffect(() => {
-    if (selectType == undefined || selectIndustry == undefined) {
-      getInitialSds("", "", "").then((res) => {
-        console.log(res);
+    if (selectId != undefined) {
+      getInitialSds(selectType, selectIndustry, selectId).then((res) => {
+        setSelectContent(res);
+      });
+    } else if (selectType == undefined || selectIndustry == undefined) {
+      getInitialSds("", "", selectId).then((res) => {
+        // console.log(res)
         setSelectContent(res);
       });
     } else {
       getInitialSds(selectType, selectIndustry, selectId).then((res) => {
         setSelectContent(res);
-        console.log(res);
       });
     }
   }, [selectType, selectIndustry, selectId]);
@@ -126,15 +129,18 @@ export default function SearchBar() {
   };
 
   const changeId = (value, index) => {
-    console.log(value, index);
     setSelectNumId(selectContent[0][index.key]);
     if (value) {
       setSelectId(value);
+      setSelectType(selectContent[2][index.key]);
+      setSelectIndustry(selectContent[3][index.key]);
     }
   };
-  const searchId = (value) => {
+  const searchId = (value, index) => {
     if (value) {
       setSelectId(value);
+      setSelectType(selectContent[2][index.key]);
+      setSelectIndustry(selectContent[3][index.key]);
     }
   };
 

@@ -178,7 +178,7 @@ export default function SkeletonChart({ w, h }) {
           .on("end", dragended)
       )
       .on("mouseover", function (event, d) {
-        console.log(d);
+        // console.log(d);
         let htmlStr =
           "<b>" +
           "name: " +
