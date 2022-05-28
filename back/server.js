@@ -173,7 +173,7 @@ function getIPCertLinksInSkip2(
   nodeNumIdInfo
 ) {
   let allLinks = {};
-  console.log(typeof(ICScreen[0]))
+  console.log(typeof (ICScreen[0]))
   console.log(nowNodeNumId)
   if (ICScreen[1].indexOf(parseInt(nowNodeNumId)) > -1) {
     nowNodeLinkInfo = ICAloneInfo[i];
@@ -196,7 +196,7 @@ function getIPCertLinksInSkip2(
       dirtyDomainNum: nowNodeLinkInfo[2],
       skipNum: 0,
     };
-  } 
+  }
   else if (ICScreen[0].indexOf(parseInt(nowNodeNumId)) > -1) {
     // 数据信息存储变量
     let WhoisName = 0;
@@ -291,7 +291,7 @@ function getIPCertLinksInSkip2(
     allLinks["pureDomainNum"] = pureDomain;
     allLinks["dirtyDomainNum"] = dirtyDomain;
     allLinks["skipNum"] = skipNum;
-  } 
+  }
   else {
     allLinks = {
       id: 0,
@@ -337,8 +337,8 @@ function getNodesInICLinks(
   ICAloneInfo
 ) {
   let allLinks = [];
-  let listLinks = [];
-  let listNode = [];
+  let listLinks = nodeICLinks[nowNodeNumId][0];
+  let listNode = nodeICLinks[nowNodeNumId][1];
   if (!nodeICLinks.hasOwnProperty(nowNodeNumId)) {
     allLinks = {
       id: 0,
@@ -363,14 +363,6 @@ function getNodesInICLinks(
     return allLinks;
   }
 
-  // 获取当前节点所在的所有IC链路和单独的IC节点
-  for (let i of nodeICLinks[nowNodeNumId]) {
-    if (i instanceof Array) {
-      listLinks.push(i);
-    } else {
-      listNode.push(i);
-    }
-  }
   //将IC链路进行拼接，获取每个IC节点出现的次数
   let nowICNode = [];
   for (let i of listLinks) {
@@ -589,6 +581,7 @@ app.post("/getIcClueData2Sds", jsonParser, (req, res, next) => {
   }
 });
 
+
 // 获取IC连接图所需要的数据
 app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
   let nodes = [];
@@ -651,6 +644,7 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
   let nodesNumId = {};
   let linksList = {};
 
+  // 读取ICLinks中的所有节点和Links
   for (let i of links) {
     if (i["linksNumId"][0] != nowJSource) {
       let filedata = path.join(
@@ -685,6 +679,27 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
   let nowLinks = [];
 
   //针对每一个IC节点进行循环
+  for (let i of nodes) {
+    filedata = path.join(
+      __dirname,
+      "data/ICAloneLinks/" + i["numId"] + ".json"
+    );
+    nowData = JSON.parse(fs.readFileSync(filedata, "utf-8"));
+    for (j of nowData["nodes"]) {
+      if (!nodesNumId.hasOwnProperty(j[0])) {
+        nodesNumId[j[0]] = []
+      }
+      nodesNumId[j[0]].push([i["numId"]].toString());
+    }
+    for (j of nowData["links"]) {
+      if (!linksList.hasOwnProperty([j[0], j[1], j[2]].toString())) {
+        linksList[[j[0], j[1], j[2]].toString()] = []
+      }
+      linksList[[j[0], j[1], j[2]].toString()].push([i["numId"]].toString());
+    }
+  }
+
+  //针对每一个在ICLinks中的IC节点进行循环
   for (let i of nodes) {
     // 如果当前节点在IC链路中
     if (ICScreen[0].indexOf(i["numId"]) > -1) {
@@ -751,7 +766,7 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
           if (!linksList.hasOwnProperty([j[1][0], j[1][1], j[1][2]].toString())) {
             linksList[[j[1][0], j[1][1], j[1][2]].toString()] = []
           }
-          linksList[[j[1][0], j[1][1], j[1][2]].toString()].push([i["numId"]].toString());
+          linksList[[j[1][0], j[1][1], j[1][2]].toString()].push([i["numId"].toString()]);
         }
       }
 
@@ -764,29 +779,6 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
     }
   }
 
-  //针对每一个IC节点进行循环
-  for (let i of nodes) {
-    //如果当前节点不在IC链路中，即当前节点单独的IC节点
-    if (ICScreen[1].indexOf(i["numId"]) > -1) {
-      filedata = path.join(
-        __dirname,
-        "data/ICAloneLinks/" + i["numId"] + ".json"
-      );
-      nowData = JSON.parse(fs.readFileSync(filedata, "utf-8"));
-      for (j of nowData["nodes"]) {
-        if (!nodesNumId.hasOwnProperty(j[0])) {
-          nodesNumId[j[0]] = []
-        }
-        nodesNumId[j[0]].push([i["numId"]].toString());
-      }
-      for (j of nowData["links"]) {
-        if (!linksList.hasOwnProperty([j[0], j[1], j[2]].toString())) {
-          linksList[[j[0], j[1], j[2]].toString()] = []
-        }
-        linksList[[j[0], j[1], j[2]].toString()].push([i["numId"]].toString());
-      }
-    }
-  }
 
   //针对所有的节点进行存储
   for (let i in nodesNumId) {
@@ -859,6 +851,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
         ICNodesIndustry[j] = {}
       }
     }
+
     // 如果在IC连接中，则在industryINICLinks中存储对应的数据
     if (isInICLinks) {
       if (!industryINICLinks.hasOwnProperty(i["industry"])) {
@@ -879,6 +872,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
       }
     }
   }
+
   let industryInNodes = []
   for (let i in industryINICNodes) {
     if (i == "  ") {
@@ -891,6 +885,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
   }
   industryInNodes.sort((a, b) => a["industry"] - b["industry"])
   industryInNodes.sort((a, b) => a["industry"].length - b["industry"].length)
+  
   let industryInLinks = []
   for (let i in industryINICLinks) {
     if (i == "  ") {
@@ -947,6 +942,8 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
     }
     ICLinks[nowICLinks[1]].push(nowICLinks.toString())
   }
+
+  
   let ICLinksSortKey = Object.keys(ICLinks).sort(function (a, b) {
     return ICLinks[b].length - ICLinks[a].length
   })
