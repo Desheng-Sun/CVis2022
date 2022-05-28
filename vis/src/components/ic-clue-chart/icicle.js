@@ -433,6 +433,17 @@ export default Kapsule({
         .on("contextmenu", function (event, d) {
           let currNumId = d.data.numId; // 当前选中节点的numId
           event.preventDefault(); // 阻止浏览器默认事件
+          if (event.shiftKey) {    // 按下shift键
+            if (!selectedIclcleNode.includes(currNumId))
+              selectedIclcleNode.push(currNumId);
+            newCellG
+              .filter(function (event, d) {
+                let cur = d3.select(this).select("rect").attr("numId");   // 找到当前的numId对应的数据
+                return currNumId == cur;
+              })
+              .selectAll("rect")
+              .classed("selectedIclcle", true);
+          }
           if (!event.ctrlKey) {
             if (d.depth === 0) {
               d3.selectAll('.icicleSvg rect').classed("selectedIclcle", true)   // 选中第0层，选中所有的数据
@@ -464,7 +475,6 @@ export default Kapsule({
                 .selectAll("rect")
                 .classed("selectedIclcle", true);
             } else {
-              let currNumId = d.data.numId; // 当前选中节点的numId
               if (!selectedIclcleNode.includes(currNumId))
                 selectedIclcleNode.push(currNumId);
               newCellG
@@ -487,8 +497,6 @@ export default Kapsule({
               .selectAll("rect")
               .classed("selectedIclcle", false);
           }
-
-          console.log(selectedIclcleNode);
         });
     }
     newCellG
