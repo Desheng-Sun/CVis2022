@@ -73721,11 +73721,11 @@ export default function DataProcessChecker() {
   //   });
   // }, [])
 
-  useEffect(() => {
-    getDifChartSds(nodesLinksInfo).then((res) => {
-      console.log(res)
-    });
-  }, [])
+  // useEffect(() => {
+  //   getDifChartSds(nodesLinksInfo).then((res) => {
+  //     console.log(res)
+  //   });
+  // }, [])
 
   // useEffect(() => {
   //   getInfoListSds(nodesLinksInfo).then((res) => {
