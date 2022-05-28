@@ -433,9 +433,11 @@ export default Kapsule({
         .on("contextmenu", function (event, d) {
           let currNumId = d.data.numId; // 当前选中节点的numId
           event.preventDefault(); // 阻止浏览器默认事件
-          if (event.shiftKey) {    // 按下shift键
-            if (!selectedIclcleNode.includes(currNumId))
+          if (event.altKey) {    // 按下shift键
+            if (!selectedIclcleNode.includes(currNumId)) {
+
               selectedIclcleNode.push(currNumId);
+            }
             newCellG
               .filter(function (event, d) {
                 let cur = d3.select(this).select("rect").attr("numId");   // 找到当前的numId对应的数据
@@ -444,7 +446,7 @@ export default Kapsule({
               .selectAll("rect")
               .classed("selectedIclcle", true);
           }
-          if (!event.ctrlKey) {
+          else if (!event.ctrlKey && !event.altKey) {
             if (d.depth === 0) {
               d3.selectAll('.icicleSvg rect').classed("selectedIclcle", true)   // 选中第0层，选中所有的数据
               d3.selectAll('.selectedIclcle').each((d, index) => {
@@ -459,13 +461,15 @@ export default Kapsule({
 
               d3.select(this).classed("selectedIclcle", true)
               let childrenNode = d3.select(this)._groups[0][0].__data__.children
-
-              childrenNode.forEach((d) => {
-                let eachNumId = d.data.numId
-                if (!selectedIclcleNode.includes(eachNumId)) {
-                  selectedIclcleNode.push(eachNumId);
-                }
-              })
+              if (childrenNode != undefined) {
+                childrenNode.forEach((d) => {
+                  let eachNumId = d.data.numId
+                  if (!selectedIclcleNode.includes(eachNumId)) {
+                    selectedIclcleNode.push(eachNumId);
+                  }
+                })
+              }
+              console.log(childrenNode);
               selectedIclcleNode = Array.from(new Set(selectedIclcleNode))
               newCellG
                 .filter(function (event, d) {

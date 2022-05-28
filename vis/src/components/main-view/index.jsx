@@ -327,7 +327,7 @@ export default function MainView({ w, h }) {
       setData({ nodes: [], links: [] });
     } else {
       getMainChartSds(dataParam).then((res) => {
-        console.log(res);
+        console.log(dataParam, res);
         setData(res);
         setDifChartInput(res);
       });
@@ -341,7 +341,7 @@ export default function MainView({ w, h }) {
 
   // 绘制图形
   function drawChart() {
-    if (data.nodes.length === 0) return;
+    // if (data.nodes.length === 0) return;
     const nodes = data.nodes.map((d) => ({ data: { ...d } }));
     const links = data.links.map((d) => ({ data: { ...d } }));
 
