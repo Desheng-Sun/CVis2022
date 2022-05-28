@@ -96,7 +96,7 @@
   {
     "selector": "node[type=\"IP\"]",
     "style": {
-      "background-color": "#7fc97f"
+      "background-color": "#33a02c"
     }
   },
   {

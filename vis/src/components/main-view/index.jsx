@@ -327,6 +327,7 @@ export default function MainView({ w, h }) {
       setData({ nodes: [], links: [] });
     } else {
       getMainChartSds(dataParam).then((res) => {
+        console.log(res);
         setData(res);
         setDifChartInput(res);
       });
