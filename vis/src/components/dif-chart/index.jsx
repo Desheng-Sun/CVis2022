@@ -68426,7 +68426,7 @@ export default function DifChart({ w, h }) {
       //   }
       //   return color(d.data.name)
       // })
-      .attr("stroke", "black")
+      .attr("stroke", "#ccc")
       .attr("d", arc)
       .on("click", function (event, d, i) {
         selectICLInksNum = d.data.nowICLinksIndex;
@@ -68600,7 +68600,7 @@ export default function DifChart({ w, h }) {
       .append("path")
       .attr("d", arc3)
       .attr("fill", "#ffffff")
-      .attr("stroke", "black");
+      .attr("stroke", "#ccc");
 
     diffCHartWrapper
       .append("g")

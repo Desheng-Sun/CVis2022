@@ -111,7 +111,7 @@
 
 #nodelinkic {
   height: 100%;
-  flex: 1;
+  flex: 2;
   background-color: #fff;
 }
 
@@ -120,12 +120,6 @@
   flex: 1;
   /* background-color: rgb(215, 214, 209); */
   /* padding-top: 4px; */
-}
-
-#existingdomain {
-  height: 100%;
-  flex: 1;
-  /* background-color: gray; */
 }
 
 /* 分析团伙板块 */
