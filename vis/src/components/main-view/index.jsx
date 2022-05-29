@@ -329,7 +329,6 @@ export default function MainView({ w, h }) {
       console.log(data);
     } else {
       getMainChartSds(dataParam).then((res) => {
-        console.log(dataParam, res);
         setData(res);
         setDifChartInput(res);
       });
@@ -849,20 +848,21 @@ export default function MainView({ w, h }) {
   }
 
   function getDataForDifChart() {
+    console.log("dataaaaa", data);
     let currICNodes = cy.nodes().filter((ele, index) => {
       return ele.data("type") === "IP" || ele.data("type") === "Cert";
     });
     currICNodes = currICNodes.map((item, index) => {
       return item.data("numId");
     });
-    console.log("currICNodes", currICNodes);
 
     let graphnodes, graphlinks;
-    console.log(data.nodes);
     graphnodes = cy.nodes().map(function (ele, i) {
       let inICLinks = data.nodes.filter((item, index) => {
+        console.log(item, ele);
         return item["id"] === ele.data("id");
       });
+
       inICLinks = inICLinks[0]["InICLinks"];
 
       let inICLinksAfterDelete = []; // 删除后的ICLinks
