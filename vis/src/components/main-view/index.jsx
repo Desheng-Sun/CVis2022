@@ -118,6 +118,7 @@ export default function MainView({ w, h }) {
   const [fromTableLink, setFromTableLink] = useState([]);
   const [fromIndustryStackNode, setFromIndustryStackNode] = useState("");
   const [data, setData] = useState({ nodes: [], links: [] });
+  const [dataFirst, setDataFirst] = useState(true);
   const [dataParam, setDataParam] = useState("");
 
   // 给其他组件的数据
@@ -325,6 +326,7 @@ export default function MainView({ w, h }) {
   useEffect(() => {
     if (dataParam === "") {
       setData({ nodes: [], links: [] });
+      console.log(data);
     } else {
       getMainChartSds(dataParam).then((res) => {
         setData(res);
@@ -334,13 +336,16 @@ export default function MainView({ w, h }) {
   }, [dataParam]);
   // 处理节点的搜索事件
   useEffect(() => {
-    drawChart();
-    dragElement(document.getElementById("main-legend"));
+    if (!dataFirst) {
+      drawChart();
+      dragElement(document.getElementById("main-legend"));
+    }
+    setDataFirst(false);
   }, [data]);
 
   // 绘制图形
   function drawChart() {
-    // if (data.nodes.length === 0) return;
+    if (data.nodes.length === 0) return;
     const nodes = data.nodes.map((d) => ({ data: { ...d } }));
     const links = data.links.map((d) => ({ data: { ...d } }));
 
@@ -851,8 +856,7 @@ export default function MainView({ w, h }) {
       return item.data("numId");
     });
 
-    let graphnodes, graphlinks; // 获取图中当前node与link
-
+    let graphnodes, graphlinks;
     graphnodes = cy.nodes().map(function (ele, i) {
       let inICLinks = data.nodes.filter((item, index) => {
         console.log(item, ele);
@@ -903,6 +907,13 @@ export default function MainView({ w, h }) {
     });
 
     setDifChartInput({ nodes: [...graphnodes], links: [...graphlinks] });
+  }
+
+  function applyStyle(e) {
+    if (e.target.checked) {
+      // 如果要应用样式
+      // cy.style().
+    }
   }
 
   function drawLegend() {
@@ -1244,6 +1255,7 @@ export default function MainView({ w, h }) {
             />
           </div>
           <Checkbox onChange={addArrow}>箭头方向</Checkbox>
+          <Checkbox onChange={applyStyle}>应用样式</Checkbox>
         </div>
       </div>
       <div id="main-legend">

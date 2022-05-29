@@ -24,6 +24,7 @@ export default function ICClueChart({ w, h }) {
   PubSub.unsubscribe("getClueFromDense");
   PubSub.subscribe("getClueFromDense", (msg, clue) => {
     getIcClueData2Sds(clue.numId, clue.Id).then((res) => {
+      console.log(res);
       setData(res);
     });
   });
