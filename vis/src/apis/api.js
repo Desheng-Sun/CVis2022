@@ -26,7 +26,7 @@ export function getInitialSds(type, industry, id) {
   return post("/getInitialSds", {
     type: type,
     industry: industry,
-    id: id
+    id: id,
   });
 }
 
@@ -94,4 +94,12 @@ export function getIndustryStackSds(nodesLinksInfo) {
   return post("/getIndustryStackSds", {
     nodesLinksInfo: nodesLinksInfo,
   });
+}
+
+export function getIdentifyData() {
+  return post("/getIdentifyData");
+}
+
+export function getCrutialpathData() {
+  return post("/getCrutialpathData");
 }

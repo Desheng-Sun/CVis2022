@@ -1,6 +1,6 @@
 import * as echarts from "echarts";
 import { useEffect, useState } from "react";
-
+import { getCrutialpathData } from "../../apis/api";
 export default function CrutialPath() {
   const [data, setData] = useState({ nodes: [], links: [] });
   /**
@@ -12,10 +12,18 @@ export default function CrutialPath() {
    *  两个核心资产之间的路径为关键路径；路径越短，重要程度越高
    */
   useEffect(() => {
+    getCrutialpathData().then((res) => {
+      console.log(res);
+      setData(res);
+    });
+  }, []);
+
+  useEffect(() => {
     drawSankey();
   }, []);
 
   function drawSankey() {
+    console.log(data);
     let chartDom = document.getElementById("crutial-path");
     // 判断dom是否已经被实例化, 如果已存在实例，则dispose()
     let existInstance = echarts.getInstanceByDom(chartDom);
