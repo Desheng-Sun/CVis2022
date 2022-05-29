@@ -2,11 +2,8 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const fs = require("fs");
-const Database = require("arangojs").Database;
-const username = "root";
-const password = "123456";
 const port = 3008;
-
+const jsnx = require("jsnetworkx");
 const bodyParser = require("body-parser");
 const jsonParser = bodyParser.json();
 const urlencodedParser = bodyParser.urlencoded({ extended: true });
@@ -1782,7 +1779,6 @@ app.post("/getIdentifyData", jsonParser, (req, res, next) => {
   ];
   let s_1 = 0.00000001;
   let s_2 = 0.0002;
-  let jsnx = require("jsnetworkx");
   let G = new jsnx.Graph();
   G.addEdgesFrom(edges);
   let bc = jsnx.betweennessCentrality(G)._numberValues;
