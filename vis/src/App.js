@@ -21,6 +21,7 @@ import SearchBar from "./components/search-bar";
 import CombineTable from "./components/combine-table";
 import IndustryStackChart from "./components/industry-stack-chart";
 import ClueDense from "./components/clue-dense";
+import CrutialPath from "./components/crutial-path";
 
 // import SubChart from './components/sub-chart';n
 // 引入问题一的自定义组件
@@ -54,11 +55,7 @@ function App() {
           element={<ICClueChart />}
         />
         <Route key="difchart" path="/difchart" element={<DifChart />} />
-        <Route
-          key="mainview"
-          path="/mainview"
-          element={<MainView />}
-        />
+        <Route key="mainview" path="/mainview" element={<MainView />} />
         <Route key="detaillist" path="/detaillist" element={<DetailList />} />
         <Route key="checker" path="/checker" element={<DataProcessChecker />} />
         <Route key="searchbar" path="/searchbar" element={<SearchBar />} />
@@ -73,6 +70,11 @@ function App() {
           element={<IndustryStackChart />}
         />
         <Route key="cluedense" path="/cluedense" element={<ClueDense />} />
+        <Route
+          key="crutialpath"
+          path="/crutialpath"
+          element={<CrutialPath />}
+        />
       </Routes>
     </div>
   );
