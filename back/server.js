@@ -1851,3 +1851,23 @@ app.post("/getIdentifyData", jsonParser, (req, res, next) => {
   res.send(sendData);
   res.end();
 });
+
+//输入起点终点，返回关键链路接口
+app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
+  let source = 1,
+    target = 4;
+  let edges = [
+    [1, 2],
+    [2, 4],
+    [3, 4],
+    [1, 3],
+    [5, 6],
+    [4, 8],
+    [5, 7],
+  ];
+  let G = new jsnx.Graph();
+  G.addEdgesFrom(edges);
+  var path = jsnx.bidirectionalShortestPath(G, source, target);
+  res.send(path);
+  res.end();
+});

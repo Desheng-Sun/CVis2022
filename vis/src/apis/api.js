@@ -99,3 +99,7 @@ export function getIndustryStackSds(nodesLinksInfo) {
 export function getIdentifyData() {
   return post("/getIdentifyData");
 }
+
+export function getCrutialpathData() {
+  return post("/getCrutialpathData");
+}

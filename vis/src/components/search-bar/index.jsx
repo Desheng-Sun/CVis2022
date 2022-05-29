@@ -11,7 +11,6 @@ export default function SearchBar() {
   const [selectType, setSelectType] = useState(undefined);
   const [selectIndustry, setSelectIndustry] = useState(undefined);
   const [selectContent, setSelectContent] = useState([[], [], [], []]);
-
   useEffect(() => {
     if (selectId != undefined) {
       getInitialSds(selectType, selectIndustry, selectId).then((res) => {
