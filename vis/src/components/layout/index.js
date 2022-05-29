@@ -78,10 +78,10 @@ export default function Layout() {
       document.getElementById("asset").getBoundingClientRect().height
     );
     setCrutialPathWidth(
-      document.getElementById("keypath").getBoundingClientRect().width
+      document.getElementById("crutial-path").getBoundingClientRect().width
     );
     setCrutialPathHeight(
-      document.getElementById("keypath").getBoundingClientRect().height
+      document.getElementById("crutial-path").getBoundingClientRect().height
     );
     setClueDenseWidth(
       document.getElementById("clue-dense-chart").getBoundingClientRect().width
@@ -159,10 +159,7 @@ export default function Layout() {
         </div>
         <div id="keypath">
           <ChartHeader chartName={"关键链路分析"} />
-          <CrutialPath
-            w={crutialPathWidth}
-            h={crutialPathHeight}
-          />
+          <CrutialPath w={crutialPathWidth} h={crutialPathHeight} />
         </div>
         <div id="conclusion">
           <ChartHeader chartName={"团伙分析结果"} />

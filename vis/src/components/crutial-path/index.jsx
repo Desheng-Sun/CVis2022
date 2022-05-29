@@ -1,7 +1,10 @@
 import * as echarts from "echarts";
 import { useEffect, useState } from "react";
 import { getCrutialpathData } from "../../apis/api";
-export default function CrutialPath() {
+import PubSub from "pubsub-js";
+export default function CrutialPath({ w, h }) {
+  const [canvasWidth, setCanvasWidth] = useState(w);
+  const [canvasHeight, setCanvasHeight] = useState(h);
   const [data, setData] = useState({ nodes: [], links: [] });
   /**
    * 在核心资产视图中 选择的起点核心资产与终点核心资产 作为参数请求数据，
@@ -18,12 +21,19 @@ export default function CrutialPath() {
     });
   }, []);
 
+  PubSub.unsubscribe("assetsToPathDt");
+  PubSub.subscribe("assetsToPathDt", (msg, res) => {
+    console.log(res);
+  });
+
   useEffect(() => {
+    // console.log(w, h, canvasWidth, canvasHeight);
+    // if (canvasWidth !== 0) {
     drawSankey();
-  }, []);
+    // }
+  }, [canvasWidth, canvasHeight, data]);
 
   function drawSankey() {
-    console.log(data);
     let chartDom = document.getElementById("crutial-path");
     // 判断dom是否已经被实例化, 如果已存在实例，则dispose()
     let existInstance = echarts.getInstanceByDom(chartDom);
@@ -101,6 +111,6 @@ export default function CrutialPath() {
   }
 
   return (
-    <div id="crutial-path" style={{ height: "400px", width: "800px" }}></div>
+    <div id="crutial-path" style={{ height: "400px", width: "100%" }}></div>
   );
 }

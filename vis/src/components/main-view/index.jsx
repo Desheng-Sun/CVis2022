@@ -13,6 +13,7 @@ import {
   CheckOutlined,
   CaretUpOutlined,
   ExpandOutlined,
+  CaretDownOutlined,
 } from "@ant-design/icons";
 import fcose from "cytoscape-fcose";
 import "cytoscape-navigator/cytoscape.js-navigator.css";
@@ -319,16 +320,21 @@ export default function MainView({ w, h }) {
     setFromIndustryStackNode(industryStackToMainDt);
   });
   useEffect(() => {
-    if (cy) cy.nodes().removeClass("stackhighlightNode");
-    if (fromIndustryStackNode !== "") {
+    // if (cy) cy.nodes().removeClass("stackhighlightNode");
+    if (cy && fromIndustryStackNode !== "") {
       if (fromIndustryStackNode.split("-")[0] === "set") {
         cy.$("#" + fromIndustryStackNode.split("-")[1]).addClass(
           "stackhighlightNode"
         );
       } else if (fromIndustryStackNode.split("-")[0] === "reset") {
-        cy.$("#" + fromIndustryStackNode.split("-")[1]).removeClass(
-          "stackhighlightNode"
-        );
+        if (cy.$("#" + fromIndustryStackNode.split("-").length === 1)) {
+          // 选择清楚所有高亮的点
+          cy.nodes().removeClass("stackhighlightNode");
+        } else {
+          cy.$("#" + fromIndustryStackNode.split("-")[1]).removeClass(
+            "stackhighlightNode"
+          );
+        }
       }
     }
   }, [fromIndustryStackNode]);
@@ -1277,7 +1283,7 @@ export default function MainView({ w, h }) {
             style={{ paddingLeft: "40px" }}
             onClick={onCollapse}
           />
-          <ExpandOutlined
+          <CaretDownOutlined
             id="expand-legend-icon"
             style={{ paddingLeft: "10px" }}
             onClick={onExpand}

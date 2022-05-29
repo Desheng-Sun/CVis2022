@@ -52,7 +52,12 @@
   padding-bottom: 5px;
 }
 
-.d3-context-menu:hover {
+.d3-context-menu li {
+  padding-top: 2px;
+  padding-right: 5px;
+}
+
+.d3-context-menu li:hover {
   background: rgba(0, 0, 0, 0.6);
 }
 

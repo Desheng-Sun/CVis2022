@@ -3,6 +3,8 @@ import * as d3 from "d3";
 import PubSub from "pubsub-js";
 import d3ContextMenu from "d3-context-menu";
 import "./index.css";
+import { Button } from "antd";
+import { NodeIndexOutlined } from "@ant-design/icons";
 
 export default function IndustryStackChart({ w, h }) {
   const [data, setData] = useState([]);
@@ -200,9 +202,9 @@ export default function IndustryStackChart({ w, h }) {
     }
   }, [selectedNodeNumId]);
 
-  useEffect(() => {
-    console.log(toPath);
-  }, [toPath]);
+  // useEffect(() => {
+  //   console.log(toPath);
+  // }, [toPath]);
 
   useEffect(() => {
     setSvgWidth(w);
@@ -220,8 +222,8 @@ export default function IndustryStackChart({ w, h }) {
   function drawChart() {
     if (data.length === 0) return;
 
-    d3.select("#industry-stack svg").remove();
-    d3.select("#industry-stack .stackToolTip").remove();
+    d3.select("#industry-stack-chart svg").remove();
+    d3.select("#industry-stack-chart .stackToolTip").remove();
     var combinationOrderSet = new Set();
     var innerCirlceColor = { IP: "#33a02c", Cert: "#ff756a" };
     // 映射产业类型
@@ -305,7 +307,7 @@ export default function IndustryStackChart({ w, h }) {
     let gHeight = 50,
       circleR = 5,
       levelNumber = 3;
-    let gWidth = svgWidth / levelNumber;
+    let gWidth = (svgWidth * 0.9) / levelNumber;
     const arc = d3
       .arc()
       .innerRadius((i, j) => circleR + (gHeight / industryType.length) * j)
@@ -318,9 +320,9 @@ export default function IndustryStackChart({ w, h }) {
       .padAngle(0.2);
 
     let wrapper = d3
-      .select("#industry-stack")
+      .select("#industry-stack-chart")
       .append("svg")
-      .attr("width", svgWidth)
+      .attr("width", svgWidth * 0.9)
       .attr(
         "height",
         (gHeight + circleR + 10) * 2 * (data.length / levelNumber + 1)
@@ -336,16 +338,20 @@ export default function IndustryStackChart({ w, h }) {
     const menu = [
       {
         title: "资产起点",
-        action: function (d, event) {
-          console.log(toPath["startNode"]);
-          setToPath((toPath) => toPath.startNode.push[d.numId]);
+        action: function (d) {
+          setToPath((toPath) => ({
+            startNode: [...toPath.startNode, d.numId],
+            endNode: [...toPath.endNode],
+          }));
         },
       },
       {
         title: "资产终点",
-        action: function (d, event) {
-          console.log(toPath);
-          setToPath(toPath.endNode.push[d.numId]);
+        action: function (d) {
+          setToPath((toPath) => ({
+            startNode: [...toPath.startNode],
+            endNode: [...toPath.endNode, d.numId],
+          }));
         },
       },
     ];
@@ -366,6 +372,7 @@ export default function IndustryStackChart({ w, h }) {
           // 按下Ctrl键 + click 取消选择
           // setSelectedNodeNumId("reset-" + d.id); // 取消在主图中高亮当前数据点
         } else {
+          console.log(d);
           // setSelectedNodeNumId("set-" + d.id); // 在主图中高亮当前数据点
         }
       })
@@ -428,7 +435,7 @@ export default function IndustryStackChart({ w, h }) {
       .attr("stroke-width", 3);
 
     var industryStacktoolTip = d3
-      .select("#industry-stack")
+      .select("#industry-stack-chart")
       .append("div")
       .attr("class", "stackToolTip");
 
@@ -477,7 +484,7 @@ export default function IndustryStackChart({ w, h }) {
             })
             .attr("stroke-width", 0.5)
             .on("mouseover", (event, d) => {
-              let htmlText = `产业 <strong>${industryType[j]}</strong>`;
+              let htmlText = `id: <strong>${d.id}</strong> <br>产业: <strong>${industryType[j]}</strong>`;
               industryStacktoolTip
                 .style("left", event.pageX + 5 + "px")
                 .style("top", event.pageY + 5 + "px")
@@ -492,15 +499,44 @@ export default function IndustryStackChart({ w, h }) {
     }
   }
 
+  function onClearSelection() {
+    d3.selectAll("#industry-stack-chart rect").attr("fill", "transparent");
+    setSelectedNodeNumId("reset-");
+    setToPath({ startNode: [], endNode: [] });
+    PubSub.publish("assetsToPathDt", { startNode: [], endNode: [] }); // 传递给关键路径组件空数据，用于清空数据
+  }
+  function onSubmitToPath() {
+    // 像关键路径图传递数据
+    PubSub.publish("assetsToPathDt", toPath);
+  }
+
   return (
     <div
       id="industry-stack"
       style={{
         width: svgWidth,
         height: svgHeight,
-        overflow: "auto",
-        background: "white",
       }}
-    ></div>
+    >
+      <div id="industry-stack-chart" style={{ height: svgHeight }}></div>
+      <div
+        id="stackControl"
+        style={{
+          height: svgHeight,
+        }}
+      >
+        <Button onClick={onClearSelection} type="dashed" size="small">
+          清空
+        </Button>
+        <Button
+          onClick={onSubmitToPath}
+          type="dashed"
+          size="small"
+          icon={<NodeIndexOutlined />}
+        >
+          路径
+        </Button>
+      </div>
+    </div>
   );
 }
