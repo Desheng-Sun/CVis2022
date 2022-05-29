@@ -6,59 +6,6 @@
     }
   },
   {
-    "selector": "edge.arrow",
-    "style": {
-      "target-arrow-shape": "vee",
-      "target-arrow-color": "#aaa",
-      "curve-style": "straight",
-      "width": 6
-    }
-  },
-  {
-    "selector": "node.stackhighlightNode",
-    "style": {
-      "border-color": "#f5f440",
-      "border-width": "3px"
-    }
-  },
-  {
-    "selector": "node.tablehighlightNode",
-    "style": {
-      "border-color": "#f5f440",
-      "border-width": "3px"
-    }
-  },
-  {
-    "selector": "edge.tablehighlightLink",
-    "style": {
-      "line-style": "dashed",
-      "width": 6
-    }
-  },
-  {
-    "selector": "node.semitransp",
-    "style": { "opacity": "0.5" }
-  },
-  {
-    "selector": "node.coreNode",
-    "style": {
-      "border-color": "#f5f440",
-      "border-width": "2px",
-      "opacity": "1"
-    }
-  },
-  {
-    "selector": "node.keyRoad",
-    "style": {
-      "border-color": "#f5f440",
-      "opacity": "1"
-    }
-  },
-  {
-    "selector": "edge.semitransp",
-    "style": { "opacity": "0.2" }
-  },
-  {
     "selector": "node[type=\"new\"]",
     "style": {
       "background-color": "red",
@@ -175,33 +122,6 @@
     "selector": "edge[relation=\"r_cert_chain\"]",
     "style": {
       "line-color": "#f9b4ae"
-    }
-  },
-  {
-    "selector": "node.searched",
-    "style": {
-      "border-color": "#f5f440",
-      "border-width": "3px"
-    }
-  },
-  {
-    "selector": "node:selected",
-    "style": {
-      "border-color": "#e53f32",
-      "border-width": "3px"
-    }
-  },
-  {
-    "selector": "node[type=\"Domain\"]:selected",
-    "style": {
-      "border-color": "#e53f32",
-      "border-width": "3px"
-    }
-  },
-  {
-    "selector": "edge:selected",
-    "style": {
-      "line-color": "#e53f32"
     }
   }
 ]

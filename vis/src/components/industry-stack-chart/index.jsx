@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as d3 from "d3";
 import PubSub from "pubsub-js";
+import d3ContextMenu from "d3-context-menu";
 import "./index.css";
 
 export default function IndustryStackChart({ w, h }) {
@@ -8,12 +9,35 @@ export default function IndustryStackChart({ w, h }) {
   const [svgWidth, setSvgWidth] = useState(w);
   const [svgHeight, setSvgHeight] = useState(h);
   const [dataParam, setDataParam] = useState([]);
-  const [selectedNodeNumId, setSelectedNodeNumId] = useState("");
+
+  // 传递给其他组件的数据
+  const [selectedNodeNumId, setSelectedNodeNumId] = useState(""); // 主图高亮的数据
+  const [toPath, setToPath] = useState({ startNode: [], endNode: [] }); // 传递给关键路径识别的算法并在关键路径图中绘制出当前路径
 
   PubSub.unsubscribe("industryStackDt");
+  // 数据格式: 缺少每种产业的数量信息
+  //   [  {
+  //     "numId": 16802,
+  //     "id": "IP_7cc9198e5eaa613f2e0065ab6600b9dcfb62f4f598b20383925897b83e1b1f9b",
+  //     "name": "104.244.xxx.xxx",
+  //     "type": "IP",
+  //     "industry": "  ",
+  //     "InICLinks": []
+  // },
+  // {
+  //   "numId": 16802,
+  //   "id": "IP_7cc9198e5eaa613f2e0065ab6600b9dcfb62f4f598b20383925897b83e1b1f9b",
+  //   "name": "104.244.xxx.xxx",
+  //   "type": "IP",
+  //   "industry": "  ",
+  //   "InICLinks": []
+  // }]
+
   PubSub.subscribe("industryStackDt", (msg, dataparam) => {
+    // 这里根据dataParamn参数从后端获取数据
     setDataParam(dataparam);
   });
+
   useEffect(() => {
     let dt = [
       {
@@ -66,6 +90,106 @@ export default function IndustryStackChart({ w, h }) {
         ],
         group: 1,
       },
+      {
+        id: "Cert_E",
+        numId: 0,
+        ICIndustry: [
+          { industry: "AB", number: 2 },
+          { industry: "AE", number: 8 },
+          { industry: "BCE", number: 1 },
+        ],
+        group: 1,
+      },
+      {
+        id: "Cert_E",
+        numId: 0,
+        ICIndustry: [
+          { industry: "AB", number: 2 },
+          { industry: "AE", number: 8 },
+          { industry: "BCE", number: 1 },
+        ],
+        group: 1,
+      },
+      {
+        id: "Cert_E",
+        numId: 0,
+        ICIndustry: [
+          { industry: "AB", number: 2 },
+          { industry: "AE", number: 8 },
+          { industry: "BCE", number: 1 },
+        ],
+        group: 1,
+      },
+      {
+        id: "Cert_E",
+        numId: 0,
+        ICIndustry: [
+          { industry: "AB", number: 2 },
+          { industry: "AE", number: 8 },
+          { industry: "BCE", number: 1 },
+        ],
+        group: 1,
+      },
+      {
+        id: "Cert_E",
+        numId: 0,
+        ICIndustry: [
+          { industry: "AB", number: 2 },
+          { industry: "AE", number: 8 },
+          { industry: "BCE", number: 1 },
+        ],
+        group: 1,
+      },
+      {
+        id: "Cert_E",
+        numId: 0,
+        ICIndustry: [
+          { industry: "AB", number: 2 },
+          { industry: "AE", number: 8 },
+          { industry: "BCE", number: 1 },
+        ],
+        group: 1,
+      },
+      {
+        id: "Cert_E",
+        numId: 0,
+        ICIndustry: [
+          { industry: "AB", number: 2 },
+          { industry: "AE", number: 8 },
+          { industry: "BCE", number: 1 },
+        ],
+        group: 1,
+      },
+      {
+        id: "Cert_E",
+        numId: 0,
+        ICIndustry: [
+          { industry: "AB", number: 2 },
+          { industry: "AE", number: 8 },
+          { industry: "BCE", number: 1 },
+        ],
+        group: 1,
+      },
+      {
+        id: "Cert_E",
+        numId: 0,
+        ICIndustry: [
+          { industry: "AB", number: 2 },
+          { industry: "AE", number: 8 },
+          { industry: "BCE", number: 1 },
+        ],
+        group: 1,
+      },
+      {
+        id: "Cert_E",
+        numId: 0,
+        ICIndustry: [
+          { industry: "AB", number: 2 },
+          { industry: "AE", number: 8 },
+          { industry: "BCE", number: 1 },
+        ],
+        group: 1,
+      },
     ];
     setData(dt);
   }, [dataParam]);
@@ -77,7 +201,12 @@ export default function IndustryStackChart({ w, h }) {
   }, [selectedNodeNumId]);
 
   useEffect(() => {
+    console.log(toPath);
+  }, [toPath]);
+
+  useEffect(() => {
     setSvgWidth(w);
+    console.log(w);
   }, [w]);
 
   useEffect(() => {
@@ -86,12 +215,13 @@ export default function IndustryStackChart({ w, h }) {
 
   useEffect(() => {
     drawChart();
-  }, [svgWidth, svgHeight, data]);
+  }, [svgWidth, data]);
 
   function drawChart() {
     if (data.length === 0) return;
 
     d3.select("#industry-stack svg").remove();
+    d3.select("#industry-stack .stackToolTip").remove();
     var combinationOrderSet = new Set();
     var innerCirlceColor = { IP: "#33a02c", Cert: "#ff756a" };
     // 映射产业类型
@@ -202,6 +332,24 @@ export default function IndustryStackChart({ w, h }) {
         return "translate(" + x.toString() + "," + y.toString() + ")";
       });
 
+    // 节点的右键事件
+    const menu = [
+      {
+        title: "资产起点",
+        action: function (d, event) {
+          console.log(toPath["startNode"]);
+          setToPath((toPath) => toPath.startNode.push[d.numId]);
+        },
+      },
+      {
+        title: "资产终点",
+        action: function (d, event) {
+          console.log(toPath);
+          setToPath(toPath.endNode.push[d.numId]);
+        },
+      },
+    ];
+
     let g = wrapper
       .selectAll("g")
       .data(data)
@@ -214,29 +362,42 @@ export default function IndustryStackChart({ w, h }) {
         return "translate(" + x.toString() + "," + y.toString() + ")";
       })
       .on("click", function (event, d) {
-        // 单击选择，双击取消
-        setSelectedNodeNumId("set-" + d.id);
+        if (event.ctrlKey) {
+          // 按下Ctrl键 + click 取消选择
+          // setSelectedNodeNumId("reset-" + d.id); // 取消在主图中高亮当前数据点
+        } else {
+          // setSelectedNodeNumId("set-" + d.id); // 在主图中高亮当前数据点
+        }
       })
-      .on("dblclick", function (event, d) {
-        setSelectedNodeNumId("reset-" + d.id);
-      });
+      .on(
+        "contextmenu",
+        d3ContextMenu(menu, {
+          position: function (d, event) {
+            return {
+              top: event.y + 10,
+              left: event.x + 10,
+            };
+          },
+        })
+      );
 
     g.append("rect")
       .attr("rx", 6)
       .attr("ry", 6)
-      .attr("x", -60)
-      .attr("y", -57)
+      .attr("x", -63)
+      .attr("y", -59)
       .attr("class", "bgRect")
       .attr("fill", "transparent")
       .attr("stroke", "none")
-      .attr("width", (gHeight + circleR * 2) * 2 + 10)
-      .attr("height", (gHeight + circleR * 2) * 2 + 5)
+      .attr("width", (gHeight + circleR * 2) * 2 + 2)
+      .attr("height", (gHeight + circleR * 2) * 2 + 2)
       .on("click", function (event, d) {
-        // 单击选择，双击取消
-        d3.select(this).attr("fill", "#ccc");
-      })
-      .on("dblclick", function (event, d) {
-        d3.select(this).attr("fill", "transparent");
+        if (event.ctrlKey) {
+          // 按下Ctrl键 + click 取消选择
+          d3.select(this).attr("fill", "transparent");
+        } else {
+          d3.select(this).attr("fill", "#ccc");
+        }
       });
 
     g.append("text")

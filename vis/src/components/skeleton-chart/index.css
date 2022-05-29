@@ -36,17 +36,20 @@
 }
 
 .d3-context-menu {
-  position: relative;
-  width: 120px;
-  height: 30px;
+  position: absolute;
+  min-width: 100px;
+  max-width: auto;
+  height: auto;
   border-radius: 7px;
   padding-top: 5px;
   background: rgba(0, 0, 0, 0.3);
   color: white;
   cursor: pointer;
 }
+
 .d3-context-menu ul {
-  padding-left: 35px;
+  padding-left: 20px;
+  padding-bottom: 5px;
 }
 
 .d3-context-menu:hover {

@@ -2043,14 +2043,7 @@ export default function BulletChart({ w, h, divname, dataparam }) {
     });
   }, [dataparam]);
 
-  // 监听从主图传过来的参数
-  // PubSub.unsubscribe('bullet');
-  // PubSub.subscribe('bullet', (msg, bulletDt) => {
-  //   // console.log(bulletDt);
-  //   setDataParam({nodes: [...bulletDt.nodes], links: [...bulletDt.links]});
-  // })
-  
-
+ 
   useEffect(() => {
     const dimensions = {
       width: svgWidth,
@@ -2119,6 +2112,5 @@ export default function BulletChart({ w, h, divname, dataparam }) {
       .text((d) => d.title);
   }, [data, dataRange, svgHeight, svgWidth]);
 
-  // return <div style={{ width: "100%", height: "100%" }}></div>;
   return <></>;
 }
