@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import * as d3 from "d3";
 import { Select, Button, Form } from "antd";
 import { getInitialSds } from "../../apis/api";
 import PubSub from "pubsub-js";
