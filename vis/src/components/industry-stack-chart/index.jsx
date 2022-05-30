@@ -5,7 +5,7 @@ import d3ContextMenu from "d3-context-menu";
 import "./index.css";
 import { Button } from "antd";
 import { NodeIndexOutlined } from "@ant-design/icons";
-
+import { getIdentifyICNodesSds } from "../../apis/api";
 export default function IndustryStackChart({ w, h }) {
   const [data, setData] = useState([]);
   const [svgWidth, setSvgWidth] = useState(w);
@@ -41,160 +41,163 @@ export default function IndustryStackChart({ w, h }) {
   });
 
   useEffect(() => {
-    
-    let dt = [
-      {
-        id: "IP_A",
-        numId: 0,
-        ICIndustry: [
-          { industry: "AB", number: 2 },
-          { industry: "AED", number: 18 },
-          { industry: "BCD", number: 1 },
-        ],
-        group: 1,
-      },
-      {
-        id: "IP_B",
-        numId: 0,
-        ICIndustry: [
-          { industry: "AB", number: 2 },
-          { industry: "AE", number: 8 },
-          { industry: "DE", number: 1 },
-        ],
-        group: 1,
-      },
-      {
-        id: "Cert_C",
-        numId: 0,
-        ICIndustry: [
-          { industry: "B", number: 2 },
-          { industry: "AE", number: 8 },
-          { industry: "BCD", number: 1 },
-        ],
-        group: 1,
-      },
-      {
-        id: "IP_D",
-        numId: 0,
-        ICIndustry: [
-          { industry: "AB", number: 2 },
-          { industry: "AE", number: 8 },
-          { industry: "H", number: 1 },
-        ],
-        group: 1,
-      },
-      {
-        id: "Cert_E",
-        numId: 0,
-        ICIndustry: [
-          { industry: "AB", number: 2 },
-          { industry: "AE", number: 8 },
-          { industry: "BCE", number: 1 },
-        ],
-        group: 1,
-      },
-      {
-        id: "Cert_E",
-        numId: 0,
-        ICIndustry: [
-          { industry: "AB", number: 2 },
-          { industry: "AE", number: 8 },
-          { industry: "BCE", number: 1 },
-        ],
-        group: 1,
-      },
-      {
-        id: "Cert_E",
-        numId: 0,
-        ICIndustry: [
-          { industry: "AB", number: 2 },
-          { industry: "AE", number: 8 },
-          { industry: "BCE", number: 1 },
-        ],
-        group: 1,
-      },
-      {
-        id: "Cert_E",
-        numId: 0,
-        ICIndustry: [
-          { industry: "AB", number: 2 },
-          { industry: "AE", number: 8 },
-          { industry: "BCE", number: 1 },
-        ],
-        group: 1,
-      },
-      {
-        id: "Cert_E",
-        numId: 0,
-        ICIndustry: [
-          { industry: "AB", number: 2 },
-          { industry: "AE", number: 8 },
-          { industry: "BCE", number: 1 },
-        ],
-        group: 1,
-      },
-      {
-        id: "Cert_E",
-        numId: 0,
-        ICIndustry: [
-          { industry: "AB", number: 2 },
-          { industry: "AE", number: 8 },
-          { industry: "BCE", number: 1 },
-        ],
-        group: 1,
-      },
-      {
-        id: "Cert_E",
-        numId: 0,
-        ICIndustry: [
-          { industry: "AB", number: 2 },
-          { industry: "AE", number: 8 },
-          { industry: "BCE", number: 1 },
-        ],
-        group: 1,
-      },
-      {
-        id: "Cert_E",
-        numId: 0,
-        ICIndustry: [
-          { industry: "AB", number: 2 },
-          { industry: "AE", number: 8 },
-          { industry: "BCE", number: 1 },
-        ],
-        group: 1,
-      },
-      {
-        id: "Cert_E",
-        numId: 0,
-        ICIndustry: [
-          { industry: "AB", number: 2 },
-          { industry: "AE", number: 8 },
-          { industry: "BCE", number: 1 },
-        ],
-        group: 1,
-      },
-      {
-        id: "Cert_E",
-        numId: 0,
-        ICIndustry: [
-          { industry: "AB", number: 2 },
-          { industry: "AE", number: 8 },
-          { industry: "BCE", number: 1 },
-        ],
-        group: 1,
-      },
-      {
-        id: "Cert_E",
-        numId: 0,
-        ICIndustry: [
-          { industry: "AB", number: 2 },
-          { industry: "AE", number: 8 },
-          { industry: "BCE", number: 1 },
-        ],
-        group: 1,
-      },
-    ];
-    setData(dt);
+    getIdentifyICNodesSds(dataParam).then((res) => {
+      console.log("------", res);
+      setData(res);
+    });
+    // let dt = [
+    //   {
+    //     id: "IP_A",
+    //     numId: 0,
+    //     ICIndustry: [
+    //       { industry: "AB", number: 2 },
+    //       { industry: "AED", number: 18 },
+    //       { industry: "BCD", number: 1 },
+    //     ],
+    //     group: 1,
+    //   },
+    //   {
+    //     id: "IP_B",
+    //     numId: 0,
+    //     ICIndustry: [
+    //       { industry: "AB", number: 2 },
+    //       { industry: "AE", number: 8 },
+    //       { industry: "DE", number: 1 },
+    //     ],
+    //     group: 1,
+    //   },
+    //   {
+    //     id: "Cert_C",
+    //     numId: 0,
+    //     ICIndustry: [
+    //       { industry: "B", number: 2 },
+    //       { industry: "AE", number: 8 },
+    //       { industry: "BCD", number: 1 },
+    //     ],
+    //     group: 1,
+    //   },
+    //   {
+    //     id: "IP_D",
+    //     numId: 0,
+    //     ICIndustry: [
+    //       { industry: "AB", number: 2 },
+    //       { industry: "AE", number: 8 },
+    //       { industry: "H", number: 1 },
+    //     ],
+    //     group: 1,
+    //   },
+    //   {
+    //     id: "Cert_E",
+    //     numId: 0,
+    //     ICIndustry: [
+    //       { industry: "AB", number: 2 },
+    //       { industry: "AE", number: 8 },
+    //       { industry: "BCE", number: 1 },
+    //     ],
+    //     group: 1,
+    //   },
+    //   {
+    //     id: "Cert_E",
+    //     numId: 0,
+    //     ICIndustry: [
+    //       { industry: "AB", number: 2 },
+    //       { industry: "AE", number: 8 },
+    //       { industry: "BCE", number: 1 },
+    //     ],
+    //     group: 1,
+    //   },
+    //   {
+    //     id: "Cert_E",
+    //     numId: 0,
+    //     ICIndustry: [
+    //       { industry: "AB", number: 2 },
+    //       { industry: "AE", number: 8 },
+    //       { industry: "BCE", number: 1 },
+    //     ],
+    //     group: 1,
+    //   },
+    //   {
+    //     id: "Cert_E",
+    //     numId: 0,
+    //     ICIndustry: [
+    //       { industry: "AB", number: 2 },
+    //       { industry: "AE", number: 8 },
+    //       { industry: "BCE", number: 1 },
+    //     ],
+    //     group: 1,
+    //   },
+    //   {
+    //     id: "Cert_E",
+    //     numId: 0,
+    //     ICIndustry: [
+    //       { industry: "AB", number: 2 },
+    //       { industry: "AE", number: 8 },
+    //       { industry: "BCE", number: 1 },
+    //     ],
+    //     group: 1,
+    //   },
+    //   {
+    //     id: "Cert_E",
+    //     numId: 0,
+    //     ICIndustry: [
+    //       { industry: "AB", number: 2 },
+    //       { industry: "AE", number: 8 },
+    //       { industry: "BCE", number: 1 },
+    //     ],
+    //     group: 1,
+    //   },
+    //   {
+    //     id: "Cert_E",
+    //     numId: 0,
+    //     ICIndustry: [
+    //       { industry: "AB", number: 2 },
+    //       { industry: "AE", number: 8 },
+    //       { industry: "BCE", number: 1 },
+    //     ],
+    //     group: 1,
+    //   },
+    //   {
+    //     id: "Cert_E",
+    //     numId: 0,
+    //     ICIndustry: [
+    //       { industry: "AB", number: 2 },
+    //       { industry: "AE", number: 8 },
+    //       { industry: "BCE", number: 1 },
+    //     ],
+    //     group: 1,
+    //   },
+    //   {
+    //     id: "Cert_E",
+    //     numId: 0,
+    //     ICIndustry: [
+    //       { industry: "AB", number: 2 },
+    //       { industry: "AE", number: 8 },
+    //       { industry: "BCE", number: 1 },
+    //     ],
+    //     group: 1,
+    //   },
+    //   {
+    //     id: "Cert_E",
+    //     numId: 0,
+    //     ICIndustry: [
+    //       { industry: "AB", number: 2 },
+    //       { industry: "AE", number: 8 },
+    //       { industry: "BCE", number: 1 },
+    //     ],
+    //     group: 1,
+    //   },
+    //   {
+    //     id: "Cert_E",
+    //     numId: 0,
+    //     ICIndustry: [
+    //       { industry: "AB", number: 2 },
+    //       { industry: "AE", number: 8 },
+    //       { industry: "BCE", number: 1 },
+    //     ],
+    //     group: 1,
+    //   },
+    // ];
+    // setData(dt);
   }, [dataParam]);
 
   useEffect(() => {

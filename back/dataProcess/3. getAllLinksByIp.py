@@ -109,6 +109,7 @@ def getLinksToTarget(numId, typeName, i, nowPath, nodeAllLinks, nodeLinks, nodeC
         if(j[2] in nodeInMiddle1 and j[2] in nodeInMiddle2):
             nodesToTarget.append(j[2])
             linksToTarget.append(j)
+            
     # 获取关联的Whois信息
     for j in nodeAllLinks[2]:
         if(j[1] in nodesToTarget):
@@ -147,6 +148,7 @@ def getLinksToTarget(numId, typeName, i, nowPath, nodeAllLinks, nodeLinks, nodeC
         "domainNum": allDomainNodeNum,
         "industryNum": allDomainInstduryNodeNum,
     }
+
 
 
 def getAllLinksByNodes(coreList, nowPath, nodes, nodeCsvW, ICScreen, linksAll):

@@ -32,25 +32,31 @@ def getNodesInICLinks(nodesInIClinks, ICScreen, nodePath, nowPath):
 
 def getAllNodeALinksINICLinks(ICAloneNodes, nowNodes, nowPath, nodeCsvW):
     for i in nowNodes:
+        # 如果该节点不在任何单独路径中，则跳过
         if(len(ICAloneNodes[str(i)]["nodesNumId"]) == 1):
             with open(nowPath + "ICAloneLinks/" + str(i) + ".json", "w", encoding="utf-8") as f:
                 json.dump(ICAloneNodes[str(i)], f, ensure_ascii=False)
             continue
+        # 打开节点三跳节点的信息
         nodeLinksInfoJ = open(nowPath + "ICLinks/" +
                                 str(i) + ".json", "r", encoding="utf-8")
         nodeLinksInfo = json.load(nodeLinksInfoJ)
+        # 打开对应的ICLinks信息
         aj = open(nowPath + "ICScreenLinks2/" + str(i) +
                     ".json", "r", encoding="utf-8")
         a = json.load(aj)
         useNode = set()
         useNode.add(str(i))
+        # 获取在该节点三条内，且不在任何ICLinks中的节点
         for j in nodeLinksInfo["links"]:
             if(str(j[1]) in ICAloneNodes[str(i)]["nodesNumId"] and str(j[2]) in ICAloneNodes[str(i)]["nodesNumId"]):
                 if(j[0] != "r_cert" or j[0] != "r_dns_a"):
                     useNode.add(str(j[1]))
                     useNode.add(str(j[2]))
+        # 获取剩余的节点
         InICLinksNodes = list(
             set(ICAloneNodes[str(i)]["nodesNumId"]).difference(useNode))
+        # 判断剩余的节点所在的IC链路
         for j in InICLinksNodes:
             nowNodesLinks = {}
             for k in nodeLinksInfo["links"]:
