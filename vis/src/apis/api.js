@@ -103,3 +103,9 @@ export function getIdentifyData() {
 export function getCrutialpathData() {
   return post("/getCrutialpathData");
 }
+
+export function getIdentifyICNodesSds(nodesLinksInfo) {
+  return post("/getIdentifyICNodesSds", {
+    nodesLinksInfo: nodesLinksInfo,
+  });
+}

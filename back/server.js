@@ -879,6 +879,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
       }
     }
   }
+
   industryType = Array.from(industryType)
   industryType.sort((a, b) => a - b)
   industryType.sort((a, b) => a.length - b.length)
@@ -945,6 +946,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
       }
     }
   }
+
   for (let i in ICNodesIndustry) {
     for (let j of industryType) {
       if (!ICNodesIndustry[i].hasOwnProperty(j)) {
@@ -995,7 +997,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
       }
       ICLinks[targetNumId] = ICLinks[targetNumId].filter(e => e != ICLinksString)
       let targetICInfo = nodeNumIdInfo[parseInt(targetNumId) - 1]
-      ICLinksInfo["source"] = {
+      difInfo["source"] = {
         numId: sourceICInfo[0],
         id: sourceICInfo[1],
         name: sourceICInfo[2],
@@ -1010,6 +1012,14 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
         name: targetICInfo[2],
         type: targetICInfo[3],
         index: 1,
+        startICLinkNum: startICLinkNum,
+      }      
+      difInfo["IC"] = {
+        numId: [sourceICInfo[0], targetICInfo[0]],
+        id: [sourceICInfo[1], targetICInfo[1]],
+        name: [sourceICInfo[2], targetICInfo[2]],
+        type: [sourceICInfo[3], targetICInfo[3]],
+        index: 0,
         startICLinkNum: startICLinkNum,
       }
 
@@ -1229,6 +1239,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
   res.send(sendData);
   res.end()
 });
+
 
 // 初步获取社区的主要信息
 app.post("/getInfoListSds", jsonParser, (req, res, next) => {
@@ -1957,4 +1968,49 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
   // var path = jsnx.bidirectionalShortestPath(G, source, target);
   // res.send(path);
   // res.end();
+});
+
+// 获取社区的最终数据
+app.post("/getIdentifyICNodesSds", jsonParser, (req, res, next) => {
+  // 获取node和links信息
+  const nodes = req.body.nodesLinksInfo["nodes"];
+  const links = req.body.nodesLinksInfo["links"];
+  let ICNodesIndustry = {}
+  let industryType = new Set()
+  // 获取每一个ICLinks中黑灰产业类型的数量，并获取在ICLinks中和不在ICLinks中的黑灰产的数量
+  for (let i of nodes) {
+    industryType.add(i["industry"])
+    isInICLinks = false
+    for (let j of i["InICLinks"]) {
+      // 判断节点是否在IC连接中
+      if (j.indexOf(",") > -1) {
+        let k = j.split(",")
+        ICNodesIndustry[k[0]] = {}
+        ICNodesIndustry[k[1]] = {}
+      }
+      else {
+        ICNodesIndustry[j] = {}
+      }
+    }
+  }
+
+  // 获取每一个IC节点中黑灰产业类型的数量
+  for (let i of links) {
+    let targetNumId = i["linksNumId"][1]
+    if (ICNodesIndustry.hasOwnProperty(targetNumId)) {
+      let nowICIndustry = nodeNumIdInfo[parseInt(i["linksNumId"][0]) - 1][4]
+      if (!ICNodesIndustry[targetNumId].hasOwnProperty(nowICIndustry)) {
+        ICNodesIndustry[targetNumId][nowICIndustry] = 0
+      }
+      if (i.hasOwnProperty("childrenNum")) {
+        ICNodesIndustry[targetNumId][nowICIndustry] += i["childrenNum"]
+      }
+      else {
+        ICNodesIndustry[targetNumId][nowICIndustry] += 1
+      }
+    }
+  }
+  
+  res.send(ICNodesIndustry);
+  res.end();
 });
