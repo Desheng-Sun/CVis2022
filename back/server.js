@@ -77,7 +77,7 @@ const ICScreenJ = fs.readFileSync(nowPath + "ICScreen.json", "utf-8");
 const ICScreen = JSON.parse(ICScreenJ);
 
 // 获取每个节点所在的ICLinks的信息
-const nodeICLinksJ = fs.readFileSync(nowPath + "nodeICLinks.json", "utf8");
+const nodeICLinksJ = fs.readFileSync(nowPath + "nodeICLinks4.json", "utf8");
 const nodeICLinks = JSON.parse(nodeICLinksJ);
 
 // 记录最初开始的节点
@@ -681,6 +681,7 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
 
   //针对每一个IC节点进行循环
   for (let i of nodes) {
+    if (ICScreen[1].indexOf(i["numId"]) > -1) {
     filedata = path.join(
       __dirname,
       "data/ICAloneLinks/" + i["numId"] + ".json"
@@ -697,7 +698,7 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
         linksList[[j[0], j[1], j[2]].toString()] = []
       }
       linksList[[j[0], j[1], j[2]].toString()].push([i["numId"]].toString());
-    }
+    }}
   }
 
   //针对每一个在ICLinks中的IC节点进行循环

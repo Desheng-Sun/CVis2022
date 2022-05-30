@@ -1,3 +1,4 @@
+import ast
 import json
 import os
 from traceback import print_tb
@@ -248,36 +249,79 @@ if __name__ == '__main__':
     nodesInIClinks = getNodesInICLinks(
         nodesInIClinks, ICScreen[1], "ICLinks/", nowPath)
 
-    with alive_bar(len(nodesInIClinks)) as bar:
-        for i in nodeCsvW:
-            j = str(i[0])
-            if(len(nodesInIClinks[j][0]) == 0 and len(nodesInIClinks[j][1]) == 0):
-                nodesInIClinks.pop(j)
-            bar()
+    # with alive_bar(len(nodesInIClinks)) as bar:
+    #     for i in nodeCsvW:
+    #         j = str(i[0])
+    #         if(len(nodesInIClinks[j][0]) == 0 and len(nodesInIClinks[j][1]) == 0):
+    #             nodesInIClinks.pop(j)
+    #         bar()
     
-    for i in ipNode:
-        if(str(i[0]) in nodesInIClinks):
-            nodesInIClinks.pop(str(i[0]))
-    for i in certNode:
-        if(str(i[0]) in nodesInIClinks):
-            nodesInIClinks.pop(str(i[0]))
+    # for i in ipNode:
+    #     if(str(i[0]) in nodesInIClinks):
+    #         nodesInIClinks.pop(str(i[0]))
+    # for i in certNode:
+    #     if(str(i[0]) in nodesInIClinks):
+    #         nodesInIClinks.pop(str(i[0]))
 
-    with alive_bar(len(nodesInIClinks)) as bar:
-        for i in nodesInIClinks:
-            inLinksSet = set()
-            for j in nodesInIClinks[i][0]:
-                inLinksSet.add(j[0])
-                inLinksSet.add(j[1])
-            nodesInIClinks[i][1] = list(
-                set(nodesInIClinks[i][1]).difference(inLinksSet))
-            bar()
+    # with alive_bar(len(nodesInIClinks)) as bar:
+    #     for i in nodesInIClinks:
+    #         inLinksSet = set()
+    #         for j in nodesInIClinks[i][0]:
+    #             inLinksSet.add(j[0])
+    #             inLinksSet.add(j[1])
+    #         nodesInIClinks[i][1] = list(
+    #             set(nodesInIClinks[i][1]).difference(inLinksSet))
+    #         bar()
 
-    with open(nowPath + "nodeICLinks.json", "w", encoding="utf-8") as f:
-        json.dump(nodesInIClinks, f, ensure_ascii=False)
+    # with open(nowPath + "nodeICLinks.json", "w", encoding="utf-8") as f:
+    #     json.dump(nodesInIClinks, f, ensure_ascii=False)
 
-    with open(nowPath + "nodeICLinks.json", "r", encoding="utf-8") as f:
-        nodesInIClinks = json.load(f)
-        print(nodesInIClinks["479"])
+    # with open(nowPath + "nodeICLinks.json", "r", encoding="utf-8") as f:
+    #     nodesInIClinks = json.load(f)
+    #     print(nodesInIClinks["479"])
+
+        # nodesInIClinks3 = {}
+    # with open(nowPath + "nodeICLinks.json", "r", encoding="utf-8") as f:
+    #     nodesInIClinks = json.load(f)
+    #     with open(nowPath + "nodeICLinks2.json", "r", encoding="utf-8") as f2:
+    #         nodesInIClinks2 = json.load(f2)
+    #         with alive_bar(len(nodesInIClinks2)) as bar:
+    #             for i in nodesInIClinks:
+    #                 nodesInIClinks3[i] = [[], []]
+    #                 ICLinks = set()
+    #                 ICNodes = set()
+    #                 ICLinks2 = set()
+    #                 ICNodes2 = set()
+    #                 for j in nodesInIClinks[i][0]:
+    #                     ICLinks.add(str(j))
+    #                 for j in nodesInIClinks[i][1]:
+    #                     ICNodes.add(str(j))
+    #                 for j in nodesInIClinks2[i][0]:
+    #                     ICLinks2.add(str(j))
+    #                 for j in nodesInIClinks2[i][1]:
+    #                     ICNodes2.add(str(j))
+    #                 nodesInIClinks3[i][0] = list(ICLinks.intersection(ICLinks2))
+    #                 nodesInIClinks3[i][1] = list(ICNodes.intersection(ICNodes2))
+    #                 bar()
+            
+    #         with open(nowPath + "nodeICLinks3.json", "w", encoding="utf-8") as f3:
+    #             json.dump(nodesInIClinks3, f3, ensure_ascii=False)
+    # with open(nowPath + "nodeICLinks3.json", "r", encoding="utf-8") as f:
+    #     nodesInIClinks = json.load(f)
+    #     nodesInIClinks2 = {}
+    #     with alive_bar(len(nodesInIClinks)) as bar:
+    #         for i in nodesInIClinks:
+    #             nodesInIClinks2[i] = [[],[]]
+    #             for j in nodesInIClinks[i][0]:
+    #                 nodesInIClinks2[i][0].append(ast.literal_eval(j))
+    #             for j in nodesInIClinks[i][1]:
+    #                 nodesInIClinks2[i][1].append(int(j))
+    #             bar()
+    #     print(nodesInIClinks2["479"][0][0])
+
+    #     with open(nowPath + "nodeICLinks4.json", "w", encoding="utf-8") as f2:
+    #         json.dump(nodesInIClinks2, f2, ensure_ascii=False)
+
     ICAloneNodes = {}
     for i in ICScreen[0]:
         ICAloneNodes[str(i)] = {
@@ -296,7 +340,6 @@ if __name__ == '__main__':
             for j in nodesInIClinks[i][1]:
                 ICAloneNodes[str(j)]["nodesNumId"].append(str(i))
             bar()
-    print(ICAloneNodes["523"])
     
     pool = mp.Pool(processes=12)
     numLen = int(len(ICScreen[0]) / 12)
