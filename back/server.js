@@ -2,8 +2,11 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const fs = require("fs");
+const Database = require("arangojs").Database;
+const username = "root";
+const password = "123456";
 const port = 3008;
-// const jsnx = require("jsnetworkx");
+
 const bodyParser = require("body-parser");
 const jsonParser = bodyParser.json();
 const urlencodedParser = bodyParser.urlencoded({ extended: true });
@@ -973,7 +976,6 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
   let ICLinksSortKey = Object.keys(ICLinks).sort(function (a, b) {
     return ICLinks[b].length - ICLinks[a].length
   })
-  let difInfo = []
   let ICLinksInfo = []
   let startICLinkNum = 0
   for (let i of ICLinksSortKey) {
@@ -982,6 +984,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
     }
     let sourceICInfo = nodeNumIdInfo[parseInt(i) - 1]
     for (let ICLinksString of ICLinks[i]) {
+      let difInfo = {}
       startICLinkNum += 1
       j = ICLinksString.split(",")
       let sourceNumId = j[0]
@@ -992,24 +995,25 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
       }
       ICLinks[targetNumId] = ICLinks[targetNumId].filter(e => e != ICLinksString)
       let targetICInfo = nodeNumIdInfo[parseInt(targetNumId) - 1]
-      ICLinksInfo.push({
+      ICLinksInfo["source"] = {
         numId: sourceICInfo[0],
         id: sourceICInfo[1],
         name: sourceICInfo[2],
         type: sourceICInfo[3],
         index: 0,
         startICLinkNum: startICLinkNum,
-      })
+      }
 
-      ICLinksInfo.push({
+      difInfo["target"] = {
         numId: targetICInfo[0],
         id: targetICInfo[1],
         name: targetICInfo[2],
         type: targetICInfo[3],
         index: 1,
         startICLinkNum: startICLinkNum,
-      })
+      }
 
+      difInfo["industry"] = []
       for (let k in useIndustryType) {
         if (k == "  ") {
           continue
@@ -1021,21 +1025,21 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
           continue
         }
 
-        difInfo.push({
+        difInfo["industry"].push({
           industry: k,
           number: ICindustry1,
           index: 0,
           startICLinkNum: startICLinkNum,
           height: useIndustryType[k]
         })
-        difInfo.push({
+        difInfo["industry"].push({
           industry: k,
           number: ICindustry2,
           index: 1,
           startICLinkNum: startICLinkNum,
           height: useIndustryType[k]
         })
-        difInfo.push({
+        difInfo["industry"].push({
           industry: k,
           number: ICindustry3,
           index: 2,
@@ -1043,6 +1047,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
           height: useIndustryType[k]
         })
       }
+      ICLinksInfo.push(difInfo)
     }
   }
   // let sendData = {
@@ -1220,7 +1225,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
 
   // sendData["depthmax"] = depthmax
 
-  let sendData = [ICIndustryInfo, difInfo, ICLinksInfo]
+  let sendData = [ICIndustryInfo, ICLinksInfo]
   res.send(sendData);
   res.end()
 });
