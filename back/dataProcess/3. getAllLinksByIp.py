@@ -74,26 +74,35 @@ def getLinksToTarget(numId, typeName, i, nowPath, nodeAllLinks, nodeLinks, nodeC
             nodesToTarget.append(j[1])
     TargetLinksJ.close()
 
-    nodeInMiddle = []
+    nodeInMiddle1 = []
+    nodeInMiddle2 = []
     linksInMiddle = []
     # 获取当前nodes所在的所有Links，如果Links是跳转到域名的注册人姓名等也保存
     for j in nodeAllLinks[3]:
         if(j[1] in nodesToTarget and j[2] in nodesToTarget):
             linksToTarget.append(j)
-        if(j[3] == 2):
+        elif(j[3] == 2):
             if(j[1] not in nodesToTarget and j[2] in nodesToTarget):
-                nodeInMiddle.append(j[1])
+                nodeInMiddle1.append(j[1])
                 linksInMiddle.append(j)
             elif(j[1] in nodesToTarget and j[2] not in nodesToTarget):
-                nodeInMiddle.append(j[2])
+                nodeInMiddle1.append(j[2])
                 linksInMiddle.append(j)
         elif(j[3] == 1):
-            if(j[1] in nodeInMiddle and j[2] in nodesToTarget):
-                nodesToTarget.append(j[1])
+            if(j[1] not in nodesToTarget and j[2] in nodesToTarget):
+                nodeInMiddle2.append(j[1])
                 linksInMiddle.append(j)
-            elif(j[1] in nodesToTarget and j[2] in nodeInMiddle):
-                nodesToTarget.append(j[2])
+            elif(j[1] in nodesToTarget and j[2] not in nodesToTarget):
+                nodeInMiddle2.append(j[2])
                 linksInMiddle.append(j)
+                
+    for j in linksInMiddle:
+        if(j[1] in nodeInMiddle1 and j[1] in nodeInMiddle2):
+            nodesToTarget.append(j[1])
+            linksToTarget.append(j)
+        if(j[2] in nodeInMiddle1 and j[2] in nodeInMiddle2):
+            nodesToTarget.append(j[2])
+            linksToTarget.append(j)
 
     for j in nodeAllLinks[2]:
         if(j[1] in nodesToTarget):
