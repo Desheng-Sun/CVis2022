@@ -242,6 +242,31 @@ export default function MainView({ w, h }) {
     setDistanceFlag(true);
   }, [nodeDistance, edgeLength]);
 
+  // 获取从diff图中传进来的IC link，并将属于当前IC link路上的所有点高亮起来: "numId,numId"
+  PubSub.unsubscribe("fromDiffChartToMain");
+  PubSub.subscribe("fromDiffChartToMain", function (msg, ICLink) {
+    if (cy) {
+      cy.nodes().removeClass("InIClink");
+      cy.nodes().removeClass("start_end");
+
+      let arr = ICLink.split(",");
+      let reverseICLink = arr[1] + "," + arr[0];
+      if (ICLink !== "") {
+        cy.nodes().forEach((ele) => {
+          if (ICLink.indexOf(ele.data("numId").toString()) !== -1) {
+            // 表明是起点和终点
+            ele.addClass("start_end");
+          } else if (
+            ele.data("InICLinks").includes(ICLink) ||
+            ele.data("InICLinks").includes(reverseICLink)
+          ) {
+            ele.addClass("InIClink");
+          }
+        });
+      }
+    }
+  });
+
   // 撤销上一步操作
   useEffect(() => {
     if (undoOut) {
@@ -762,7 +787,6 @@ export default function MainView({ w, h }) {
     let graphnodes, graphlinks;
     graphnodes = cy.nodes().map(function (ele, i) {
       let inICLinks = data.nodes.filter((item, index) => {
-        console.log(item, ele);
         return item["id"] === ele.data("id");
       });
 

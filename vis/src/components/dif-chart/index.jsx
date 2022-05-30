@@ -10992,6 +10992,12 @@ export default function DifChart({ w, h }) {
     if (JSON.stringify(data) === "[]") return;
     d3.selectAll("#diff-legend svg").remove();
     d3.selectAll("#diff-all-chart svg").remove();
+    d3.selectAll("#diff-all-chart #diff-tooltip").remove();
+
+    var diffTooltip = d3
+      .select("#diff-all-chart")
+      .append("div")
+      .attr("class", "diff-tooltip");
 
     let chartHeight = svgHeight * 0.7;
 
@@ -11008,6 +11014,26 @@ export default function DifChart({ w, h }) {
     };
 
     // 绘制左侧的所有产业数量统计图
+    // 统计每种产业的最大值和小值
+    let industryMinMax = {};
+    for (let i = 0; i < data[0].length; i++) {
+      if (industryMinMax.hasOwnProperty(data[0][i].industry)) {
+        industryMinMax[data[0][i].industry].min = Math.min(
+          industryMinMax[data[0][i].industry].min,
+          data[0][i].number
+        );
+        industryMinMax[data[0][i].industry].max = Math.max(
+          industryMinMax[data[0][i].industry].max,
+          data[0][i].number
+        );
+      } else {
+        industryMinMax[data[0][i].industry] = {
+          min: data[0][i].number,
+          max: data[0][i].number,
+        };
+      }
+    }
+
     let industrySvg = d3
       .select("#all-industry")
       .append("svg")
@@ -11015,7 +11041,7 @@ export default function DifChart({ w, h }) {
       .attr("height", chartHeight);
 
     let singleInustryHeight = chartHeight / (data[0].length / 2);
-    let singleIndustryWidth = 30;
+    let singleIndustryWidth = 15;
 
     let industryG = industrySvg
       .append("g")
@@ -11035,7 +11061,25 @@ export default function DifChart({ w, h }) {
       })
       .attr("height", singleInustryHeight)
       .attr("storke", "#aaa")
-      .attr("fill", (d, i) => industryColor[d.industry]);
+      .attr("fill", (d, i) => {
+        return colorScale(
+          industryColor[d.industry],
+          0,
+          industryMinMax[d.industry].max,
+          d.number
+        );
+      })
+      .on("mouseover", function (event, d) {
+        let htmlStr = `<b>${d.industry}:${d.number}</b>`;
+        diffTooltip
+          .style("left", event.pageX + 10 + "px")
+          .style("top", event.pageY + "px")
+          .style("visibility", "visible")
+          .html(htmlStr);
+      })
+      .on("mouseout", function (event, d) {
+        diffTooltip.style("visibility", "hidden");
+      });
 
     // 绘制每一对IC之间的产业信息图
     var ICWidth = 1000;
@@ -11050,7 +11094,7 @@ export default function DifChart({ w, h }) {
       .select("#diff-chart")
       .append("svg")
       .attr("width", ICWidth)
-      .attr("height", chartHeight);
+      .attr("height", chartHeight * 1.1);
 
     var x = d3
       .scaleBand()
@@ -11072,6 +11116,23 @@ export default function DifChart({ w, h }) {
       .attr("nodeWidth", (d) => {
         pairWidth = x.bandwidth();
         return x.bandwidth();
+      })
+      .append("text")
+      .attr("x", 0)
+      .attr("y", chartHeight + 8)
+      .text((d, index) => index)
+      .attr("fill", "black")
+      .attr("font-size", "8px")
+      .style("cursor", "pointer")
+      .on("click", function (event, d) {
+        if (d3.select(this).attr("fill") === "black") {
+          d3.select(this).attr("fill", "red").attr("font-weight", "bolder");
+          let curICLink = d.IC.numId.replace("--", ",");
+          PubSub.publish("fromDiffChartToMain", curICLink);
+        } else {
+          d3.select(this).attr("fill", "black").attr("font-weight", "normal");
+          PubSub.publish("fromDiffChartToMain", "");
+        }
       });
 
     for (let i = 0; i < data[1].length; i++) {
@@ -11095,23 +11156,23 @@ export default function DifChart({ w, h }) {
           .attr("fill", (d) => {
             let currIndustry = d.industry[j].industry;
             let currNumber = d.industry[j].number;
-            return colorScale(
-              "#eee",
-              industryColor[currIndustry],
-              0,
-              15,
-              currNumber
-            );
+            return colorScale(industryColor[currIndustry], 0, 15, currNumber);
           })
           .on("mouseover", (event, d) => {
-            let curPair = d.IC.name;
-            let currIndustry = d.industry[j].industry;
-            let htmlStr = `<b>IC链路</b>`;
+            let htmlStr = `<b>IC链路: </b>${d.IC.name}<br/><b>产业：</b>${d.industry[j].industry}(${d.industry[j].number})`;
+            diffTooltip
+              .style("left", event.pageX + 10 + "px")
+              .style("top", event.pageY + "px")
+              .style("visibility", "visible")
+              .html(htmlStr);
+          })
+          .on("mouseout", function (event, d) {
+            diffTooltip.style("visibility", "hidden");
           });
       }
     }
 
-    function colorScale(startColor, endColor, min, max, value) {
+    function colorScale(endColor, min, max, value) {
       let color = d3
         .scaleLinear()
         .domain([min, max]) // #32c9d0
@@ -11167,7 +11228,7 @@ export default function DifChart({ w, h }) {
         style={{ width: "100%", height: "5%", paddingLeft: "5px" }}
       ></div>
       <div id="diff-all-chart" style={{ width: "100%", height: "95%" }}>
-        <div id="all-industry" style={{ width: "20%", height: "100%" }}></div>
+        <div id="all-industry" style={{ width: "10%", height: "100%" }}></div>
         <div id="diff-chart" style={{ width: "400px", height: "100%" }}></div>
       </div>
     </div>
