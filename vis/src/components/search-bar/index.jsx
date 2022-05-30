@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import * as d3 from "d3";
 import { Select, Button, Form } from "antd";
 import { getInitialSds } from "../../apis/api";
 import PubSub from "pubsub-js";
@@ -12,7 +11,6 @@ export default function SearchBar() {
   const [selectType, setSelectType] = useState(undefined);
   const [selectIndustry, setSelectIndustry] = useState(undefined);
   const [selectContent, setSelectContent] = useState([[], [], [], []]);
-
   useEffect(() => {
     if (selectId != undefined) {
       getInitialSds(selectType, selectIndustry, selectId).then((res) => {

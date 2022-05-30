@@ -12,6 +12,7 @@ import MainView from "../main-view";
 import ConclusionText from "../conclusion-text";
 import IndustryStackChart from "../industry-stack-chart";
 import ClueDense from "../clue-dense";
+import CrutialPath from "../crutial-path";
 import { useEffect, useState } from "react";
 
 export default function Layout() {
@@ -31,6 +32,8 @@ export default function Layout() {
   const [industryStackChartHeight, setIndustryStackChartHeight] = useState(0);
   const [cluedenseWidth, setClueDenseWidth] = useState(0);
   const [cluedenseHeight, setClueDenseHeight] = useState(0);
+  const [crutialPathWidth, setCrutialPathWidth] = useState(0);
+  const [crutialPathHeight, setCrutialPathHeight] = useState(0);
 
   useEffect(() => {
     // setCountsBarWidth(
@@ -68,12 +71,18 @@ export default function Layout() {
       document.getElementById("mainmap").getBoundingClientRect().width
     );
     setMainChartHeight(968);
-    // setIndustryStackChartWidth(
-    //   document.getElementById("assetandpath").getBoundingClientRect().width
-    // );
-    // setIndustryStackChartHeight(
-    //   document.getElementById("assetandpath").getBoundingClientRect().height
-    // );
+    setIndustryStackChartWidth(
+      document.getElementById("asset").getBoundingClientRect().width
+    );
+    setIndustryStackChartHeight(
+      document.getElementById("asset").getBoundingClientRect().height
+    );
+    setCrutialPathWidth(
+      document.getElementById("crutial-path").getBoundingClientRect().width
+    );
+    setCrutialPathHeight(
+      document.getElementById("crutial-path").getBoundingClientRect().height
+    );
     setClueDenseWidth(
       document.getElementById("clue-dense-chart").getBoundingClientRect().width
     );
@@ -141,13 +150,16 @@ export default function Layout() {
             />
           </div>
         </div>
-
-        <div id="assetandpath">
-          <ChartHeader chartName={"核心资产与关键链路分析"} />
-          {/* <IndustryStackChart
+        <div id="asset">
+          <ChartHeader chartName={"核心资产分析"} />
+          <IndustryStackChart
             w={industryStackChartWidth}
             h={industryStackChartHeight}
-          /> */}
+          />
+        </div>
+        <div id="keypath">
+          <ChartHeader chartName={"关键链路分析"} />
+          <CrutialPath w={crutialPathWidth} h={crutialPathHeight} />
         </div>
         <div id="conclusion">
           <ChartHeader chartName={"团伙分析结果"} />

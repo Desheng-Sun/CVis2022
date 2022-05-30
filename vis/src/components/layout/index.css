@@ -156,9 +156,17 @@
   /* background-color: white; */
 }
 
-#assetandpath {
+#asset{
   width: 100%;
-  flex: 10;
+  flex: 7;
+  /* background-color: rgb(220, 213, 226); */
+  /* padding-top: 4px; */
+  /* padding-bottom: 4px; */
+}
+
+#keypath {
+  width: 100%;
+  flex: 3;
   /* background-color: rgb(220, 213, 226); */
   /* padding-top: 4px; */
   /* padding-bottom: 4px; */

@@ -362,12 +362,18 @@ export default function SkeletonChart({ w, h }) {
       .on(
         "contextmenu",
         d3ContextMenu(menu, {
-          position: function (d) {
-            var elm = this;
-            var bounds = elm.getBoundingClientRect();
+          position: function (d, event) {
+            //   var elm = this;
+            //   var bounds = elm.getBoundingClientRect();
+            //   return {
+            //     top: bounds.top + bounds.height,
+            //     left: bounds.left,
+            //   };
+            // },
+            console.log(event);
             return {
-              top: bounds.top + bounds.height,
-              left: bounds.left,
+              top: event.y + 10,
+              left: event.x + 10,
             };
           },
         })

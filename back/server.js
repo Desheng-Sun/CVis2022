@@ -2,11 +2,8 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const fs = require("fs");
-const Database = require("arangojs").Database;
-const username = "root";
-const password = "123456";
 const port = 3008;
-
+// const jsnx = require("jsnetworkx");
 const bodyParser = require("body-parser");
 const jsonParser = bodyParser.json();
 const urlencodedParser = bodyParser.urlencoded({ extended: true });
@@ -1828,5 +1825,123 @@ app.post("/getFinalDataSds", jsonParser, (req, res, next) => {
     group_type: group_type,
   };
   res.send(sendData);
+  res.end();
+});
+
+//识别关键链路和核心资产接口
+app.post("/getIdentifyData", jsonParser, (req, res, next) => {
+  // let nodes = req.nodes;
+  // let edges = req.edges;
+  let nodes = [
+    { numId: 1, type: "IP" },
+    { numId: 2, type: "IP" },
+    { numId: 3, type: "Domain" },
+    { numId: 4, type: "IP" },
+    { numId: 5, type: "Cert" },
+    { numId: 6, type: "Domain" },
+    { numId: 7, type: "Domain" },
+    { numId: 8, type: "Domain" },
+  ];
+  let edges = [
+    [1, 2],
+    [2, 3],
+    [3, 4],
+    [1, 3],
+    [5, 6],
+    [4, 8],
+    [5, 7],
+  ];
+  let s_1 = 0.00000001;
+  let s_2 = 0.0002;
+  let G = new jsnx.Graph();
+  G.addEdgesFrom(edges);
+  let bc = jsnx.betweennessCentrality(G)._numberValues;
+  let bcarr = [];
+  for (let i = 0; i < Object.keys(bc).length; i++) {
+    bcarr.push({ name: Object.keys(bc)[i], value: Object.values(bc)[i] });
+  }
+  let compare = function (obj1, obj2) {
+    let val1 = obj1.value;
+    let val2 = obj2.value;
+    if (val1 < val2) return 1;
+    else if (val1 > val2) return -1;
+    else return 0;
+  };
+  bcarr = bcarr.sort(compare);
+  let selectbcarr = [];
+  for (let i = 0; i < bcarr.length; i++) {
+    if ((i + 1) * s_1 > bcarr[i].value) break;
+    selectbcarr.push(bcarr[i]);
+  }
+  let dc = jsnx.degree(G)._numberValues;
+  let dcarr = [];
+  for (let i = 0; i < Object.keys(dc).length; i++) {
+    dcarr.push({ name: Object.keys(dc)[i], value: Object.values(dc)[i] });
+  }
+  dcarr = dcarr.sort(compare);
+  let selectdcarr = [];
+  for (let i = 0; i < dcarr.length; i++) {
+    if ((i + 1) * s_2 > dcarr[i].value) break;
+    selectdcarr.push(dcarr[i]);
+  }
+  function getIntersectionData(dataA, dataB) {
+    outLoop: for (let i = dataA.length - 1; i >= 0; i--) {
+      for (let j = 0; j < dataB.length; j++) {
+        if (dataA[i].id === dataB[j].id) {
+          continue outLoop;
+        }
+      }
+      dataA.splice(i, 1);
+    }
+    return dataA;
+  }
+  let result = getIntersectionData(selectbcarr, selectdcarr);
+  let selectnodes = [];
+  for (let i = 0; i < result.length; i++) {
+    let nodetype = nodes.filter((p) => p.numId == Number(result[i].name))[0]
+      .type;
+    if (nodetype == "IP" || nodetype == "Cert") {
+      selectnodes.push(Number(result[i].name));
+    }
+  }
+  console.log(selectnodes);
+  let selectedges = jsnx.edges(G, selectnodes);
+  let g = new jsnx.Graph();
+  g.addEdgesFrom(selectedges);
+  let dropnodes = [];
+  for (let i = 0; i < selectnodes.length; i++) {
+    let path = [];
+    for (let j = i + 1; j < selectnodes.length; j++) {
+      if (!jsnx.hasPath(g, { source: selectnodes[i], target: selectnodes[j] }))
+        path.push(true);
+    }
+    if (path.length == selectnodes.length - i) dropnodes.push(i);
+  }
+  g.removeNodesFrom(dropnodes);
+  let sendData = {
+    identifyNodes: g.nodes(),
+    identifyEdges: g.edges(),
+  };
+  res.send(sendData);
+  res.end();
+});
+
+//输入起点终点，返回关键链路接口
+app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
+  let source = 1,
+    target = 4;
+  let edges = [
+    [1, 2],
+    [2, 4],
+    [3, 4],
+    [1, 3],
+    [5, 6],
+    [4, 8],
+    [5, 7],
+  ];
+  let G = new jsnx.Graph();
+  G.addEdgesFrom(edges);
+  var path = jsnx.bidirectionalShortestPath(G, source, target);
+  res.send(path);
   res.end();
 });

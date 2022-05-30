@@ -13,6 +13,7 @@ import {
   CheckOutlined,
   CaretUpOutlined,
   ExpandOutlined,
+  CaretDownOutlined,
 } from "@ant-design/icons";
 import fcose from "cytoscape-fcose";
 import "cytoscape-navigator/cytoscape.js-navigator.css";
@@ -114,15 +115,18 @@ export default function MainView({ w, h }) {
   const [rollback, setRollback] = useState(false);
   const [layoutFlag, setLayoutFlag] = useState(false);
   const [arrowFlag, setArrowFlag] = useState(false);
+  const [styleCheck, setStyleCheck] = useState(false);
   const [fromTableNode, setfromTableNode] = useState([]);
   const [fromTableLink, setFromTableLink] = useState([]);
   const [fromIndustryStackNode, setFromIndustryStackNode] = useState("");
   const [data, setData] = useState({ nodes: [], links: [] });
+  const [dataFirst, setDataFirst] = useState(true);
   const [dataParam, setDataParam] = useState("");
 
   // 给其他组件的数据
-  const [resData, setResData] = useState({ nodes: [], links: [] }); // 右侧表格和子弹图的所有数据
+  const [resData, setResData] = useState({ nodes: [], links: [] }); // 右侧表格和子弹图的确定的团伙子图
   const [difChartInput, setDifChartInput] = useState({ nodes: [], links: [] }); // 当前主图中的点和边 改变时更新DifChart视图
+  const [statistics, setDataStatistics] = useState({ nodes: [], links: [] }); //  对选中的数据点进行统计分析，不一定是团伙子图
 
   // 随系统缩放修改画布大小
   useEffect(() => {
@@ -138,8 +142,9 @@ export default function MainView({ w, h }) {
     if (searchNodebyId) {
       var j = cy.getElementById(searchNodebyId);
       cy.center(j); // 将被搜索元素居中
-      j.addClass("searched");
+      j.select();
 
+      // j.addClass("searched");
       // cy.getElementById(searchNodebyId).style({
       //   // 高亮显示被选中节点
       //   "background-color": "#ffff00",
@@ -171,9 +176,9 @@ export default function MainView({ w, h }) {
     }
   }, [difChartInput]);
 
-  // 监听是否选择当前数据为一个团伙
+  // 当确定了团伙的时候对团伙数据进行统计分析，并获取团伙中的关键路径和核心资产
   useEffect(() => {
-    if (resData.nodes.length !== 0 || resData.links.length !== 0) {
+    if (resData.nodes.length !== 0) {
       PubSub.publish("combinedNodeTableDt", resData); // 分别向节点表和边表传递数据
       PubSub.publish("combinedLinkTableDt", resData);
       let tempNode = [];
@@ -185,6 +190,21 @@ export default function MainView({ w, h }) {
       PubSub.publish("industryStackDt", tempNode); // 将选中的数据中的IP和Cert传给stack组件
     }
   }, [resData]);
+
+  // 对选择的数据在右侧表格和核心资产图中进行统计分析
+  useEffect(() => {
+    if (statistics.nodes.length !== 0) {
+      PubSub.publish("combinedNodeTableDt", statistics); // 分别向节点表和边表传递数据
+      PubSub.publish("combinedLinkTableDt", statistics);
+      let tempNode = [];
+      for (let n of statistics.nodes) {
+        if (["IP", "Cert"].includes(n.type)) {
+          tempNode.push(n);
+        }
+      }
+      PubSub.publish("industryStackDt", tempNode); // 将选中的数据中的IP和Cert传给stack组件
+    }
+  }, [statistics]);
 
   // 监听布局是否变化
   useEffect(() => {
@@ -253,8 +273,7 @@ export default function MainView({ w, h }) {
   // 是否添加箭头
   useEffect(() => {
     if (arrowFlag) {
-      let selection = cy.edges(":selected");
-      selection.addClass("arrow");
+      cy.edges(":selected").addClass("arrow");
     } else if (cy) {
       cy.edges().removeClass("arrow");
     }
@@ -301,16 +320,21 @@ export default function MainView({ w, h }) {
     setFromIndustryStackNode(industryStackToMainDt);
   });
   useEffect(() => {
-    if (cy) cy.nodes().removeClass("stackhighlightNode");
-    if (fromIndustryStackNode !== "") {
+    // if (cy) cy.nodes().removeClass("stackhighlightNode");
+    if (cy && fromIndustryStackNode !== "") {
       if (fromIndustryStackNode.split("-")[0] === "set") {
         cy.$("#" + fromIndustryStackNode.split("-")[1]).addClass(
           "stackhighlightNode"
         );
       } else if (fromIndustryStackNode.split("-")[0] === "reset") {
-        cy.$("#" + fromIndustryStackNode.split("-")[1]).removeClass(
-          "stackhighlightNode"
-        );
+        if (cy.$("#" + fromIndustryStackNode.split("-").length === 1)) {
+          // 选择清楚所有高亮的点
+          cy.nodes().removeClass("stackhighlightNode");
+        } else {
+          cy.$("#" + fromIndustryStackNode.split("-")[1]).removeClass(
+            "stackhighlightNode"
+          );
+        }
       }
     }
   }, [fromIndustryStackNode]);
@@ -327,124 +351,36 @@ export default function MainView({ w, h }) {
       setData({ nodes: [], links: [] });
     } else {
       getMainChartSds(dataParam).then((res) => {
-        console.log(dataParam, res);
         setData(res);
+        console.log(res);
         setDifChartInput(res);
       });
     }
   }, [dataParam]);
   // 处理节点的搜索事件
   useEffect(() => {
-    drawChart();
-    dragElement(document.getElementById("main-legend"));
+    if (!dataFirst) {
+      drawChart();
+      dragElement(document.getElementById("main-legend"));
+      setStyleCheck(false);
+    }
+    setDataFirst(false);
   }, [data]);
 
   // 绘制图形
   function drawChart() {
-    // if (data.nodes.length === 0) return;
+    if (data.nodes.length === 0) return;
     const nodes = data.nodes.map((d) => ({ data: { ...d } }));
     const links = data.links.map((d) => ({ data: { ...d } }));
 
     d3.selectAll("#main-chart div").remove();
     d3.selectAll("div#main-container .mainToolTip").remove();
     Promise.all([
-      fetch("./json/cy-style.json").then(function (res) {
+      fetch("./json/cy-style-class.json").then(function (res) {
         return res.json();
       }),
     ]).then(function (fetchData) {
       stylesJson = fetchData[0];
-      let newStyleArr = {
-        selector: "node",
-        style: {
-          width: function (ele) {
-            return ele.degree() < 30 ? 30 : ele.degree();
-          },
-          height: function (ele) {
-            return ele.degree() < 30 ? 30 : ele.degree();
-          },
-        },
-      };
-
-      let domainNodeStyle = {
-        selector: 'node[type="Domain"]',
-        style: {
-          "pie-size": "100%",
-          "pie-1-background-color": "#2978b4",
-          "pie-1-background-size": function (ele, curIndustry = "A") {
-            if (ele.data("industry").trim() === "") return "0";
-            let curIndustryArr = ele.data("industry").split("");
-            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
-            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
-            return "0";
-          },
-          "pie-2-background-color": "#f9bf6f",
-          "pie-2-background-size": function (ele, curIndustry = "B") {
-            if (ele.data("industry").trim() === "") return "0";
-            let curIndustryArr = ele.data("industry").split("");
-            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
-            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
-            return "0";
-          },
-          "pie-3-background-color": "#ff756a",
-          "pie-3-background-size": function (ele, curIndustry = "C") {
-            if (ele.data("industry").trim() === "") return "0";
-            let curIndustryArr = ele.data("industry").split("");
-            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
-            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
-            return "0";
-          },
-          "pie-4-background-color": "#E8747C",
-          "pie-4-background-size": function (ele, curIndustry = "D") {
-            if (ele.data("industry").trim() === "") return "0";
-            let curIndustryArr = ele.data("industry").split("");
-            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
-            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
-            return "0";
-          },
-          "pie-5-background-color": "#2978b4",
-          "pie-5-background-size": function (ele, curIndustry = "E") {
-            if (ele.data("industry").trim() === "") return "0";
-            let curIndustryArr = ele.data("industry").split("");
-            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
-            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
-            return "0";
-          },
-          "pie-6-background-color": "#a6cee3",
-          "pie-6-background-size": function (ele, curIndustry = "F") {
-            if (ele.data("industry").trim() === "") return "0";
-            let curIndustryArr = ele.data("industry").split("");
-            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
-            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
-            return "0";
-          },
-          "pie-7-background-color": "#e53f32",
-          "pie-7-background-size": function (ele, curIndustry = "G") {
-            if (ele.data("industry").trim() === "") return "0";
-            let curIndustryArr = ele.data("industry").split("");
-            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
-            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
-            return "0";
-          },
-          "pie-8-background-color": "#f9b4ae",
-          "pie-8-background-size": function (ele, curIndustry = "H") {
-            if (ele.data("industry").trim() === "") return "0";
-            let curIndustryArr = ele.data("industry").split("");
-            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
-            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
-            return "0";
-          },
-          "pie-9-background-color": "#f5f440",
-          "pie-9-background-size": function (ele, curIndustry = "I") {
-            if (ele.data("industry").trim() === "") return "0";
-            let curIndustryArr = ele.data("industry").split("");
-            let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
-            if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
-            return "0";
-          },
-        },
-      };
-      stylesJson.push(newStyleArr);
-      stylesJson.push(domainNodeStyle);
       cy = cytoscape({
         container: document.getElementById("main-chart"),
         elements: {
@@ -469,7 +405,6 @@ export default function MainView({ w, h }) {
       layout = cy.layout(layoutOption);
       layout.run();
 
-      // cy.boxSelectionEnabled(true); // 设置支持框选操作，如果同时启用平移，用户必须按住shift、control、alt或command中的一个来启动框选择
       urOption = {
         isDebug: true,
         actions: {},
@@ -584,20 +519,18 @@ export default function MainView({ w, h }) {
               cy.getElementById(curNodeId).neighborhood().select();
             },
           },
-          // {
-          //   id: "select-analyze",
-          //   content: "统计分析",
-          //   tooltipText: "统计分析",
-          //   selector: "node",
-          //   onClickFunction: function (e) {
-          //     let selection = cy.$(":selected");
-          //     let t = selection.map((n) => n.json().data);
-          //     let nodes = selection.nodes().map((ele) => ele.json().data);
-          //     let links = selection.edges().map((ele) => ele.json().data);
-          //     setResData({ nodes: [...nodes], links: [...links] });
-          //     setDoaminStatistic([...t]); // 获取选择的所有数据
-          //   },
-          // },
+          {
+            id: "select-analyze",
+            content: "统计分析",
+            tooltipText: "统计分析",
+            selector: "node",
+            onClickFunction: function (e) {
+              let selection = cy.$(":selected"); // 获取当前选中的数据
+              let nodes = selection.nodes().map((ele) => ele.json().data);
+              let links = selection.edges().map((ele) => ele.json().data);
+              setDataStatistics({ nodes: [...nodes], links: [...links] });
+            },
+          },
           {
             id: "copy-self",
             content: "复制id",
@@ -620,14 +553,6 @@ export default function MainView({ w, h }) {
       };
       cy.contextMenus(menuOptions);
     });
-
-    function domainPieStyle(ele, curIndustry) {
-      if (ele.data("industry").trim() === "") return "0";
-      let curIndustryArr = ele.data("industry").split("");
-      let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
-      if (curIndustryArr.includes(curIndustry)) return cellPie.toString();
-      return "0";
-    }
   }
 
   // 绘制控制面板
@@ -749,25 +674,12 @@ export default function MainView({ w, h }) {
     ]);
   }
 
-  // 移除节点以及其相邻的边
-  function onDeleteNode(Id) {
-    Id = "n2";
-    let j = cy.$("#" + Id);
-    cy.remove(j);
-  }
-
   // 根据节点类型过滤掉一些点
   function onFilterNode(nodeType) {
     nodeType = "Domain";
     var collection = cy.elements("node[type = '" + nodeType + "']"); // 使用选择器对元素进行删除
     cy.remove(collection);
   }
-
-  // 根据节点的id获取相应的元素
-  // function onSearchNode(Id) {
-  //   Id = "n2";
-  //   cy.getElementById(Id).style({ "background-color": "purple" }); // 更改被选中节点的属性
-  // }
 
   // 图片的下载功能
   function onExportChart() {
@@ -786,10 +698,6 @@ export default function MainView({ w, h }) {
     aLink.dispatchEvent(evt);
     aLink.click();
     // document.body.removeChild(aLink);
-  }
-
-  function onGetSelected() {
-    let selection = cy.elements(":selected");
   }
 
   // 过滤对应的回车和按钮提交事件
@@ -831,7 +739,7 @@ export default function MainView({ w, h }) {
     setArrowFlag(!arrowFlag);
   }
 
-  // 获取当前图中展示的数据
+  // 获取确定当前为一个子图并在右侧展示子图的数据
   function onSubmitRes() {
     let nodes, links;
     nodes = cy.nodes().map(function (ele, i) {
@@ -850,13 +758,14 @@ export default function MainView({ w, h }) {
     currICNodes = currICNodes.map((item, index) => {
       return item.data("numId");
     });
-    console.log("currICNodes", currICNodes);
 
     let graphnodes, graphlinks;
     graphnodes = cy.nodes().map(function (ele, i) {
       let inICLinks = data.nodes.filter((item, index) => {
+        console.log(item, ele);
         return item["id"] === ele.data("id");
       });
+
       inICLinks = inICLinks[0]["InICLinks"];
 
       let inICLinksAfterDelete = []; // 删除后的ICLinks
@@ -901,6 +810,125 @@ export default function MainView({ w, h }) {
     });
 
     setDifChartInput({ nodes: [...graphnodes], links: [...graphlinks] });
+  }
+
+  // 复选框确定是否添加样式
+  function applyStyle(e) {
+    setStyleCheck(!styleCheck);
+    if (e.target.checked) {
+      // 读取新的样式文件获取样式
+      Promise.all([
+        fetch("./json/cy-style-details.json").then(function (res) {
+          return res.json();
+        }),
+      ]).then(function (fetchData) {
+        let styleDetailsJson = fetchData[0];
+        styleDetailsJson = [...styleDetailsJson, ...stylesJson];
+        let newStyleArr = {
+          selector: "node",
+          style: {
+            width: function (ele) {
+              return ele.degree() < 30 ? 30 : ele.degree();
+            },
+            height: function (ele) {
+              return ele.degree() < 30 ? 30 : ele.degree();
+            },
+          },
+        };
+        let domainNodeStyle = {
+          selector: 'node[type="Domain"]',
+          style: {
+            "pie-size": "100%",
+            "pie-1-background-color": "#2978b4",
+            "pie-1-background-size": function (ele, curIndustry = "A") {
+              if (ele.data("industry").trim() === "") return "0";
+              let curIndustryArr = ele.data("industry").split("");
+              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              if (curIndustryArr.includes(curIndustry))
+                return cellPie.toString();
+              return "0";
+            },
+            "pie-2-background-color": "#f9bf6f",
+            "pie-2-background-size": function (ele, curIndustry = "B") {
+              if (ele.data("industry").trim() === "") return "0";
+              let curIndustryArr = ele.data("industry").split("");
+              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              if (curIndustryArr.includes(curIndustry))
+                return cellPie.toString();
+              return "0";
+            },
+            "pie-3-background-color": "#ff756a",
+            "pie-3-background-size": function (ele, curIndustry = "C") {
+              if (ele.data("industry").trim() === "") return "0";
+              let curIndustryArr = ele.data("industry").split("");
+              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              if (curIndustryArr.includes(curIndustry))
+                return cellPie.toString();
+              return "0";
+            },
+            "pie-4-background-color": "#E8747C",
+            "pie-4-background-size": function (ele, curIndustry = "D") {
+              if (ele.data("industry").trim() === "") return "0";
+              let curIndustryArr = ele.data("industry").split("");
+              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              if (curIndustryArr.includes(curIndustry))
+                return cellPie.toString();
+              return "0";
+            },
+            "pie-5-background-color": "#2978b4",
+            "pie-5-background-size": function (ele, curIndustry = "E") {
+              if (ele.data("industry").trim() === "") return "0";
+              let curIndustryArr = ele.data("industry").split("");
+              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              if (curIndustryArr.includes(curIndustry))
+                return cellPie.toString();
+              return "0";
+            },
+            "pie-6-background-color": "#a6cee3",
+            "pie-6-background-size": function (ele, curIndustry = "F") {
+              if (ele.data("industry").trim() === "") return "0";
+              let curIndustryArr = ele.data("industry").split("");
+              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              if (curIndustryArr.includes(curIndustry))
+                return cellPie.toString();
+              return "0";
+            },
+            "pie-7-background-color": "#e53f32",
+            "pie-7-background-size": function (ele, curIndustry = "G") {
+              if (ele.data("industry").trim() === "") return "0";
+              let curIndustryArr = ele.data("industry").split("");
+              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              if (curIndustryArr.includes(curIndustry))
+                return cellPie.toString();
+              return "0";
+            },
+            "pie-8-background-color": "#f9b4ae",
+            "pie-8-background-size": function (ele, curIndustry = "H") {
+              if (ele.data("industry").trim() === "") return "0";
+              let curIndustryArr = ele.data("industry").split("");
+              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              if (curIndustryArr.includes(curIndustry))
+                return cellPie.toString();
+              return "0";
+            },
+            "pie-9-background-color": "#f5f440",
+            "pie-9-background-size": function (ele, curIndustry = "I") {
+              if (ele.data("industry").trim() === "") return "0";
+              let curIndustryArr = ele.data("industry").split("");
+              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              if (curIndustryArr.includes(curIndustry))
+                return cellPie.toString();
+              return "0";
+            },
+          },
+        };
+        styleDetailsJson.push(newStyleArr);
+        styleDetailsJson.push(domainNodeStyle);
+        cy.style().fromJson(styleDetailsJson).update();
+      });
+    } else {
+      cy.style().fromJson(stylesJson).update(); // 恢复到只添加类的样式
+    }
   }
 
   function drawLegend() {
@@ -1242,6 +1270,9 @@ export default function MainView({ w, h }) {
             />
           </div>
           <Checkbox onChange={addArrow}>箭头方向</Checkbox>
+          <Checkbox checked={styleCheck} onChange={applyStyle}>
+            应用样式
+          </Checkbox>
         </div>
       </div>
       <div id="main-legend">
@@ -1252,7 +1283,7 @@ export default function MainView({ w, h }) {
             style={{ paddingLeft: "40px" }}
             onClick={onCollapse}
           />
-          <ExpandOutlined
+          <CaretDownOutlined
             id="expand-legend-icon"
             style={{ paddingLeft: "10px" }}
             onClick={onExpand}

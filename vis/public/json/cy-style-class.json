@@ -1,0 +1,68 @@
+[
+  {
+    "selector": "node.stackhighlightNode",
+    "style": {
+      "border-color": "#f5f440",
+      "border-width": "3px"
+    }
+  },
+  {
+    "selector": "edge.arrow",
+    "style": {
+      "target-arrow-shape": "vee",
+      "target-arrow-color": "#aaa",
+      "curve-style": "straight",
+      "width": 6
+    }
+  },
+  {
+    "selector": "node.tablehighlightNode",
+    "style": {
+      "border-color": "#f5f440",
+      "border-width": "3px"
+    }
+  },
+  {
+    "selector": "edge.tablehighlightLink",
+    "style": {
+      "line-style": "dashed",
+      "width": 6
+    }
+  },
+  {
+    "selector": "node.semitransp",
+    "style": { "opacity": "0.5" }
+  },
+  {
+    "selector": "node.coreNode",
+    "style": {
+      "border-color": "#f5f440",
+      "border-width": "2px",
+      "opacity": "1"
+    }
+  },
+  {
+    "selector": "node.keyRoad",
+    "style": {
+      "border-color": "#f5f440",
+      "opacity": "1"
+    }
+  },
+  {
+    "selector": "edge.semitransp",
+    "style": { "opacity": "0.2" }
+  },
+  {
+    "selector": "node:selected",
+    "style": {
+      "border-color": "#ffff00",
+      "border-width": "3px"
+    }
+  },
+  {
+    "selector": "edge:selected",
+    "style": {
+      "line-color": "yellow"
+    }
+  }
+]

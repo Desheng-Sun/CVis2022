@@ -1,19 +1,45 @@
 import React, { useEffect, useState } from "react";
 import * as d3 from "d3";
 import PubSub from "pubsub-js";
+import d3ContextMenu from "d3-context-menu";
 import "./index.css";
+import { Button } from "antd";
+import { NodeIndexOutlined } from "@ant-design/icons";
 
 export default function IndustryStackChart({ w, h }) {
   const [data, setData] = useState([]);
   const [svgWidth, setSvgWidth] = useState(w);
   const [svgHeight, setSvgHeight] = useState(h);
   const [dataParam, setDataParam] = useState([]);
-  const [selectedNodeNumId, setSelectedNodeNumId] = useState("");
+
+  // 传递给其他组件的数据
+  const [selectedNodeNumId, setSelectedNodeNumId] = useState(""); // 主图高亮的数据
+  const [toPath, setToPath] = useState({ startNode: [], endNode: [] }); // 传递给关键路径识别的算法并在关键路径图中绘制出当前路径
 
   PubSub.unsubscribe("industryStackDt");
+  // 数据格式: 缺少每种产业的数量信息
+  //   [  {
+  //     "numId": 16802,
+  //     "id": "IP_7cc9198e5eaa613f2e0065ab6600b9dcfb62f4f598b20383925897b83e1b1f9b",
+  //     "name": "104.244.xxx.xxx",
+  //     "type": "IP",
+  //     "industry": "  ",
+  //     "InICLinks": []
+  // },
+  // {
+  //   "numId": 16802,
+  //   "id": "IP_7cc9198e5eaa613f2e0065ab6600b9dcfb62f4f598b20383925897b83e1b1f9b",
+  //   "name": "104.244.xxx.xxx",
+  //   "type": "IP",
+  //   "industry": "  ",
+  //   "InICLinks": []
+  // }]
+
   PubSub.subscribe("industryStackDt", (msg, dataparam) => {
+    // 这里根据dataParamn参数从后端获取数据
     setDataParam(dataparam);
   });
+
   useEffect(() => {
     let dt = [
       {
@@ -66,6 +92,106 @@ export default function IndustryStackChart({ w, h }) {
         ],
         group: 1,
       },
+      {
+        id: "Cert_E",
+        numId: 0,
+        ICIndustry: [
+          { industry: "AB", number: 2 },
+          { industry: "AE", number: 8 },
+          { industry: "BCE", number: 1 },
+        ],
+        group: 1,
+      },
+      {
+        id: "Cert_E",
+        numId: 0,
+        ICIndustry: [
+          { industry: "AB", number: 2 },
+          { industry: "AE", number: 8 },
+          { industry: "BCE", number: 1 },
+        ],
+        group: 1,
+      },
+      {
+        id: "Cert_E",
+        numId: 0,
+        ICIndustry: [
+          { industry: "AB", number: 2 },
+          { industry: "AE", number: 8 },
+          { industry: "BCE", number: 1 },
+        ],
+        group: 1,
+      },
+      {
+        id: "Cert_E",
+        numId: 0,
+        ICIndustry: [
+          { industry: "AB", number: 2 },
+          { industry: "AE", number: 8 },
+          { industry: "BCE", number: 1 },
+        ],
+        group: 1,
+      },
+      {
+        id: "Cert_E",
+        numId: 0,
+        ICIndustry: [
+          { industry: "AB", number: 2 },
+          { industry: "AE", number: 8 },
+          { industry: "BCE", number: 1 },
+        ],
+        group: 1,
+      },
+      {
+        id: "Cert_E",
+        numId: 0,
+        ICIndustry: [
+          { industry: "AB", number: 2 },
+          { industry: "AE", number: 8 },
+          { industry: "BCE", number: 1 },
+        ],
+        group: 1,
+      },
+      {
+        id: "Cert_E",
+        numId: 0,
+        ICIndustry: [
+          { industry: "AB", number: 2 },
+          { industry: "AE", number: 8 },
+          { industry: "BCE", number: 1 },
+        ],
+        group: 1,
+      },
+      {
+        id: "Cert_E",
+        numId: 0,
+        ICIndustry: [
+          { industry: "AB", number: 2 },
+          { industry: "AE", number: 8 },
+          { industry: "BCE", number: 1 },
+        ],
+        group: 1,
+      },
+      {
+        id: "Cert_E",
+        numId: 0,
+        ICIndustry: [
+          { industry: "AB", number: 2 },
+          { industry: "AE", number: 8 },
+          { industry: "BCE", number: 1 },
+        ],
+        group: 1,
+      },
+      {
+        id: "Cert_E",
+        numId: 0,
+        ICIndustry: [
+          { industry: "AB", number: 2 },
+          { industry: "AE", number: 8 },
+          { industry: "BCE", number: 1 },
+        ],
+        group: 1,
+      },
     ];
     setData(dt);
   }, [dataParam]);
@@ -76,8 +202,13 @@ export default function IndustryStackChart({ w, h }) {
     }
   }, [selectedNodeNumId]);
 
+  // useEffect(() => {
+  //   console.log(toPath);
+  // }, [toPath]);
+
   useEffect(() => {
     setSvgWidth(w);
+    console.log(w);
   }, [w]);
 
   useEffect(() => {
@@ -86,12 +217,13 @@ export default function IndustryStackChart({ w, h }) {
 
   useEffect(() => {
     drawChart();
-  }, [svgWidth, svgHeight, data]);
+  }, [svgWidth, data]);
 
   function drawChart() {
     if (data.length === 0) return;
 
-    d3.select("#industry-stack svg").remove();
+    d3.select("#industry-stack-chart svg").remove();
+    d3.select("#industry-stack-chart .stackToolTip").remove();
     var combinationOrderSet = new Set();
     var innerCirlceColor = { IP: "#33a02c", Cert: "#ff756a" };
     // 映射产业类型
@@ -175,7 +307,7 @@ export default function IndustryStackChart({ w, h }) {
     let gHeight = 50,
       circleR = 5,
       levelNumber = 3;
-    let gWidth = svgWidth / levelNumber;
+    let gWidth = (svgWidth * 0.9) / levelNumber;
     const arc = d3
       .arc()
       .innerRadius((i, j) => circleR + (gHeight / industryType.length) * j)
@@ -188,9 +320,9 @@ export default function IndustryStackChart({ w, h }) {
       .padAngle(0.2);
 
     let wrapper = d3
-      .select("#industry-stack")
+      .select("#industry-stack-chart")
       .append("svg")
-      .attr("width", svgWidth)
+      .attr("width", svgWidth * 0.9)
       .attr(
         "height",
         (gHeight + circleR + 10) * 2 * (data.length / levelNumber + 1)
@@ -201,6 +333,28 @@ export default function IndustryStackChart({ w, h }) {
         let y = gHeight + circleR * 2;
         return "translate(" + x.toString() + "," + y.toString() + ")";
       });
+
+    // 节点的右键事件
+    const menu = [
+      {
+        title: "资产起点",
+        action: function (d) {
+          setToPath((toPath) => ({
+            startNode: [...toPath.startNode, d.numId],
+            endNode: [...toPath.endNode],
+          }));
+        },
+      },
+      {
+        title: "资产终点",
+        action: function (d) {
+          setToPath((toPath) => ({
+            startNode: [...toPath.startNode],
+            endNode: [...toPath.endNode, d.numId],
+          }));
+        },
+      },
+    ];
 
     let g = wrapper
       .selectAll("g")
@@ -214,29 +368,43 @@ export default function IndustryStackChart({ w, h }) {
         return "translate(" + x.toString() + "," + y.toString() + ")";
       })
       .on("click", function (event, d) {
-        // 单击选择，双击取消
-        setSelectedNodeNumId("set-" + d.id);
+        if (event.ctrlKey) {
+          // 按下Ctrl键 + click 取消选择
+          // setSelectedNodeNumId("reset-" + d.id); // 取消在主图中高亮当前数据点
+        } else {
+          console.log(d);
+          // setSelectedNodeNumId("set-" + d.id); // 在主图中高亮当前数据点
+        }
       })
-      .on("dblclick", function (event, d) {
-        setSelectedNodeNumId("reset-" + d.id);
-      });
+      .on(
+        "contextmenu",
+        d3ContextMenu(menu, {
+          position: function (d, event) {
+            return {
+              top: event.y + 10,
+              left: event.x + 10,
+            };
+          },
+        })
+      );
 
     g.append("rect")
       .attr("rx", 6)
       .attr("ry", 6)
-      .attr("x", -60)
-      .attr("y", -57)
+      .attr("x", -63)
+      .attr("y", -59)
       .attr("class", "bgRect")
       .attr("fill", "transparent")
       .attr("stroke", "none")
-      .attr("width", (gHeight + circleR * 2) * 2 + 10)
-      .attr("height", (gHeight + circleR * 2) * 2 + 5)
+      .attr("width", (gHeight + circleR * 2) * 2 + 2)
+      .attr("height", (gHeight + circleR * 2) * 2 + 2)
       .on("click", function (event, d) {
-        // 单击选择，双击取消
-        d3.select(this).attr("fill", "#ccc");
-      })
-      .on("dblclick", function (event, d) {
-        d3.select(this).attr("fill", "transparent");
+        if (event.ctrlKey) {
+          // 按下Ctrl键 + click 取消选择
+          d3.select(this).attr("fill", "transparent");
+        } else {
+          d3.select(this).attr("fill", "#ccc");
+        }
       });
 
     g.append("text")
@@ -267,7 +435,7 @@ export default function IndustryStackChart({ w, h }) {
       .attr("stroke-width", 3);
 
     var industryStacktoolTip = d3
-      .select("#industry-stack")
+      .select("#industry-stack-chart")
       .append("div")
       .attr("class", "stackToolTip");
 
@@ -316,7 +484,7 @@ export default function IndustryStackChart({ w, h }) {
             })
             .attr("stroke-width", 0.5)
             .on("mouseover", (event, d) => {
-              let htmlText = `产业 <strong>${industryType[j]}</strong>`;
+              let htmlText = `id: <strong>${d.id}</strong> <br>产业: <strong>${industryType[j]}</strong>`;
               industryStacktoolTip
                 .style("left", event.pageX + 5 + "px")
                 .style("top", event.pageY + 5 + "px")
@@ -331,15 +499,44 @@ export default function IndustryStackChart({ w, h }) {
     }
   }
 
+  function onClearSelection() {
+    d3.selectAll("#industry-stack-chart rect").attr("fill", "transparent");
+    setSelectedNodeNumId("reset-");
+    setToPath({ startNode: [], endNode: [] });
+    PubSub.publish("assetsToPathDt", { startNode: [], endNode: [] }); // 传递给关键路径组件空数据，用于清空数据
+  }
+  function onSubmitToPath() {
+    // 像关键路径图传递数据
+    PubSub.publish("assetsToPathDt", toPath);
+  }
+
   return (
     <div
       id="industry-stack"
       style={{
         width: svgWidth,
         height: svgHeight,
-        overflow: "auto",
-        background: "white",
       }}
-    ></div>
+    >
+      <div id="industry-stack-chart" style={{ height: svgHeight }}></div>
+      <div
+        id="stackControl"
+        style={{
+          height: svgHeight,
+        }}
+      >
+        <Button onClick={onClearSelection} type="dashed" size="small">
+          清空
+        </Button>
+        <Button
+          onClick={onSubmitToPath}
+          type="dashed"
+          size="small"
+          icon={<NodeIndexOutlined />}
+        >
+          路径
+        </Button>
+      </div>
+    </div>
   );
 }
