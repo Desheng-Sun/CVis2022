@@ -1038,21 +1038,21 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
         difInfo["industry"].push({
           industry: k,
           number: ICindustry1,
-          // index: 0,
+          index: 0,
           startICLinkNum: startICLinkNum,
           height: useIndustryType[k]
         })
         difInfo["industry"].push({
           industry: k,
           number: ICindustry2,
-          // index: 1,
+          index: 1,
           startICLinkNum: startICLinkNum,
           height: useIndustryType[k]
         })
         difInfo["industry"].push({
           industry: k,
           number: ICindustry3,
-          // index: 2,
+          index: 2,
           startICLinkNum: startICLinkNum,
           height: useIndustryType[k]
         })
