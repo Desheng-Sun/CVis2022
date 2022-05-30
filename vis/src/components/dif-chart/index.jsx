@@ -14,10 +14,11 @@ export default function DifChart({ w, h }) {
   const [linksInfo, setLinksInfo] = useState({ nodes: [], links: [] });
 
   // 随主图数据更新而更新视图
-  PubSub.unsubscribe("updateDifChart");
-  PubSub.subscribe("updateDifChart", (msg, linksInfo) => {
-    setLinksInfo(linksInfo);
-  });
+  
+  // PubSub.unsubscribe("updateDifChart");
+  // PubSub.subscribe("updateDifChart", (msg, linksInfo) => {
+  //   setLinksInfo(linksInfo);
+  // });
 
   // 随系统缩放修改画布大小
   useEffect(() => {
@@ -34,7 +35,6 @@ export default function DifChart({ w, h }) {
 
   useEffect(() => {
     getDifChartSds(linksInfo).then((res) => {
-      console.log(res);
       console.log("------", res);
       setData(res);
     });
@@ -44,13 +44,30 @@ export default function DifChart({ w, h }) {
   function draw() {
     if (JSON.stringify(data) === "[]") return;
     d3.selectAll("#diff-legend svg").remove();
-    d3.selectAll("#diff-chart svg").remove();
+    d3.selectAll("#diff-all-chart svg").remove();
+
+    // 绘制左侧的所有产业数量统计图
+    let industrySvg = d3
+      .select("#all-industry")
+      .append("svg")
+      .attr("width", "100%")
+      .attr("height", "100%");
+
+    // 绘制每一对IC之间的产业信息图
+    let ICSvg = d3
+      .select("#diff-chart")
+      .append("svg")
+      .attr("width", "100%")
+      .attr("height", "100%");
   }
 
   return (
     <div id="difference-chart">
       <div id="diff-legend" style={{ width: "100%", height: "5%" }}></div>
-      <div id="diff-chart" style={{ width: "100%", height: "95%" }}></div>
+      <div id="diff-all-chart" style={{ width: "100%", height: "95%" }}>
+        <div id="all-industry" style={{ width: "20%", height: "100%" }}></div>
+        <div id="diff-chart" style={{ width: "80%", height: "100%" }}></div>
+      </div>
     </div>
   );
 }

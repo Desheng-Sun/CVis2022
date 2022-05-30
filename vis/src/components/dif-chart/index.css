@@ -26,3 +26,8 @@
   text-anchor: middle;
   font-size: 8px;
 }
+
+#diff-all-chart {
+  display: flex;
+  flex-direction: row;
+}
