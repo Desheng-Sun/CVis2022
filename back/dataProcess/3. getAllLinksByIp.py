@@ -16,6 +16,7 @@ def getAllLinksByIp(nowPath, numId, nodeCsvW, ICScreen, linksAll):
     linksToIp = []
     linksToCert = []
     linksToWhos = []
+    linksToCname = []
     linksToDomain = []
     for i in nodeLinks["links"]:
         if(i[0] == "r_dns_a"):
@@ -24,6 +25,8 @@ def getAllLinksByIp(nowPath, numId, nodeCsvW, ICScreen, linksAll):
             linksToCert.append(i)
         elif(i[0] == "r_whois_phone" or i[0] == "r_whois_email" or i[0] == "r_whois_name"):
             linksToWhos.append(i)
+        elif(i[0] == "r_cname"):
+            linksToCname.append(i)
         elif(i[3] > 0):
             linksToDomain.append(i)
     nodeAllLinks = [linksToIp,
@@ -78,7 +81,7 @@ def getLinksToTarget(numId, typeName, i, nowPath, nodeAllLinks, nodeLinks, nodeC
     nodeInMiddle2 = []
     linksInMiddle = []
     # 获取当前nodes所在的所有Links，如果Links是跳转到域名的注册人姓名等也保存
-    for j in nodeAllLinks[3]:
+    for j in nodeAllLinks[4]:
         if(j[1] in nodesToTarget and j[2] in nodesToTarget):
             linksToTarget.append(j)
         elif(j[3] == 2):
@@ -108,6 +111,13 @@ def getLinksToTarget(numId, typeName, i, nowPath, nodeAllLinks, nodeLinks, nodeC
         if(j[1] in nodesToTarget):
             linksToTarget.append(j)
             nodesToTarget.append(j[2])
+    for j in nodeAllLinks[3]:
+        if(j[1] in nodesToTarget and j[2] not in nodesToTarget):
+            linksToTarget.append(j)
+            nodesToTarget.append(j[2])
+        if(j[1] not in nodesToTarget or j[2] in nodesToTarget):
+            linksToTarget.append(j)
+            nodesToTarget.append(j[1])
     
 
     # 统计当前Links和Nodes的数量及类型
