@@ -243,40 +243,41 @@ if __name__ == '__main__':
         nodesInIClinks[str(i[0])] = [[], []]
     ICScreenJ = open(nowPath + "ICScreen.json", "r", encoding="utf-8")
     ICScreen = json.load(ICScreenJ)
-    # nodesInIClinks = getNodesInICLinks(
-    #     nodesInIClinks, ICScreen[0], "ICScreenLinks/", nowPath)
-    # nodesInIClinks = getNodesInICLinks(
-    #     nodesInIClinks, ICScreen[1], "ICLinks/", nowPath)
+    nodesInIClinks = getNodesInICLinks(
+        nodesInIClinks, ICScreen[0], "ICScreenLinks/", nowPath)
+    nodesInIClinks = getNodesInICLinks(
+        nodesInIClinks, ICScreen[1], "ICLinks/", nowPath)
 
-    # with alive_bar(len(nodesInIClinks)) as bar:
-    #     for i in nodeCsvW:
-    #         j = str(i[0])
-    #         if(len(nodesInIClinks[j][0]) == 0 and len(nodesInIClinks[j][1]) == 0):
-    #             nodesInIClinks.pop(j)
-    #         bar()
+    with alive_bar(len(nodesInIClinks)) as bar:
+        for i in nodeCsvW:
+            j = str(i[0])
+            if(len(nodesInIClinks[j][0]) == 0 and len(nodesInIClinks[j][1]) == 0):
+                nodesInIClinks.pop(j)
+            bar()
     
-    # for i in ipNode:
-    #     if(str(i[0]) in nodesInIClinks):
-    #         nodesInIClinks.pop(str(i[0]))
-    # for i in certNode:
-    #     if(str(i[0]) in nodesInIClinks):
-    #         nodesInIClinks.pop(str(i[0]))
+    for i in ipNode:
+        if(str(i[0]) in nodesInIClinks):
+            nodesInIClinks.pop(str(i[0]))
+    for i in certNode:
+        if(str(i[0]) in nodesInIClinks):
+            nodesInIClinks.pop(str(i[0]))
 
-    # with alive_bar(len(nodesInIClinks)) as bar:
-    #     for i in nodesInIClinks:
-    #         inLinksSet = set()
-    #         for j in nodesInIClinks[i][0]:
-    #             inLinksSet.add(j[0])
-    #             inLinksSet.add(j[1])
-    #         nodesInIClinks[i][1] = list(
-    #             set(nodesInIClinks[i][1]).difference(inLinksSet))
-    #         bar()
+    with alive_bar(len(nodesInIClinks)) as bar:
+        for i in nodesInIClinks:
+            inLinksSet = set()
+            for j in nodesInIClinks[i][0]:
+                inLinksSet.add(j[0])
+                inLinksSet.add(j[1])
+            nodesInIClinks[i][1] = list(
+                set(nodesInIClinks[i][1]).difference(inLinksSet))
+            bar()
 
-    # with open(nowPath + "nodeICLinks.json", "w", encoding="utf-8") as f:
-    #     json.dump(nodesInIClinks, f, ensure_ascii=False)
+    with open(nowPath + "nodeICLinks.json", "w", encoding="utf-8") as f:
+        json.dump(nodesInIClinks, f, ensure_ascii=False)
 
     with open(nowPath + "nodeICLinks.json", "r", encoding="utf-8") as f:
         nodesInIClinks = json.load(f)
+        print(nodesInIClinks["479"])
     ICAloneNodes = {}
     for i in ICScreen[0]:
         ICAloneNodes[str(i)] = {
@@ -343,4 +344,4 @@ if __name__ == '__main__':
 
     # 将所有数据进行合并
     print("将所有数据进行合并----------------------------------------------")
-    mergeNodesAlone()
+    mergeNodesAlone ()
