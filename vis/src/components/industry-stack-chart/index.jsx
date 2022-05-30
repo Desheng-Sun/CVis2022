@@ -41,6 +41,7 @@ export default function IndustryStackChart({ w, h }) {
   });
 
   useEffect(() => {
+    
     let dt = [
       {
         id: "IP_A",

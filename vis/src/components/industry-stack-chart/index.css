@@ -14,19 +14,20 @@
   z-index: 1000;
 }
 
-#industry-stack{
+#industry-stack {
   display: flex;
   flex-direction: row;
   background: "white";
 }
 
-#stackControl{
+#stackControl {
   width: 10%;
 }
 
-#industry-stack-chart{
+#industry-stack-chart {
   width: 90%;
   flex: 29;
   overflow-y: auto;
   background: "white";
+  overflow-x: hidden;
 }
