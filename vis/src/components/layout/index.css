@@ -3,7 +3,7 @@
   width: 100vw;
   background-color: rgb(240, 239, 239);
   display: flex;
-  /* overflow: hidden; */
+  overflow: hidden;
 }
 
 /* 两栏 发现团伙 分析团伙 */
@@ -156,7 +156,7 @@
   /* background-color: white; */
 }
 
-#asset{
+#asset {
   width: 100%;
   flex: 6.4;
   /* background-color: rgb(220, 213, 226); */

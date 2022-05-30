@@ -2100,13 +2100,11 @@ export default function DetailList({ w, h, divname, dataparam }) {
         return nodeTable;
       });
       nodeTable.addEventListener("click", (event) => {
-        // 测试下载功能是否成功
-        if (event.target.nodeName === "TH") {
-          downloadRes();
-        }
         // 增加元素
         if (event.target.nodeName === "INPUT" && event.target.checked) {
-          let curNumId = parseInt(event.path[2].cells[1].innerHTML.replaceAll(",", "")); // 将html的numId转换为int类型
+          let curNumId = parseInt(
+            event.path[2].cells[1].innerHTML.replaceAll(",", "")
+          ); // 将html的numId转换为int类型
           if (!isNaN(curNumId)) {
             setSelectionNode((selectionNode) =>
               Array.from(new Set([...selectionNode, curNumId]))
@@ -2115,7 +2113,9 @@ export default function DetailList({ w, h, divname, dataparam }) {
         }
         // 删除元素
         if (event.target.nodeName === "INPUT" && !event.target.checked) {
-          let curNumId = parseInt(event.path[2].cells[1].innerHTML.replaceAll(",", ""));
+          let curNumId = parseInt(
+            event.path[2].cells[1].innerHTML.replaceAll(",", "")
+          );
           if (!isNaN(curNumId)) {
             setSelectionNode((selectionNode) =>
               selectionNode.filter((d) => d !== curNumId)
@@ -2124,6 +2124,12 @@ export default function DetailList({ w, h, divname, dataparam }) {
             setSelectionNode([]);
           }
         }
+      });
+
+      // 下载事件
+      nodeTable.addEventListener("contextmenu", (event) => {
+        event.preventDefault();
+        downloadRes('node');
       });
     } else if (divname === "combine-table-dl-link") {
       g.append(() => {
@@ -2164,6 +2170,12 @@ export default function DetailList({ w, h, divname, dataparam }) {
             setSelectionLink([]);
           }
         }
+
+        // 下载表格数据
+        linkTable.addEventListener("contextmenu", (event) => {
+          event.preventDefault();
+          downloadRes('link');
+        });
       });
     }
   }, [nodeData, linkData, svgWidth, svgHeight]);
@@ -2179,54 +2191,57 @@ export default function DetailList({ w, h, divname, dataparam }) {
     </div>`;
   }
 
-  function downloadRes() {
-    console.log("download");
+  function downloadRes(type) {
     const tNodeHeader = "id,name,type,industry,isCore,";
     var nodeFilter = ["id", "name", "type", "industry", "isCore"];
     const tLinkHeader = "relation,source,target,isCore,";
     var linkFilter = ["relation", "source", "target", "isCore"];
     // 保存节点信息
-    let nodeCsvString = tNodeHeader;
-    nodeCsvString += "\r\n";
-    nodeData.forEach((item) => {
-      nodeFilter.forEach((key) => {
-        let value = item[key];
-        if (key === "industry") {
-          let valueArr = '"[' + value.split("").toString() + ']"';
-          nodeCsvString += valueArr + ",";
-        } else {
-          nodeCsvString += value + ",";
-        }
-      });
+    if(type === 'node'){
+      let nodeCsvString = tNodeHeader;
       nodeCsvString += "\r\n";
-    });
-    nodeCsvString =
-      "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(nodeCsvString);
-    let nodeLink = document.createElement("a");
-    nodeLink.href = nodeCsvString;
-    nodeLink.download = "节点.csv";
-    document.body.appendChild(nodeLink);
-    nodeLink.click();
-    document.body.removeChild(nodeLink);
+      nodeData.forEach((item) => {
+        nodeFilter.forEach((key) => {
+          let value = item[key];
+          if (key === "industry") {
+            let valueArr = '"[' + value.split("").toString() + ']"';
+            nodeCsvString += valueArr + ",";
+          } else {
+            nodeCsvString += value + ",";
+          }
+        });
+        nodeCsvString += "\r\n";
+      });
+      nodeCsvString =
+        "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(nodeCsvString);
+      let nodeLink = document.createElement("a");
+      nodeLink.href = nodeCsvString;
+      nodeLink.download = "节点.csv";
+      document.body.appendChild(nodeLink);
+      nodeLink.click();
+      document.body.removeChild(nodeLink);
+    }
 
     // 保存边的信息
-    let linkCsvString = tLinkHeader;
-    linkCsvString += "\r\n";
-    linkData.forEach((item) => {
-      linkFilter.forEach((key) => {
-        let value = item[key];
-        linkCsvString += value + ",";
-      });
+    else if(type === 'link'){
+      let linkCsvString = tLinkHeader;
       linkCsvString += "\r\n";
-    });
-    linkCsvString =
-      "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(linkCsvString);
-    let linkLink = document.createElement("a");
-    linkLink.href = linkCsvString;
-    linkLink.download = "边.csv";
-    document.body.appendChild(linkLink);
-    linkLink.click();
-    document.body.removeChild(linkLink);
+      linkData.forEach((item) => {
+        linkFilter.forEach((key) => {
+          let value = item[key];
+          linkCsvString += value + ",";
+        });
+        linkCsvString += "\r\n";
+      });
+      linkCsvString =
+        "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(linkCsvString);
+      let linkLink = document.createElement("a");
+      linkLink.href = linkCsvString;
+      linkLink.download = "边.csv";
+      document.body.appendChild(linkLink);
+      linkLink.click();
+      document.body.removeChild(linkLink);
+    }
   }
 
   function sparkbar(max) {
