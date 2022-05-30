@@ -846,6 +846,10 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
           ICLinksIndustry[j][i["industry"]] = 0
         }
         ICLinksIndustry[j][i["industry"]] += 1
+        let k = j.split(",")
+        ICNodesIndustry[k[0]] = {}
+        ICNodesIndustry[k[1]] = {}
+
       }
       else {
         ICNodesIndustry[j] = {}
@@ -878,6 +882,9 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
   let useIndustryType = {}
   let height = 0
   for (let i of industryType) {
+    if (i == "  ") {
+      continue
+    }
     height += 1
     useIndustryType[i] = height
   }
@@ -904,7 +911,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
     ICIndustryInfo.push({
       industry: i,
       number: linksNum,
-      index: 0,
+      index: 1,
       height: useIndustryType[i]
     })
   }
@@ -935,16 +942,15 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
       }
     }
   }
-
   for (let i in ICNodesIndustry) {
-    for (let j in industryType) {
+    for (let j of industryType) {
       if (!ICNodesIndustry[i].hasOwnProperty(j)) {
         ICNodesIndustry[i][j] = 0
       }
     }
   }
   for (let i in ICLinksIndustry) {
-    for (let j in industryType) {
+    for (let j of industryType) {
       if (!ICLinksIndustry[i].hasOwnProperty(j)) {
         ICLinksIndustry[i][j] = 0
       }
@@ -984,6 +990,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
         sourceNumId = j[1]
         targetNumId = j[0]
       }
+      ICLinks[targetNumId] = ICLinks[targetNumId].filter(e => e != ICLinksString)
       let targetICInfo = nodeNumIdInfo[parseInt(targetNumId) - 1]
       ICLinksInfo.push({
         numId: sourceICInfo[0],
@@ -993,6 +1000,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
         index: 0,
         startICLinkNum: startICLinkNum,
       })
+
       ICLinksInfo.push({
         numId: targetICInfo[0],
         id: targetICInfo[1],
@@ -1014,25 +1022,25 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
         }
 
         difInfo.push({
-          industry: i,
+          industry: k,
           number: ICindustry1,
           index: 0,
           startICLinkNum: startICLinkNum,
-          height: useIndustryType[i]
+          height: useIndustryType[k]
         })
         difInfo.push({
-          industry: i,
+          industry: k,
           number: ICindustry2,
           index: 1,
           startICLinkNum: startICLinkNum,
-          height: useIndustryType[i]
+          height: useIndustryType[k]
         })
         difInfo.push({
-          industry: i,
+          industry: k,
           number: ICindustry3,
           index: 2,
           startICLinkNum: startICLinkNum,
-          height: useIndustryType[i]
+          height: useIndustryType[k]
         })
       }
     }
@@ -1212,7 +1220,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
 
   // sendData["depthmax"] = depthmax
 
-  let sendData = [ICIndustryInfo, difInfo, startICLinkNum]
+  let sendData = [ICIndustryInfo, difInfo, ICLinksInfo]
   res.send(sendData);
   res.end()
 });
@@ -1928,20 +1936,20 @@ app.post("/getIdentifyData", jsonParser, (req, res, next) => {
 
 //输入起点终点，返回关键链路接口
 app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
-  let source = 1,
-    target = 4;
-  let edges = [
-    [1, 2],
-    [2, 4],
-    [3, 4],
-    [1, 3],
-    [5, 6],
-    [4, 8],
-    [5, 7],
-  ];
-  let G = new jsnx.Graph();
-  G.addEdgesFrom(edges);
-  var path = jsnx.bidirectionalShortestPath(G, source, target);
-  res.send(path);
-  res.end();
+  // let source = 1,
+  //   target = 4;
+  // let edges = [
+  //   [1, 2],
+  //   [2, 4],
+  //   [3, 4],
+  //   [1, 3],
+  //   [5, 6],
+  //   [4, 8],
+  //   [5, 7],
+  // ];
+  // let G = new jsnx.Graph();
+  // G.addEdgesFrom(edges);
+  // var path = jsnx.bidirectionalShortestPath(G, source, target);
+  // res.send(path);
+  // res.end();
 });
