@@ -2106,7 +2106,7 @@ export default function DetailList({ w, h, divname, dataparam }) {
         }
         // 增加元素
         if (event.target.nodeName === "INPUT" && event.target.checked) {
-          let curNumId = parseInt(event.path[2].cells[1].innerHTML); // 将html的numId转换为int类型
+          let curNumId = parseInt(event.path[2].cells[1].innerHTML.replaceAll(",", "")); // 将html的numId转换为int类型
           if (!isNaN(curNumId)) {
             setSelectionNode((selectionNode) =>
               Array.from(new Set([...selectionNode, curNumId]))
@@ -2115,7 +2115,7 @@ export default function DetailList({ w, h, divname, dataparam }) {
         }
         // 删除元素
         if (event.target.nodeName === "INPUT" && !event.target.checked) {
-          let curNumId = parseInt(event.path[2].cells[1].innerHTML);
+          let curNumId = parseInt(event.path[2].cells[1].innerHTML.replaceAll(",", ""));
           if (!isNaN(curNumId)) {
             setSelectionNode((selectionNode) =>
               selectionNode.filter((d) => d !== curNumId)

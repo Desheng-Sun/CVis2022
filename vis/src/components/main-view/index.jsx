@@ -116,7 +116,7 @@ export default function MainView({ w, h }) {
   const [layoutFlag, setLayoutFlag] = useState(false);
   const [arrowFlag, setArrowFlag] = useState(false);
   const [styleCheck, setStyleCheck] = useState(false);
-  const [fromTableNode, setfromTableNode] = useState([]);
+  const [fromTableNode, setFromTableNode] = useState([]);
   const [fromTableLink, setFromTableLink] = useState([]);
   const [fromIndustryStackNode, setFromIndustryStackNode] = useState("");
   const [data, setData] = useState({ nodes: [], links: [] });
@@ -282,13 +282,14 @@ export default function MainView({ w, h }) {
   // 从table中传入数据进行高亮
   PubSub.unsubscribe("tableToMainNodeDt");
   PubSub.subscribe("tableToMainNodeDt", (msg, nodeData) => {
-    setfromTableNode(nodeData);
+    setFromTableNode(nodeData);
   });
   PubSub.unsubscribe("tableToMainLinkDt");
   PubSub.subscribe("tableToMainLinkDt", (msg, linkData) => {
     setFromTableLink(linkData);
   });
   useEffect(() => {
+    console.log(fromTableNode);
     if (cy) cy.nodes().removeClass("tablehighlightNode");
     if (fromTableNode.length !== 0) {
       cy.nodes().forEach((ele) => {
@@ -300,7 +301,7 @@ export default function MainView({ w, h }) {
   }, [fromTableNode]);
   useEffect(() => {
     if (cy) cy.edges().removeClass("tablehighlightLink");
-    if (fromTableLink.length !== 0) {
+    if (cy && fromTableLink.length !== 0) {
       cy.edges().forEach((ele) => {
         if (
           fromTableLink.includes(
@@ -308,7 +309,6 @@ export default function MainView({ w, h }) {
           )
         ) {
           ele.addClass("tablehighlightLink");
-          // ele.style("line-color", "#f5f440");
         }
       });
     }
@@ -328,7 +328,7 @@ export default function MainView({ w, h }) {
         );
       } else if (fromIndustryStackNode.split("-")[0] === "reset") {
         if (cy.$("#" + fromIndustryStackNode.split("-").length === 1)) {
-          // 选择清楚所有高亮的点
+          // 选择清除所有高亮的点
           cy.nodes().removeClass("stackhighlightNode");
         } else {
           cy.$("#" + fromIndustryStackNode.split("-")[1]).removeClass(

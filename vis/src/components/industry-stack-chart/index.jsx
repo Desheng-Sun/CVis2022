@@ -9,7 +9,7 @@ import { NodeIndexOutlined } from "@ant-design/icons";
 export default function IndustryStackChart({ w, h }) {
   const [data, setData] = useState([]);
   const [svgWidth, setSvgWidth] = useState(w);
-  const [svgHeight, setSvgHeight] = useState(h);
+  const [svgHeight, setSvgHeight] = useState("26.29vh");
   const [dataParam, setDataParam] = useState([]);
 
   // 传递给其他组件的数据
@@ -202,18 +202,9 @@ export default function IndustryStackChart({ w, h }) {
     }
   }, [selectedNodeNumId]);
 
-  // useEffect(() => {
-  //   console.log(toPath);
-  // }, [toPath]);
-
   useEffect(() => {
     setSvgWidth(w);
-    console.log(w);
   }, [w]);
-
-  useEffect(() => {
-    setSvgHeight(h);
-  }, [h]);
 
   useEffect(() => {
     drawChart();
@@ -338,7 +329,8 @@ export default function IndustryStackChart({ w, h }) {
     const menu = [
       {
         title: "资产起点",
-        action: function (d) {
+        action: function (d, event, index) {
+          d3.select(this).select("rect").attr("stroke", "green");
           setToPath((toPath) => ({
             startNode: [...toPath.startNode, d.numId],
             endNode: [...toPath.endNode],
@@ -347,7 +339,8 @@ export default function IndustryStackChart({ w, h }) {
       },
       {
         title: "资产终点",
-        action: function (d) {
+        action: function (d, event, index) {
+          d3.select(this).select("rect").attr("stroke", "red");
           setToPath((toPath) => ({
             startNode: [...toPath.startNode],
             endNode: [...toPath.endNode, d.numId],
@@ -501,30 +494,20 @@ export default function IndustryStackChart({ w, h }) {
 
   function onClearSelection() {
     d3.selectAll("#industry-stack-chart rect").attr("fill", "transparent");
+    d3.selectAll("#industry-stack-chart rect").attr("stroke", "none");
     setSelectedNodeNumId("reset-");
     setToPath({ startNode: [], endNode: [] });
     PubSub.publish("assetsToPathDt", { startNode: [], endNode: [] }); // 传递给关键路径组件空数据，用于清空数据
   }
   function onSubmitToPath() {
-    // 像关键路径图传递数据
+    // 向关键路径图传递数据
     PubSub.publish("assetsToPathDt", toPath);
   }
 
   return (
-    <div
-      id="industry-stack"
-      style={{
-        width: svgWidth,
-        height: svgHeight,
-      }}
-    >
+    <div id="industry-stack" style={{ width: "100%", height: svgHeight }}>
       <div id="industry-stack-chart" style={{ height: svgHeight }}></div>
-      <div
-        id="stackControl"
-        style={{
-          height: svgHeight,
-        }}
-      >
+      <div id="stackControl" style={{ height: svgHeight }}>
         <Button onClick={onClearSelection} type="dashed" size="small">
           清空
         </Button>

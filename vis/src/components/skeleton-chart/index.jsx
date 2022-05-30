@@ -280,7 +280,7 @@ export default function SkeletonChart({ w, h }) {
     const simulation = d3
       .forceSimulation()
       .nodes(nodes)
-      .force("charge", d3.forceManyBody().strength(-50));
+      .force("charge", d3.forceManyBody().strength(-50))
     if (linkStrength && typeof linkStrength === "number") {
       simulation.force(
         "link",
@@ -289,6 +289,7 @@ export default function SkeletonChart({ w, h }) {
           .links(links)
           .id((d) => d.id)
           .strength(linkStrength)
+          .iterations(100)
       );
     } else {
       simulation.force(
@@ -298,6 +299,7 @@ export default function SkeletonChart({ w, h }) {
           .links(links)
           .id((d) => d.id)
           .strength((d) => (d.source.group === d.target.group ? 0.6 : 0.1))
+          .iterations(100)
       );
     }
     simulation
