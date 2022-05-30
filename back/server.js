@@ -997,29 +997,29 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
       }
       ICLinks[targetNumId] = ICLinks[targetNumId].filter(e => e != ICLinksString)
       let targetICInfo = nodeNumIdInfo[parseInt(targetNumId) - 1]
-      difInfo["source"] = {
-        numId: sourceICInfo[0],
-        id: sourceICInfo[1],
-        name: sourceICInfo[2],
-        type: sourceICInfo[3],
-        index: 0,
-        startICLinkNum: startICLinkNum,
-      }
+      // difInfo["source"] = {
+      //   numId: sourceICInfo[0],
+      //   id: sourceICInfo[1],
+      //   name: sourceICInfo[2],
+      //   type: sourceICInfo[3],
+      //   index: 0,
+      //   startICLinkNum: startICLinkNum,
+      // }
 
-      difInfo["target"] = {
-        numId: targetICInfo[0],
-        id: targetICInfo[1],
-        name: targetICInfo[2],
-        type: targetICInfo[3],
-        index: 1,
-        startICLinkNum: startICLinkNum,
-      }      
+      // difInfo["target"] = {
+      //   numId: targetICInfo[0],
+      //   id: targetICInfo[1],
+      //   name: targetICInfo[2],
+      //   type: targetICInfo[3],
+      //   index: 1,
+      //   startICLinkNum: startICLinkNum,
+      // }      
       difInfo["IC"] = {
-        numId: [sourceICInfo[0], targetICInfo[0]],
-        id: [sourceICInfo[1], targetICInfo[1]],
-        name: [sourceICInfo[2], targetICInfo[2]],
-        type: [sourceICInfo[3], targetICInfo[3]],
-        index: 0,
+        numId: sourceICInfo[0] + "--" +  targetICInfo[0],
+        // id: [sourceICInfo[1], targetICInfo[1]],
+        name: sourceICInfo[2]+ "--" + targetICInfo[2],
+        // type: [sourceICInfo[3], targetICInfo[3]],
+        // index: 0,
         startICLinkNum: startICLinkNum,
       }
 
@@ -1038,21 +1038,21 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
         difInfo["industry"].push({
           industry: k,
           number: ICindustry1,
-          index: 0,
+          // index: 0,
           startICLinkNum: startICLinkNum,
           height: useIndustryType[k]
         })
         difInfo["industry"].push({
           industry: k,
           number: ICindustry2,
-          index: 1,
+          // index: 1,
           startICLinkNum: startICLinkNum,
           height: useIndustryType[k]
         })
         difInfo["industry"].push({
           industry: k,
           number: ICindustry3,
-          index: 2,
+          // index: 2,
           startICLinkNum: startICLinkNum,
           height: useIndustryType[k]
         })
