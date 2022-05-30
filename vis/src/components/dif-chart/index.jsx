@@ -11102,6 +11102,11 @@ export default function DifChart({ w, h }) {
               15,
               currNumber
             );
+          })
+          .on("mouseover", (event, d) => {
+            let curPair = d.IC.name;
+            let currIndustry = d.industry[j].industry;
+            let htmlStr = `<b>IC链路</b>`;
           });
       }
     }
