@@ -8,12 +8,21 @@ import pandas as pd
 import time
 
 
+# 获取每个节点所在的IC链路
 def getNodesInICLinks(nodesInIClinks, ICScreen, nodePath, nowPath):
     with alive_bar(len(ICScreen)) as bar:
         # 获取每一个节点所在的IC链路或其所在的单独的IC节点NumID
         for i in ICScreen:
             if(nodePath == "ICScreenLinks/"):
-                nodeLinksInfoJ = open(nowPath + nodePath +
+                nodeLinksInfoJ = open(nowPath + "ICScreenLinks2/" +
+                                      str(i) + ".json", "r", encoding="utf-8")
+                nodeLinksInfo = json.load(nodeLinksInfoJ)
+                for j in nodeLinksInfo:
+                    for k in j["nodes"]:
+                        nodesInIClinks[str(k[0])][0].append(
+                            [j["begin"][0], j["end"][0]])
+
+                nodeLinksInfoJ = open(nowPath + "ICScreenLinks3/" +
                                       str(i) + ".json", "r", encoding="utf-8")
                 nodeLinksInfo = json.load(nodeLinksInfoJ)
                 for j in nodeLinksInfo:
@@ -30,66 +39,96 @@ def getNodesInICLinks(nodesInIClinks, ICScreen, nodePath, nowPath):
         return nodesInIClinks
 
 
-def getAllNodeALinksINICLinks(ICAloneNodes, nowNodes, nowPath, nodeCsvW):
+# 为每个IC链路添加对应的节点
+def getAllNodeALinksINICLinks(coreList, ICAloneNodes, nowNodes, nowPath, nodeCsvW):
+    print("第", coreList, "个线程开始执行了----------------",
+          time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
+    # with alive_bar(len(nowNodes)) as bar:
     for i in nowNodes:
         # 如果该节点不在任何单独路径中，则跳过
-        if(len(ICAloneNodes[str(i)]["nodesNumId"]) == 1):
+        if(len(ICAloneNodes[str(i)]) == 0):
             with open(nowPath + "ICAloneLinks/" + str(i) + ".json", "w", encoding="utf-8") as f:
-                json.dump(ICAloneNodes[str(i)], f, ensure_ascii=False)
+                json.dump({"nodes": [], "links": []}, f, ensure_ascii=False)
             continue
         # 打开节点三跳节点的信息
         nodeLinksInfoJ = open(nowPath + "ICLinks/" +
-                                str(i) + ".json", "r", encoding="utf-8")
+                              str(i) + ".json", "r", encoding="utf-8")
         nodeLinksInfo = json.load(nodeLinksInfoJ)
-        # 打开对应的ICLinks信息
-        aj = open(nowPath + "ICScreenLinks2/" + str(i) +
-                    ".json", "r", encoding="utf-8")
-        a = json.load(aj)
-        useNode = set()
-        useNode.add(str(i))
-        # 获取在该节点三条内，且不在任何ICLinks中的节点
+        nodesAloneLinks = set()
+        # 获取在该节点三条内，且不在任何ICLinks连接
         for j in nodeLinksInfo["links"]:
-            if(str(j[1]) in ICAloneNodes[str(i)]["nodesNumId"] and str(j[2]) in ICAloneNodes[str(i)]["nodesNumId"]):
-                if(j[0] != "r_cert" or j[0] != "r_dns_a"):
-                    useNode.add(str(j[1]))
-                    useNode.add(str(j[2]))
-        # 获取剩余的节点
-        InICLinksNodes = list(
-            set(ICAloneNodes[str(i)]["nodesNumId"]).difference(useNode))
-        # 判断剩余的节点所在的IC链路
-        for j in InICLinksNodes:
-            nowNodesLinks = {}
-            for k in nodeLinksInfo["links"]:
-                if(k[0] == "r_cert" or j[0] == "r_dns_a"):
-                    continue
-                if(k[1] == int(j)):
-                    nowNodesLinks[str(k[2])] = [k[0], k[1], k[2]]
-                elif(k[2] == int(j)):
-                    nowNodesLinks[str(k[1])] = [k[0], k[1], k[2]]
-            for k in range(len(a)):
-                for l in a[k]["nodes"]:
-                    if(str(l[0]) in nowNodesLinks):
-                        a[k]["nodes"].append(list(nodeCsvW[int(j) - 1]))
-                        a[k]["links"].append(nowNodesLinks[str(l[0])])
-                        a[k]["nodeNum"] += 1
-                        if(nodeCsvW[int(j) - 1][3] == "Domain"):
-                            a[k]["domainNum"] += 1
-                        if(nodeCsvW[int(j) - 1][-1] != "  "):
-                            a[k]["industryNum"] += 1
-
-        with open(nowPath + "ICScreenLinks/" + str(i) +".json", "w", encoding="utf-8") as f:
-            json.dump(a, f, ensure_ascii= False)
-
-        useNode = list(useNode)
-        for j in nodeLinksInfo["links"]:
-            if(str(j[1]) in useNode and str(j[2]) in useNode):
-                ICAloneNodes[str(i)]["links"].append([j[0], j[1], j[2]])
-        for j in useNode:
-            ICAloneNodes[str(i)]["nodes"].append(list(nodeCsvW[int(j) - 1]))
+            if(str(j[1]) in ICAloneNodes[str(i)] or str(j[2]) in ICAloneNodes[str(i)]):
+                # if(nodeCsvW[int(j[1])][-1] == "  " and nodeCsvW[int(j[2])][-1]):
+                #     continue
+                nodesAloneLinks.add(str(j))
+        nodesAloneLinks = list(nodesAloneLinks)
+        nodesAloneLinks.sort(
+            reverse=True, key=lambda x: ast.literal_eval(x)[3])
+        nowICNodesAloneLinksInfo = {
+            "nodes": [],
+            "links": []
+        }
+        nowICNodesAloneNodesSet = set()
+        useLinks = set()
+        for j in nodesAloneLinks:
+            k = ast.literal_eval(j)
+            if(k[3] == 3):
+                nowICNodesAloneNodesSet.add(str(k[1]))
+                nowICNodesAloneNodesSet.add(str(k[2]))
+                nowICNodesAloneLinksInfo["links"].append(k)
+                useLinks.add(j)
+            else:
+                if(str(k[1]) in nowICNodesAloneNodesSet or str(k[2]) in nowICNodesAloneNodesSet):
+                    nowICNodesAloneNodesSet.add(str(k[1]))
+                    nowICNodesAloneNodesSet.add(str(k[2]))
+                    nowICNodesAloneLinksInfo["links"].append(k)
+                    useLinks.add(j)
+        for j in list(nowICNodesAloneNodesSet):
+            nowICNodesAloneLinksInfo["nodes"].append(
+                list(nodeCsvW[int(j) - 1]))
         with open(nowPath + "ICAloneLinks/" + str(i) + ".json", "w", encoding="utf-8") as f:
-            json.dump(ICAloneNodes[str(i)], f, ensure_ascii=False)
+            json.dump(nowICNodesAloneLinksInfo, f, ensure_ascii=False)
+
+        # 打开对应的ICLinks信息
+        ICLinksNowJ = open(nowPath + "ICScreenLinks2/" + str(i) +
+                           ".json", "r", encoding="utf-8")
+        ICLinksNow = json.load(ICLinksNowJ)
+        nodesAloneLinks = list(set(nodesAloneLinks).difference(useLinks))
+        for j in range(len(ICLinksNow)):
+            nowICLinksNodes = set()
+            for k in ICLinksNow[j]["nodes"]:
+                nowICLinksNodes.add(k[0])
+            for k in nodesAloneLinks:
+                l = ast.literal_eval(k)
+                if(l[1] in nowICLinksNodes):
+                    nowICLinksNodes.add(l[2])
+                    ICLinksNow[j]["nodes"].append(
+                        list(nodeCsvW[int(l[2]) - 1]))
+                    ICLinksNow[j]["links"].append(l)
+                    ICLinksNow[j]["nodeNum"] += 1
+                    if(nodeCsvW[int(l[2]) - 1][3] == "Domain"):
+                        ICLinksNow[j]["domainNum"] += 1
+                    if(nodeCsvW[int(l[2]) - 1][-1] != "  "):
+                        ICLinksNow[j]["industryNum"] += 1
+                elif(l[2] in nowICLinksNodes):
+                    nowICLinksNodes.add(l[1])
+                    ICLinksNow[j]["nodes"].append(
+                        list(nodeCsvW[int(l[1]) - 1]))
+                    ICLinksNow[j]["links"].append(l)
+                    ICLinksNow[j]["nodeNum"] += 1
+                    if(nodeCsvW[int(l[1]) - 1][3] == "Domain"):
+                        ICLinksNow[j]["domainNum"] += 1
+                    if(nodeCsvW[int(l[1]) - 1][-1] != "  "):
+                        ICLinksNow[j]["industryNum"] += 1
+
+        with open(nowPath + "ICScreenLinks/" + str(i) + ".json", "w", encoding="utf-8") as f:
+            json.dump(ICLinksNow, f, ensure_ascii=False)
+            # bar()
+    print("第", coreList, "个线程执行完成了----------------",
+          time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
 
 
+# 获取每个IC链路的相关信息
 def getICLinksInfo(coreList, nowPath, nodes):
     print("第", coreList, "个线程开始执行了----------------",
           time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
@@ -148,6 +187,7 @@ def getICLinksInfo(coreList, nowPath, nodes):
           time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
 
 
+# 合并所有信息
 def mergeNodesNeighbourInfop():
     nodeToNodeInfo = {}
     for i in range(12):
@@ -171,6 +211,7 @@ def mergeNodesNeighbourInfop():
         json.dump(nodeToNodeInfo, f, ensure_ascii=False)
 
 
+# 获取每个单独节点的相关信息
 def getNodesAloneInfo(coreList, nowPath, nodes):
     print("第", coreList, "个线程开始执行了----------------",
           time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
@@ -221,6 +262,7 @@ def getNodesAloneInfo(coreList, nowPath, nodes):
           time.strftime('%Y-%m-%d %H:%M:%S', time.localtime()))
 
 
+# 合并所有信息
 def mergeNodesAlone():
     nodeToNodeInfo = {}
     for i in range(12):
@@ -250,116 +292,72 @@ if __name__ == '__main__':
         nodesInIClinks[str(i[0])] = [[], []]
     ICScreenJ = open(nowPath + "ICScreen.json", "r", encoding="utf-8")
     ICScreen = json.load(ICScreenJ)
+    # 获取节点所在的所有链接
     nodesInIClinks = getNodesInICLinks(
         nodesInIClinks, ICScreen[0], "ICScreenLinks/", nowPath)
     nodesInIClinks = getNodesInICLinks(
         nodesInIClinks, ICScreen[1], "ICLinks/", nowPath)
 
-    # with alive_bar(len(nodesInIClinks)) as bar:
-    #     for i in nodeCsvW:
-    #         j = str(i[0])
-    #         if(len(nodesInIClinks[j][0]) == 0 and len(nodesInIClinks[j][1]) == 0):
-    #             nodesInIClinks.pop(j)
-    #         bar()
-    
-    # for i in ipNode:
-    #     if(str(i[0]) in nodesInIClinks):
-    #         nodesInIClinks.pop(str(i[0]))
-    # for i in certNode:
-    #     if(str(i[0]) in nodesInIClinks):
-    #         nodesInIClinks.pop(str(i[0]))
+    # 删除不在任何ICLinks中的节点
+    with alive_bar(len(nodesInIClinks)) as bar:
+        for i in nodeCsvW:
+            j = str(i[0])
+            if(len(nodesInIClinks[j][0]) == 0 and len(nodesInIClinks[j][1]) == 0):
+                nodesInIClinks.pop(j)
+            bar()
 
-    # with alive_bar(len(nodesInIClinks)) as bar:
-    #     for i in nodesInIClinks:
-    #         inLinksSet = set()
-    #         for j in nodesInIClinks[i][0]:
-    #             inLinksSet.add(j[0])
-    #             inLinksSet.add(j[1])
-    #         nodesInIClinks[i][1] = list(
-    #             set(nodesInIClinks[i][1]).difference(inLinksSet))
-    #         bar()
+    # 删除所有的IC节点
+    for i in ipNode:
+        if(str(i[0]) in nodesInIClinks):
+            nodesInIClinks.pop(str(i[0]))
+    for i in certNode:
+        if(str(i[0]) in nodesInIClinks):
+            nodesInIClinks.pop(str(i[0]))
 
-    # with open(nowPath + "nodeICLinks.json", "w", encoding="utf-8") as f:
-    #     json.dump(nodesInIClinks, f, ensure_ascii=False)
+    # 删除所有在IC链路中的IC节点
+    with alive_bar(len(nodesInIClinks)) as bar:
+        for i in nodesInIClinks:
+            inLinksSet = set()
+            for j in nodesInIClinks[i][0]:
+                inLinksSet.add(j[0])
+                inLinksSet.add(j[1])
+            nodesInIClinks[i][1] = list(
+                set(nodesInIClinks[i][1]).difference(inLinksSet))
+            bar()
 
-    # with open(nowPath + "nodeICLinks.json", "r", encoding="utf-8") as f:
-    #     nodesInIClinks = json.load(f)
-    #     print(nodesInIClinks["479"])
+    with open(nowPath + "nodeICLinks.json", "w", encoding="utf-8") as f:
+        json.dump(nodesInIClinks, f, ensure_ascii=False)
 
-        # nodesInIClinks3 = {}
-    # with open(nowPath + "nodeICLinks.json", "r", encoding="utf-8") as f:
-    #     nodesInIClinks = json.load(f)
-    #     with open(nowPath + "nodeICLinks2.json", "r", encoding="utf-8") as f2:
-    #         nodesInIClinks2 = json.load(f2)
-    #         with alive_bar(len(nodesInIClinks2)) as bar:
-    #             for i in nodesInIClinks:
-    #                 nodesInIClinks3[i] = [[], []]
-    #                 ICLinks = set()
-    #                 ICNodes = set()
-    #                 ICLinks2 = set()
-    #                 ICNodes2 = set()
-    #                 for j in nodesInIClinks[i][0]:
-    #                     ICLinks.add(str(j))
-    #                 for j in nodesInIClinks[i][1]:
-    #                     ICNodes.add(str(j))
-    #                 for j in nodesInIClinks2[i][0]:
-    #                     ICLinks2.add(str(j))
-    #                 for j in nodesInIClinks2[i][1]:
-    #                     ICNodes2.add(str(j))
-    #                 nodesInIClinks3[i][0] = list(ICLinks.intersection(ICLinks2))
-    #                 nodesInIClinks3[i][1] = list(ICNodes.intersection(ICNodes2))
-    #                 bar()
-            
-    #         with open(nowPath + "nodeICLinks3.json", "w", encoding="utf-8") as f3:
-    #             json.dump(nodesInIClinks3, f3, ensure_ascii=False)
-    # with open(nowPath + "nodeICLinks3.json", "r", encoding="utf-8") as f:
-    #     nodesInIClinks = json.load(f)
-    #     nodesInIClinks2 = {}
-    #     with alive_bar(len(nodesInIClinks)) as bar:
-    #         for i in nodesInIClinks:
-    #             nodesInIClinks2[i] = [[],[]]
-    #             for j in nodesInIClinks[i][0]:
-    #                 nodesInIClinks2[i][0].append(ast.literal_eval(j))
-    #             for j in nodesInIClinks[i][1]:
-    #                 nodesInIClinks2[i][1].append(int(j))
-    #             bar()
-    #     print(nodesInIClinks2["479"][0][0])
 
-    #     with open(nowPath + "nodeICLinks4.json", "w", encoding="utf-8") as f2:
-    #         json.dump(nodesInIClinks2, f2, ensure_ascii=False)
+    with open(nowPath + "nodeICLinks.json", "r", encoding="utf-8") as f:
+        nodesInIClinks = json.load(f)
+        print(nodesInIClinks["344287"])
 
     ICAloneNodes = {}
     for i in ICScreen[0]:
-        ICAloneNodes[str(i)] = {
-            "nodesNumId": [str(i)],
-            "nodes": [],
-            "links": []
-        }
+        ICAloneNodes[str(i)] = []
     for i in ICScreen[1]:
-        ICAloneNodes[str(i)] = {
-            "nodesNumId": [str(i)],
-            "nodes": [],
-            "links": []
-        }
+        ICAloneNodes[str(i)] = []
     with alive_bar(len(nodesInIClinks)) as bar:
         for i in nodesInIClinks:
             for j in nodesInIClinks[i][1]:
-                ICAloneNodes[str(j)]["nodesNumId"].append(str(i))
+                ICAloneNodes[str(j)].append(str(i))
             bar()
-    
+    # getAllNodeALinksINICLinks(0, ICAloneNodes, ICScreen[0], nowPath, nodeCsvW)
+
     pool = mp.Pool(processes=12)
     numLen = int(len(ICScreen[0]) / 12)
     for i in range(12):
         nodeListNum = (i + 1) * numLen
         if(i == 11):
             nodeListNum = None
-        pool.apply_async(getAllNodeALinksINICLinks, args=(
+        pool.apply_async(getAllNodeALinksINICLinks, args=(i,
             ICAloneNodes, ICScreen[0][i * numLen: nodeListNum], nowPath, nodeCsvW))
         print(i, i + 1, i * numLen, nodeListNum)
     pool.close()
     pool.join()
 
-    # getICLinksInfo(0, nowPath, ICScreen[0][0: 2])
+    # # getICLinksInfo(0, nowPath, ICScreen[0][0: 2])
 
     pool = mp.Pool(processes=12)
     numLen = int(len(ICScreen[0]) / 12)
@@ -394,3 +392,47 @@ if __name__ == '__main__':
     # 将所有数据进行合并
     print("将所有数据进行合并----------------------------------------------")
     mergeNodesAlone ()
+
+
+
+    # nodesInIClinks3 = {}
+    # with open(nowPath + "nodeICLinks.json", "r", encoding="utf-8") as f:
+    #     nodesInIClinks = json.load(f)
+    #     with open(nowPath + "nodeICLinks2.json", "r", encoding="utf-8") as f2:
+    #         nodesInIClinks2 = json.load(f2)
+    #         with alive_bar(len(nodesInIClinks2)) as bar:
+    #             for i in nodesInIClinks:
+    #                 nodesInIClinks3[i] = [[], []]
+    #                 ICLinks = set()
+    #                 ICNodes = set()
+    #                 ICLinks2 = set()
+    #                 ICNodes2 = set()
+    #                 for j in nodesInIClinks[i][0]:
+    #                     ICLinks.add(str(j))
+    #                 for j in nodesInIClinks[i][1]:
+    #                     ICNodes.add(str(j))
+    #                 for j in nodesInIClinks2[i][0]:
+    #                     ICLinks2.add(str(j))
+    #                 for j in nodesInIClinks2[i][1]:
+    #                     ICNodes2.add(str(j))
+    #                 nodesInIClinks3[i][0] = list(ICLinks.intersection(ICLinks2))
+    #                 nodesInIClinks3[i][1] = list(ICNodes.intersection(ICNodes2))
+    #                 bar()
+
+    #         with open(nowPath + "nodeICLinks3.json", "w", encoding="utf-8") as f3:
+    #             json.dump(nodesInIClinks3, f3, ensure_ascii=False)
+    # with open(nowPath + "nodeICLinks3.json", "r", encoding="utf-8") as f:
+    #     nodesInIClinks = json.load(f)
+    #     nodesInIClinks4 = {}
+    #     with alive_bar(len(nodesInIClinks)) as bar:
+    #         for i in nodesInIClinks:
+    #             nodesInIClinks4[i] = [[],[]]
+    #             for j in nodesInIClinks[i][0]:
+    #                 nodesInIClinks4[i][0].append(ast.literal_eval(j))
+    #             for j in nodesInIClinks[i][1]:
+    #                 nodesInIClinks4[i][1].append(int(j))
+    #             bar()
+    #     print(nodesInIClinks2["479"][0][0])
+
+    #     with open(nowPath + "nodeICLinks4.json", "w", encoding="utf-8") as f2:
+    #         json.dump(nodesInIClinks4, f2, ensure_ascii=False)
