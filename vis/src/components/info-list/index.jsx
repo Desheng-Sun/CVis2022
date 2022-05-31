@@ -1,5 +1,6 @@
 import { Tag, Table } from "antd";
 import { getInfoListSds } from "../../apis/api";
+import PubSub from "pubsub-js";
 
 import "antd/dist/antd.css";
 import { useEffect, useState } from "react";
@@ -1993,12 +1994,19 @@ let nodesLinksInfo = {
 
 export default function InfoList() {
   const [data, setData] = useState([]);
+  const [dataParam, setDataParam] = useState({nodes: [], links:[]})
 
   useEffect(() => {
-    getInfoListSds(nodesLinksInfo).then((res) => {
+    if(dataParam.nodes.length === 0) return 
+    getInfoListSds(dataParam).then((res) => {
       setData([res]);
     });
-  }, []);
+  }, [dataParam]);
+
+  PubSub.unsubscribe("fromMainToInfoList")
+  PubSub.subscribe("fromMainToInfoList", function(msg, dataParam){
+    setDataParam(dataParam)
+  })
 
   const colorList = [
     "#f9b4ae",
