@@ -75,7 +75,8 @@
 #main-legend {
   position: absolute;
   width: 120px;
-  top: 119px;
+  top: 93px;
+  right: 856px;
   background: #eee;
   cursor: pointer;
 }

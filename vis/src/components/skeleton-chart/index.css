@@ -26,13 +26,11 @@
 }
 
 .possible {
-  fill: #fe2236;
-  opacity: 0.5;
+  fill: #fe919b;
 }
 
 .selected {
   fill: #bcd981;
-  opacity: 0.5;
 }
 
 .d3-context-menu {

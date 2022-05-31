@@ -21,6 +21,12 @@ export default function SkeletonChart({ w, h }) {
   const [selectedNodeFirst, setSelectedNodeFirst] = useState(true);
   const [currIc, setCurrIc] = useState(undefined); // 当前已选择的ic
 
+  // const svgToVbScale = 1.5;
+  // const [vbWidth, vbHeight] = [
+  //   svgWidth * svgToVbScale,
+  //   svgHeight * svgToVbScale,
+  // ];
+
   // 随系统缩放修改画布大小
   useEffect(() => {
     setSvgWidth(w);
@@ -29,12 +35,12 @@ export default function SkeletonChart({ w, h }) {
     setSvgHeight(h);
   }, [h]);
 
-  // 请求数据
   // 监听冰柱图选择的节点的变化
   useEffect(() => {
     if (typeof currIc !== "undefined") {
       if (currIc.length === 0) {
         setData({ nodes: [], links: [] });
+        setSelectedNode([]);
         return;
       }
       getSkeletonChartDataSds(currIc).then((res) => {
@@ -71,6 +77,7 @@ export default function SkeletonChart({ w, h }) {
     let tLink = [],
       tNodes = [];
     if (JSON.stringify(data) !== "{}") {
+      linkedByIndex = {}; // 每重新画图就更新边对的关系
       for (let l of data.links) {
         tLink.push(l);
       }
@@ -105,6 +112,11 @@ export default function SkeletonChart({ w, h }) {
 
     if (nodes.length === 0) return;
 
+
+    let svgToVbScale = nodes.length>300? 1.5: 1
+    let vbWidth = svgWidth*svgToVbScale
+    let vbHeight = svgHeight*svgToVbScale
+    // 获取边对的关系
     for (let l of links) {
       let source = l["source"];
       let target = l["target"];
@@ -131,7 +143,7 @@ export default function SkeletonChart({ w, h }) {
       .append("svg")
       .attr("width", svgWidth)
       .attr("height", svgHeight * 0.99)
-      .attr("viewBox", [0, 0, svgWidth, svgHeight]);
+      .attr("viewBox", [0, 0, vbWidth, vbHeight]);
     var scaleFactor = 1.2, // 值为1表示紧连边缘的点
       margin = scaleFactor,
       arcWidth = nodes.length <= 5 ? 6 : nodes.length <= 10 ? 4 : 2,
@@ -141,6 +153,15 @@ export default function SkeletonChart({ w, h }) {
           : arcWidth * (industryType.length + 1),
       linkStrength = undefined;
     const wrapper = svg.append("g").attr("transform", `translate(0, 0)`);
+    const link = wrapper
+    .append("g")
+    .attr("class", "links")
+    .selectAll("line")
+    .data(links)
+    .join("line")
+    .attr("stroke-width", 1)
+    .attr("stroke", "#ccc");
+
     // create groups, links and nodes
     const groups = wrapper.append("g").attr("class", "groups");
     // 节点的右键事件
@@ -163,14 +184,7 @@ export default function SkeletonChart({ w, h }) {
         },
       },
     ];
-    const link = wrapper
-      .append("g")
-      .attr("class", "links")
-      .selectAll("line")
-      .data(links)
-      .join("line")
-      .attr("stroke-width", 1)
-      .attr("stroke", "#ccc");
+
 
     const nodeG = wrapper
       .append("g")
@@ -280,6 +294,8 @@ export default function SkeletonChart({ w, h }) {
       }
     }
 
+
+
     // 定义simulation
     const simulation = d3
       .forceSimulation()
@@ -293,7 +309,7 @@ export default function SkeletonChart({ w, h }) {
           .links(links)
           .id((d) => d.id)
           .strength(linkStrength)
-          .iterations(100)
+        // .iterations(100)
       );
     } else {
       simulation.force(
@@ -302,12 +318,12 @@ export default function SkeletonChart({ w, h }) {
           .forceLink()
           .links(links)
           .id((d) => d.id)
-          .strength((d) => (d.source.group === d.target.group ? 0.6 : 0.1))
-          .iterations(100)
+          .strength(0.1)
+        // .iterations(100)
       );
     }
     simulation
-      .force("center", d3.forceCenter(svgWidth / 2, svgHeight / 2))
+      .force("center", d3.forceCenter(vbWidth / 2, vbHeight / 2))
       .force("collision", d3.forceCollide().radius(nodeRadius * 2));
     simulation.on("tick", tick);
     function tick() {
@@ -317,14 +333,14 @@ export default function SkeletonChart({ w, h }) {
           "translate(" +
           (d.x < 2
             ? (d.x = nodeRadius)
-            : d.x > svgWidth - nodeRadius
-            ? (d.x = svgWidth - nodeRadius)
+            : d.x > vbWidth - nodeRadius
+            ? (d.x = vbWidth - nodeRadius)
             : d.x) +
           "," +
           (d.y < nodeRadius
             ? (d.y = nodeRadius)
-            : d.y > svgHeight - nodeRadius
-            ? (d.y = svgHeight - nodeRadius)
+            : d.y > vbHeight - nodeRadius
+            ? (d.y = vbHeight - nodeRadius)
             : d.y) +
           ")"
       );
@@ -364,7 +380,8 @@ export default function SkeletonChart({ w, h }) {
         }
         return "white";
       })
-      .attr("opacity", 0.5)
+      .attr("opacity", 1)
+      .attr("stroke", '#bbb')
       .on(
         "contextmenu",
         d3ContextMenu(menu, {
@@ -376,7 +393,6 @@ export default function SkeletonChart({ w, h }) {
             //     left: bounds.left,
             //   };
             // },
-            console.log(event);
             return {
               top: event.y + 10,
               left: event.x + 10,
@@ -495,8 +511,7 @@ export default function SkeletonChart({ w, h }) {
       lasso
         .possibleItems()
         .selectAll("path")
-        .attr("fill", "#fe2236")
-        .attr("opacity", 0.5);
+        .attr("fill", "#fe919b")
 
       // lasso.notPossibleItems()
       //     .classed("not_possible",true)
@@ -512,7 +527,7 @@ export default function SkeletonChart({ w, h }) {
           return d3.select(this).attr("class") !== "selected";
         })
         .attr("fill", "white")
-        .attr("opacity", 0.2);
+        // .attr("opacity", 0.2);
 
       // lasso.notSelectedItems()
       //     .selectAll('path')

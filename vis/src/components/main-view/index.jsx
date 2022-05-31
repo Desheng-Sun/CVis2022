@@ -354,6 +354,10 @@ export default function MainView({ w, h }) {
   // 请求数据并初始化图形
   useEffect(() => {
     if (dataParam === "") {
+      // 初始化的时候
+      setData({ nodes: [], links: [] });
+    } else if (dataParam.nodes.length === 0) {
+      // 传过来的是空数据，就直接清空主图中的数据
       setData({ nodes: [], links: [] });
     } else {
       getMainChartSds(dataParam).then((res) => {
@@ -374,12 +378,13 @@ export default function MainView({ w, h }) {
 
   // 绘制图形
   function drawChart() {
+    d3.selectAll("#main-chart div").remove();
+    d3.selectAll("#main-container .mainToolTip").remove();
+
     if (data.nodes.length === 0) return;
     const nodes = data.nodes.map((d) => ({ data: { ...d } }));
     const links = data.links.map((d) => ({ data: { ...d } }));
 
-    d3.selectAll("#main-chart div").remove();
-    d3.selectAll("div#main-container .mainToolTip").remove();
     Promise.all([
       fetch("./json/cy-style-class.json").then(function (res) {
         return res.json();
