@@ -177,8 +177,6 @@ export default function MainView({ w, h }) {
       PubSub.publish("combinedLinkTableDt", resData);
       PubSub.publish("industryStackDt", resData.links); // 将选中的数据传给stack组件
 
-
-
       // 确定当前属于一个团伙
       // 向后端传递数据获取核心资产和关键链路
 
@@ -390,6 +388,7 @@ export default function MainView({ w, h }) {
   function drawChart() {
     d3.selectAll("#main-chart div").remove();
     d3.selectAll("#main-container .mainToolTip").remove();
+    d3.selectAll('.cytoscape-navigator').remove()
 
     if (data.nodes.length === 0) return;
     const nodes = data.nodes.map((d) => ({ data: { ...d } }));
@@ -857,6 +856,13 @@ export default function MainView({ w, h }) {
         let domainNodeStyle = {
           selector: 'node[type="Domain"]',
           style: {
+            "border-color": function(ele){
+              if(ele.json().data.hasOwnProperty('children')){
+                console.log(ele.json().data);
+                return '#9c0f48'
+              }
+              return 'transparent'
+            },
             "pie-size": "100%",
             "pie-1-background-color": "#2978b4",
             "pie-1-background-size": function (ele, curIndustry = "A") {

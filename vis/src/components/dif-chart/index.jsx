@@ -36,7 +36,6 @@ export default function DifChart({ w, h }) {
 
   useEffect(() => {
     getDifChartSds(linksInfo).then((res) => {
-      console.log("------", res);
       setData(res);
     });
 
@@ -11000,23 +10999,18 @@ export default function DifChart({ w, h }) {
       .attr("class", "diff-tooltip");
 
     let chartHeight = svgHeight * 0.75;
+    let colorList = ['#26BAEE', '#d264b6', '#6A67CE', '#3BACB6', '#FF4949', '#F47645', '#9C0F48', '#F9D923', '#4281a4', '#c44536', '#9c89b8', '#d88c9a', '#F9D923']
+    let industryColorDict = {}
 
-    const industryColor = {
-      A: "#b3efa7",
-      B: "#e4657f",
-      G: "#a17fda",
-      AB: "#ff9f6d",
-      BC: "#64d9d7",
-      C: "#e7bf22",
-      BG: "#007acc",
-      BH: "#18aefe",
-      ABG: "#ffd764",
-    };
-
-    ///////////////////////////////// 绘制左侧的所有产业数量统计图
-    // 统计每种产业的最大值和小值
+    ///////////////////////////////// 左侧绘制所有产业数量统计图
     let industryMinMax = {};
     for (let i = 0; i < data[0].length; i++) {
+      // 将每种产业映射到不同的颜色
+      if(!industryColorDict.hasOwnProperty(data[0][i].industry)){
+        console.log();
+        industryColorDict[data[0][i].industry] = colorList[parseInt(i/2)]
+      }
+      // 统计每张产业中的最大值和最小值
       if (industryMinMax.hasOwnProperty(data[0][i].industry)) {
         industryMinMax[data[0][i].industry].min = Math.min(
           industryMinMax[data[0][i].industry].min,
@@ -11038,7 +11032,7 @@ export default function DifChart({ w, h }) {
       .select("#all-industry")
       .append("svg")
       .attr("width", "100%")
-      .attr("height", chartHeight + 5);
+      .attr("height", chartHeight + 30);
     let singleInustryHeight = chartHeight / (data[0].length / 2);
     let singleIndustryWidth = 15;
     let industryG = industrySvg
@@ -11062,7 +11056,7 @@ export default function DifChart({ w, h }) {
       .attr('stroke', 'white')
       .attr("fill", (d, i) => {
         return colorScale(
-          industryColor[d.industry],
+          industryColorDict[d.industry],
           0,
           industryMinMax[d.industry].max,
           d.number
@@ -11080,8 +11074,54 @@ export default function DifChart({ w, h }) {
         diffTooltip.style("visibility", "hidden");
       });
 
-    //////////////////////// 绘制每一对IC之间的产业信息图
-    var ICWidth = 1000;
+      let wrap_text_nchar = (text_element, max_width, line_height, unit = "em") => {
+        if (!line_height) line_height = 1.1;
+        const text_array = wrap_text_array(text_element.text(), max_width);
+        text_element.text(null)
+          .selectAll("tspan")
+          .data(text_array).enter()
+          .append("tspan")
+          .attr("x", text_element.attr("x"))
+          .attr("y", text_element.attr("y"))
+          .attr("dy", (d, i) => `${i * line_height}${unit}`)
+          .attr("dx", (d, i) => `${i * 0.5}${unit}`)
+          .text(d => d);
+      }
+      
+      let wrap_text_array = (text, max_width) => {
+        const words = text.split(/\s+/).reverse();
+        let word,
+            lines = [ ],
+            line = [ ];
+        while (word = words.pop()) {
+          line.push(word);
+          if (line.join(" ").length > max_width) {
+            line.pop()
+            lines.push(line.join(" "));
+            line = [word];
+          }
+        }
+        lines.push(line.join(" "));
+        return lines;
+      }
+
+
+      industryG.selectAll('text')
+      .data(['IN', 'NOT IN'])
+      .join('text')
+      .attr('class', 'leftText')
+      .text((d) => d)
+      .attr('x', (d, i) => 10*i + 1 + i*1)
+      .attr('y', chartHeight + 10)
+    
+      industryG.selectAll("text")
+      .each(function(d, i) { wrap_text_nchar(d3.select(this), 3) });
+
+
+
+    //////////////////////// 右侧绘制每一对IC之间的产业信息图
+    let pairWidth = data[1].length <= 15 ? 350/data[1].length: 15;
+    var ICWidth = pairWidth * data[1].length*1.5;
     var ICMargin = {
       right: 2,
       left: 0,
@@ -11095,14 +11135,7 @@ export default function DifChart({ w, h }) {
       .attr("width", ICWidth)
       .attr("height", chartHeight * 1.1);
 
-    var x = d3
-      .scaleBand()
-      .domain(data[1].map((d) => d.IC.numId))
-      .range([ICMargin.left, ICWidth - ICMargin.right])
-      .padding(0.1);
-
     let ICPairWrpapper = ICSvg.append("g").attr("class", "ICPairs");
-    let pairWidth = data[1].length <= 15 ? 350/data[1].length: 15;
 
     let pairG = ICPairWrpapper.selectAll("g")
       .data(data[1])
@@ -11111,12 +11144,10 @@ export default function DifChart({ w, h }) {
       .attr("transform", (d, i) => `translate(${ICMargin.left + i*(pairWidth + 5)}, ${ICMargin.top})`)
       .attr("nodeWidth", (d) => {
         return pairWidth
-        pairWidth = x.bandwidth();
-        return x.bandwidth();
       })
       .append("text")
-      .attr("x", pairWidth/2)
-      .attr("y", chartHeight + 8)
+      .attr("x", pairWidth/2-3)
+      .attr("y", chartHeight + 10)
       .text((d, index) => index)
       .attr("fill", "black")
       .attr("font-size", "8px")
@@ -11153,7 +11184,7 @@ export default function DifChart({ w, h }) {
           .attr("fill", (d) => {
             let currIndustry = d.industry[j].industry;
             let currNumber = d.industry[j].number;
-            return colorScale(industryColor[currIndustry], 0, 15, currNumber);
+            return colorScale(industryColorDict[currIndustry], 0, industryMinMax[currIndustry].max, currNumber);
           })
           .attr("storke-width", "1px")
           .attr('stroke', 'white')
@@ -11174,7 +11205,7 @@ export default function DifChart({ w, h }) {
     function colorScale(endColor, min, max, value) {
       let color = d3
         .scaleLinear()
-        .domain([min, max]) // #32c9d0
+        .domain([min, max])
         .range(["#eee", endColor]);
       return color(value);
     }
@@ -11197,7 +11228,7 @@ export default function DifChart({ w, h }) {
       .selectAll("rect")
       .data(industrySet)
       .join("rect")
-      .attr("fill", (d) => industryColor[d])
+      .attr("fill", (d) => industryColorDict[d])
       .attr("x", (d, i) => {
         return ((svgWidth - 10) / industrySet.length) * i;
       })
