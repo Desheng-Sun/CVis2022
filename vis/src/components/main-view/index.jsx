@@ -847,10 +847,10 @@ export default function MainView({ w, h }) {
           selector: "node",
           style: {
             width: function (ele) {
-              return ele.degree() < 30 ? 30 : ele.degree();
+              return ele.degree() < 30 ? 30 : ele.degree()> 90 ?  90 : ele.degree()> 90;
             },
             height: function (ele) {
-              return ele.degree() < 30 ? 30 : ele.degree();
+              return ele.degree() < 30 ? 30 : ele.degree()> 90 ?  90 : ele.degree()> 90;
             },
           },
         };

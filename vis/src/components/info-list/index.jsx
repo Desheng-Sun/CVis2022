@@ -4,6 +4,7 @@ import PubSub from "pubsub-js";
 
 import "antd/dist/antd.css";
 import { useEffect, useState } from "react";
+import './index.css'
 
 let nodesLinksInfo = {
   nodes: [
@@ -2059,7 +2060,7 @@ export default function InfoList() {
   ];
 
   return (
-    <div id="infolist" style={{ width: "100%", height: "100%" }}>
+    <div id="infolist" style={{ width: "100%", height: "6.29vh" }}>
       <Table
         dataSource={data}
         columns={columns}
