@@ -64,5 +64,19 @@
     "style": {
       "line-color": "yellow"
     }
+  },
+  {
+    "selector": "node.InIClink",
+    "style": {
+      "border-color": "#ffff00",
+      "border-width": "3px"
+    }
+  },
+  {
+    "selector": "node.start_end",
+    "style": {
+      "border-color": "#ff00ff",
+      "border-width": "3px"
+    }
   }
 ]

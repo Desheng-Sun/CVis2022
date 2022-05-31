@@ -33,13 +33,17 @@ export default function SkeletonChart({ w, h }) {
   // 监听冰柱图选择的节点的变化
   useEffect(() => {
     if (typeof currIc !== "undefined") {
+      if (currIc.length === 0) {
+        setData({ nodes: [], links: [] });
+        return;
+      }
       getSkeletonChartDataSds(currIc).then((res) => {
         setData(res);
       });
     }
   }, [currIc]);
 
-  // 监听用户选择的节点
+  // 监听用户选择的节点, 传递给主图
   useEffect(() => {
     if (!selectedNodeFirst) {
       let returnRes = { nodes: [], links: [] };
@@ -85,9 +89,7 @@ export default function SkeletonChart({ w, h }) {
   }, [data]);
 
   useEffect(() => {
-    if (nodes.length !== 0) {
-      drawChart();
-    }
+    drawChart();
   }, [nodes, links]);
   // 监听从冰柱图传来的参数
   PubSub.unsubscribe("icicleSelect");
@@ -97,6 +99,12 @@ export default function SkeletonChart({ w, h }) {
 
   // 绘制结构图
   function drawChart() {
+    d3.selectAll("div#skeleton-chart svg").remove();
+    d3.selectAll("div#skeleton-chart svg").remove();
+    d3.selectAll("div#skeleton-chart .skeleton-toolTip").remove();
+
+    if (nodes.length === 0) return;
+
     for (let l of links) {
       let source = l["source"];
       let target = l["target"];
@@ -112,10 +120,6 @@ export default function SkeletonChart({ w, h }) {
     let industryType = [
       ...new Set([...combinationOrder.toString().replaceAll(",", "")]),
     ].sort(); // 包含的所有产业类型
-
-    d3.selectAll("div#skeleton-chart svg").remove();
-    d3.selectAll("div#skeleton-chart svg").remove();
-    d3.selectAll("div#skeleton-chart .skeleton-toolTip").remove();
 
     var skeletonToolTip = d3
       .select("#skeleton-chart")
@@ -280,7 +284,7 @@ export default function SkeletonChart({ w, h }) {
     const simulation = d3
       .forceSimulation()
       .nodes(nodes)
-      .force("charge", d3.forceManyBody().strength(-50))
+      .force("charge", d3.forceManyBody().strength(-50));
     if (linkStrength && typeof linkStrength === "number") {
       simulation.force(
         "link",
