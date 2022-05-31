@@ -23,7 +23,7 @@ import * as d3 from "d3";
 import "./index.css";
 
 // 数据请求接口
-import { getMainChartSds } from "../..//apis/api.js";
+import { getMainChartSds, getGroupAllInfoSds } from "../..//apis/api.js";
 
 navigator(cytoscape);
 undoRedo(cytoscape);
@@ -173,17 +173,28 @@ export default function MainView({ w, h }) {
   // 当确定了团伙的时候对团伙数据进行统计分析，并获取团伙中的关键路径和核心资产
   useEffect(() => {
     if (resData.nodes.length !== 0) {
-      PubSub.publish("combinedNodeTableDt", resData); // 分别向节点表和边表传递数据
-      PubSub.publish("combinedLinkTableDt", resData);
-      PubSub.publish("industryStackDt", resData.links); // 将选中的数据传给stack组件
+      // PubSub.publish("combinedNodeTableDt", resData); // 分别向节点表和边表传递数据
+      // PubSub.publish("combinedLinkTableDt", resData);
+      // PubSub.publish("industryStackDt", resData.links); // 将选中的数据传给stack组件
 
-      // 确定当前属于一个团伙
-      // 向后端传递数据获取核心资产和关键链路
+      // // 确定当前属于一个团伙
+      // // 向后端传递数据获取核心资产和关键链路
 
-      // 向info-list传递数据
-      PubSub.publish("fromMainToInfoList", resData)
+      // // 向info-list传递数据
+      // PubSub.publish("fromMainToInfoList", resData)
       
+      console.log(resData)
+      getGroupAllInfoSds(resData).then((res) => {
+        console.log(res)
+        // PubSub.publish("combinedNodeTableDt", res.getInfoListSds); // 分别向节点表和边表传递数据
+        // PubSub.publish("combinedLinkTableDt", res.getBulletChartDataSds);
+        // PubSub.publish("industryStackDt", res.links); // 将选中的数据传给stack组件
+        // // 确定当前属于一个团伙
+        // // 向后端传递数据获取核心资产和关键链路
+        // // 向info-list传递数据
+        // PubSub.publish("fromMainToInfoList", res)
 
+      });
     }
   }, [resData]);
 

@@ -5,7 +5,7 @@ import d3ContextMenu from "d3-context-menu";
 import "./index.css";
 import { Button } from "antd";
 import { NodeIndexOutlined } from "@ant-design/icons";
-import { getIdentifyICNodesSds } from "../../apis/api";
+// import { getIdentifyICNodesSds } from "../../apis/api";
 export default function IndustryStackChart({ w, h }) {
   const [data, setData] = useState([]);
   const [svgWidth, setSvgWidth] = useState(w);
@@ -22,78 +22,9 @@ export default function IndustryStackChart({ w, h }) {
   });
 
   useEffect(() => {
-    getIdentifyICNodesSds(dataParam).then((res) => {
-      setData(res);
-    });
-
-    // let dt = [
-    //   {
-    //     id: "IP_92daa1711397e6264d8a06e03d89b033ac734c687c69f70408492c77a123c860",
-    //     numId: 95736,
-    //     industry: [
-    //       {
-    //         industry: "  ",
-    //         number: 89,
-    //       },
-    //       {
-    //         industry: "A",
-    //         number: 7,
-    //       },
-    //       {
-    //         industry: "AI",
-    //         number: 1,
-    //       },
-    //       {
-    //         industry: "AB",
-    //         number: 1,
-    //       },
-    //     ],
-    //   },
-    //   {
-    //     id: "IP_9637f29b412f3046f2e6b45f00d6da15b7cbed92f1db091babced19b257e04f9",
-    //     numId: 2119042,
-    //     industry: [
-    //       {
-    //         industry: "  ",
-    //         number: 88,
-    //       },
-    //       {
-    //         industry: "A",
-    //         number: 7,
-    //       },
-    //       {
-    //         industry: "AI",
-    //         number: 1,
-    //       },
-    //       {
-    //         industry: "AB",
-    //         number: 1,
-    //       },
-    //     ],
-    //   },
-    //   {
-    //     id: "Cert_f02481232fbaf471d77a4e703b806ea4ab5747e53fa0e22c4b63e79adb9cd659",
-    //     numId: 2120668,
-    //     industry: [
-    //       {
-    //         industry: "A",
-    //         number: 3,
-    //       },
-    //     ],
-    //   },
-    //   {
-    //     id: "Cert_89ec59e3789a63613f5ce4742e1b22662397278cb2f3b2222fdbc2986e40a039",
-    //     numId: 2127219,
-    //     industry: [
-    //       {
-    //         industry: "A",
-    //         number: 1,
-    //       },
-    //     ],
-    //   },
-    // ];
-    // setData(dt);
-  }, [dataParam]);
+      // console.log("------", res);
+      setData(dataParam);
+    }, [dataParam]);
 
   useEffect(() => {
     if (selectedNodeNumId !== "") {
