@@ -143,12 +143,6 @@ export default function MainView({ w, h }) {
       var j = cy.getElementById(searchNodebyId);
       cy.center(j); // 将被搜索元素居中
       j.select();
-
-      // j.addClass("searched");
-      // cy.getElementById(searchNodebyId).style({
-      //   // 高亮显示被选中节点
-      //   "background-color": "#ffff00",
-      // });
     }
   }, [searchNodebyId]);
 
@@ -181,13 +175,7 @@ export default function MainView({ w, h }) {
     if (resData.nodes.length !== 0) {
       PubSub.publish("combinedNodeTableDt", resData); // 分别向节点表和边表传递数据
       PubSub.publish("combinedLinkTableDt", resData);
-      let tempNode = [];
-      for (let n of resData.nodes) {
-        if (["IP", "Cert"].includes(n.type)) {
-          tempNode.push(n);
-        }
-      }
-      PubSub.publish("industryStackDt", tempNode); // 将选中的数据中的IP和Cert传给stack组件
+      PubSub.publish("industryStackDt", resData.links); // 将选中的数据传给stack组件
     }
   }, [resData]);
 
@@ -196,13 +184,7 @@ export default function MainView({ w, h }) {
     if (statistics.nodes.length !== 0) {
       PubSub.publish("combinedNodeTableDt", statistics); // 分别向节点表和边表传递数据
       PubSub.publish("combinedLinkTableDt", statistics);
-      let tempNode = [];
-      for (let n of statistics.nodes) {
-        if (["IP", "Cert"].includes(n.type)) {
-          tempNode.push(n);
-        }
-      }
-      PubSub.publish("industryStackDt", tempNode); // 将选中的数据中的IP和Cert传给stack组件
+      PubSub.publish("industryStackDt", statistics.links); // 将选中的数据中的IP和Cert传给stack组件
     }
   }, [statistics]);
 
@@ -241,6 +223,31 @@ export default function MainView({ w, h }) {
     }
     setDistanceFlag(true);
   }, [nodeDistance, edgeLength]);
+
+  // 获取从diff图中传进来的IC link，并将属于当前IC link路上的所有点高亮起来: "numId,numId"
+  PubSub.unsubscribe("fromDiffChartToMain");
+  PubSub.subscribe("fromDiffChartToMain", function (msg, ICLink) {
+    if (cy) {
+      cy.nodes().removeClass("InIClink");
+      cy.nodes().removeClass("start_end");
+
+      let arr = ICLink.split(",");
+      let reverseICLink = arr[1] + "," + arr[0];
+      if (ICLink !== "") {
+        cy.nodes().forEach((ele) => {
+          if (ICLink.indexOf(ele.data("numId").toString()) !== -1) {
+            // 表明是起点和终点
+            ele.addClass("start_end");
+          } else if (
+            ele.data("InICLinks").includes(ICLink) ||
+            ele.data("InICLinks").includes(reverseICLink)
+          ) {
+            ele.addClass("InIClink");
+          }
+        });
+      }
+    }
+  });
 
   // 撤销上一步操作
   useEffect(() => {
@@ -289,7 +296,6 @@ export default function MainView({ w, h }) {
     setFromTableLink(linkData);
   });
   useEffect(() => {
-    console.log(fromTableNode);
     if (cy) cy.nodes().removeClass("tablehighlightNode");
     if (fromTableNode.length !== 0) {
       cy.nodes().forEach((ele) => {
@@ -352,7 +358,6 @@ export default function MainView({ w, h }) {
     } else {
       getMainChartSds(dataParam).then((res) => {
         setData(res);
-        console.log(res);
         setDifChartInput(res);
       });
     }
@@ -762,7 +767,6 @@ export default function MainView({ w, h }) {
     let graphnodes, graphlinks;
     graphnodes = cy.nodes().map(function (ele, i) {
       let inICLinks = data.nodes.filter((item, index) => {
-        console.log(item, ele);
         return item["id"] === ele.data("id");
       });
 

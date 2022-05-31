@@ -143,7 +143,6 @@ export default function SearchBar() {
   };
 
   const onSearchData = () => {
-    console.log(selectNumId, selectType);
     PubSub.publish("getClueFromDense", {
       numId: selectNumId,
       Id: selectType,
@@ -155,6 +154,15 @@ export default function SearchBar() {
     setSelectType(undefined);
     setSelectIndustry(undefined);
   };
+
+
+  // 清除丑丑图、skeleton图的数据
+  const onclearAll = () => {
+    PubSub.publish("getClueFromDense", {
+      numId: -1,
+      Id: '',
+    });
+  };
   return (
     <div style={{ paddingTop: "15px" }}>
       <Form.Item>
@@ -165,7 +173,7 @@ export default function SearchBar() {
           onChange={changeType}
           onSearch={searchType}
           showSearch
-          style={{ width: 100 }}
+          style={{ width: 70 }}
           value={selectType}
         >
           {type.map((item, index) => (
@@ -181,7 +189,7 @@ export default function SearchBar() {
           onChange={changeIndustry}
           onSearch={searchIndustry}
           showSearch
-          style={{ width: 100 }}
+          style={{ width: 70 }}
           value={selectIndustry}
         >
           {industry.map((item, index) => (
@@ -210,6 +218,9 @@ export default function SearchBar() {
         </Button>
         <Button type="primary" onClick={onCleanData}>
           清除
+        </Button>
+        <Button type="primary" onClick={onclearAll}>
+          清空
         </Button>
       </Form.Item>
     </div>

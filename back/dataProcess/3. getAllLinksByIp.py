@@ -100,6 +100,7 @@ def getLinksToTarget(numId, typeName, i, nowPath, nodeAllLinks, nodeLinks, nodeC
             elif(j[1] in nodesToTarget and j[2] not in nodesToTarget):
                 nodeInMiddle2.append(j[2])
                 linksInMiddle.append(j)
+
     # 获取第一跳和最后一跳都关联的节点并保存对应的链路信息和节点信息        
     for j in linksInMiddle:
         if(j[1] in nodeInMiddle1 and j[1] in nodeInMiddle2):
@@ -108,6 +109,7 @@ def getLinksToTarget(numId, typeName, i, nowPath, nodeAllLinks, nodeLinks, nodeC
         if(j[2] in nodeInMiddle1 and j[2] in nodeInMiddle2):
             nodesToTarget.append(j[2])
             linksToTarget.append(j)
+            
     # 获取关联的Whois信息
     for j in nodeAllLinks[2]:
         if(j[1] in nodesToTarget):
@@ -119,7 +121,7 @@ def getLinksToTarget(numId, typeName, i, nowPath, nodeAllLinks, nodeLinks, nodeC
         if(j[1] in nodesToTarget and j[2] not in nodesToTarget):
             linksToTarget.append(j)
             nodesToTarget.append(j[2])
-        if(j[1] not in nodesToTarget or j[2] in nodesToTarget):
+        if(j[1] not in nodesToTarget and j[2] in nodesToTarget):
             linksToTarget.append(j)
             nodesToTarget.append(j[1])
     
@@ -146,6 +148,7 @@ def getLinksToTarget(numId, typeName, i, nowPath, nodeAllLinks, nodeLinks, nodeC
         "domainNum": allDomainNodeNum,
         "industryNum": allDomainInstduryNodeNum,
     }
+
 
 
 def getAllLinksByNodes(coreList, nowPath, nodes, nodeCsvW, ICScreen, linksAll):
