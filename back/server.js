@@ -1954,7 +1954,6 @@ app.post("/getIdentifyData", jsonParser, (req, res, next) => {
   res.end();
 });
 
-const PythonShell = require("python-shell").PythonShell;
 // 输入起点终点，返回关键链路接口
 app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
   let source = 1,
