@@ -683,25 +683,25 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
 
   //针对每一个IC节点进行循环
   for (let i of nodes) {
-    if (ICScreen[1].indexOf(i["numId"]) > -1) {
-      filedata = path.join(
-        __dirname,
-        "data/ICAloneLinks/" + i["numId"] + ".json"
-      );
-      nowData = JSON.parse(fs.readFileSync(filedata, "utf-8"));
-      for (j of nowData["nodes"]) {
-        if (!nodesNumId.hasOwnProperty(j[0])) {
-          nodesNumId[j[0]] = [];
-        }
-        nodesNumId[j[0]].push([i["numId"]].toString());
+    // if (ICScreen[1].indexOf(i["numId"]) > -1) {
+    filedata = path.join(
+      __dirname,
+      "data/ICAloneLinks/" + i["numId"] + ".json"
+    );
+    nowData = JSON.parse(fs.readFileSync(filedata, "utf-8"));
+    for (j of nowData["nodes"]) {
+      if (!nodesNumId.hasOwnProperty(j[0])) {
+        nodesNumId[j[0]] = [];
       }
-      for (j of nowData["links"]) {
-        if (!linksList.hasOwnProperty([j[0], j[1], j[2]].toString())) {
-          linksList[[j[0], j[1], j[2]].toString()] = [];
-        }
-        linksList[[j[0], j[1], j[2]].toString()].push([i["numId"]].toString());
-      }
+      nodesNumId[j[0]].push([i["numId"]].toString());
     }
+    for (j of nowData["links"]) {
+      if (!linksList.hasOwnProperty([j[0], j[1], j[2]].toString())) {
+        linksList[[j[0], j[1], j[2]].toString()] = [];
+      }
+      linksList[[j[0], j[1], j[2]].toString()].push([i["numId"]].toString());
+    }
+    // }
   }
 
   //针对每一个在ICLinks中的IC节点进行循环
@@ -963,7 +963,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
       );
     }
   }
-
+  console.log(useIndustryType);
   let ICLinks = {};
   for (let i in ICLinksIndustry) {
     nowICLinks = i.split(",");
@@ -1042,7 +1042,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
           index: 0,
           startICLinkNum: startICLinkNum,
           height: useIndustryType[k][0],
-          proportion: Math.sqrt(ICindustry1 / useIndustryType[k][0]),
+          proportion: Math.sqrt(ICindustry1 / useIndustryType[k][1]),
         });
         difInfo["industry"].push({
           industry: k,
@@ -1050,7 +1050,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
           index: 1,
           startICLinkNum: startICLinkNum,
           height: useIndustryType[k][0],
-          proportion: Math.sqrt(ICindustry2 / useIndustryType[k][0]),
+          proportion: Math.sqrt(ICindustry2 / useIndustryType[k][1]),
         });
         difInfo["industry"].push({
           industry: k,
@@ -1058,12 +1058,13 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
           index: 2,
           startICLinkNum: startICLinkNum,
           height: useIndustryType[k][0],
-          proportion: Math.sqrt(ICindustry3 / useIndustryType[k][0]),
+          proportion: Math.sqrt(ICindustry3 / useIndustryType[k][1]),
         });
       }
       ICLinksInfo.push(difInfo);
     }
   }
+
   // let sendData = {
   //   "name": "root",
   //   "depthmax": 0,
@@ -1932,7 +1933,6 @@ app.post("/getIdentifyData", jsonParser, (req, res, next) => {
       selectnodes.push(Number(result[i].name));
     }
   }
-  console.log(selectnodes);
   let selectedges = jsnx.edges(G, selectnodes);
   let g = new jsnx.Graph();
   g.addEdgesFrom(selectedges);

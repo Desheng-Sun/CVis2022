@@ -23,8 +23,6 @@ export default function IndustryStackChart({ w, h }) {
 
   useEffect(() => {
     getIdentifyICNodesSds(dataParam).then((res) => {
-      console.log("dataParam", dataParam);
-      console.log("------", res);
       setData(res);
     });
 

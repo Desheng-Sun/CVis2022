@@ -176,6 +176,16 @@ export default function MainView({ w, h }) {
       PubSub.publish("combinedNodeTableDt", resData); // 分别向节点表和边表传递数据
       PubSub.publish("combinedLinkTableDt", resData);
       PubSub.publish("industryStackDt", resData.links); // 将选中的数据传给stack组件
+
+
+
+      // 确定当前属于一个团伙
+      // 向后端传递数据获取核心资产和关键链路
+
+      // 向info-list传递数据
+      PubSub.publish("fromMainToInfoList", resData)
+      
+
     }
   }, [resData]);
 
@@ -354,6 +364,10 @@ export default function MainView({ w, h }) {
   // 请求数据并初始化图形
   useEffect(() => {
     if (dataParam === "") {
+      // 初始化的时候
+      setData({ nodes: [], links: [] });
+    } else if (dataParam.nodes.length === 0) {
+      // 传过来的是空数据，就直接清空主图中的数据
       setData({ nodes: [], links: [] });
     } else {
       getMainChartSds(dataParam).then((res) => {
@@ -374,12 +388,13 @@ export default function MainView({ w, h }) {
 
   // 绘制图形
   function drawChart() {
+    d3.selectAll("#main-chart div").remove();
+    d3.selectAll("#main-container .mainToolTip").remove();
+
     if (data.nodes.length === 0) return;
     const nodes = data.nodes.map((d) => ({ data: { ...d } }));
     const links = data.links.map((d) => ({ data: { ...d } }));
 
-    d3.selectAll("#main-chart div").remove();
-    d3.selectAll("div#main-container .mainToolTip").remove();
     Promise.all([
       fetch("./json/cy-style-class.json").then(function (res) {
         return res.json();
