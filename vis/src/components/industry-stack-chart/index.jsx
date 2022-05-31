@@ -17,184 +17,81 @@ export default function IndustryStackChart({ w, h }) {
   const [toPath, setToPath] = useState({ startNode: [], endNode: [] }); // 传递给关键路径识别的算法并在关键路径图中绘制出当前路径
 
   PubSub.unsubscribe("industryStackDt");
-  // 数据格式: 缺少每种产业的数量信息
-  //   [  {
-  //     "numId": 16802,
-  //     "id": "IP_7cc9198e5eaa613f2e0065ab6600b9dcfb62f4f598b20383925897b83e1b1f9b",
-  //     "name": "104.244.xxx.xxx",
-  //     "type": "IP",
-  //     "industry": "  ",
-  //     "InICLinks": []
-  // },
-  // {
-  //   "numId": 16802,
-  //   "id": "IP_7cc9198e5eaa613f2e0065ab6600b9dcfb62f4f598b20383925897b83e1b1f9b",
-  //   "name": "104.244.xxx.xxx",
-  //   "type": "IP",
-  //   "industry": "  ",
-  //   "InICLinks": []
-  // }]
-
   PubSub.subscribe("industryStackDt", (msg, dataparam) => {
-    // 这里根据dataParamn参数从后端获取数据
     setDataParam(dataparam);
   });
 
   useEffect(() => {
     getIdentifyICNodesSds(dataParam).then((res) => {
+      console.log("dataParam", dataParam);
       console.log("------", res);
       setData(res);
     });
+
     // let dt = [
     //   {
-    //     id: "IP_A",
-    //     numId: 0,
-    //     ICIndustry: [
-    //       { industry: "AB", number: 2 },
-    //       { industry: "AED", number: 18 },
-    //       { industry: "BCD", number: 1 },
+    //     id: "IP_92daa1711397e6264d8a06e03d89b033ac734c687c69f70408492c77a123c860",
+    //     numId: 95736,
+    //     industry: [
+    //       {
+    //         industry: "  ",
+    //         number: 89,
+    //       },
+    //       {
+    //         industry: "A",
+    //         number: 7,
+    //       },
+    //       {
+    //         industry: "AI",
+    //         number: 1,
+    //       },
+    //       {
+    //         industry: "AB",
+    //         number: 1,
+    //       },
     //     ],
-    //     group: 1,
     //   },
     //   {
-    //     id: "IP_B",
-    //     numId: 0,
-    //     ICIndustry: [
-    //       { industry: "AB", number: 2 },
-    //       { industry: "AE", number: 8 },
-    //       { industry: "DE", number: 1 },
+    //     id: "IP_9637f29b412f3046f2e6b45f00d6da15b7cbed92f1db091babced19b257e04f9",
+    //     numId: 2119042,
+    //     industry: [
+    //       {
+    //         industry: "  ",
+    //         number: 88,
+    //       },
+    //       {
+    //         industry: "A",
+    //         number: 7,
+    //       },
+    //       {
+    //         industry: "AI",
+    //         number: 1,
+    //       },
+    //       {
+    //         industry: "AB",
+    //         number: 1,
+    //       },
     //     ],
-    //     group: 1,
     //   },
     //   {
-    //     id: "Cert_C",
-    //     numId: 0,
-    //     ICIndustry: [
-    //       { industry: "B", number: 2 },
-    //       { industry: "AE", number: 8 },
-    //       { industry: "BCD", number: 1 },
+    //     id: "Cert_f02481232fbaf471d77a4e703b806ea4ab5747e53fa0e22c4b63e79adb9cd659",
+    //     numId: 2120668,
+    //     industry: [
+    //       {
+    //         industry: "A",
+    //         number: 3,
+    //       },
     //     ],
-    //     group: 1,
     //   },
     //   {
-    //     id: "IP_D",
-    //     numId: 0,
-    //     ICIndustry: [
-    //       { industry: "AB", number: 2 },
-    //       { industry: "AE", number: 8 },
-    //       { industry: "H", number: 1 },
+    //     id: "Cert_89ec59e3789a63613f5ce4742e1b22662397278cb2f3b2222fdbc2986e40a039",
+    //     numId: 2127219,
+    //     industry: [
+    //       {
+    //         industry: "A",
+    //         number: 1,
+    //       },
     //     ],
-    //     group: 1,
-    //   },
-    //   {
-    //     id: "Cert_E",
-    //     numId: 0,
-    //     ICIndustry: [
-    //       { industry: "AB", number: 2 },
-    //       { industry: "AE", number: 8 },
-    //       { industry: "BCE", number: 1 },
-    //     ],
-    //     group: 1,
-    //   },
-    //   {
-    //     id: "Cert_E",
-    //     numId: 0,
-    //     ICIndustry: [
-    //       { industry: "AB", number: 2 },
-    //       { industry: "AE", number: 8 },
-    //       { industry: "BCE", number: 1 },
-    //     ],
-    //     group: 1,
-    //   },
-    //   {
-    //     id: "Cert_E",
-    //     numId: 0,
-    //     ICIndustry: [
-    //       { industry: "AB", number: 2 },
-    //       { industry: "AE", number: 8 },
-    //       { industry: "BCE", number: 1 },
-    //     ],
-    //     group: 1,
-    //   },
-    //   {
-    //     id: "Cert_E",
-    //     numId: 0,
-    //     ICIndustry: [
-    //       { industry: "AB", number: 2 },
-    //       { industry: "AE", number: 8 },
-    //       { industry: "BCE", number: 1 },
-    //     ],
-    //     group: 1,
-    //   },
-    //   {
-    //     id: "Cert_E",
-    //     numId: 0,
-    //     ICIndustry: [
-    //       { industry: "AB", number: 2 },
-    //       { industry: "AE", number: 8 },
-    //       { industry: "BCE", number: 1 },
-    //     ],
-    //     group: 1,
-    //   },
-    //   {
-    //     id: "Cert_E",
-    //     numId: 0,
-    //     ICIndustry: [
-    //       { industry: "AB", number: 2 },
-    //       { industry: "AE", number: 8 },
-    //       { industry: "BCE", number: 1 },
-    //     ],
-    //     group: 1,
-    //   },
-    //   {
-    //     id: "Cert_E",
-    //     numId: 0,
-    //     ICIndustry: [
-    //       { industry: "AB", number: 2 },
-    //       { industry: "AE", number: 8 },
-    //       { industry: "BCE", number: 1 },
-    //     ],
-    //     group: 1,
-    //   },
-    //   {
-    //     id: "Cert_E",
-    //     numId: 0,
-    //     ICIndustry: [
-    //       { industry: "AB", number: 2 },
-    //       { industry: "AE", number: 8 },
-    //       { industry: "BCE", number: 1 },
-    //     ],
-    //     group: 1,
-    //   },
-    //   {
-    //     id: "Cert_E",
-    //     numId: 0,
-    //     ICIndustry: [
-    //       { industry: "AB", number: 2 },
-    //       { industry: "AE", number: 8 },
-    //       { industry: "BCE", number: 1 },
-    //     ],
-    //     group: 1,
-    //   },
-    //   {
-    //     id: "Cert_E",
-    //     numId: 0,
-    //     ICIndustry: [
-    //       { industry: "AB", number: 2 },
-    //       { industry: "AE", number: 8 },
-    //       { industry: "BCE", number: 1 },
-    //     ],
-    //     group: 1,
-    //   },
-    //   {
-    //     id: "Cert_E",
-    //     numId: 0,
-    //     ICIndustry: [
-    //       { industry: "AB", number: 2 },
-    //       { industry: "AE", number: 8 },
-    //       { industry: "BCE", number: 1 },
-    //     ],
-    //     group: 1,
     //   },
     // ];
     // setData(dt);
@@ -239,16 +136,17 @@ export default function IndustryStackChart({ w, h }) {
     let min = 0,
       max = 0;
     for (let d of data) {
-      for (let j in d.ICIndustry) {
-        min = Math.min(min, d.ICIndustry[j]["number"]);
-        max = Math.max(max, d.ICIndustry[j]["number"]);
-        combinationOrderSet.add(d.ICIndustry[j]["industry"]);
+      for (let j in d.industry) {
+        min = Math.min(min, d.industry[j]["number"]);
+        max = Math.max(max, d.industry[j]["number"]);
+        combinationOrderSet.add(d.industry[j]["industry"]);
       }
     }
     let combinationOrder = [...combinationOrderSet].sort();
     let industryType = [
       ...new Set([...combinationOrder.toString().replaceAll(",", "")]),
     ].sort(); // 包含的所有产业类型
+    console.log(industryType, combinationOrder);
 
     const AColorScale = d3
       .scaleLinear()
@@ -286,7 +184,7 @@ export default function IndustryStackChart({ w, h }) {
       .scaleLinear()
       .domain([0, max])
       .range(["#fff", "#87ccff"]);
-    console.log(max);
+
     const industryColoeScale = {
       A: AColorScale,
       B: BColorScale,
@@ -367,10 +265,10 @@ export default function IndustryStackChart({ w, h }) {
       .on("click", function (event, d) {
         if (event.ctrlKey) {
           // 按下Ctrl键 + click 取消选择
-          // setSelectedNodeNumId("reset-" + d.id); // 取消在主图中高亮当前数据点
+          setSelectedNodeNumId("reset-" + d.id); // 取消在主图中高亮当前数据点
         } else {
           console.log(d);
-          // setSelectedNodeNumId("set-" + d.id); // 在主图中高亮当前数据点
+          setSelectedNodeNumId("set-" + d.id); // 在主图中高亮当前数据点
         }
       })
       .on(
@@ -407,7 +305,7 @@ export default function IndustryStackChart({ w, h }) {
     g.append("text")
       .attr("transform", (d) => "translate(10,10)")
       .selectAll("tspan")
-      .data((d) => d.ICIndustry)
+      .data((d) => d.industry)
       .join("tspan")
       .attr("x", 50)
       .attr("y", (d, i) => `${i * 1.5 - 2}em`)
@@ -448,17 +346,18 @@ export default function IndustryStackChart({ w, h }) {
             // .attr("stroke", "#aaa")
             .attr("fill", (d) => {
               if (first_flag) {
-                for (let loopIndu in d.ICIndustry) {
+                for (let loopIndu in d.industry) {
                   if (
                     combinationOrder.indexOf(
-                      d.ICIndustry[loopIndu]["industry"]
+                      d.industry[loopIndu]["industry"]
                     ) === i
                   ) {
-                    // 当前产业与当前弧对应的产业一致
-                    let currIndu = d.ICIndustry[loopIndu]["industry"]; // 当前产业集合，然后获取当前产业集合包含的子产业对应的径向索引
+                    // 当前产业与当前分区对应的产业一致
+                    let currIndu = d.industry[loopIndu]["industry"]; // 当前产业集合，然后获取当前产业集合包含的子产业对应的径向索引
                     currInduYIndex = currIndu
                       .split("")
                       .map((value) => industryType.indexOf(value));
+                    currInduYIndex = Array.from(new Set([...currInduYIndex]));
                     indu = loopIndu;
                     break;
                   }
@@ -470,8 +369,11 @@ export default function IndustryStackChart({ w, h }) {
                 currInduYIndex.indexOf(j) !== -1
               ) {
                 // return industryColor[j];
+                if (industryType[j].replaceAll(" ", "") === "") {
+                  return "green";
+                }
                 return industryColoeScale[industryType[j]](
-                  d.ICIndustry[indu]["number"]
+                  d.industry[indu]["number"]
                 );
               }
               return "#bbb";
@@ -482,6 +384,12 @@ export default function IndustryStackChart({ w, h }) {
             .attr("stroke-width", 0.5)
             .on("mouseover", (event, d) => {
               let htmlText = `id: <strong>${d.id}</strong> <br>产业: <strong>${industryType[j]}</strong>`;
+              if (
+                currInduYIndex.length !== 0 &&
+                currInduYIndex.indexOf(j) !== -1
+              ) {
+                htmlText += `(${d.industry[indu]["number"]})`;
+              }
               industryStacktoolTip
                 .style("left", event.pageX + 5 + "px")
                 .style("top", event.pageY + 5 + "px")

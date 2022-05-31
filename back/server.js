@@ -77,7 +77,7 @@ const ICScreenJ = fs.readFileSync(nowPath + "ICScreen.json", "utf-8");
 const ICScreen = JSON.parse(ICScreenJ);
 
 // 获取每个节点所在的ICLinks的信息
-const nodeICLinksJ = fs.readFileSync(nowPath + "nodeICLinks4.json", "utf8");
+const nodeICLinksJ = fs.readFileSync(nowPath + "nodeICLinks.json", "utf8");
 const nodeICLinks = JSON.parse(nodeICLinksJ);
 
 // 记录最初开始的节点
@@ -883,7 +883,7 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
   }
 
   industryType = Array.from(industryType)
-  industryType = industryType.filter(e => e!= "  ")
+  industryType = industryType.filter(e => e != "  ")
   industryType.sort((a, b) => a - b)
   industryType.sort((a, b) => a.length - b.length)
   let useIndustryType = {}
@@ -1996,9 +1996,9 @@ app.post("/getIdentifyICNodesSds", jsonParser, (req, res, next) => {
     }
   }
   let sendData = []
-  for(let i in ICNodesIndustry){
+  for (let i in ICNodesIndustry) {
     let industryNowNode = []
-    for(j in ICNodesIndustry[i]){
+    for (j in ICNodesIndustry[i]) {
       industryNowNode.push({
         industry: j,
         number: ICNodesIndustry[i][j]
@@ -2007,7 +2007,7 @@ app.post("/getIdentifyICNodesSds", jsonParser, (req, res, next) => {
     sendData.push({
       id: nodeNumIdInfo[parseInt(i) - 1][1],
       numId: parseInt(i) - 1,
-      industry:industryNowNode
+      industry: industryNowNode
     })
   }
 

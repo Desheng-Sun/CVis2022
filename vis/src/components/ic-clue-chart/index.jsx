@@ -10,25 +10,30 @@ import "./index.css";
 import { getIcClueData2Sds } from "../../apis/api.js";
 
 var icicleChart;
-let prevSelected = [];
+var prevSelected = [];
 export default function ICClueChart({ w, h }) {
   const [svgWidth, setSvgWidth] = useState(w);
   const [svgHeight, setSvgHeight] = useState(h);
-  const [data, setData] = useState({});
+  const [data, setData] = useState(undefined);
   const [dataParam, setDataParam] = useState("");
   const [selectedIclcleNode, setSelectedIclcleNode] = useState([]);
   const [selectedIclcleNodeFirst, setSelectedIclcleNodeFirst] = useState(true);
-  // const [icicleChart, setIcicleChart] = useState([])
 
   // cluedense点击后更新冰柱图
   PubSub.unsubscribe("getClueFromDense");
   PubSub.subscribe("getClueFromDense", (msg, clue) => {
+    if (clue.numId === -1) {
+      setData({}); // 清空丑丑图的数据
+      setSelectedIclcleNode([]); // 清空丑丑图中选择的数据
+      prevSelected = [];
+      icicleChart.setSelectedIcicleNode();
+      return;
+    }
     getIcClueData2Sds(clue.numId, clue.Id).then((res) => {
-      console.log(res);
       setData(res);
     });
   });
-  // 监听选择的节点的变化，如果变化了就传递给另一个组件
+  // 监听选择的节点的变化，如果
   useEffect(() => {
     if (!selectedIclcleNodeFirst) {
       PubSub.publish("icicleSelect", selectedIclcleNode);
@@ -48,11 +53,14 @@ export default function ICClueChart({ w, h }) {
   }, [data]);
 
   function drawICClueChart() {
-    if (JSON.stringify(data) === "{}") return;
+    if (data == undefined) return; // 系统初始化的时候直接完成
     if (JSON.stringify(svgWidth) === "{}" || JSON.stringify(svgHeight) === "{}")
       return;
     d3.selectAll("#icclue-chart svg").remove();
     d3.selectAll("#icclue-chart .icicle-viz").remove();
+
+    if (JSON.stringify(data) === "{}") return; // 如果数据为空就不绘制
+
     var titleSvg = d3
       .select("#icclue-title")
       .append("svg")
@@ -78,7 +86,6 @@ export default function ICClueChart({ w, h }) {
       .style("color", "black")
       .style("line-height", 1)
       .attr("text-align", "center");
-    // console.log(data);
 
     for (let i = 0; i < data.length; i++) {
       let skipNum = data[i].skipNum + 1;

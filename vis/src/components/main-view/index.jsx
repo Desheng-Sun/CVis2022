@@ -143,12 +143,6 @@ export default function MainView({ w, h }) {
       var j = cy.getElementById(searchNodebyId);
       cy.center(j); // 将被搜索元素居中
       j.select();
-
-      // j.addClass("searched");
-      // cy.getElementById(searchNodebyId).style({
-      //   // 高亮显示被选中节点
-      //   "background-color": "#ffff00",
-      // });
     }
   }, [searchNodebyId]);
 
@@ -181,13 +175,7 @@ export default function MainView({ w, h }) {
     if (resData.nodes.length !== 0) {
       PubSub.publish("combinedNodeTableDt", resData); // 分别向节点表和边表传递数据
       PubSub.publish("combinedLinkTableDt", resData);
-      // let tempNode = [];
-      // for (let n of resData.nodes) {
-      //   if (["IP", "Cert"].includes(n.type)) {
-      //     tempNode.push(n);
-      //   }
-      // }
-      PubSub.publish("industryStackDt", resData.links); // 将选中的数据中的IP和Cert传给stack组件
+      PubSub.publish("industryStackDt", resData.links); // 将选中的数据传给stack组件
     }
   }, [resData]);
 
@@ -196,12 +184,6 @@ export default function MainView({ w, h }) {
     if (statistics.nodes.length !== 0) {
       PubSub.publish("combinedNodeTableDt", statistics); // 分别向节点表和边表传递数据
       PubSub.publish("combinedLinkTableDt", statistics);
-      // let tempNode = [];
-      // for (let n of statistics.nodes) {
-      //   if (["IP", "Cert"].includes(n.type)) {
-      //     tempNode.push(n);
-      //   }
-      // }
       PubSub.publish("industryStackDt", statistics.links); // 将选中的数据中的IP和Cert传给stack组件
     }
   }, [statistics]);
@@ -314,7 +296,6 @@ export default function MainView({ w, h }) {
     setFromTableLink(linkData);
   });
   useEffect(() => {
-    console.log(fromTableNode);
     if (cy) cy.nodes().removeClass("tablehighlightNode");
     if (fromTableNode.length !== 0) {
       cy.nodes().forEach((ele) => {
@@ -377,7 +358,6 @@ export default function MainView({ w, h }) {
     } else {
       getMainChartSds(dataParam).then((res) => {
         setData(res);
-        console.log(res);
         setDifChartInput(res);
       });
     }

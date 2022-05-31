@@ -75,7 +75,7 @@
   {
     "selector": "node.start_end",
     "style": {
-      "border-color": "#3d2d4f",
+      "border-color": "#ff00ff",
       "border-width": "3px"
     }
   }

@@ -149,6 +149,9 @@ export default Kapsule({
       //返回被选中的节点
       return selectedIclcleNode;
     },
+    setSelectedIcicleNode: function () {   // 将选择的数据置空
+      selectedIclcleNode = []
+    }
   },
   stateInit: () => ({
     zoom: zoomable(),
