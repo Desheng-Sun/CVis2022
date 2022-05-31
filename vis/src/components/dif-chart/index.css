@@ -50,12 +50,15 @@
 
 #diff-chart {
   overflow-x: scroll;
+  overflow-y: hidden;
 }
 
 .diff-tooltip {
   visibility: hidden;
   position: absolute;
   max-width: 320px;
+  text-align: left;
+  line-height: 2;
   white-space: nowrap;
   padding: 5px;
   border-radius: 3px;
