@@ -68,3 +68,9 @@
   pointer-events: none;
   z-index: 999;
 }
+
+.leftText{
+  font-size:8px;
+  fill:black;
+  font-weight: bold;
+}

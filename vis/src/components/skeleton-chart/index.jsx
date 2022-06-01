@@ -141,7 +141,7 @@ export default function SkeletonChart({ w, h }) {
     const svg = d3
       .select("#skeleton-chart")
       .append("svg")
-      .attr("width", svgWidth)
+      .attr("width", svgWidth*0.99)
       .attr("height", svgHeight * 0.99)
       .attr("viewBox", [0, 0, vbWidth, vbHeight]);
     var scaleFactor = 1.2, // 值为1表示紧连边缘的点

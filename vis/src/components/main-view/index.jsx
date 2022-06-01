@@ -173,16 +173,24 @@ export default function MainView({ w, h }) {
   // 当确定了团伙的时候对团伙数据进行统计分析，并获取团伙中的关键路径和核心资产
   useEffect(() => {
     if (resData.nodes.length !== 0) {
+      // PubSub.publish("combinedNodeTableDt", resData); // 分别向节点表和边表传递数据
+      // PubSub.publish("combinedLinkTableDt", resData);
+      // PubSub.publish("industryStackDt", resData.links); // 将选中的数据传给stack组件
+
+      // // 确定当前属于一个团伙
+      // // 向后端传递数据获取核心资产和关键链路
+
+      // // 向info-list传递数据
+      // PubSub.publish("fromMainToInfoList", resData)
+      
       console.log(resData)
       getGroupAllInfoSds(resData).then((res) => {
         console.log(res)
         // PubSub.publish("combinedNodeTableDt", res.getInfoListSds); // 分别向节点表和边表传递数据
         // PubSub.publish("combinedLinkTableDt", res.getBulletChartDataSds);
         // PubSub.publish("industryStackDt", res.links); // 将选中的数据传给stack组件
-        // // 确定当前属于一个团伙
-        // // 向后端传递数据获取核心资产和关键链路
-        // // 向info-list传递数据
-        // PubSub.publish("fromMainToInfoList", res)
+        // PubSub.publish("fromMainToInfoList", res)   // 向info-list传递数据
+        // // 确定当前属于一个团伙，向后端传递数据获取核心资产和关键链路
 
       });
     }
@@ -389,6 +397,7 @@ export default function MainView({ w, h }) {
   function drawChart() {
     d3.selectAll("#main-chart div").remove();
     d3.selectAll("#main-container .mainToolTip").remove();
+    d3.selectAll('.cytoscape-navigator').remove()
 
     if (data.nodes.length === 0) return;
     const nodes = data.nodes.map((d) => ({ data: { ...d } }));
@@ -846,16 +855,23 @@ export default function MainView({ w, h }) {
           selector: "node",
           style: {
             width: function (ele) {
-              return ele.degree() < 30 ? 30 : ele.degree();
+              return ele.degree() < 30 ? 30 : ele.degree()> 90 ?  90 : ele.degree()> 90;
             },
             height: function (ele) {
-              return ele.degree() < 30 ? 30 : ele.degree();
+              return ele.degree() < 30 ? 30 : ele.degree()> 90 ?  90 : ele.degree()> 90;
             },
           },
         };
         let domainNodeStyle = {
           selector: 'node[type="Domain"]',
           style: {
+            "border-color": function(ele){
+              if(ele.json().data.hasOwnProperty('children')){
+                console.log(ele.json().data);
+                return '#9c0f48'
+              }
+              return 'transparent'
+            },
             "pie-size": "100%",
             "pie-1-background-color": "#2978b4",
             "pie-1-background-size": function (ele, curIndustry = "A") {

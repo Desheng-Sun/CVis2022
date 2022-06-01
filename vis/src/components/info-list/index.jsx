@@ -4,6 +4,7 @@ import PubSub from "pubsub-js";
 
 import "antd/dist/antd.css";
 import { useEffect, useState } from "react";
+import './index.css'
 
 
 export default function InfoList() {
@@ -12,7 +13,7 @@ export default function InfoList() {
 
   useEffect(() => {
     if(dataParam.nodes.length === 0) return 
-      setData([dataParam]);
+    setData([dataParam]);
   }, [dataParam]);
 
   PubSub.unsubscribe("fromMainToInfoList")
@@ -71,7 +72,7 @@ export default function InfoList() {
   ];
 
   return (
-    <div id="infolist" style={{ width: "100%", height: "100%" }}>
+    <div id="infolist" style={{ width: "100%", height: "6.29vh" }}>
       <Table
         dataSource={data}
         columns={columns}
