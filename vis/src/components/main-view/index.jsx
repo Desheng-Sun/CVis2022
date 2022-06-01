@@ -189,10 +189,8 @@ export default function MainView({ w, h }) {
         // PubSub.publish("combinedNodeTableDt", res.getInfoListSds); // 分别向节点表和边表传递数据
         // PubSub.publish("combinedLinkTableDt", res.getBulletChartDataSds);
         // PubSub.publish("industryStackDt", res.links); // 将选中的数据传给stack组件
-        // // 确定当前属于一个团伙
-        // // 向后端传递数据获取核心资产和关键链路
-        // // 向info-list传递数据
-        // PubSub.publish("fromMainToInfoList", res)
+        // PubSub.publish("fromMainToInfoList", res)   // 向info-list传递数据
+        // // 确定当前属于一个团伙，向后端传递数据获取核心资产和关键链路
 
       });
     }

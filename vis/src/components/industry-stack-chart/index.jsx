@@ -16,13 +16,19 @@ export default function IndustryStackChart({ w, h }) {
   const [selectedNodeNumId, setSelectedNodeNumId] = useState(""); // 主图高亮的数据
   const [toPath, setToPath] = useState({ startNode: [], endNode: [] }); // 传递给关键路径识别的算法并在关键路径图中绘制出当前路径
 
+  // 设置参数
+  // PubSub.unsubscribe("industryStackDt");
+  // PubSub.subscribe("industryStackDt", (msg, dataparam) => {
+  //   setDataParam(dataparam);
+  // });
+
+  // 直接设置数据
   PubSub.unsubscribe("industryStackDt");
   PubSub.subscribe("industryStackDt", (msg, dataparam) => {
-    setDataParam(dataparam);
+    setDataParam(data);
   });
 
   useEffect(() => {
-      // console.log("------", res);
       setData(dataParam);
     }, [dataParam]);
 

@@ -13,7 +13,7 @@ export default function InfoList() {
 
   useEffect(() => {
     if(dataParam.nodes.length === 0) return 
-      setData([dataParam]);
+    setData([dataParam]);
   }, [dataParam]);
 
   PubSub.unsubscribe("fromMainToInfoList")
