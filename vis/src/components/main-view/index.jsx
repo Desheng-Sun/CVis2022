@@ -176,12 +176,7 @@ export default function MainView({ w, h }) {
       // PubSub.publish("combinedNodeTableDt", resData); // 分别向节点表和边表传递数据
       // PubSub.publish("combinedLinkTableDt", resData);
       // PubSub.publish("industryStackDt", resData.links); // 将选中的数据传给stack组件
-
-      // // 确定当前属于一个团伙
-      // // 向后端传递数据获取核心资产和关键链路
-
-      // // 向info-list传递数据
-      // PubSub.publish("fromMainToInfoList", resData)
+      // PubSub.publish("fromMainToInfoList", resData)  // 向info-list传递数据
       
       console.log(resData)
       getGroupAllInfoSds(resData).then((res) => {
