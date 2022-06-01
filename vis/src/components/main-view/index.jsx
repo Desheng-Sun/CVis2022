@@ -122,6 +122,9 @@ export default function MainView({ w, h }) {
   const [data, setData] = useState({ nodes: [], links: [] });
   const [dataFirst, setDataFirst] = useState(true);
   const [dataParam, setDataParam] = useState("");
+  const [isSubmit, setIsSubmit] = useState(false);  // 判断是否提交了团体数据
+  const [showCore, setShowCore] = useState(false);  // 是否展示核心资产与关键路径，未提交之前是默认不可以选择的
+  const [showCoreDisable, setShowCoreDisable] = useState(false);  // 是否展示核心资产与关键路径，未提交之前是默认不可以选择的
 
   // 给其他组件的数据
   const [resData, setResData] = useState({ nodes: [], links: [] }); // 右侧表格和子弹图的确定的团伙子图
@@ -173,16 +176,15 @@ export default function MainView({ w, h }) {
   // 当确定了团伙的时候对团伙数据进行统计分析，并获取团伙中的关键路径和核心资产
   useEffect(() => {
     if (resData.nodes.length !== 0) {
-      // PubSub.publish("combinedNodeTableDt", resData); // 分别向节点表和边表传递数据
-      // PubSub.publish("combinedLinkTableDt", resData);
-      // PubSub.publish("industryStackDt", resData.links); // 将选中的数据传给stack组件
-      // PubSub.publish("fromMainToInfoList", resData)  // 向info-list传递数据
-      
       getGroupAllInfoSds({nodes: resData.nodes, links: resData.links, isAll: true}).then((res) => {
+        console.log(res);
         PubSub.publish("combinedNodeTableDt", [res.getDetialListSds, res.getBulletChartDataSds]); // 分别向节点表和边表传递数据
         PubSub.publish("combinedLinkTableDt", [res.getDetialListSds, res.getBulletChartDataSds]);
         PubSub.publish("industryStackDt", res.getIdentifyICNodesSds); // 将选中的数据传给stack组件
         PubSub.publish("fromMainToInfoList", res.getInfoListSds)   // 向info-list传递数据
+
+        // 更新主图的数据就不再对数据进行变化了
+        setData(res.getDetialListSds)
       });
     }
   }, [resData]);
@@ -196,9 +198,6 @@ export default function MainView({ w, h }) {
         PubSub.publish("industryStackDt", res.getIdentifyICNodesSds); // 将选中的数据传给stack组件
       });
 
-      // PubSub.publish("combinedNodeTableDt", statistics); // 分别向节点表和边表传递数据
-      // PubSub.publish("combinedLinkTableDt", statistics);
-      // PubSub.publish("industryStackDt", statistics.links); // 将选中的数据中的IP和Cert传给stack组件
     }
   }, [statistics]);
 
@@ -244,21 +243,33 @@ export default function MainView({ w, h }) {
     if (cy) {
       cy.nodes().removeClass("InIClink");
       cy.nodes().removeClass("start_end");
+      cy.edges().removeClass('InIClink')
 
       let arr = ICLink.split(",");
       let reverseICLink = arr[1] + "," + arr[0];
       if (ICLink !== "") {
+        let innerNode = []
         cy.nodes().forEach((ele) => {
           if (ICLink.indexOf(ele.data("numId").toString()) !== -1) {
             // 表明是起点和终点
             ele.addClass("start_end");
+            innerNode.push(ele.data('id'))
           } else if (
             ele.data("InICLinks").includes(ICLink) ||
             ele.data("InICLinks").includes(reverseICLink)
           ) {
             ele.addClass("InIClink");
+            innerNode.push(ele.data('id'))
           }
         });
+
+        if(innerNode.length !== 0){   // 高亮路径上的边
+          cy.edges().forEach((ele) => {
+            if(innerNode.includes(ele.data('source')) && innerNode.includes(ele.data('target'))){
+              ele.addClass('InIClink')
+            }
+          })
+        }
       }
     }
   });
@@ -290,6 +301,26 @@ export default function MainView({ w, h }) {
     }
     setRollback(false);
   }, [rollback]);
+
+  // 应用核心资产和关键路径的样式
+  useEffect(() => {
+    if(showCore){
+      if(cy){
+        cy.nodes().removeClass("core");
+        cy.edges().removeClass("core");
+        cy.nodes().forEach((ele) =>{
+          if(ele.data('isCore')){
+            ele.addClass('core')
+          }
+        })
+        cy.edges().forEach((ele) => {
+          if(ele.data('isCore')){
+            ele.addClass('core')
+          }
+        })
+      }
+    }
+  }, [showCore])
 
   // 是否添加箭头
   useEffect(() => {
@@ -373,6 +404,8 @@ export default function MainView({ w, h }) {
     } else if (dataParam.nodes.length === 0) {
       // 传过来的是空数据，就直接清空主图中的数据
       setData({ nodes: [], links: [] });
+      setIsSubmit(false)
+      setShowCoreDisable(false)
     } else {
       getMainChartSds(dataParam).then((res) => {
         setData(res);
@@ -397,8 +430,16 @@ export default function MainView({ w, h }) {
     d3.selectAll('.cytoscape-navigator').remove()
 
     if (data.nodes.length === 0) return;
-    const nodes = data.nodes.map((d) => ({ data: { ...d } }));
-    const links = data.links.map((d) => ({ data: { ...d } }));
+
+    console.log(data);
+    var nodes, links;
+    if(!isSubmit){   // 不是提交完成之后的数据
+      nodes = data.nodes.map((d) => ({ data: { ...d } }));
+      links = data.links.map((d) => ({ data: { ...d } }));
+    }else{
+      nodes = data.nodes.map((d) => ({data:{'id': d.id, 'industry': d.industry, 'name': d.name,'isCore': d.isCore, 'numId': d.numId, 'type': d.type}}))
+      links = data.links.map((d) => ({ data: { ...d } }));
+    }
 
     Promise.all([
       fetch("./json/cy-style-class.json").then(function (res) {
@@ -773,11 +814,16 @@ export default function MainView({ w, h }) {
     links = cy.edges().map(function (ele, i) {
       return ele.json().data;
     });
+    setIsSubmit(true)   // 确定提交
+    setShowCoreDisable(true)  // 提交之后可以应用核心资产和关键路径的样式
     setResData({ nodes: [...nodes], links: [...links] });
   }
 
+  // 将数据传给diff chart
   function getDataForDifChart() {
     let currICNodes = cy.nodes().filter((ele, index) => {
+      ele.removeClass('start_end')  // 更新图中的数据之后移除相应的样式
+      ele.removeClass('InIClink')
       return ele.data("type") === "IP" || ele.data("type") === "Cert";
     });
     currICNodes = currICNodes.map((item, index) => {
@@ -830,6 +876,7 @@ export default function MainView({ w, h }) {
       return ele.json().data;
     });
     graphlinks = cy.edges().map(function (ele, i) {
+      ele.removeClass('InIClink')
       return ele.json().data;
     });
 
@@ -862,14 +909,12 @@ export default function MainView({ w, h }) {
         let domainNodeStyle = {
           selector: 'node[type="Domain"]',
           style: {
-            "border-color": function(ele){
+            "border-style": function(ele){
               if(ele.json().data.hasOwnProperty('children')){
-                console.log(ele.json().data);
-                return '#9c0f48'
+                return 'double'
               }
-              return 'transparent'
             },
-            "pie-size": "100%",
+            "pie-size": "95%",
             "pie-1-background-color": "#2978b4",
             "pie-1-background-size": function (ele, curIndustry = "A") {
               if (ele.data("industry").trim() === "") return "0";
@@ -953,6 +998,26 @@ export default function MainView({ w, h }) {
             },
           },
         };
+
+        // 如果是提交之后的应用样式，则需要把关键路径和核心资产表示出来
+        if(isSubmit){
+          let coreNode = {
+            selector: 'node',
+            style:{
+              "border-color": "#ad0c1b",
+              "border-width": "3px"
+            }
+          }
+          let coreLink = {
+            selector: 'edge',
+            style:{
+              "line-color": "#ad0c1b",
+              "opacity": "1"
+            }
+          }
+        }
+
+
         styleDetailsJson.push(newStyleArr);
         styleDetailsJson.push(domainNodeStyle);
         cy.style().fromJson(styleDetailsJson).update();
@@ -1167,6 +1232,12 @@ export default function MainView({ w, h }) {
       document.onmousemove = null;
     }
   }
+  // 应用核心资产与关键路径的样式
+  function applyCoreStyle(){
+    if(showCoreDisable){  // 如果可以设置显示样式
+      setShowCore(!showCore)
+    }
+  }
 
   return (
     <div
@@ -1303,6 +1374,9 @@ export default function MainView({ w, h }) {
           <Checkbox onChange={addArrow}>箭头方向</Checkbox>
           <Checkbox checked={styleCheck} onChange={applyStyle}>
             应用样式
+          </Checkbox>
+          <Checkbox checked={showCore} onChange={applyCoreStyle} disable = {showCoreDisable}> 
+            核心资产与关键路径
           </Checkbox>
         </div>
       </div>
