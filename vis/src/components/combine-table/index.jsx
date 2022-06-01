@@ -9,7 +9,8 @@ export default function CombineTable({ w, h, b }) {
   const [dlWidth, setDlWidth] = useState(0);
   const [dlHeight, setDlHeight] = useState(0);
   const [dataParam, setDataParam] = useState({ nodes: [], links: [] });
-  // const [belong, setBelong] = useState("");
+  const [bullteData, setBullteData] = useState([]);
+  
   useEffect(() => {
     setBcWidth(
       document.getElementById("combine-table-bc-" + b).getBoundingClientRect()
@@ -27,20 +28,22 @@ export default function CombineTable({ w, h, b }) {
       document.getElementById("combine-table-dl-" + b).getBoundingClientRect()
         .height
     );
-    // setBelong(b);
+
   }, [w, h, b]);
 
   // 监听从主图来的数据
   if (b === "node") {
     PubSub.unsubscribe("combinedNodeTableDt");
-    PubSub.subscribe("combinedNodeTableDt", (msg, tableDt) => {
-      setDataParam({ nodes: [...tableDt.nodes], links: [...tableDt.links] });
+    PubSub.subscribe("combinedNodeTableDt", (msg, combineTableDt) => {
+      setBullteData(combineTableDt[1])
+      setDataParam({ nodes: [...combineTableDt[0].nodes], links: [...combineTableDt[0].links] });
     });
   }
   if (b === "link") {
     PubSub.unsubscribe("combinedLinkTableDt");
-    PubSub.subscribe("combinedLinkTableDt", (msg, tableDt) => {
-      setDataParam({ nodes: [...tableDt.nodes], links: [...tableDt.links] });
+    PubSub.subscribe("combinedLinkTableDt", (msg, combineTableDt) => {
+      setBullteData(combineTableDt[1])
+      setDataParam({ nodes: [...combineTableDt[0].nodes], links: [...combineTableDt[0].links] });
     });
   }
 
@@ -51,7 +54,7 @@ export default function CombineTable({ w, h, b }) {
           w={bcWidth}
           h={bcHeight}
           divname={"combine-table-bc-" + b}
-          dataparam={dataParam}
+          dataparam={bullteData}
         />
       </div>
       <div id={"combine-table-dl-" + b}>

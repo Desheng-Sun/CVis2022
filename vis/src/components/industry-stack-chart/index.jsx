@@ -24,13 +24,13 @@ export default function IndustryStackChart({ w, h }) {
 
   // 直接设置数据
   PubSub.unsubscribe("industryStackDt");
-  PubSub.subscribe("industryStackDt", (msg, dataparam) => {
-    setDataParam(data);
+  PubSub.subscribe("industryStackDt", (msg, coreNodedt) => {
+    setData(coreNodedt);
   });
 
-  useEffect(() => {
-      setData(dataParam);
-    }, [dataParam]);
+  // useEffect(() => {
+  //     setData(dataParam);
+  //   }, [dataParam]);
 
   useEffect(() => {
     if (selectedNodeNumId !== "") {

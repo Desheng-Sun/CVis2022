@@ -12,8 +12,6 @@ export default function BulletChart({ w, h, divname, dataparam }) {
 
   const [svgWidth, setSvgWidth] = useState(w);
   const [svgHeight, setSvgHeight] = useState(h);
-  const [divName, setDivName] = useState(divname);
-  const [dataParam, setDataParam] = useState({ nodes: [], links: [] });
 
 
   // 随系统缩放修改画布大小
@@ -25,29 +23,29 @@ export default function BulletChart({ w, h, divname, dataparam }) {
   }, [h]);
 
   useEffect(() => {
-    if(dataparam.nodes.length == 0) return 
+    if(dataparam.length == 0) return 
     if (divname === "combine-table-bc-node") {
-      dataparam = dataparam[1]; // nodes
+      let nodeDt = dataparam[1]; // nodes
       // 计算数据中measures和markers共同的最大、最小值 用于画图比例尺映射
       let allNumInData = [];
-      dataparam.forEach((item, index) => {
+      nodeDt.forEach((item, index) => {
         allNumInData.push(...item["measures"], ...item["markers"]);
       });
-      setData(dataparam);
+      setData(nodeDt);
       // 设置数据 + 记录最大、最小值
       setDataRange({
         minNum: Math.min(...allNumInData),
         maxNum: Math.max(...allNumInData),
       });
     } else if (divname === "combine-table-bc-link") {
-      dataparam = dataparam[0]; // links
+      let linkDt = dataparam[0]; // links
 
       // 计算数据中measures和markers共同的最大、最小值 用于画图比例尺映射
       let allNumInData = [];
-      dataparam.forEach((item, index) => {
+      linkDt.forEach((item, index) => {
         allNumInData.push(...item["measures"], ...item["markers"]);
       });
-      setData(dataparam);
+      setData(linkDt);
       // 设置数据 + 记录最大、最小值
       setDataRange({
         minNum: Math.min(...allNumInData),

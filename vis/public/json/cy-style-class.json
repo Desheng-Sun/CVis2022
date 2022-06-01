@@ -34,7 +34,7 @@
     "style": { "opacity": "0.5" }
   },
   {
-    "selector": "node.coreNode",
+    "selector": "node.core",
     "style": {
       "border-color": "#f5f440",
       "border-width": "2px",
@@ -42,7 +42,7 @@
     }
   },
   {
-    "selector": "node.keyRoad",
+    "selector": "node.key",
     "style": {
       "border-color": "#f5f440",
       "opacity": "1"

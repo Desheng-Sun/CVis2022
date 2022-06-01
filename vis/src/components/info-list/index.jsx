@@ -9,16 +9,16 @@ import './index.css'
 
 export default function InfoList() {
   const [data, setData] = useState([]);
-  const [dataParam, setDataParam] = useState({nodes: [], links:[]})
+  const [dataParam, setDataParam] = useState(undefined)
 
   useEffect(() => {
-    if(dataParam.nodes.length === 0) return 
+    if(dataParam == undefined) return 
     setData([dataParam]);
   }, [dataParam]);
 
   PubSub.unsubscribe("fromMainToInfoList")
-  PubSub.subscribe("fromMainToInfoList", function(msg, dataParam){
-    setDataParam(dataParam)
+  PubSub.subscribe("fromMainToInfoList", function(msg, infoDt){
+    setDataParam(infoDt)
   })
 
   const colorList = [
