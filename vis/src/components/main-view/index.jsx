@@ -178,15 +178,11 @@ export default function MainView({ w, h }) {
       // PubSub.publish("industryStackDt", resData.links); // 将选中的数据传给stack组件
       // PubSub.publish("fromMainToInfoList", resData)  // 向info-list传递数据
       
-      console.log(resData)
-      getGroupAllInfoSds(resData).then((res) => {
-        console.log(res)
+      getGroupAllInfoSds({nodes: resData.nodes, links: resData.links, isAll: true}).then((res) => {
         PubSub.publish("combinedNodeTableDt", [res.getDetialListSds, res.getBulletChartDataSds]); // 分别向节点表和边表传递数据
         PubSub.publish("combinedLinkTableDt", [res.getDetialListSds, res.getBulletChartDataSds]);
         PubSub.publish("industryStackDt", res.getIdentifyICNodesSds); // 将选中的数据传给stack组件
         PubSub.publish("fromMainToInfoList", res.getInfoListSds)   // 向info-list传递数据
-        // 确定当前属于一个团伙，向后端传递数据获取核心资产和关键链路
-        
       });
     }
   }, [resData]);
@@ -194,9 +190,15 @@ export default function MainView({ w, h }) {
   // 对选择的数据在右侧表格和核心资产图中进行统计分析
   useEffect(() => {
     if (statistics.nodes.length !== 0) {
-      PubSub.publish("combinedNodeTableDt", statistics); // 分别向节点表和边表传递数据
-      PubSub.publish("combinedLinkTableDt", statistics);
-      PubSub.publish("industryStackDt", statistics.links); // 将选中的数据中的IP和Cert传给stack组件
+      getGroupAllInfoSds({nodes: statistics.nodes, links: statistics.links, isAll: false}).then((res) => {
+        PubSub.publish("combinedNodeTableDt", [res.getDetialListSds, res.getBulletChartDataSds]); // 分别向节点表和边表传递数据
+        PubSub.publish("combinedLinkTableDt", [res.getDetialListSds, res.getBulletChartDataSds]);
+        PubSub.publish("industryStackDt", res.getIdentifyICNodesSds); // 将选中的数据传给stack组件
+      });
+
+      // PubSub.publish("combinedNodeTableDt", statistics); // 分别向节点表和边表传递数据
+      // PubSub.publish("combinedLinkTableDt", statistics);
+      // PubSub.publish("industryStackDt", statistics.links); // 将选中的数据中的IP和Cert传给stack组件
     }
   }, [statistics]);
 
