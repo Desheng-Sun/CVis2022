@@ -548,9 +548,9 @@ app.post("/getIcClueData2Sds", jsonParser, (req, res, next) => {
   );
   let nowPath = path.join(__dirname, "data/");
   let sendData;
-  
+
   // 获取搜索的初始节点
-  if(startNumId == 0){
+  if (startNumId == 0) {
     startNumId = req.body.numId
   }
   // 获取搜索过的节点
@@ -1921,6 +1921,7 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
   // 获取node和links信息
   const initialLinks = req.body.nodesLinksInfo["links"];
   const initialNodes = req.body.nodesLinksInfo["nodes"];
+  const isAll = req.body.isAll
   let links = [];
   let nodes = [];
   for (let i of initialLinks) {
@@ -1943,15 +1944,21 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
       nodes.push(i);
     }
   }
-  // 获取社区的核心资产-----------------------------------------------------------------
-  let identifyData = getIdentifyData(nodes, links)
 
   let ICNodesIndustry = {}
-  for (let i of identifyData["nodes"]) {
-    if (nodeNumIdInfo[parseInt(i) - 1][3] == "IP" || nodeNumIdInfo[parseInt(i) - 1][3] == "Cert") {
-      ICNodesIndustry[i] = {}
+  let identifyData = {}
+
+  if (isAll) {
+    // 获取社区的核心资产-----------------------------------------------------------------
+    identifyData = getIdentifyData(nodes, links)
+    identifyData["links"] = new Set(identifyData["links"].map(e => e.toString()))
+    for (let i of identifyData["nodes"]) {
+      if (nodeNumIdInfo[parseInt(i) - 1][3] == "IP" || nodeNumIdInfo[parseInt(i) - 1][3] == "Cert") {
+        ICNodesIndustry[i] = {}
+      }
     }
   }
+
   // 获取节点和链路的长度-----------------------------------------------------------------------
   numnode = nodes.length;
   numlink = links.length;
@@ -2016,20 +2023,44 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
 
   // 获取每个节点的信息，包括其numId、id、name、type、黑灰产类型等数据-------------------------------
   let nodesInfo = {};
+  num = 0
   for (let i of nodes) {
+    let isCore = false
+    if (isAll) {
+      if (identifyData["nodes"].indexOf(i["numId"]) > -1) {
+        isCore = true
+      }
+      num += 1
+    }
     nodesInfo[i["numId"]] = {
       numId: i["numId"],
       id: i["id"],
       name: i["name"],
       type: i["type"],
       industry: i["industry"],
-      isCore: true,
+      isCore: isCore,
       LinksInfo: [],
     };
+
+    if (!isAll) {
+      if (i["type"] == "IP" || i["type"] == "Cert") {
+        ICNodesIndustry[i["numId"]] = {}
+      }
+    }
   }
 
   let nowLinks = [];
+  num = 0
   for (let i of links) {
+    let isCore = false
+    // 获取关键链路的相关信息
+    if (isAll) {
+      if (identifyData["links"].has(i["linksNumId"].toString())) {
+        isCore = true
+      }
+      num += 1
+    }
+
     // 记录每个节点关联的links的数值----------------------------------------------------------------------------
     nodesInfo[i["linksNumId"][0]]["LinksInfo"].push(i["relation"]);
     nodesInfo[i["linksNumId"][1]]["LinksInfo"].push(i["relation"]);
@@ -2041,7 +2072,7 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
       source: i["source"],
       target: i["target"],
       linksNumId: i["linksNumId"],
-      isCore: true,
+      isCore: isCore,
     });
 
 
@@ -2054,6 +2085,8 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
       }
       ICNodesIndustry[targetNumId][nowICIndustry] += 1
     }
+
+
 
     // 获取每一个节点连接的Links和每一个Links的信息---------------------------------------------------------------------
     //如果为r_cert_chain，则将source作为certAsSource，target作为certAsTarget
@@ -2260,8 +2293,6 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
   // 获取社区的节点数量和边数量信息
   let getBulletChartDataSds = [linksList, nodesList]
 
-
-
   // 记录所有的links的数据类型-------------------------------------------------------------
   const LinksSet = [
     "r_cert",
@@ -2313,87 +2344,103 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
       industry: industryNowNode
     })
   }
+  let getFinalDataSds
+  if (isAll) {
+    // 获取社区的所有数据，最终的文本展示---------
+    // 节点的类型，8个------------
+    let node_type = [
+      "Domain",
+      "IP",
+      "Cert",
+      "Whois_Name",
+      "Whois_Phone",
+      "Whois_Email",
+      "IP_C",
+      "ASN",
+    ];
+    let node_num = [];
+    // 获取每个类型的节点的数量--------
+    for (let i of node_type) {
+      node_num.push(
+        nodes.filter((e) => {
+          return e["type"] == i;
+        }).length
+      );
+    }
+    //链路的类型11个-----------------------------
+    let link_type = [
+      "r_request_jump",
+      "r_subdomain",
+      "r_cname",
+      "r_dns_a",
+      "r_cidr",
+      "r_cert",
+      "r_cert_chain",
+      "r_whois_name",
+      "r_whois_phone",
+      "r_whois_email",
+      "r_asn",
+    ];
+    let links_num = [];
 
-  // 获取社区的所有数据，最终的文本展示---------
-  // 节点的类型，8个------------
-  let node_type = [
-    "Domain",
-    "IP",
-    "Cert",
-    "Whois_Name",
-    "Whois_Phone",
-    "Whois_Email",
-    "IP_C",
-    "ASN",
-  ];
-  let node_num = [];
-  // 获取每个类型的节点的数量--------
-  for (let i of node_type) {
-    node_num.push(
-      nodes.filter((e) => {
-        return e["type"] == i;
-      }).length
-    );
-  }
-  //链路的类型11个-----------------------------
-  let link_type = [
-    "r_request_jump",
-    "r_subdomain",
-    "r_cname",
-    "r_dns_a",
-    "r_cidr",
-    "r_cert",
-    "r_cert_chain",
-    "r_whois_name",
-    "r_whois_phone",
-    "r_whois_email",
-    "r_asn",
-  ];
-  let links_num = [];
-  //获取每个类型的链路的数据--------------------------------
-  for (let i of link_type) {
-    links_num.push(
-      links.filter((e) => {
-        return e["relation"] == i;
-      }).length
-    );
+    //获取每个类型的链路的数据--------------------------------
+    for (let i of link_type) {
+      links_num.push(
+        links.filter((e) => {
+          return e["relation"] == i;
+        }).length
+      );
+    }
+
+    let industryTypeAll = {
+      A: "涉黄",
+      B: "涉赌",
+      C: "诈骗",
+      D: "涉毒",
+      E: "涉枪",
+      F: "黑客",
+      G: "非法交易平台",
+      H: "非法支付平台",
+      I: "其他",
+    };
+    let industry_type = []
+    // 获取其涉及的黑灰产的内容
+    for (let i of industryType) {
+      industry_type.push(industryTypeAll[i]);
+    }
+    getFinalDataSds = {
+      groupscope: groupscope,
+      clue: nodes[0][1],
+      num_all_node: numnode,
+      node_type: node_type,
+      node_num: node_num,
+      node_all_link: numlink,
+      link_type: link_type,
+      links_num: links_num,
+      industry_type: industry_type,
+      num_industry: industry_type.length,
+      group_type: grouptype,
+    };
   }
 
-  let industryTypeAll = {
-    A: "涉黄",
-    B: "涉赌",
-    C: "诈骗",
-    D: "涉毒",
-    E: "涉枪",
-    F: "黑客",
-    G: "非法交易平台",
-    H: "非法支付平台",
-    I: "其他",
-  };
-  let industry_type = []
-  // 获取其涉及的黑灰产的内容
-  for (let i of industryType) {
-    industry_type.push(industryTypeAll[i]);
+
+  let sendData
+  if (isAll) {
+    sendData = {
+      getInfoListSds: getInfoListSds,
+      getBulletChartDataSds: getBulletChartDataSds,
+      getDetialListSds: getDetialListSds,
+      getIdentifyICNodesSds: getIdentifyICNodesSds,
+      getFinalDataSds: getFinalDataSds
+    }
   }
-  let getFinalDataSds = {
-    groupscope: groupscope,
-    clue: nodes[0][1],
-    num_all_node: numnode,
-    node_type: node_type,
-    node_num: node_num,
-    node_all_link: numlink,
-    link_type: link_type,
-    links_num: links_num,
-    industry_type: industry_type,
-    num_industry: industry_type.length,
-    group_type: grouptype,
-  };
-  let sendData = {
-    getInfoListSds: getInfoListSds,
-    getBulletChartDataSds: getBulletChartDataSds,
-    getDetialListSds: getDetialListSds,
-    getIdentifyICNodesSds:getIdentifyICNodesSds,
-    getFinalDataSds: getFinalDataSds
+  else {
+    sendData = {
+      getInfoListSds: getInfoListSds,
+      getBulletChartDataSds: getBulletChartDataSds,
+      getDetialListSds: getDetialListSds,
+      getIdentifyICNodesSds: getIdentifyICNodesSds,
+    }
   }
   res.send(sendData)
   res.end()
