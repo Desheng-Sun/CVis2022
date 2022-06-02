@@ -8,7 +8,7 @@ import "./index.css";
 export default function DifChart({ w, h }) {
   const [svgWidth, setSvgWidth] = useState(w);
   const [svgHeight, setSvgHeight] = useState(h);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(undefined);
   const [selectICLinks, setSelectICLinks] = useState("");
 
   const [linksInfo, setLinksInfo] = useState({ nodes: [], links: [] });
@@ -29,7 +29,8 @@ export default function DifChart({ w, h }) {
   }, [h]);
 
   useEffect(() => {
-    if (svgHeight != 0 && data.length !== 0) {
+    if (data != undefined) {
+      console.log(data);
       draw();
     }
   }, [svgHeight, data]);
@@ -10990,8 +10991,11 @@ export default function DifChart({ w, h }) {
   function draw() {
     if (JSON.stringify(data) === "[]") return;
     d3.selectAll("#diff-legend svg").remove();
-    d3.selectAll("#diff-all-chart svg").remove();
+    d3.selectAll("#diff-all-industry svg").remove();
+    d3.selectAll("#diff-chart svg").remove();
     d3.selectAll("#diff-all-chart .diff-tooltip").remove();
+
+    if(data[0].length === 0) return 
 
     var diffTooltip = d3
       .select("#diff-all-chart")
@@ -11253,10 +11257,7 @@ export default function DifChart({ w, h }) {
 
   return (
     <div id="difference-chart">
-      <div
-        id="diff-legend"
-        style={{ width: "100%", height: "5%", paddingLeft: "5px" }}
-      ></div>
+      <div id="diff-legend" style={{ width: "100%", height: "5%", paddingLeft: "5px" }}></div>
       <div id="diff-all-chart" style={{ width: "100%", height: "95%" }}>
         <div id="all-industry" style={{ width: "10%", height: "100%" }}></div>
         <div id="diff-chart" style={{ width: "400px", height: "100%" }}></div>

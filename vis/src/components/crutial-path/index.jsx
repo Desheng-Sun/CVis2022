@@ -19,7 +19,6 @@ export default function CrutialPath({ w, h }) {
 
   useEffect(() => {
     // getCrutialpathData().then((res) => {
-    //   console.log(res);
     //   setData(res);
     // });
 
@@ -117,38 +116,6 @@ export default function CrutialPath({ w, h }) {
       { source: "L2-2", target: "L4", value: 1 },
     ]}]
 
-  //   let dt = [
-  //     {
-  //       start:"L1",
-  //       end: 'L5',
-  //       nodes: [
-  //     { name: "L1", itemStyle: { color: colors[1] }, depth: 0 },
-  //     { name: "L2", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-1", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-2", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-3", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-4", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L4", itemStyle: { color: colors[0] }, depth: 2 },
-  //     { name: "L5", itemStyle: { color: colors[0] }, depth: 2 },
-  //     { name: "L3", itemStyle: { color: colors[1] }, depth: 3 },
-  //   ], 
-  //   links:[
-  //     { source: "L1", target: "L2", value: 2 },
-  //     { source: "L4", target: "L3", value: 4 },
-  //     { source: "L5", target: "L3", value: 3 },
-  //     { source: "L2", target: "L4", value: 1 },
-  //     { source: "L2", target: "L5", value: 1 },
-  //     { source: "L1", target: "L2-1", value: 1 },
-  //     { source: "L1", target: "L2-2", value: 2 },
-  //     { source: "L2-1", target: "L4", value: 1 },
-  //     { source: "L1", target: "L2-3", value: 1 },
-  //     { source: "L2-3", target: "L4", value: 1 },
-  //     { source: "L1", target: "L2-4", value: 1 },
-  //     { source: "L2-4", target: "L5", value: 1 },
-  //     { source: "L2-2", target: "L5", value: 1 },
-  //     { source: "L2-2", target: "L4", value: 1 },
-  //   ]}
-  // ]
     setData(dt)
   }, []);
 
@@ -240,8 +207,6 @@ export default function CrutialPath({ w, h }) {
       option.title.push(title)
       option.series.push(series)
     }
-    console.log(option);
-
 
     option && sankey.setOption(option, true);
     window.onresize = sankey.resize;
