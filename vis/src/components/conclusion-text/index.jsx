@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PubSub from "pubsub-js";
 import "./index.css";
 
@@ -9,6 +9,20 @@ export default function ConclusionText() {
   PubSub.unsubscribe('fromMainToConclusion')
   PubSub.subscribe('fromMainToConclusion',function(msg, text){
     setConclusionData(text)
+    // setConclusionData({
+    //   clue: text.clue,
+    //   clueAll: text.clueAll,
+    //   group_type: text.group_type,
+    //   groupscope: text.groupscope,
+    //   industry_type: [...text.industry_type],
+    //   link_type: [...text.link_type],
+    //   links_num: [...text.links_num],
+    //   node_all_link: text.node_all_link,
+    //   node_num: [...text.node_num],
+    //   node_type: [...text.node_type],
+    //   num_all_node: text.num_all_node,
+    //   num_industry: text.num_industry
+    // })
   })
   
   let colorListNode = [
@@ -36,41 +50,6 @@ export default function ConclusionText() {
     "#f9bf6f",
   ];
 
-  // let conclusionData = {
-  //   groupscope: "小",
-  //   clue: "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
-  //   num_all_node: 111,
-  //   node_type: [
-  //     "Domain",
-  //     "IP",
-  //     "Cert",
-  //     "Whois_Name",
-  //     "Whois_Phone",
-  //     "Whois_Email",
-  //     "IP_C",
-  //     "ASN",
-  //   ],
-  //   node_num: [104, 4, 2, 0, 0, 0, 0, 1],
-  //   num_all_link: 181,
-  //   link_type: [
-  //     "r_request_jump",
-  //     "r_subdomain",
-  //     "r_cname",
-  //     "r_dns_a",
-  //     "r_cidr",
-  //     "r_cert",
-  //     "r_cert_chain",
-  //     "r_whois_name",
-  //     "r_whois_phone",
-  //     "r_whois_email",
-  //     "r_asn",
-  //   ],
-  //   link_num: [0, 103, 0, 0, 0, 0, 0, 50, 27, 0, 1],
-  //   industry_type: ["涉赌", "涉黄", "涉枪", "非法交易平台"],
-  //   num_industry: 4,
-  //   group_type: "复合型",
-  // };
-  
   
   return (
     JSON.stringify(conclusionData) === '{}' ? <div id="conclusion-text"></div>:
@@ -105,7 +84,7 @@ export default function ConclusionText() {
             条边
           </b>
           ，其中
-          {conclusionData.link_num.map((item, index) => {
+          {conclusionData.links_num.map((item, index) => {
             if (item !== 0) {
               return (
                 <span style={{ color: colorListLink[index] }}>

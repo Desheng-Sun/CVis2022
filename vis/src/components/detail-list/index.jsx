@@ -215,7 +215,12 @@ export default function DetailList({ w, h, divname, dataparam }) {
         nodeFilter.forEach((key) => {
           let value = item[key];
           if (key === "industry") {
-            let valueArr = '"[' + value.split("").toString() + ']"';
+            let valueArr;
+            if(value === '  '){
+              valueArr = "[]"
+            }else{
+            valueArr = '"[' + value.split("").toString() + ']"';
+            }
             nodeCsvString += valueArr + ",";
           } else {
             nodeCsvString += value + ",";

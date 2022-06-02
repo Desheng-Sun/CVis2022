@@ -517,11 +517,11 @@ export default function MainView({ w, h }) {
         cy.elements()
           .difference(neigh.outgoers().union(neigh.incomers()))
           .not(neigh)
-          .addClass("semitransp");
-        neigh.addClass("highlight").outgoers().addClass("highlight");
+          .addClass("semitransp");  // 提高非选中的点和其邻居节点的透明度
+
         // 增加tooltip
         let htmlText;
-        if (curNOdeData.type === "Domain")
+        if (curNOdeData.type === "Domain"){
           htmlText =
             "<b>" +
             "id: " +
@@ -537,7 +537,8 @@ export default function MainView({ w, h }) {
             "industry: " +
             "</b>" +
             curNOdeData.industry;
-        else
+        }
+        else{
           htmlText =
             "<b>" +
             "id: " +
@@ -548,6 +549,7 @@ export default function MainView({ w, h }) {
             "name: " +
             "</b>" +
             curNOdeData.name;
+        }
         maintoolTip
           .style("left", e.renderedPosition.x + 610 + "px")
           .style("top", e.renderedPosition.y + 110 + "px")
@@ -555,13 +557,7 @@ export default function MainView({ w, h }) {
           .html(htmlText);
       });
       cy.on("mouseout", "node", function (e) {
-        var neigh = e.target;
-        cy.elements().removeClass("semitransp");
-        neigh
-          .removeClass("highlight")
-          .outgoers()
-          .union(neigh.incomers())
-          .removeClass("highlight");
+        cy.elements().removeClass("semitransp");  // 将所有元素的透明度还原
         maintoolTip.style("visibility", "hidden");
       });
 
@@ -917,9 +913,12 @@ export default function MainView({ w, h }) {
           style: {
             "border-style": function(ele){
               if(ele.json().data.hasOwnProperty('children')){
+                console.log('Domain有children', ele);
                 return 'double'
               }
+              return 'solid'
             },
+            "border-width": '6px',
             "pie-size": "95%",
             "pie-1-background-color": "#2978b4",
             "pie-1-background-size": function (ele, curIndustry = "A") {
