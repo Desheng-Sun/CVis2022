@@ -411,6 +411,7 @@ export default function MainView({ w, h }) {
       setData({ nodes: [], links: [] });
       setIsSubmit(false)
       setShowCoreDisable(false)
+      setDifChartInput({nodes: [-1], links:[]})
     } else {
       getMainChartSds(dataParam).then((res) => {
         console.log(res)
@@ -837,6 +838,7 @@ export default function MainView({ w, h }) {
       let inICLinks = data.nodes.filter((item, index) => {
         return item["id"] === ele.data("id");
       });
+      console.log(inICLinks);
 
       inICLinks = inICLinks[0]["InICLinks"];
 
@@ -901,10 +903,10 @@ export default function MainView({ w, h }) {
           selector: "node",
           style: {
             width: function (ele) {
-              return ele.degree() < 30 ? 30 : ele.degree()> 90 ?  90 : ele.degree()> 90;
+              return ele.degree() < 30 ? 30 : ele.degree()> 90 ?  90 : ele.degree();
             },
             height: function (ele) {
-              return ele.degree() < 30 ? 30 : ele.degree()> 90 ?  90 : ele.degree()> 90;
+              return ele.degree() < 30 ? 30 : ele.degree()> 50 ?  90 : ele.degree();
             },
           },
         };
@@ -913,90 +915,94 @@ export default function MainView({ w, h }) {
           style: {
             "border-style": function(ele){
               if(ele.json().data.hasOwnProperty('children')){
-                console.log('Domain有children', ele);
                 return 'double'
               }
               return 'solid'
             },
-            "border-width": '6px',
+            "border-width": function(ele){
+              if(ele.json().data.hasOwnProperty('children')){
+                return '3px'
+              }
+              return '0'
+            },
             "pie-size": "95%",
-            "pie-1-background-color": "#2978b4",
+            "pie-1-background-color": "#26BAEE",
             "pie-1-background-size": function (ele, curIndustry = "A") {
               if (ele.data("industry").trim() === "") return "0";
-              let curIndustryArr = ele.data("industry").split("");
-              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              let curIndustryArr = ele.data("industry").trim().split("");
+              let cellPie = Math.floor(100 / curIndustryArr.length); 
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
             },
-            "pie-2-background-color": "#f9bf6f",
+            "pie-2-background-color": "#d264b6",
             "pie-2-background-size": function (ele, curIndustry = "B") {
               if (ele.data("industry").trim() === "") return "0";
-              let curIndustryArr = ele.data("industry").split("");
-              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              let curIndustryArr = ele.data("industry").trim().split("");
+              let cellPie = Math.floor(100 / curIndustryArr.length); 
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
             },
-            "pie-3-background-color": "#ff756a",
+            "pie-3-background-color": "#6A67CE",
             "pie-3-background-size": function (ele, curIndustry = "C") {
               if (ele.data("industry").trim() === "") return "0";
-              let curIndustryArr = ele.data("industry").split("");
-              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              let curIndustryArr = ele.data("industry").trim().split("");
+              let cellPie = Math.floor(100 / curIndustryArr.length); 
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
             },
-            "pie-4-background-color": "#E8747C",
+            "pie-4-background-color": "#3BACB6",
             "pie-4-background-size": function (ele, curIndustry = "D") {
               if (ele.data("industry").trim() === "") return "0";
-              let curIndustryArr = ele.data("industry").split("");
-              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              let curIndustryArr = ele.data("industry").trim().split("");
+              let cellPie = Math.floor(100 / curIndustryArr.length); 
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
             },
-            "pie-5-background-color": "#2978b4",
+            "pie-5-background-color": "#FF4949",
             "pie-5-background-size": function (ele, curIndustry = "E") {
               if (ele.data("industry").trim() === "") return "0";
-              let curIndustryArr = ele.data("industry").split("");
-              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              let curIndustryArr = ele.data("industry").trim().split("");
+              let cellPie = Math.floor(100 / curIndustryArr.length); 
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
             },
-            "pie-6-background-color": "#a6cee3",
+            "pie-6-background-color": "#F47645",
             "pie-6-background-size": function (ele, curIndustry = "F") {
               if (ele.data("industry").trim() === "") return "0";
-              let curIndustryArr = ele.data("industry").split("");
-              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              let curIndustryArr = ele.data("industry").trim().split("");
+              let cellPie = Math.floor(100 / curIndustryArr.length); 
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
             },
-            "pie-7-background-color": "#e53f32",
+            "pie-7-background-color": "#9C0F48",
             "pie-7-background-size": function (ele, curIndustry = "G") {
               if (ele.data("industry").trim() === "") return "0";
-              let curIndustryArr = ele.data("industry").split("");
-              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              let curIndustryArr = ele.data("industry").trim().split("");
+              let cellPie = Math.floor(100 / curIndustryArr.length);
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
             },
-            "pie-8-background-color": "#f9b4ae",
+            "pie-8-background-color": "#F9D923",
             "pie-8-background-size": function (ele, curIndustry = "H") {
               if (ele.data("industry").trim() === "") return "0";
-              let curIndustryArr = ele.data("industry").split("");
-              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              let curIndustryArr = ele.data("industry").trim().split("");
+              let cellPie = Math.floor(100 / curIndustryArr.length);
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
             },
-            "pie-9-background-color": "#f5f440",
+            "pie-9-background-color": "#548c2f",
             "pie-9-background-size": function (ele, curIndustry = "I") {
               if (ele.data("industry").trim() === "") return "0";
-              let curIndustryArr = ele.data("industry").split("");
-              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              let curIndustryArr = ele.data("industry").trim().split("");
+              let cellPie = Math.floor(100 / curIndustryArr.length); 
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
@@ -1071,17 +1077,18 @@ export default function MainView({ w, h }) {
       "#7fc97f",
     ];
     let industryType = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
-    let industryColor = [
-      "#7fc97f",
-      "#f9bf6f",
-      "#ff756a",
-      "#2978b4",
-      "#f67f02",
-      "#a6cee3",
-      "#e53f32",
-      "#f9b4ae",
-      "#f5f440",
-    ];
+    let industryColor = {
+      'A':'#26BAEE', 
+      'B':'#d264b6',
+      'C':'#6A67CE',
+      'D':'#3BACB6',
+      'E':'#FF4949',
+      'F':'#F47645',
+      'G':'#9C0F48',
+      'H':'#F9D923',
+      'I':'#548c2f',
+    }
+    
     // 添加节点类型的图例
     let nodeTypeWrapper = legendSvg
       .append("g")
@@ -1191,7 +1198,7 @@ export default function MainView({ w, h }) {
       .attr("y", 10)
       .attr("width", 9)
       .attr("height", 15)
-      .attr("fill", (d, i) => industryColor[i]);
+      .attr("fill", (d, i) => industryColor[d]);
     industryTypeG
       .append("text")
       .text((d) => d)

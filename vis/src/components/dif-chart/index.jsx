@@ -35,36 +35,52 @@ export default function DifChart({ w, h }) {
   }, [svgHeight, data]);
 
   useEffect(() => {
+    if(linksInfo.nodes[0] === -1){  // 数据被清空了
+      setData([])
+    }else{
     getDifChartSds(linksInfo).then((res) => {
       setData(res);
     });
+  }
   }, [linksInfo]);
 
   // 绘制结构图
   function draw() {
-    if (JSON.stringify(data) === "[]") return;
     d3.selectAll("#diff-legend svg").remove();
-    d3.selectAll("#diff-all-industry svg").remove();
+    d3.selectAll("#all-industry svg").remove();
     d3.selectAll("#diff-chart svg").remove();
     d3.selectAll("#diff-all-chart .diff-tooltip").remove();
 
+    if (JSON.stringify(data) === "[]") return;
+
     if(data[0].length === 0) return 
 
+    console.log(data);
     var diffTooltip = d3
       .select("#diff-all-chart")
       .append("div")
       .attr("class", "diff-tooltip");
 
     let chartHeight = svgHeight * 0.75;
-    let colorList = ['#26BAEE', '#d264b6', '#6A67CE', '#3BACB6', '#FF4949', '#F47645', '#9C0F48', '#F9D923', '#4281a4', '#c44536', '#9c89b8', '#d88c9a', '#F9D923']
-    let industryColorDict = {}
+    let colorList = ['#4281a4', '#c44536', '#9c89b8', '#d88c9a', '#F9D923']
+    let industryColorDict = {
+      'A':'#26BAEE', 
+      'B':'#d264b6',
+      'C':'#6A67CE',
+      'D':'#3BACB6',
+      'E':'#FF4949',
+      'F':'#F47645',
+      'G':'#9C0F48',
+      'H':'#F9D923',
+      'I':'#548c2f',
+    }
+    
 
     ///////////////////////////////// 左侧绘制所有产业数量统计图
     let industryMinMax = {};
     for (let i = 0; i < data[0].length; i++) {
       // 将每种产业映射到不同的颜色
       if(!industryColorDict.hasOwnProperty(data[0][i].industry)){
-        console.log();
         industryColorDict[data[0][i].industry] = colorList[parseInt(i/2)]
       }
       // 统计每张产业中的最大值和最小值
@@ -178,7 +194,7 @@ export default function DifChart({ w, h }) {
 
     //////////////////////// 右侧绘制每一对IC之间的产业信息图
     let pairWidth = data[1].length <= 15 ? 350/data[1].length: 15;
-    var ICWidth = pairWidth * data[1].length*1.5;
+    var ICWidth = data[1].length !== 0 ? pairWidth * data[1].length*1.5: 10
     var ICMargin = {
       right: 2,
       left: 0,
