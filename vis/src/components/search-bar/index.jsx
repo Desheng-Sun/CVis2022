@@ -127,6 +127,7 @@ export default function SearchBar() {
   };
 
   const changeId = (value, index) => {
+    console.log(selectContent)
     setSelectNumId(selectContent[0][index.key]);
     if (value) {
       setSelectId(value);
@@ -134,20 +135,21 @@ export default function SearchBar() {
       setSelectIndustry(selectContent[3][index.key]);
     }
   };
-  const searchId = (value, index) => {
+  const searchId = (value) => {
+    console.log(selectContent)
     if (value) {
       setSelectId(value);
-      setSelectType(selectContent[2][index.key]);
-      setSelectIndustry(selectContent[3][index.key]);
     }
   };
 
   const onSearchData = () => {
+    console.log(selectNumId, selectType)
     PubSub.publish("getClueFromDense", {
       numId: selectNumId,
       Id: selectType,
     });
   };
+
   const onCleanData = () => {
     setSelectId(undefined);
     setSelectNumId(undefined);

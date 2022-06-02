@@ -413,6 +413,7 @@ export default function MainView({ w, h }) {
       setShowCoreDisable(false)
     } else {
       getMainChartSds(dataParam).then((res) => {
+        console.log(res)
         setData(res);
         setDifChartInput(res);
       });
