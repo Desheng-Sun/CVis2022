@@ -44,7 +44,7 @@ const nowPath = path.join(__dirname, "data/");
 // 获取节点的相关信息
 let nodeInfoJ = fs.readFileSync(
   nowPath +
-  "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv",
+    "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv",
   "utf8"
 );
 nodeInfoJ = nodeInfoJ.split("\n");
@@ -153,7 +153,6 @@ app.post("/getInitialSds", jsonParser, (req, res, next) => {
   res.send(useNodeIdInfo);
   res.end();
 });
-
 
 // 获取筛选后的IC节点的信息
 app.post("/getClueDenseDataSds", jsonParser, (req, res, next) => {
@@ -551,10 +550,10 @@ app.post("/getIcClueData2Sds", jsonParser, (req, res, next) => {
 
   // 获取搜索的初始节点
   if (startNumId == 0) {
-    startNumId = req.body.numId
+    startNumId = req.body.numId;
   }
   // 获取搜索过的节点
-  searchNumId.push(req.body.numId)
+  searchNumId.push(req.body.numId);
 
   if (!fs.existsSync(filedata)) {
     if (req.body.type == "IP" || req.body.type == "Cert") {
@@ -1921,7 +1920,7 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
   // 获取node和links信息
   const initialLinks = req.body.nodesLinksInfo["links"];
   const initialNodes = req.body.nodesLinksInfo["nodes"];
-  const isAll = req.body.isAll
+  const isAll = req.body.isAll;
   let links = [];
   let nodes = [];
   for (let i of initialLinks) {
@@ -1945,16 +1944,21 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
     }
   }
 
-  let ICNodesIndustry = {}
-  let identifyData = {}
+  let ICNodesIndustry = {};
+  let identifyData = {};
 
   if (isAll) {
     // 获取社区的核心资产-----------------------------------------------------------------
-    identifyData = getIdentifyData(nodes, links)
-    identifyData["links"] = new Set(identifyData["links"].map(e => e.toString()))
+    identifyData = getIdentifyData(nodes, links);
+    identifyData["links"] = new Set(
+      identifyData["links"].map((e) => e.toString())
+    );
     for (let i of identifyData["nodes"]) {
-      if (nodeNumIdInfo[parseInt(i) - 1][3] == "IP" || nodeNumIdInfo[parseInt(i) - 1][3] == "Cert") {
-        ICNodesIndustry[i] = {}
+      if (
+        nodeNumIdInfo[parseInt(i) - 1][3] == "IP" ||
+        nodeNumIdInfo[parseInt(i) - 1][3] == "Cert"
+      ) {
+        ICNodesIndustry[i] = {};
       }
     }
   }
@@ -1977,11 +1981,11 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
   let industryType = new Set();
   for (let i of nodes) {
     if (i["industry"] == "  ") {
-      continue
+      continue;
     }
     industryType.add(i["industry"]);
   }
-  let grouptype = "单一型"
+  let grouptype = "单一型";
   if (industryType.size > 1) {
     grouptype = "复合型";
   }
@@ -2020,17 +2024,16 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
   let ipc = new Set();
   let asn = new Set();
 
-
   // 获取每个节点的信息，包括其numId、id、name、type、黑灰产类型等数据-------------------------------
   let nodesInfo = {};
-  num = 0
+  num = 0;
   for (let i of nodes) {
-    let isCore = false
+    let isCore = false;
     if (isAll) {
       if (identifyData["nodes"].indexOf(i["numId"]) > -1) {
-        isCore = true
+        isCore = true;
       }
-      num += 1
+      num += 1;
     }
     nodesInfo[i["numId"]] = {
       numId: i["numId"],
@@ -2044,27 +2047,26 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
 
     if (!isAll) {
       if (i["type"] == "IP" || i["type"] == "Cert") {
-        ICNodesIndustry[i["numId"]] = {}
+        ICNodesIndustry[i["numId"]] = {};
       }
     }
   }
 
   let nowLinks = [];
-  num = 0
+  num = 0;
   for (let i of links) {
-    let isCore = false
+    let isCore = false;
     // 获取关键链路的相关信息
     if (isAll) {
       if (identifyData["links"].has(i["linksNumId"].toString())) {
-        isCore = true
+        isCore = true;
       }
-      num += 1
+      num += 1;
     }
 
     // 记录每个节点关联的links的数值----------------------------------------------------------------------------
     nodesInfo[i["linksNumId"][0]]["LinksInfo"].push(i["relation"]);
     nodesInfo[i["linksNumId"][1]]["LinksInfo"].push(i["relation"]);
-
 
     // 记录每个links的信息-------------------------------------------------------------------------------------
     nowLinks.push({
@@ -2075,18 +2077,15 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
       isCore: isCore,
     });
 
-
     // 获取每一个核心资产的黑灰产的类型---------------------------------------------------------------------------
-    let targetNumId = i["linksNumId"][1]
+    let targetNumId = i["linksNumId"][1];
     if (ICNodesIndustry.hasOwnProperty(targetNumId)) {
-      let nowICIndustry = nodeNumIdInfo[parseInt(i["linksNumId"][0]) - 1][4]
+      let nowICIndustry = nodeNumIdInfo[parseInt(i["linksNumId"][0]) - 1][4];
       if (!ICNodesIndustry[targetNumId].hasOwnProperty(nowICIndustry)) {
-        ICNodesIndustry[targetNumId][nowICIndustry] = 0
+        ICNodesIndustry[targetNumId][nowICIndustry] = 0;
       }
-      ICNodesIndustry[targetNumId][nowICIndustry] += 1
+      ICNodesIndustry[targetNumId][nowICIndustry] += 1;
     }
-
-
 
     // 获取每一个节点连接的Links和每一个Links的信息---------------------------------------------------------------------
     //如果为r_cert_chain，则将source作为certAsSource，target作为certAsTarget
@@ -2099,7 +2098,7 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
     else if (i["relation"] == "r_cert") {
       r_cert += 1;
       domainAsSource.add(i["source"]);
-      certAsSource.add(i["target"])
+      certAsSource.add(i["target"]);
     }
     //如果为r_whois_name，则将source作为domainAsSource，target作为whoisName
     else if (i["relation"] == "r_whois_name") {
@@ -2167,7 +2166,7 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
     );
   });
 
-  console.log(certAsSource)
+  console.log(certAsSource);
   // 记录所有的links的数据信息----------------------------------------------------------------
   const linksList = [
     {
@@ -2293,7 +2292,7 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
   ];
 
   // 获取社区的节点数量和边数量信息
-  let getBulletChartDataSds = [linksList, nodesList]
+  let getBulletChartDataSds = [linksList, nodesList];
 
   // 记录所有的links的数据类型-------------------------------------------------------------
   const LinksSet = [
@@ -2323,30 +2322,28 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
     nowNodes.push(nodesInfo[i]);
   }
 
-
   let getDetialListSds = {
     nodes: nowNodes,
     links: nowLinks,
-  }
-
+  };
 
   // 获取每一个核心资产中黑灰产业类型的数量----------------------------------------------
-  let getIdentifyICNodesSds = []
+  let getIdentifyICNodesSds = [];
   for (let i in ICNodesIndustry) {
-    let industryNowNode = []
+    let industryNowNode = [];
     for (j in ICNodesIndustry[i]) {
       industryNowNode.push({
         industry: j,
-        number: ICNodesIndustry[i][j]
-      })
+        number: ICNodesIndustry[i][j],
+      });
     }
     getIdentifyICNodesSds.push({
       id: nodeNumIdInfo[parseInt(i) - 1][1],
       numId: parseInt(i) - 1,
-      industry: industryNowNode
-    })
+      industry: industryNowNode,
+    });
   }
-  let getFinalDataSds
+  let getFinalDataSds;
   if (isAll) {
     // 获取社区的所有数据，最终的文本展示---------
     // 节点的类型，8个------------
@@ -2405,7 +2402,7 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
       H: "非法支付平台",
       I: "其他",
     };
-    let industry_type = []
+    let industry_type = [];
     // 获取其涉及的黑灰产的内容
     for (let i of industryType) {
       industry_type.push(industryTypeAll[i]);
@@ -2425,31 +2422,33 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
     };
   }
 
-
-  let sendData
+  let sendData;
   if (isAll) {
     sendData = {
       getInfoListSds: getInfoListSds,
       getBulletChartDataSds: getBulletChartDataSds,
       getDetialListSds: getDetialListSds,
       getIdentifyICNodesSds: getIdentifyICNodesSds,
-      getFinalDataSds: getFinalDataSds
-    }
-  }
-  else {
+      getFinalDataSds: getFinalDataSds,
+    };
+  } else {
     sendData = {
       getInfoListSds: getInfoListSds,
       getBulletChartDataSds: getBulletChartDataSds,
       getDetialListSds: getDetialListSds,
       getIdentifyICNodesSds: getIdentifyICNodesSds,
-    }
+    };
   }
-  res.send(sendData)
-  res.end()
+  res.send(sendData);
+  res.end();
 });
 
 // 输入起点终点，返回关键链路接口
 app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
+  let startnodes = [1, 2];
+  let endnodes = [4, 4];
+  // let startnodes = req.body.start;
+  // let endnodes = req.body.end;
   let source = 1,
     target = 4;
   let edges = [
@@ -2457,9 +2456,51 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
     [2, 4],
     [3, 4],
     [1, 3],
+    // [1, 4],
+    // [4, 5],
+    // [2, 5],
+    // [1, 6],
   ];
   let G = new jsnx.Graph();
   G.addEdgesFrom(edges);
+  function arrSlice(arr) {
+    let hashout = {};
+    let hashin = {};
+    let resarr = [];
+    let reslinksarr = [];
+    let resnodesarr = [];
+    for (let i = 0; i < arr.length; i++) {
+      for (let j = 0; j < arr[i].length - 1; j++) {
+        if (arr[i][j] in hashout) hashout[arr[i][j]] += 1;
+        else hashout[arr[i][j]] = 1;
+        if (arr[i][j + 1] in hashin) hashin[arr[i][j + 1]] += 1;
+        else hashin[arr[i][j + 1]] = 1;
+        reslinksarr.push({ source: arr[i][j], target: arr[i][j + 1] });
+        resnodesarr.push({ name: arr[i][j], depth: j });
+      }
+    }
+    for (let i = 0; i < reslinksarr.length; i++) {
+      let hin =
+        hashin[String(reslinksarr[i]["target"])] == undefined
+          ? 0
+          : hashin[String(reslinksarr[i]["target"])];
+      let hout =
+        hashout[String(reslinksarr[i]["target"])] == undefined
+          ? 0
+          : hashout[String(reslinksarr[i]["target"])];
+      reslinksarr[i]["value"] = Math.max(hin, hout);
+    }
+    const removeDuplicateObj = (arr) => {
+      let obj = {};
+      arr = arr.reduce((newArr, next) => {
+        obj[next.name] ? "" : (obj[next.name] = true && newArr.push(next));
+        return newArr;
+      }, []);
+      return arr;
+    };
+    resarr.push(removeDuplicateObj(resnodesarr), reslinksarr);
+    return resarr;
+  }
   function getPathArray(stack) {
     let arr = [];
     for (let i = stack.length - 1; i >= 0; i--) {
@@ -2491,7 +2532,19 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
     }
     return resultarr;
   }
-  let sendData = getAllShortestPath(G, source, target);
-  res.send(sendData);
+  let linkarr = [];
+  for (let i = 0; i < startnodes.length; i++) {
+    let nodeslinksarr = arrSlice(
+      getAllShortestPath(G, startnodes[i], endnodes[i])
+    );
+    linkarr.push({
+      start: startnodes[i],
+      end: endnodes[i],
+      nodes: nodeslinksarr[0],
+      links: nodeslinksarr[1],
+    });
+  }
+  console.log(linkarr);
+  res.send(linkarr);
   res.end();
 });
