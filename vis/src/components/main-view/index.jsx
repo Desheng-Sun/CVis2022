@@ -12,7 +12,7 @@ import {
   RollbackOutlined,
   CheckOutlined,
   CaretUpOutlined,
-  ExpandOutlined,
+  DownloadOutlined,
   CaretDownOutlined,
 } from "@ant-design/icons";
 import fcose from "cytoscape-fcose";
@@ -37,7 +37,7 @@ const { Option } = Select;
 const { Search } = Input;
 
 var cy, layoutOption, stylesJson, layout;
-var ur, urOption; // 保留点和边的初状态
+var ur, urOption, graphData; // 保留点和边的初状态
 var layoutOptionDict = {
   euler: {
     name: "euler",
@@ -124,7 +124,7 @@ export default function MainView({ w, h }) {
   const [dataParam, setDataParam] = useState("");
   const [isSubmit, setIsSubmit] = useState(false);  // 判断是否提交了团体数据
   const [showCore, setShowCore] = useState(false);  // 是否展示核心资产与关键路径，未提交之前是默认不可以选择的
-  const [showCoreDisable, setShowCoreDisable] = useState(false);  // 是否展示核心资产与关键路径，未提交之前是默认不可以选择的
+  const [showCoreAble, setShowCoreAble] = useState(false);  // 是否可选展示核心资产与关键路径，未提交之前是默认不可以选择的
 
 
   // 给其他组件的数据
@@ -184,7 +184,7 @@ export default function MainView({ w, h }) {
         PubSub.publish("industryStackDt", res.getIdentifyICNodesSds); // 将选中的数据传给stack组件
         PubSub.publish("fromMainToInfoList", res.getInfoListSds)   // 向info-list传递数据
         PubSub.publish('fromMainToConclusion', res.getFinalDataSds)
-
+        graphData = res.getDetialListSds  // 保存图的完整数据
         // 更新主图的数据就不再对数据进行变化了
         setData(res.getDetialListSds)
       });
@@ -309,18 +309,19 @@ export default function MainView({ w, h }) {
     if(showCore){
       if(cy){
         cy.nodes().forEach((ele) =>{
-          if(ele.data('isCore')){
+          if(ele.data('isCore') === true){
             ele.addClass('isCore')
           }
         })
         cy.edges().forEach((ele) => {
-          if(!ele.data('isCore')){
+          if(ele.data('isCore') === true){
             ele.addClass('isCore')
           }
         })
       }
     }
-    if(showCoreDisable && showCore){
+
+    if(showCoreAble && !showCore){
       if(cy){
         cy.nodes().removeClass("isCore");
         cy.edges().removeClass("isCore");}
@@ -410,7 +411,7 @@ export default function MainView({ w, h }) {
       // 传过来的是空数据，就直接清空主图中的数据
       setData({ nodes: [], links: [] });
       setIsSubmit(false)
-      setShowCoreDisable(false)
+      setShowCoreAble(false)
       setDifChartInput({nodes: [-1], links:[]})
     } else {
       getMainChartSds(dataParam).then((res) => {
@@ -818,7 +819,7 @@ export default function MainView({ w, h }) {
       return ele.json().data;
     });
     setIsSubmit(true)   // 确定提交
-    setShowCoreDisable(true)  // 提交之后可以应用核心资产和关键路径的样式
+    setShowCoreAble(true)  // 提交之后可以应用核心资产和关键路径的样式
     setResData({ nodes: [...nodes], links: [...links] });
   }
 
@@ -1027,8 +1028,6 @@ export default function MainView({ w, h }) {
             }
           }
         }
-
-
         styleDetailsJson.push(newStyleArr);
         styleDetailsJson.push(domainNodeStyle);
         cy.style().fromJson(styleDetailsJson).update();
@@ -1246,8 +1245,85 @@ export default function MainView({ w, h }) {
   }
   // 应用核心资产与关键路径的样式
   function applyCoreStyle(e){
-    if(showCoreDisable){  // 如果可以设置显示样式
+    if(showCoreAble){  // 如果可以设置显示样式
       setShowCore(e.target.checked)
+    }
+  }
+
+  // 下载图数据与子图
+  function onDownload(){
+    if(graphData != undefined){
+      console.log('下载了');
+      const tNodeHeader = "id,name,type,industry,isCore,";
+      var nodeFilter = ["id", "name", "type", "industry", "isCore"];
+      const tLinkHeader = "relation,source,target,isCore,";
+      var linkFilter = ["relation", "source", "target", "isCore"];
+      // 保存节点信息
+      let nodeCsvString = tNodeHeader;
+      nodeCsvString += "\r\n";
+      graphData.nodes.forEach((item) => {
+        nodeFilter.forEach((key) => {
+          let value = item[key];
+          if (key === "industry") {
+            let valueArr;
+            if(value === '  '){
+              valueArr = "[]"
+            }else{
+            valueArr = '"[' + value.split("").toString() + ']"';
+            }
+            nodeCsvString += valueArr + ",";
+          } else {
+            nodeCsvString += value + ",";
+          }
+        });
+        nodeCsvString += "\r\n";
+      });
+      nodeCsvString =
+        "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(nodeCsvString);
+      let nodeLink = document.createElement("a");
+      nodeLink.href = nodeCsvString;
+      nodeLink.download = "节点.csv";
+      document.body.appendChild(nodeLink);
+      nodeLink.click();
+      document.body.removeChild(nodeLink);
+
+    // 保存边的信息
+      let linkCsvString = tLinkHeader;
+      linkCsvString += "\r\n";
+      graphData.links.forEach((item) => {
+        linkFilter.forEach((key) => {
+          let value = item[key];
+          linkCsvString += value + ",";
+        });
+        linkCsvString += "\r\n";
+      });
+      linkCsvString =
+        "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(linkCsvString);
+      let linkLink = document.createElement("a");
+      linkLink.href = linkCsvString;
+      linkLink.download = "边.csv";
+      document.body.appendChild(linkLink);
+      linkLink.click();
+      document.body.removeChild(linkLink);
+
+      // 下载图片
+      if(cy){
+        let blob = cy.png({
+          output: "blob",
+          bg: "transparent",
+          full: true,
+          scale: 4,
+          quality: 1,
+        });
+        let aLink = document.createElement("a");
+        let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("click", true, true);
+        aLink.download = `${new Date().getTime()}.png`;
+        aLink.href = URL.createObjectURL(blob);
+        aLink.dispatchEvent(evt);
+        aLink.click();
+        document.body.removeChild(aLink);
+      }
     }
   }
 
@@ -1270,7 +1346,7 @@ export default function MainView({ w, h }) {
         >
           {/*  控制数据 */}
           <div id="main-data-search">
-            节点搜索：
+            节点搜索&nbsp;&nbsp;&nbsp;
             <Search
               onSearch={onSearchNode}
               placeholder="输入节点id"
@@ -1278,7 +1354,7 @@ export default function MainView({ w, h }) {
             />
           </div>
           <div id="main-data-filter" style={{ paddingLeft: "10px" }}>
-            过滤：
+            过滤&nbsp;&nbsp;&nbsp;
             <Cascader
               options={options}
               onChange={onFilterDetails}
@@ -1286,15 +1362,15 @@ export default function MainView({ w, h }) {
               showSearch={{ filter }}
             />
             <Button type="primary" onClick={onFilter}>
-              Submit
+              执行
             </Button>
             <Button
               type="dashed"
               icon={<UndoOutlined />}
-              style={{ marginLeft: "10px" }}
+              style={{ marginLeft: "60px" }}
               onClick={onUndoOut}
             >
-              undo
+              撤销
             </Button>
             <Button
               type="dashed"
@@ -1302,7 +1378,7 @@ export default function MainView({ w, h }) {
               style={{ marginLeft: "5px" }}
               onClick={onRedoIn}
             >
-              redo
+              重做
             </Button>
             <Button
               type="dashed"
@@ -1310,7 +1386,7 @@ export default function MainView({ w, h }) {
               style={{ marginLeft: "5px" }}
               onClick={onRollback}
             >
-              rollback
+              还原
             </Button>
             <Button
               type="dashed"
@@ -1318,7 +1394,14 @@ export default function MainView({ w, h }) {
               style={{ marginLeft: "5px" }}
               onClick={onSubmitRes}
             >
-              submit
+              提交
+            </Button>
+            <Button
+              type="dashed"
+              icon={<DownloadOutlined />}
+              style={{ marginLeft: "5px" }}
+              onClick={onDownload}
+            >
             </Button>
           </div>
         </div>
@@ -1336,7 +1419,7 @@ export default function MainView({ w, h }) {
           }}
         >
           <div id="main-layout">
-            布 局：
+            布&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;局&nbsp;&nbsp;&nbsp;
             <Select
               value={chartLayout}
               style={{ width: 120 }}
@@ -1352,7 +1435,7 @@ export default function MainView({ w, h }) {
           <div
             id="node-distance"
             style={{
-              paddingLeft: "50px",
+              paddingLeft: "30px",
               display: "flex",
               alignItems: "center",
             }}
@@ -1369,7 +1452,7 @@ export default function MainView({ w, h }) {
           <div
             id="edge-length"
             style={{
-              paddingLeft: "50px",
+              paddingLeft: "30px",
               display: "flex",
               alignItems: "center",
             }}
@@ -1383,11 +1466,11 @@ export default function MainView({ w, h }) {
               style={{ width: 120 }}
             />
           </div>
-          <Checkbox onChange={addArrow}>箭头方向</Checkbox>
+          <Checkbox onChange={addArrow}>箭头</Checkbox>
           <Checkbox checked={styleCheck} onChange={applyStyle}>
-            应用样式
+            样式
           </Checkbox>
-          <Checkbox checked={showCore} onChange={applyCoreStyle} disable = {showCoreDisable} id = "coreCheckBox"> 
+          <Checkbox checked={showCore} onChange={applyCoreStyle} disable = {showCoreAble} id = "coreCheckBox"> 
             核心资产与关键路径
           </Checkbox>
         </div>
