@@ -278,7 +278,7 @@ def mergeNodesAlone():
 
 
 # 获取ICLinks修改后每个节点所在的IC链路
-def getNodesInICLinks(nodesInIClinks, ICScreen, nodePath, nowPath):
+def getNodesInICLinksAfter(nodesInIClinks, ICScreen, nodePath, nowPath):
     with alive_bar(len(ICScreen)) as bar:
         # 获取每一个节点所在的IC链路或其所在的单独的IC节点NumID
         for i in ICScreen:
@@ -298,7 +298,7 @@ def getNodesInICLinks(nodesInIClinks, ICScreen, nodePath, nowPath):
                             continue
                         nodesInIClinks[k][0].append(
                             [j["begin"][0], j["end"][0]])
-                    
+
             nodeLinksInfoJ = open(nowPath + "ICAloneLinks/" +
                                   str(i) + ".json", "r", encoding="utf-8")
             nodeLinksInfo = json.load(nodeLinksInfoJ)
@@ -358,7 +358,6 @@ if __name__ == '__main__':
 
     # with open(nowPath + "nodeICLinks2.json", "w", encoding="utf-8") as f:
     #     json.dump(nodesInIClinks, f, ensure_ascii=False)
-
 
     # with open(nowPath + "nodeICLinks2.json", "r", encoding="utf-8") as f:
     #     nodesInIClinks = json.load(f)
@@ -430,11 +429,10 @@ if __name__ == '__main__':
     ICScreenJ = open(nowPath + "ICScreen.json", "r", encoding="utf-8")
     ICScreen = json.load(ICScreenJ)
     # 获取节点所在的所有链接
-    nodesInIClinks = getNodesInICLinks(
+    nodesInIClinks = getNodesInICLinksAfter(
         nodesInIClinks, ICScreen[0], "ICScreenLinks/", nowPath)
-    nodesInIClinks = getNodesInICLinks(
+    nodesInIClinks = getNodesInICLinksAfter(
         nodesInIClinks, ICScreen[1], "ICLinks/", nowPath)
-
 
     # 删除不在任何ICLinks中的节点
     with alive_bar(len(nodesInIClinks)) as bar:
@@ -452,6 +450,10 @@ if __name__ == '__main__':
         if(str(i[0]) in nodesInIClinks):
             nodesInIClinks.pop(str(i[0]))
 
-            
+    print(nodesInIClinks["91561"])
     with open(nowPath + "nodeICLinks.json", "w", encoding="utf-8") as f:
         json.dump(nodesInIClinks, f, ensure_ascii=False)
+
+    # with open(nowPath + "nodeICLinks.json", "r", encoding="utf-8") as f:
+    #     nodesInIClinks = json.load(f)
+    #     print(nodesInIClinks["91561"])

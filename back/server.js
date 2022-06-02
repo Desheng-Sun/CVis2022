@@ -101,9 +101,9 @@ app.post("/getInitialSds", jsonParser, (req, res, next) => {
           useNodeIdInfo[1].push(i[1]);
           useNodeIdInfo[2].push(i[3]);
           useNodeIdInfo[3].push(i[4]);
-        }
-        if (useNodeIdInfo[0].length >= 15) {
-          break;
+          if (useNodeIdInfo[0].length >= 15) {
+            break;
+          }
         }
       }
     } else {
@@ -117,9 +117,9 @@ app.post("/getInitialSds", jsonParser, (req, res, next) => {
           useNodeIdInfo[1].push(i[1]);
           useNodeIdInfo[2].push(i[3]);
           useNodeIdInfo[3].push(i[4]);
-        }
-        if (useNodeIdInfo[0].length >= 15) {
-          break;
+          if (useNodeIdInfo[0].length >= 15) {
+            break;
+          }
         }
       }
     }
@@ -144,9 +144,9 @@ app.post("/getInitialSds", jsonParser, (req, res, next) => {
         useNodeIdInfo[1].push(i[1]);
         useNodeIdInfo[2].push(i[3]);
         useNodeIdInfo[3].push(i[4]);
-      }
-      if (useNodeIdInfo[0].length >= 15) {
-        break;
+        if (useNodeIdInfo[0].length >= 15) {
+          break;
+        }
       }
     }
   }
@@ -684,6 +684,7 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
     }
   }
 
+
   let nowNodes = [];
   let nowLinks = [];
 
@@ -784,7 +785,6 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
           ]);
         }
       }
-
       for (let j in nowNodeNodeInfo) {
         nowNodes.push(nowNodeNodeInfo[j]);
       }
@@ -2167,7 +2167,6 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
     );
   });
 
-  console.log(certAsSource)
   // 记录所有的links的数据信息----------------------------------------------------------------
   const linksList = [
     {
