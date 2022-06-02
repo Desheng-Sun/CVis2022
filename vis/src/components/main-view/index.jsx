@@ -183,6 +183,7 @@ export default function MainView({ w, h }) {
         PubSub.publish("combinedLinkTableDt", [res.getDetialListSds, res.getBulletChartDataSds]);
         PubSub.publish("industryStackDt", res.getIdentifyICNodesSds); // 将选中的数据传给stack组件
         PubSub.publish("fromMainToInfoList", res.getInfoListSds)   // 向info-list传递数据
+        PubSub.publish('fromMainToConclusion', '')
 
         // 更新主图的数据就不再对数据进行变化了
         setData(res.getDetialListSds)
