@@ -44,7 +44,7 @@ const nowPath = path.join(__dirname, "data/");
 // 获取节点的相关信息
 let nodeInfoJ = fs.readFileSync(
   nowPath +
-    "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv",
+  "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv",
   "utf8"
 );
 nodeInfoJ = nodeInfoJ.split("\n");
@@ -82,7 +82,8 @@ const nodeICLinks = JSON.parse(nodeICLinksJ);
 let startNumId = 0;
 //记录当前搜索的节点
 let searchNumId = [];
-//
+// 当前视图的节点和nodes信息
+let groupInfo = []
 // 获取视图的初始数据：node信息改为json文件
 app.post("/getInitialSds", jsonParser, (req, res, next) => {
   let type = req.body.type;
@@ -1837,9 +1838,12 @@ function getIdentifyData(enterNodes, enterLinks) {
   }
   // 获取输入的链路信息
   let links = [];
-
   for (let i of enterLinks) {
     links.push(i["linksNumId"]);
+  }
+  groupInfo = {
+    nodes: nodes,
+    links: links
   }
 
   let s_1 = 0.00000001;
@@ -2407,13 +2411,13 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
     for (let i of industryType) {
       i = i.split("")
       console.log(i)
-      for(let j of i){
+      for (let j of i) {
         industry_type.push(industryTypeAll[j]);
 
       }
     }
     let clueAll = ""
-    for(let i of searchNumId){
+    for (let i of searchNumId) {
       clueAll += nodeNumIdInfo[i - 1][2]
     }
     getFinalDataSds = {
@@ -2462,16 +2466,11 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
   // let endnodes = req.body.end;
   let source = 1,
     target = 4;
-  let edges = [
-    [1, 2],
-    [2, 4],
-    [3, 4],
-    [1, 3],
-    // [1, 4],
-    // [4, 5],
-    // [2, 5],
-    // [1, 6],
-  ];
+
+  let edges = groupInfo["links"]
+  let nodes = groupInfo["nodes"]
+  //edges: [[1,2],[1,3]]
+  // nodes: [{"numId": 1, "type": "Domain"}]
   let G = new jsnx.Graph();
   G.addEdgesFrom(edges);
   function arrSlice(arr) {
@@ -2558,4 +2557,14 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
   console.log(linkarr);
   res.send(linkarr);
   res.end();
+});
+
+
+app.post("/getClearData", jsonParser, (req, res, next) => {
+  // 记录最初开始的节点
+  startNumId = 0;
+  //记录当前搜索的节点
+  searchNumId = [];
+  // 当前视图的节点和nodes信息
+  groupInfo = [];
 });
