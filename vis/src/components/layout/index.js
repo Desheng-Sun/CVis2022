@@ -163,7 +163,7 @@ export default function Layout() {
         </div>
         <div id="conclusion">
           <ChartHeader chartName={"团伙分析结果"} />
-          {/* <ConclusionText /> */}
+          <ConclusionText />
         </div>
       </div>
     </div>

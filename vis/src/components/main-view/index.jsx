@@ -126,6 +126,7 @@ export default function MainView({ w, h }) {
   const [showCore, setShowCore] = useState(false);  // 是否展示核心资产与关键路径，未提交之前是默认不可以选择的
   const [showCoreDisable, setShowCoreDisable] = useState(false);  // 是否展示核心资产与关键路径，未提交之前是默认不可以选择的
 
+
   // 给其他组件的数据
   const [resData, setResData] = useState({ nodes: [], links: [] }); // 右侧表格和子弹图的确定的团伙子图
   const [difChartInput, setDifChartInput] = useState({ nodes: [], links: [] }); // 当前主图中的点和边 改变时更新DifChart视图
@@ -306,19 +307,22 @@ export default function MainView({ w, h }) {
   useEffect(() => {
     if(showCore){
       if(cy){
-        cy.nodes().removeClass("core");
-        cy.edges().removeClass("core");
         cy.nodes().forEach((ele) =>{
           if(ele.data('isCore')){
-            ele.addClass('core')
+            ele.addClass('isCore')
           }
         })
         cy.edges().forEach((ele) => {
-          if(ele.data('isCore')){
-            ele.addClass('core')
+          if(!ele.data('isCore')){
+            ele.addClass('isCore')
           }
         })
       }
+    }
+    if(showCoreDisable && showCore){
+      if(cy){
+        cy.nodes().removeClass("isCore");
+        cy.edges().removeClass("isCore");}
     }
   }, [showCore])
 
@@ -1233,9 +1237,9 @@ export default function MainView({ w, h }) {
     }
   }
   // 应用核心资产与关键路径的样式
-  function applyCoreStyle(){
+  function applyCoreStyle(e){
     if(showCoreDisable){  // 如果可以设置显示样式
-      setShowCore(!showCore)
+      setShowCore(e.target.checked)
     }
   }
 
@@ -1375,7 +1379,7 @@ export default function MainView({ w, h }) {
           <Checkbox checked={styleCheck} onChange={applyStyle}>
             应用样式
           </Checkbox>
-          <Checkbox checked={showCore} onChange={applyCoreStyle} disable = {showCoreDisable}> 
+          <Checkbox checked={showCore} onChange={applyCoreStyle} disable = {showCoreDisable} id = "coreCheckBox"> 
             核心资产与关键路径
           </Checkbox>
         </div>
