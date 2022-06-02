@@ -11,7 +11,6 @@ const dataType = ["numConnectedDomain", "numDomainWithIn", "rateIn"];
 const dataTypeForShow = ["#D", "#DarkD", "ratio"];
 
 
-
 let prevIndex = -1; // 记录鼠标上一个坐标位置对应的数据index
 export default function ClueDense({ w, h }) {
   const [data, setData] = useState({ IP: [], Cert: [] });

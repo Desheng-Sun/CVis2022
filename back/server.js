@@ -82,7 +82,7 @@ const nodeICLinks = JSON.parse(nodeICLinksJ);
 let startNumId = 0;
 //记录当前搜索的节点
 let searchNumId = [];
-
+//
 // 获取视图的初始数据：node信息改为json文件
 app.post("/getInitialSds", jsonParser, (req, res, next) => {
   let type = req.body.type;
@@ -1920,7 +1920,8 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
   // 获取node和links信息
   const initialLinks = req.body.nodesLinksInfo["links"];
   const initialNodes = req.body.nodesLinksInfo["nodes"];
-  const isAll = req.body.isAll;
+  const isAll = req.body.nodesLinksInfo["isAll"];
+  console.log(isAll)
   let links = [];
   let nodes = [];
   for (let i of initialLinks) {
@@ -2166,7 +2167,6 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
     );
   });
 
-  console.log(certAsSource);
   // 记录所有的links的数据信息----------------------------------------------------------------
   const linksList = [
     {
@@ -2405,11 +2405,21 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
     let industry_type = [];
     // 获取其涉及的黑灰产的内容
     for (let i of industryType) {
-      industry_type.push(industryTypeAll[i]);
+      i = i.split("")
+      console.log(i)
+      for(let j of i){
+        industry_type.push(industryTypeAll[j]);
+
+      }
+    }
+    let clueAll = ""
+    for(let i of searchNumId){
+      clueAll += nodeNumIdInfo[i - 1][2]
     }
     getFinalDataSds = {
       groupscope: groupscope,
-      clue: nodes[0][1],
+      clue: nodeNumIdInfo[startNumId - 1][2],
+      clueAll: clueAll,
       num_all_node: numnode,
       node_type: node_type,
       node_num: node_num,
@@ -2420,6 +2430,7 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
       num_industry: industry_type.length,
       group_type: grouptype,
     };
+    console.log(getFinalDataSds)
   }
 
   let sendData;
