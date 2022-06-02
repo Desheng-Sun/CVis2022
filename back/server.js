@@ -44,7 +44,7 @@ const nowPath = path.join(__dirname, "data/");
 // 获取节点的相关信息
 let nodeInfoJ = fs.readFileSync(
   nowPath +
-  "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv",
+    "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv",
   "utf8"
 );
 nodeInfoJ = nodeInfoJ.split("\n");
@@ -83,7 +83,7 @@ let startNumId = 0;
 //记录当前搜索的节点
 let searchNumId = [];
 // 当前视图的节点和nodes信息
-let groupInfo = []
+let groupInfo = [];
 // 获取视图的初始数据：node信息改为json文件
 app.post("/getInitialSds", jsonParser, (req, res, next) => {
   let type = req.body.type;
@@ -683,7 +683,6 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
       }
     }
   }
-
 
   let nowNodes = [];
   let nowLinks = [];
@@ -1830,7 +1829,9 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
 function getIdentifyData(enterNodes, enterLinks) {
   // 获取输入的节点信息
   let nodes = [];
+  let groupInfoNodes = {};
   for (let i of enterNodes) {
+    groupInfoNodes[i["numId"]] = i["type"];
     nodes.push({
       numId: i["numId"],
       type: i["type"],
@@ -1842,9 +1843,9 @@ function getIdentifyData(enterNodes, enterLinks) {
     links.push(i["linksNumId"]);
   }
   groupInfo = {
-    nodes: nodes,
-    links: links
-  }
+    nodes: groupInfoNodes,
+    links: links,
+  };
 
   let s_1 = 0.00000001;
   let s_2 = 0.0002;
@@ -1925,7 +1926,7 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
   const initialLinks = req.body.nodesLinksInfo["links"];
   const initialNodes = req.body.nodesLinksInfo["nodes"];
   const isAll = req.body.nodesLinksInfo["isAll"];
-  console.log(isAll)
+  console.log(isAll);
   let links = [];
   let nodes = [];
   for (let i of initialLinks) {
@@ -2409,16 +2410,15 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
     let industry_type = [];
     // 获取其涉及的黑灰产的内容
     for (let i of industryType) {
-      i = i.split("")
-      console.log(i)
+      i = i.split("");
+      console.log(i);
       for (let j of i) {
         industry_type.push(industryTypeAll[j]);
-
       }
     }
-    let clueAll = ""
+    let clueAll = "";
     for (let i of searchNumId) {
-      clueAll += nodeNumIdInfo[i - 1][2]
+      clueAll += nodeNumIdInfo[i - 1][2];
     }
     getFinalDataSds = {
       groupscope: groupscope,
@@ -2434,7 +2434,7 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
       num_industry: industry_type.length,
       group_type: grouptype,
     };
-    console.log(getFinalDataSds)
+    console.log(getFinalDataSds);
   }
 
   let sendData;
@@ -2460,19 +2460,20 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
 
 // 输入起点终点，返回关键链路接口
 app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
-  let startnodes = [1, 2];
-  let endnodes = [4, 4];
-  // let startnodes = req.body.start;
-  // let endnodes = req.body.end;
-  let source = 1,
-    target = 4;
-
-  let edges = groupInfo["links"]
-  let nodes = groupInfo["nodes"]
-  //edges: [[1,2],[1,3]]
-  // nodes: [{"numId": 1, "type": "Domain"}]
+  let startnodes = req.body.start;
+  let endnodes = req.body.end;
+  let edges = groupInfo["links"];
+  let nodes = groupInfoNodes;
   let G = new jsnx.Graph();
   G.addEdgesFrom(edges);
+  let colors = {
+    Domain: "#2978b4",
+    IP: "#33a02c",
+    Cert: "#ff756a",
+    Whois: "#f67f02",
+    IPC: "#7fc97f",
+    ASN: "#f9bf6f",
+  };
   function arrSlice(arr) {
     let hashout = {};
     let hashin = {};
@@ -2486,7 +2487,11 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
         if (arr[i][j + 1] in hashin) hashin[arr[i][j + 1]] += 1;
         else hashin[arr[i][j + 1]] = 1;
         reslinksarr.push({ source: arr[i][j], target: arr[i][j + 1] });
-        resnodesarr.push({ name: arr[i][j], depth: j });
+        resnodesarr.push({
+          name: arr[i][j],
+          depth: j,
+          itemStyle: { color: colors[nodes[arr[i][j]]] },
+        });
       }
     }
     for (let i = 0; i < reslinksarr.length; i++) {
@@ -2558,7 +2563,6 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
   res.send(linkarr);
   res.end();
 });
-
 
 app.post("/getClearData", jsonParser, (req, res, next) => {
   // 记录最初开始的节点
