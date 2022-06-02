@@ -34,17 +34,16 @@
     "style": { "opacity": "0.5" }
   },
   {
-    "selector": "node.core",
+    "selector": "node.isCore",
     "style": {
-      "border-color": "#f5f440",
-      "border-width": "2px",
-      "opacity": "1"
+      "border-color": "#ad0c1b",
+      "border-width": "3px"
     }
   },
   {
-    "selector": "node.key",
+    "selector": "edge.isCore",
     "style": {
-      "border-color": "#f5f440",
+      "line-color": "#ad0c1b",
       "opacity": "1"
     }
   },
@@ -69,6 +68,13 @@
     "selector": "node.InIClink",
     "style": {
       "border-color": "#ffff00",
+      "border-width": "3px"
+    }
+  },
+  {
+    "selector": "edge.InIClink",
+    "style": {
+      "line-color": "#ffff00",
       "border-width": "3px"
     }
   },
