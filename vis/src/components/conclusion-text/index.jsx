@@ -1,6 +1,16 @@
+import { useState } from "react";
+import PubSub from "pubsub-js";
 import "./index.css";
 
 export default function ConclusionText() {
+  const [conclusionData, setConclusionData] = useState({})
+  
+  // 监听从主图传递过来的数据
+  PubSub.unsubscribe('fromMainToConclusion')
+  PubSub.subscribe('fromMainToConclusion',function(msg, text){
+    setConclusionData(text)
+  })
+  
   let colorListNode = [
     "#2978b4",
     "#33a02c",
@@ -25,41 +35,45 @@ export default function ConclusionText() {
     "#f67f02",
     "#f9bf6f",
   ];
-  let conclusionData = {
-    groupscope: "小",
-    clue: "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
-    num_all_node: 111,
-    node_type: [
-      "Domain",
-      "IP",
-      "Cert",
-      "Whois_Name",
-      "Whois_Phone",
-      "Whois_Email",
-      "IP_C",
-      "ASN",
-    ],
-    node_num: [104, 4, 2, 0, 0, 0, 0, 1],
-    num_all_link: 181,
-    link_type: [
-      "r_request_jump",
-      "r_subdomain",
-      "r_cname",
-      "r_dns_a",
-      "r_cidr",
-      "r_cert",
-      "r_cert_chain",
-      "r_whois_name",
-      "r_whois_phone",
-      "r_whois_email",
-      "r_asn",
-    ],
-    link_num: [0, 103, 0, 0, 0, 0, 0, 50, 27, 0, 1],
-    industry_type: ["涉赌", "涉黄", "涉枪", "非法交易平台"],
-    num_industry: 4,
-    group_type: "复合型",
-  };
+
+  // let conclusionData = {
+  //   groupscope: "小",
+  //   clue: "Cert_9ace6aae20e3ac6d9ebfae8938b91112460b27ad204cf11f1301f154c5d309a4",
+  //   num_all_node: 111,
+  //   node_type: [
+  //     "Domain",
+  //     "IP",
+  //     "Cert",
+  //     "Whois_Name",
+  //     "Whois_Phone",
+  //     "Whois_Email",
+  //     "IP_C",
+  //     "ASN",
+  //   ],
+  //   node_num: [104, 4, 2, 0, 0, 0, 0, 1],
+  //   num_all_link: 181,
+  //   link_type: [
+  //     "r_request_jump",
+  //     "r_subdomain",
+  //     "r_cname",
+  //     "r_dns_a",
+  //     "r_cidr",
+  //     "r_cert",
+  //     "r_cert_chain",
+  //     "r_whois_name",
+  //     "r_whois_phone",
+  //     "r_whois_email",
+  //     "r_asn",
+  //   ],
+  //   link_num: [0, 103, 0, 0, 0, 0, 0, 50, 27, 0, 1],
+  //   industry_type: ["涉赌", "涉黄", "涉枪", "非法交易平台"],
+  //   num_industry: 4,
+  //   group_type: "复合型",
+  // };
+  
+  
   return (
+    JSON.stringify(conclusionData) === '{}' ? <div id="conclusion-text"></div>:
     <div id="conclusion-text">
       以<b>{conclusionData.clue}</b>为线索, 挖掘黑灰产团伙网络资产图。 <br />
       此为一个<b>{conclusionData.groupscope}型</b>黑灰产团伙。
