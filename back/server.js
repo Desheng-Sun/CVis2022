@@ -2560,7 +2560,7 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
     }
     getIdentifyICNodesSds.push({
       id: nodeNumIdInfo[parseInt(i) - 1][1],
-      numId: parseInt(i) - 1,
+      numId: parseInt(i),
       industry: industryNowNode,
     });
   }
