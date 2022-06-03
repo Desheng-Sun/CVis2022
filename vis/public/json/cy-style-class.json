@@ -10,7 +10,7 @@
     "selector": "edge.arrow",
     "style": {
       "target-arrow-shape": "vee",
-      "target-arrow-color": "#aaa",
+      "target-arrow-color": "#000",
       "curve-style": "straight",
       "width": 6
     }

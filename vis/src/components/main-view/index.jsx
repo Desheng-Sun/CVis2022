@@ -46,6 +46,8 @@ var layoutOptionDict = {
     avoidOverlap: true,
     springLength: 10,
     mass: 7,
+    hideEdgesOnViewport: true,
+    textureOnViewport: true,
     // animateFilter: function (node, i) {
     //   return true;
     // }, // 决定是否节点的位置应该被渲染
@@ -399,10 +401,10 @@ export default function MainView({ w, h }) {
   // 接收skeleton图过来的参数是否变化
   PubSub.unsubscribe("skeletonSelect");
   PubSub.subscribe("skeletonSelect", (msg, nodeLink) => {
-    setDataParam(nodeLink);
+    setDataParam(nodeLink);  
   });
 
-  // 请求数据并初始化图形
+  // 请求数据并更新图像
   useEffect(() => {
     if (dataParam === "") {
       // 初始化的时候
@@ -414,8 +416,20 @@ export default function MainView({ w, h }) {
       setShowCoreAble(false)
       setDifChartInput({nodes: [-1], links:[]})
     } else {
-      getMainChartSds(dataParam).then((res) => {
-        console.log(res)
+      // 不是初始化的时候获取当前图的数据
+      let nodes = []
+      let links = []
+      if(cy){
+        cy.nodes().forEach((ele) => {
+          nodes.push(ele.json().data)
+        })
+        cy.edges().forEach((ele) => {
+          links.push(ele.json().data)
+        })
+      }
+      getMainChartSds({dataParam:dataParam, nodes: nodes, links: links}).then((res) => {
+        // console.log('从skeleton传递过来的参数', dataParam, nodes, links, res);
+        // console.log({dataParam:dataParam, nodes: nodes, links: links});
         setData(res);
         setDifChartInput(res);
       });
@@ -920,11 +934,12 @@ export default function MainView({ w, h }) {
               }
               return 'solid'
             },
+            
             "border-width": function(ele){
               if(ele.json().data.hasOwnProperty('children')){
                 return '3px'
               }
-              return '0'
+              return '1px'
             },
             "pie-size": "95%",
             "pie-1-background-color": "#26BAEE",
