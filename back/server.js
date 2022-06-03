@@ -2459,8 +2459,9 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
  
 // 输入起点终点，返回关键链路接口
 app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
-  let startnodes = req.body.start;
-  let endnodes = req.body.end;
+  let startnodes = req.body.startNode;
+  let endnodes = req.body.endNode;
+  console.log(startnodes, endnodes);
   let edges = groupInfo["links"];
   let nodes = groupInfo["nodes"];
   let G = new jsnx.Graph();

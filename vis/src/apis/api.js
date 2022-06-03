@@ -75,9 +75,10 @@ export function getGroupAllInfoSds(nodesLinksInfo) {
 }
 
 // 获取关键链路信息的相关数据
-export function getCrutialpathData() {
+export function getCrutialpathData(dataparam) {
   return post("/getCrutialpathData", {
-    
+    startNode: dataparam.startNode,
+    endNode: dataparam.endNode
   });
 }
 

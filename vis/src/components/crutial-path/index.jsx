@@ -19,6 +19,7 @@ export default function CrutialPath({ w, h }) {
 
   PubSub.unsubscribe("assetsToPathDt");
   PubSub.subscribe("assetsToPathDt", (msg, dataparam) => {
+    console.log(dataparam);
     getCrutialpathData(dataparam).then((res) => {
       setData(res)
     });
