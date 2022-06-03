@@ -2074,7 +2074,7 @@ function getIdentifyData(enterNodes, enterLinks) {
   }
   g.removeNodesFrom(dropnodes);
   let sendData = {
-    nodes: g.nodes(),
+    nodes: selectnodes.filter((i) => !dropnodes.includes(i)),
     links: g.edges(),
   };
   return sendData;
@@ -2113,6 +2113,7 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
   let identifyData = {};
 
   if (isAll) {
+    console.log(nodes, links);
     // 获取社区的核心资产-----------------------------------------------------------------
     identifyData = getIdentifyData(nodes, links);
     identifyData["links"] = new Set(
@@ -2629,9 +2630,9 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
     Cert: "#ff756a",
     IP_C: "#7fc97f",
     ASN: "#f9bf6f",
-    Whois_Name: '#f67f02',
-    Whois_Phone: '#f67f02',
-    Whois_Email: '#f67f02',
+    Whois_Name: "#f67f02",
+    Whois_Phone: "#f67f02",
+    Whois_Email: "#f67f02",
   };
   function arrSlice(arr) {
     let hashout = {};
