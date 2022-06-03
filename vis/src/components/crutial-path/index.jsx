@@ -17,12 +17,14 @@ export default function CrutialPath({ w, h }) {
    */
 
 
-  useEffect(() => {
-    // getCrutialpathData().then((res) => {
-    //   setData(res);
-    // });
-
-    // 对应Domain、IP、Cert、Whois、Whois、Whois、IPC、ASN
+  PubSub.unsubscribe("assetsToPathDt");
+  PubSub.subscribe("assetsToPathDt", (msg, dataparam) => {
+    getCrutialpathData(dataparam).then((res) => {
+      setData(res)
+    });
+  });
+  
+  useState(() => {
     let colors = [
       "#2978b4",
       "#33a02c",
@@ -33,36 +35,7 @@ export default function CrutialPath({ w, h }) {
       "#7fc97f",
       "#f9bf6f",
     ];
-
-    let dt = [{
-        start:"L1",
-        end: 'L5',
-      nodes:[
-      { name: "L1", itemStyle: { color: colors[1] }, depth: 0 },
-      { name: "L2", itemStyle: { color: colors[0] }, depth: 1 },
-      { name: "L2-1", itemStyle: { color: colors[0] }, depth: 1 },
-      { name: "L2-2", itemStyle: { color: colors[0] }, depth: 1 },
-      { name: "L2-3", itemStyle: { color: colors[0] }, depth: 1 },
-      { name: "L2-4", itemStyle: { color: colors[0] }, depth: 1 },
-      { name: "L4", itemStyle: { color: colors[0] }, depth: 2 },
-      { name: "L5", itemStyle: { color: colors[0] }, depth: 2 },
-      { name: "L3", itemStyle: { color: colors[1] }, depth: 3 },
-    ], links: [
-      { source: "L1", target: "L2", value: 2 },
-      { source: "L4", target: "L3", value: 4 },
-      { source: "L5", target: "L3", value: 3 },
-      { source: "L2", target: "L4", value: 1 },
-      { source: "L2", target: "L5", value: 1 },
-      { source: "L1", target: "L2-1", value: 1 },
-      { source: "L1", target: "L2-2", value: 2 },
-      { source: "L2-1", target: "L4", value: 1 },
-      { source: "L1", target: "L2-3", value: 1 },
-      { source: "L2-3", target: "L4", value: 1 },
-      { source: "L1", target: "L2-4", value: 1 },
-      { source: "L2-4", target: "L5", value: 1 },
-      { source: "L2-2", target: "L5", value: 1 },
-      { source: "L2-2", target: "L4", value: 1 },
-    ]}, {
+    let res1 = [{
       start:"L1",
       end: 'L4',nodes:[
       { name: "L1", itemStyle: { color: colors[1] }, depth: 0 },
@@ -86,10 +59,9 @@ export default function CrutialPath({ w, h }) {
       { source: "L2-4", target: "L5", value: 1 },
       { source: "L2-2", target: "L5", value: 1 },
       { source: "L2-2", target: "L4", value: 1 },
-    ]}, {
+    ]},{
       start:"L1",
-      end: 'L5',
-      nodes:[
+      end: 'L4',nodes:[
       { name: "L1", itemStyle: { color: colors[1] }, depth: 0 },
       { name: "L2", itemStyle: { color: colors[0] }, depth: 1 },
       { name: "L2-1", itemStyle: { color: colors[0] }, depth: 1 },
@@ -98,11 +70,8 @@ export default function CrutialPath({ w, h }) {
       { name: "L2-4", itemStyle: { color: colors[0] }, depth: 1 },
       { name: "L4", itemStyle: { color: colors[0] }, depth: 2 },
       { name: "L5", itemStyle: { color: colors[0] }, depth: 2 },
-      { name: "L3", itemStyle: { color: colors[1] }, depth: 3 },
     ], links: [
       { source: "L1", target: "L2", value: 2 },
-      { source: "L4", target: "L3", value: 4 },
-      { source: "L5", target: "L3", value: 3 },
       { source: "L2", target: "L4", value: 1 },
       { source: "L2", target: "L5", value: 1 },
       { source: "L1", target: "L2-1", value: 1 },
@@ -115,18 +84,12 @@ export default function CrutialPath({ w, h }) {
       { source: "L2-2", target: "L5", value: 1 },
       { source: "L2-2", target: "L4", value: 1 },
     ]}]
-
-    setData(dt)
-  }, []);
-
-
-  PubSub.unsubscribe("assetsToPathDt");
-  PubSub.subscribe("assetsToPathDt", (msg, res) => {
-    console.log(res);
-  });
+    setData(res1);
+  }, [])
 
   useEffect(() => {
     if(data != undefined){
+      console.log(data);
       drawSankey();
     }
   }, [data]);
@@ -139,6 +102,8 @@ export default function CrutialPath({ w, h }) {
       echarts.dispose(existInstance);
     }
     if(data == undefined) return 
+
+    console.log('data.length', data.length,  `${13.56*(data == undefined || data.length === 1 ? 1: data.length/2)}`);
 
     let sankey = echarts.init(chartDom);
     let option = {
@@ -167,7 +132,7 @@ export default function CrutialPath({ w, h }) {
         text: data[i].start + '-' + data[i].end,
         // left: 'center',
         left:'3%',
-        top:  data.length === 1 ? '2%' : i*28 +'%',
+        top:  data.length === 1 ? '2%' : i*Math.floor(90/data.length) + 8 +'%' - 5,
         textAlign: 'center',
         textStyle:{
           color:'black',
@@ -187,10 +152,10 @@ export default function CrutialPath({ w, h }) {
           color: "gradient",
           curveness: 0.5,
         },
-        height: data.length === 1 ? '71%' :'20%',
+        height: data.length === 1 ? '71%' : Math.floor(71/data.length) +'%',
         left:"2%",
         right:"4%",
-        top: data.length === 1 ? '15%' : i*28 + 8 +'%',
+        top: data.length === 1 ? '15%' : i*Math.floor(90/data.length) + 8 +'%',
         nodeAlign: "left",
         nodeGap: 10,
         layoutIterations: 1,

@@ -12,7 +12,7 @@ import {
   RollbackOutlined,
   CheckOutlined,
   CaretUpOutlined,
-  ExpandOutlined,
+  DownloadOutlined,
   CaretDownOutlined,
 } from "@ant-design/icons";
 import fcose from "cytoscape-fcose";
@@ -37,7 +37,7 @@ const { Option } = Select;
 const { Search } = Input;
 
 var cy, layoutOption, stylesJson, layout;
-var ur, urOption; // 保留点和边的初状态
+var ur, urOption, graphData; // 保留点和边的初状态
 var layoutOptionDict = {
   euler: {
     name: "euler",
@@ -124,7 +124,7 @@ export default function MainView({ w, h }) {
   const [dataParam, setDataParam] = useState("");
   const [isSubmit, setIsSubmit] = useState(false);  // 判断是否提交了团体数据
   const [showCore, setShowCore] = useState(false);  // 是否展示核心资产与关键路径，未提交之前是默认不可以选择的
-  const [showCoreDisable, setShowCoreDisable] = useState(false);  // 是否展示核心资产与关键路径，未提交之前是默认不可以选择的
+  const [showCoreAble, setShowCoreAble] = useState(false);  // 是否可选展示核心资产与关键路径，未提交之前是默认不可以选择的
 
 
   // 给其他组件的数据
@@ -183,8 +183,8 @@ export default function MainView({ w, h }) {
         PubSub.publish("combinedLinkTableDt", [res.getDetialListSds, res.getBulletChartDataSds]);
         PubSub.publish("industryStackDt", res.getIdentifyICNodesSds); // 将选中的数据传给stack组件
         PubSub.publish("fromMainToInfoList", res.getInfoListSds)   // 向info-list传递数据
-        PubSub.publish('fromMainToConclusion', '')
-
+        PubSub.publish('fromMainToConclusion', res.getFinalDataSds)
+        graphData = res.getDetialListSds  // 保存图的完整数据
         // 更新主图的数据就不再对数据进行变化了
         setData(res.getDetialListSds)
       });
@@ -309,18 +309,19 @@ export default function MainView({ w, h }) {
     if(showCore){
       if(cy){
         cy.nodes().forEach((ele) =>{
-          if(ele.data('isCore')){
+          if(ele.data('isCore') === true){
             ele.addClass('isCore')
           }
         })
         cy.edges().forEach((ele) => {
-          if(!ele.data('isCore')){
+          if(ele.data('isCore') === true){
             ele.addClass('isCore')
           }
         })
       }
     }
-    if(showCoreDisable && showCore){
+
+    if(showCoreAble && !showCore){
       if(cy){
         cy.nodes().removeClass("isCore");
         cy.edges().removeClass("isCore");}
@@ -410,7 +411,8 @@ export default function MainView({ w, h }) {
       // 传过来的是空数据，就直接清空主图中的数据
       setData({ nodes: [], links: [] });
       setIsSubmit(false)
-      setShowCoreDisable(false)
+      setShowCoreAble(false)
+      setDifChartInput({nodes: [-1], links:[]})
     } else {
       getMainChartSds(dataParam).then((res) => {
         console.log(res)
@@ -517,11 +519,11 @@ export default function MainView({ w, h }) {
         cy.elements()
           .difference(neigh.outgoers().union(neigh.incomers()))
           .not(neigh)
-          .addClass("semitransp");
-        neigh.addClass("highlight").outgoers().addClass("highlight");
+          .addClass("semitransp");  // 提高非选中的点和其邻居节点的透明度
+
         // 增加tooltip
         let htmlText;
-        if (curNOdeData.type === "Domain")
+        if (curNOdeData.type === "Domain"){
           htmlText =
             "<b>" +
             "id: " +
@@ -537,7 +539,8 @@ export default function MainView({ w, h }) {
             "industry: " +
             "</b>" +
             curNOdeData.industry;
-        else
+        }
+        else{
           htmlText =
             "<b>" +
             "id: " +
@@ -548,6 +551,7 @@ export default function MainView({ w, h }) {
             "name: " +
             "</b>" +
             curNOdeData.name;
+        }
         maintoolTip
           .style("left", e.renderedPosition.x + 610 + "px")
           .style("top", e.renderedPosition.y + 110 + "px")
@@ -555,13 +559,7 @@ export default function MainView({ w, h }) {
           .html(htmlText);
       });
       cy.on("mouseout", "node", function (e) {
-        var neigh = e.target;
-        cy.elements().removeClass("semitransp");
-        neigh
-          .removeClass("highlight")
-          .outgoers()
-          .union(neigh.incomers())
-          .removeClass("highlight");
+        cy.elements().removeClass("semitransp");  // 将所有元素的透明度还原
         maintoolTip.style("visibility", "hidden");
       });
 
@@ -821,7 +819,7 @@ export default function MainView({ w, h }) {
       return ele.json().data;
     });
     setIsSubmit(true)   // 确定提交
-    setShowCoreDisable(true)  // 提交之后可以应用核心资产和关键路径的样式
+    setShowCoreAble(true)  // 提交之后可以应用核心资产和关键路径的样式
     setResData({ nodes: [...nodes], links: [...links] });
   }
 
@@ -841,6 +839,7 @@ export default function MainView({ w, h }) {
       let inICLinks = data.nodes.filter((item, index) => {
         return item["id"] === ele.data("id");
       });
+      console.log(inICLinks);
 
       inICLinks = inICLinks[0]["InICLinks"];
 
@@ -905,10 +904,10 @@ export default function MainView({ w, h }) {
           selector: "node",
           style: {
             width: function (ele) {
-              return ele.degree() < 30 ? 30 : ele.degree()> 90 ?  90 : ele.degree()> 90;
+              return ele.degree() < 30 ? 30 : ele.degree()> 90 ?  90 : ele.degree();
             },
             height: function (ele) {
-              return ele.degree() < 30 ? 30 : ele.degree()> 90 ?  90 : ele.degree()> 90;
+              return ele.degree() < 30 ? 30 : ele.degree()> 50 ?  90 : ele.degree();
             },
           },
         };
@@ -919,85 +918,92 @@ export default function MainView({ w, h }) {
               if(ele.json().data.hasOwnProperty('children')){
                 return 'double'
               }
+              return 'solid'
+            },
+            "border-width": function(ele){
+              if(ele.json().data.hasOwnProperty('children')){
+                return '3px'
+              }
+              return '0'
             },
             "pie-size": "95%",
-            "pie-1-background-color": "#2978b4",
+            "pie-1-background-color": "#26BAEE",
             "pie-1-background-size": function (ele, curIndustry = "A") {
               if (ele.data("industry").trim() === "") return "0";
-              let curIndustryArr = ele.data("industry").split("");
-              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              let curIndustryArr = ele.data("industry").trim().split("");
+              let cellPie = Math.floor(100 / curIndustryArr.length); 
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
             },
-            "pie-2-background-color": "#f9bf6f",
+            "pie-2-background-color": "#d264b6",
             "pie-2-background-size": function (ele, curIndustry = "B") {
               if (ele.data("industry").trim() === "") return "0";
-              let curIndustryArr = ele.data("industry").split("");
-              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              let curIndustryArr = ele.data("industry").trim().split("");
+              let cellPie = Math.floor(100 / curIndustryArr.length); 
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
             },
-            "pie-3-background-color": "#ff756a",
+            "pie-3-background-color": "#6A67CE",
             "pie-3-background-size": function (ele, curIndustry = "C") {
               if (ele.data("industry").trim() === "") return "0";
-              let curIndustryArr = ele.data("industry").split("");
-              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              let curIndustryArr = ele.data("industry").trim().split("");
+              let cellPie = Math.floor(100 / curIndustryArr.length); 
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
             },
-            "pie-4-background-color": "#E8747C",
+            "pie-4-background-color": "#3BACB6",
             "pie-4-background-size": function (ele, curIndustry = "D") {
               if (ele.data("industry").trim() === "") return "0";
-              let curIndustryArr = ele.data("industry").split("");
-              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              let curIndustryArr = ele.data("industry").trim().split("");
+              let cellPie = Math.floor(100 / curIndustryArr.length); 
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
             },
-            "pie-5-background-color": "#2978b4",
+            "pie-5-background-color": "#FF4949",
             "pie-5-background-size": function (ele, curIndustry = "E") {
               if (ele.data("industry").trim() === "") return "0";
-              let curIndustryArr = ele.data("industry").split("");
-              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              let curIndustryArr = ele.data("industry").trim().split("");
+              let cellPie = Math.floor(100 / curIndustryArr.length); 
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
             },
-            "pie-6-background-color": "#a6cee3",
+            "pie-6-background-color": "#F47645",
             "pie-6-background-size": function (ele, curIndustry = "F") {
               if (ele.data("industry").trim() === "") return "0";
-              let curIndustryArr = ele.data("industry").split("");
-              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              let curIndustryArr = ele.data("industry").trim().split("");
+              let cellPie = Math.floor(100 / curIndustryArr.length); 
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
             },
-            "pie-7-background-color": "#e53f32",
+            "pie-7-background-color": "#9C0F48",
             "pie-7-background-size": function (ele, curIndustry = "G") {
               if (ele.data("industry").trim() === "") return "0";
-              let curIndustryArr = ele.data("industry").split("");
-              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              let curIndustryArr = ele.data("industry").trim().split("");
+              let cellPie = Math.floor(100 / curIndustryArr.length);
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
             },
-            "pie-8-background-color": "#f9b4ae",
+            "pie-8-background-color": "#F9D923",
             "pie-8-background-size": function (ele, curIndustry = "H") {
               if (ele.data("industry").trim() === "") return "0";
-              let curIndustryArr = ele.data("industry").split("");
-              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              let curIndustryArr = ele.data("industry").trim().split("");
+              let cellPie = Math.floor(100 / curIndustryArr.length);
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
             },
-            "pie-9-background-color": "#f5f440",
+            "pie-9-background-color": "#548c2f",
             "pie-9-background-size": function (ele, curIndustry = "I") {
               if (ele.data("industry").trim() === "") return "0";
-              let curIndustryArr = ele.data("industry").split("");
-              let cellPie = 100 / curIndustryArr.length; // 每个单元格的面积
+              let curIndustryArr = ele.data("industry").trim().split("");
+              let cellPie = Math.floor(100 / curIndustryArr.length); 
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
@@ -1022,8 +1028,6 @@ export default function MainView({ w, h }) {
             }
           }
         }
-
-
         styleDetailsJson.push(newStyleArr);
         styleDetailsJson.push(domainNodeStyle);
         cy.style().fromJson(styleDetailsJson).update();
@@ -1072,17 +1076,18 @@ export default function MainView({ w, h }) {
       "#7fc97f",
     ];
     let industryType = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
-    let industryColor = [
-      "#7fc97f",
-      "#f9bf6f",
-      "#ff756a",
-      "#2978b4",
-      "#f67f02",
-      "#a6cee3",
-      "#e53f32",
-      "#f9b4ae",
-      "#f5f440",
-    ];
+    let industryColor = {
+      'A':'#26BAEE', 
+      'B':'#d264b6',
+      'C':'#6A67CE',
+      'D':'#3BACB6',
+      'E':'#FF4949',
+      'F':'#F47645',
+      'G':'#9C0F48',
+      'H':'#F9D923',
+      'I':'#548c2f',
+    }
+    
     // 添加节点类型的图例
     let nodeTypeWrapper = legendSvg
       .append("g")
@@ -1192,7 +1197,7 @@ export default function MainView({ w, h }) {
       .attr("y", 10)
       .attr("width", 9)
       .attr("height", 15)
-      .attr("fill", (d, i) => industryColor[i]);
+      .attr("fill", (d, i) => industryColor[d]);
     industryTypeG
       .append("text")
       .text((d) => d)
@@ -1240,8 +1245,85 @@ export default function MainView({ w, h }) {
   }
   // 应用核心资产与关键路径的样式
   function applyCoreStyle(e){
-    if(showCoreDisable){  // 如果可以设置显示样式
+    if(showCoreAble){  // 如果可以设置显示样式
       setShowCore(e.target.checked)
+    }
+  }
+
+  // 下载图数据与子图
+  function onDownload(){
+    if(graphData != undefined){
+      console.log('下载了');
+      const tNodeHeader = "id,name,type,industry,isCore,";
+      var nodeFilter = ["id", "name", "type", "industry", "isCore"];
+      const tLinkHeader = "relation,source,target,isCore,";
+      var linkFilter = ["relation", "source", "target", "isCore"];
+      // 保存节点信息
+      let nodeCsvString = tNodeHeader;
+      nodeCsvString += "\r\n";
+      graphData.nodes.forEach((item) => {
+        nodeFilter.forEach((key) => {
+          let value = item[key];
+          if (key === "industry") {
+            let valueArr;
+            if(value === '  '){
+              valueArr = "[]"
+            }else{
+            valueArr = '"[' + value.split("").toString() + ']"';
+            }
+            nodeCsvString += valueArr + ",";
+          } else {
+            nodeCsvString += value + ",";
+          }
+        });
+        nodeCsvString += "\r\n";
+      });
+      nodeCsvString =
+        "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(nodeCsvString);
+      let nodeLink = document.createElement("a");
+      nodeLink.href = nodeCsvString;
+      nodeLink.download = "节点.csv";
+      document.body.appendChild(nodeLink);
+      nodeLink.click();
+      document.body.removeChild(nodeLink);
+
+    // 保存边的信息
+      let linkCsvString = tLinkHeader;
+      linkCsvString += "\r\n";
+      graphData.links.forEach((item) => {
+        linkFilter.forEach((key) => {
+          let value = item[key];
+          linkCsvString += value + ",";
+        });
+        linkCsvString += "\r\n";
+      });
+      linkCsvString =
+        "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(linkCsvString);
+      let linkLink = document.createElement("a");
+      linkLink.href = linkCsvString;
+      linkLink.download = "边.csv";
+      document.body.appendChild(linkLink);
+      linkLink.click();
+      document.body.removeChild(linkLink);
+
+      // 下载图片
+      if(cy){
+        let blob = cy.png({
+          output: "blob",
+          bg: "transparent",
+          full: true,
+          scale: 4,
+          quality: 1,
+        });
+        let aLink = document.createElement("a");
+        let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("click", true, true);
+        aLink.download = `${new Date().getTime()}.png`;
+        aLink.href = URL.createObjectURL(blob);
+        aLink.dispatchEvent(evt);
+        aLink.click();
+        document.body.removeChild(aLink);
+      }
     }
   }
 
@@ -1264,7 +1346,7 @@ export default function MainView({ w, h }) {
         >
           {/*  控制数据 */}
           <div id="main-data-search">
-            节点搜索：
+            节点搜索&nbsp;&nbsp;&nbsp;
             <Search
               onSearch={onSearchNode}
               placeholder="输入节点id"
@@ -1272,7 +1354,7 @@ export default function MainView({ w, h }) {
             />
           </div>
           <div id="main-data-filter" style={{ paddingLeft: "10px" }}>
-            过滤：
+            过滤&nbsp;&nbsp;&nbsp;
             <Cascader
               options={options}
               onChange={onFilterDetails}
@@ -1280,15 +1362,15 @@ export default function MainView({ w, h }) {
               showSearch={{ filter }}
             />
             <Button type="primary" onClick={onFilter}>
-              Submit
+              执行
             </Button>
             <Button
               type="dashed"
               icon={<UndoOutlined />}
-              style={{ marginLeft: "10px" }}
+              style={{ marginLeft: "60px" }}
               onClick={onUndoOut}
             >
-              undo
+              撤销
             </Button>
             <Button
               type="dashed"
@@ -1296,7 +1378,7 @@ export default function MainView({ w, h }) {
               style={{ marginLeft: "5px" }}
               onClick={onRedoIn}
             >
-              redo
+              重做
             </Button>
             <Button
               type="dashed"
@@ -1304,7 +1386,7 @@ export default function MainView({ w, h }) {
               style={{ marginLeft: "5px" }}
               onClick={onRollback}
             >
-              rollback
+              还原
             </Button>
             <Button
               type="dashed"
@@ -1312,7 +1394,14 @@ export default function MainView({ w, h }) {
               style={{ marginLeft: "5px" }}
               onClick={onSubmitRes}
             >
-              submit
+              提交
+            </Button>
+            <Button
+              type="dashed"
+              icon={<DownloadOutlined />}
+              style={{ marginLeft: "5px" }}
+              onClick={onDownload}
+            >
             </Button>
           </div>
         </div>
@@ -1330,7 +1419,7 @@ export default function MainView({ w, h }) {
           }}
         >
           <div id="main-layout">
-            布 局：
+            布&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;局&nbsp;&nbsp;&nbsp;
             <Select
               value={chartLayout}
               style={{ width: 120 }}
@@ -1346,7 +1435,7 @@ export default function MainView({ w, h }) {
           <div
             id="node-distance"
             style={{
-              paddingLeft: "50px",
+              paddingLeft: "30px",
               display: "flex",
               alignItems: "center",
             }}
@@ -1363,7 +1452,7 @@ export default function MainView({ w, h }) {
           <div
             id="edge-length"
             style={{
-              paddingLeft: "50px",
+              paddingLeft: "30px",
               display: "flex",
               alignItems: "center",
             }}
@@ -1377,11 +1466,11 @@ export default function MainView({ w, h }) {
               style={{ width: 120 }}
             />
           </div>
-          <Checkbox onChange={addArrow}>箭头方向</Checkbox>
+          <Checkbox onChange={addArrow}>箭头</Checkbox>
           <Checkbox checked={styleCheck} onChange={applyStyle}>
-            应用样式
+            样式
           </Checkbox>
-          <Checkbox checked={showCore} onChange={applyCoreStyle} disable = {showCoreDisable} id = "coreCheckBox"> 
+          <Checkbox checked={showCore} onChange={applyCoreStyle} disable = {showCoreAble} id = "coreCheckBox"> 
             核心资产与关键路径
           </Checkbox>
         </div>
