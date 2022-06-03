@@ -1899,22 +1899,73 @@ function getIdentifyData(enterNodes, enterLinks) {
       selectnodes.push(Number(result[i].name));
     }
   }
-  let selectedges = jsnx.edges(G, selectnodes);
-  let g = new jsnx.Graph();
-  g.addEdgesFrom(selectedges);
-  let dropnodes = [];
-  for (let i = 0; i < selectnodes.length; i++) {
-    let path = [];
-    for (let j = i + 1; j < selectnodes.length; j++) {
-      if (!jsnx.hasPath(g, { source: selectnodes[i], target: selectnodes[j] }))
-        path.push(true);
+
+  function arrSlice(arr) {
+    let reslinksarr = [];
+    for (let i = 0; i < arr.length; i++) {
+      for (let j = 0; j < arr[i].length - 1; j++) {
+        reslinksarr.push([arr[i][j], arr[i][j + 1]]);
+      }
     }
-    if (path.length == selectnodes.length - i) dropnodes.push(i);
+    return reslinksarr;
   }
-  g.removeNodesFrom(dropnodes);
+  function getPathArray(stack) {
+    let arr = [];
+    for (let i = stack.length - 1; i >= 0; i--) {
+      arr.push(stack[i][0]);
+    }
+    return arr;
+  }
+  function getAllShortestPath(G, source, target) {
+    let stack = [[target, 0]];
+    let top = 0;
+    let ori = Object.keys(jsnx.predecessor(G, source)._numberValues);
+    let pred = Object.values(jsnx.predecessor(G, source)._numberValues);
+    let resultarr = [];
+    while (top >= 0) {
+      let node = ori.indexOf(String(stack[top][0])) + 1;
+      let i = stack[top][1];
+      if (node == source) resultarr.push(getPathArray(stack.slice(0, top + 1)));
+      if (pred[node - 1].length > i) {
+        top = top + 1;
+        if (top == stack.length) {
+          stack.push([pred[node - 1][i], 0]);
+        } else {
+          stack[top] = [pred[node - 1][i], 0];
+        }
+      } else {
+        if (top != 0) stack[top - 1][1] += 1;
+        top = top - 1;
+      }
+    }
+    return resultarr;
+  }
+  let linkarr = [];
+  for (let i = 0; i < selectnodes.length; i++) {
+    for (let j = i + 1; j < selectnodes.length; j++) {
+      let linksarr = arrSlice(
+        getAllShortestPath(G, selectnodes[i], selectnodes[j])
+      );
+      for (let k = 0; k < linksarr.length; k++) {
+        linkarr.push(
+          String(Math.min(linksarr[k][0], linksarr[k][1])) +
+            "+" +
+            String(Math.max(linksarr[k][0], linksarr[k][1]))
+        );
+      }
+    }
+  }
+  let selectlinks = [];
+  let selectlink = Array.from(new Set(linkarr));
+  for (let i = 0; i < selectlink.length; i++) {
+    selectlinks.push([
+      Number(selectlink[i].split("+")[0]),
+      Number(selectlink[i].split("+")[1]),
+    ]);
+  }
   let sendData = {
-    nodes: selectnodes.filter((i) => !dropnodes.includes(i)),
-    links: g.edges(),
+    nodes: selectnodes,
+    links: selectlinks,
   };
   return sendData;
 }
