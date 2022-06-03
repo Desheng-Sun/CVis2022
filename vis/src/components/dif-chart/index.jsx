@@ -62,7 +62,7 @@ export default function DifChart({ w, h }) {
       .attr("class", "diff-tooltip");
 
     let chartHeight = svgHeight * 0.75;
-    let colorList = ['#4281a4', '#c44536', '#9c89b8', '#d88c9a', '#F9D923']
+    let colorList = ['#4281a4', '#c44536', '#9c89b8', '#d88c9a', '#F9D923', '#99582a', '#B1BCE6', '#125B50', '#E4AEC5', '#7E8A97', '#00917C', '#6ECB63']
     let industryColorDict = {
       'A':'#26BAEE', 
       'B':'#d264b6',

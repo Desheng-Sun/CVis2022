@@ -46,6 +46,8 @@ var layoutOptionDict = {
     avoidOverlap: true,
     springLength: 10,
     mass: 7,
+    hideEdgesOnViewport: true,
+    textureOnViewport: true,
     // animateFilter: function (node, i) {
     //   return true;
     // }, // 决定是否节点的位置应该被渲染
@@ -920,11 +922,12 @@ export default function MainView({ w, h }) {
               }
               return 'solid'
             },
+            
             "border-width": function(ele){
               if(ele.json().data.hasOwnProperty('children')){
                 return '3px'
               }
-              return '0'
+              return '1px'
             },
             "pie-size": "95%",
             "pie-1-background-color": "#26BAEE",
