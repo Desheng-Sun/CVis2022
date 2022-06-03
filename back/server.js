@@ -44,7 +44,7 @@ const nowPath = path.join(__dirname, "data/");
 // 获取节点的相关信息
 let nodeInfoJ = fs.readFileSync(
   nowPath +
-  "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv",
+    "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv",
   "utf8"
 );
 nodeInfoJ = nodeInfoJ.split("\n");
@@ -649,30 +649,29 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
   let nowJSource = 0;
   let nowData = [];
   // 获取所有的独立节点
-  let existNodeList = {}
+  let existNodeList = {};
   // 获取所有的合并节点
-  let existNodeChildren = {}
+  let existNodeChildren = {};
   for (let i of existNodes) {
-    existNodeList[i["numId"]] = i
+    existNodeList[i["numId"]] = i;
     if (i.hasOwnProperty("children")) {
       for (let j of i["children"]) {
-        existNodeChildren[j["numId"].toString] = i["numId"]
+        existNodeChildren[j["numId"].toString] = i["numId"];
       }
     }
   }
   // 获取所有的独立链路
-  let existLinkList = {}
+  let existLinkList = {};
   // 获取所有的合并链路
-  let existLinkChildren = {}
+  let existLinkChildren = {};
   for (let i of existLinks) {
-    existLinkList[i["linksNumId"].toString()] = i
+    existLinkList[i["linksNumId"].toString()] = i;
     if (i.hasOwnProperty("children")) {
       for (let j of i["children"]) {
-        existLinkChildren[j["linksNumId"].toString] = i["linksNumId"]
+        existLinkChildren[j["linksNumId"].toString] = i["linksNumId"];
       }
     }
   }
-
 
   // 读取ICLinks中的所有节点和Links
   for (let i of links) {
@@ -692,22 +691,24 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
             // 判断当前节点是否在合并节点内
             if (existNodeChildren.hasOwnProperty(k[0])) {
               existNodeList[existNodeChildren[k[0]]]["children"] =
-                existNodeList[existNodeChildren[k[0]]]["children"]
-                  .filter(e => e["numId"] != k[0])
+                existNodeList[existNodeChildren[k[0]]]["children"].filter(
+                  (e) => e["numId"] != k[0]
+                );
             }
             // 为当前节点创建单独的数组
-            let nowNodeInfo = nodeNumIdInfo[parseInt(k[0]) - 1]
+            let nowNodeInfo = nodeNumIdInfo[parseInt(k[0]) - 1];
             existNodeList[k[0]] = {
               numId: parseInt(nowNodeInfo[0]),
               id: nowNodeInfo[1],
               name: nowNodeInfo[2],
               type: nowNodeInfo[3],
               industry: nowNodeInfo[4],
-              InICLinks: [[i["linksNumId"][0], i["linksNumId"][1]].toString()]
+              InICLinks: [[i["linksNumId"][0], i["linksNumId"][1]].toString()],
             };
-          }
-          else {
-            existNodeList[k[0]]["InICLinks"].push([i["linksNumId"][0], i["linksNumId"][1]].toString())
+          } else {
+            existNodeList[k[0]]["InICLinks"].push(
+              [i["linksNumId"][0], i["linksNumId"][1]].toString()
+            );
           }
         }
 
@@ -717,9 +718,13 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
           if (!existLinkList.hasOwnProperty([k[1], k[2]].toString())) {
             // 判断当前链路是否在合并链路内
             if (existLinkChildren.hasOwnProperty([k[1], k[2]].toString())) {
-              existLinkList[existLinkChildren[[k[1], k[2]].toString()]]["children"] =
-                existLinkList[existLinkChildren[[k[1], k[2]].toString()]]["children"]
-                  .filter(e => e["linksNumId"] != [parseInt(k[1]), parseInt(k[2])])
+              existLinkList[existLinkChildren[[k[1], k[2]].toString()]][
+                "children"
+              ] = existLinkList[existLinkChildren[[k[1], k[2]].toString()]][
+                "children"
+              ].filter(
+                (e) => e["linksNumId"] != [parseInt(k[1]), parseInt(k[2])]
+              );
             }
             existLinkList[[k[1], k[2]].toString()] = {
               relation: k[0],
@@ -727,10 +732,11 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
               target: nodeNumIdInfo[parseInt(k[2]) - 1][1],
               linksNumId: [parseInt(k[1]), parseInt(k[2])],
               InICLinks: [[i["linksNumId"][0], i["linksNumId"][1]].toString()],
-            }
-          }
-          else {
-            existLinkList[[k[1], k[2]].toString()]["InICLinks"].push([i["linksNumId"][0], i["linksNumId"][1]].toString())
+            };
+          } else {
+            existLinkList[[k[1], k[2]].toString()]["InICLinks"].push(
+              [i["linksNumId"][0], i["linksNumId"][1]].toString()
+            );
           }
         }
         break;
@@ -753,22 +759,21 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
       if (!existNodeList.hasOwnProperty(j[0])) {
         // 判断当前节点是否在合并节点内
         if (existLinkChildren.hasOwnProperty(j[0])) {
-          existNodeList[existLinkChildren[j[0]]]["children"] =
-            existNodeList[existLinkChildren[j[0]]]["children"]
-              .filter(e => e["numId"] != k[0])
+          existNodeList[existLinkChildren[j[0]]]["children"] = existNodeList[
+            existLinkChildren[j[0]]
+          ]["children"].filter((e) => e["numId"] != k[0]);
         }
-        let nowNodeInfo = nodeNumIdInfo[parseInt(j[0]) - 1]
+        let nowNodeInfo = nodeNumIdInfo[parseInt(j[0]) - 1];
         existNodeList[j[0]] = {
           numId: parseInt(nowNodeInfo[0]),
           id: nowNodeInfo[1],
           name: nowNodeInfo[2],
           type: nowNodeInfo[3],
           industry: nowNodeInfo[4],
-          InICLinks: [[i["numId"]].toString()]
+          InICLinks: [[i["numId"]].toString()],
         };
-      }
-      else {
-        existNodeList[j[0]]["InICLinks"].push([i["numId"]].toString())
+      } else {
+        existNodeList[j[0]]["InICLinks"].push([i["numId"]].toString());
       }
     }
 
@@ -776,20 +781,23 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
       if (!existLinkList.hasOwnProperty([j[1], j[2]].toString())) {
         // 判断当前节点是否在合并链路内
         if (existLinkChildren.hasOwnProperty([j[1], j[2]].toString())) {
-          existLinkList[existLinkChildren[[j[1], j[2]].toString()]]["children"] =
-            existLinkList[existLinkChildren[[j[1], j[2]].toString()]]["children"]
-              .filter(e => e["linksNumId"] != [parseInt(j[1]), parseInt(j[2])])
+          existLinkList[existLinkChildren[[j[1], j[2]].toString()]][
+            "children"
+          ] = existLinkList[existLinkChildren[[j[1], j[2]].toString()]][
+            "children"
+          ].filter((e) => e["linksNumId"] != [parseInt(j[1]), parseInt(j[2])]);
         }
         existLinkList[[j[1], j[2]].toString()] = {
           relation: j[0],
           source: nodeNumIdInfo[parseInt(j[1]) - 1][1],
           target: nodeNumIdInfo[parseInt(j[2]) - 1][1],
           linksNumId: [parseInt(j[1]), parseInt(j[2])],
-          InICLinks: [[i["numId"]].toString()]
-        }
-      }
-      else {
-        existLinkList[[j[1], j[2]].toString()]["InICLinks"].push([i["numId"]].toString());
+          InICLinks: [[i["numId"]].toString()],
+        };
+      } else {
+        existLinkList[[j[1], j[2]].toString()]["InICLinks"].push(
+          [i["numId"]].toString()
+        );
       }
     }
   }
@@ -858,11 +866,10 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
               name: nowNodeInfo[2],
               type: nowNodeInfo[3],
               industry: nowNodeInfo[4],
-              InICLinks: [[i["numId"]].toString()]
+              InICLinks: [[i["numId"]].toString()],
             };
-          }
-          else {
-            existNodeList[j[0]]["InICLinks"].push([i["numId"]].toString())
+          } else {
+            existNodeList[j[0]]["InICLinks"].push([i["numId"]].toString());
           }
 
           if (!existLinkList.hasOwnProperty([j[1][1], j[1][2]].toString())) {
@@ -871,11 +878,12 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
               source: nodeNumIdInfo[parseInt(j[1][1]) - 1][1],
               target: nodeNumIdInfo[parseInt(j[1][2]) - 1][1],
               linksNumId: [parseInt(j[1][1]), parseInt(j[1][2])],
-              InICLinks: [[i["numId"]].toString()]
-            }
-          }
-          else {
-            existLinkList[[j[1][1], j[1][2]].toString()]["InICLinks"].push([i["numId"]].toString());
+              InICLinks: [[i["numId"]].toString()],
+            };
+          } else {
+            existLinkList[[j[1][1], j[1][2]].toString()]["InICLinks"].push(
+              [i["numId"]].toString()
+            );
           }
         }
       }
@@ -888,9 +896,8 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
             type: nowNodeNodeInfo[j]["type"],
             industry: nowNodeNodeInfo[j]["industry"],
             InICLinks: nowNodeNodeInfo[j]["InICLinks"],
-          })
-        }
-        else {
+          });
+        } else {
           nowNodes.push(nowNodeNodeInfo[j]);
         }
       }
@@ -902,9 +909,8 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
             target: nowNodeLinksInfo[j]["target"],
             linksNumId: nowNodeLinksInfo[j]["linksNumId"],
             InICLinks: nowNodeLinksInfo[j]["InICLinks"],
-          })
-        }
-        else {
+          });
+        } else {
           nowLinks.push(nowNodeLinksInfo[j]);
         }
       }
@@ -913,12 +919,11 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
 
   //针对所有的节点进行存储
   for (let i in existNodeList) {
-    let j = existNodeList[i]
+    let j = existNodeList[i];
     if (j.hasOwnProperty("children")) {
       if (j["children"].length == 0) {
-        continue
-      }
-      else if (j["children"].length == 1) {
+        continue;
+      } else if (j["children"].length == 1) {
         nowNodes.push({
           numId: j["children"][0]["numId"],
           id: j["children"][0]["id"],
@@ -926,9 +931,8 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
           type: j["children"][0]["type"],
           industry: j["industry"],
           InICLinks: j["InICLinks"],
-        })
-      }
-      else {
+        });
+      } else {
         nowNodes.push({
           numId: j["children"][0]["numId"],
           id: j["children"][0]["id"],
@@ -937,33 +941,29 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
           industry: j["industry"],
           InICLinks: j["InICLinks"],
           children: j["children"],
-          childrenNum: j["children"].length
-        })
-
+          childrenNum: j["children"].length,
+        });
       }
-    }
-    else{
-      nowNodes.push(j)
+    } else {
+      nowNodes.push(j);
     }
   }
 
   //针对所有的链路进行存储
   for (let i in existLinkList) {
-    let j = existLinkList[i]
+    let j = existLinkList[i];
     if (j.hasOwnProperty("children")) {
       if (j["children"].length == 0) {
-        continue
-      }
-      else if (j["children"].length == 1) {
+        continue;
+      } else if (j["children"].length == 1) {
         nowLinks.push({
           relation: j["children"][0]["relation"],
           source: j["children"][0]["source"],
           target: j["children"][0]["target"],
           linksNumId: j["children"][0]["linksNumId"],
           InICLinks: j["InICLinks"],
-        })
-      }
-      else {
+        });
+      } else {
         nowLinks.push({
           relation: j["children"][0]["relation"],
           source: j["children"][0]["source"],
@@ -971,12 +971,11 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
           linksNumId: j["children"][0]["linksNumId"],
           InICLinks: j["InICLinks"],
           children: j["children"],
-          childrenNum: j["children"].length
-        })
+          childrenNum: j["children"].length,
+        });
       }
-    }
-    else{
-      nowLinks.push(j)
+    } else {
+      nowLinks.push(j);
     }
   }
   nowNodes.sort((a, b) => {
@@ -2000,7 +1999,8 @@ function getIdentifyData(enterNodes, enterLinks) {
   // 获取输入的链路信息
   let links = [];
   for (let i of enterLinks) {
-    links.push(i["linksNumId"]);
+    links.push([i["linksNumId"][0], i["linksNumId"][1]]);
+    links.push([i["linksNumId"][1], i["linksNumId"][0]]);
   }
   groupInfo = {
     nodes: groupInfoNodes,
@@ -2085,8 +2085,10 @@ function getIdentifyData(enterNodes, enterLinks) {
     let resultarr = [];
     while (top >= 0) {
       let node = ori.indexOf(String(stack[top][0])) + 1;
+      let nodeval = stack[top][0];
       let i = stack[top][1];
-      if (node == source) resultarr.push(getPathArray(stack.slice(0, top + 1)));
+      if (nodeval == source)
+        resultarr.push(getPathArray(stack.slice(0, top + 1)));
       if (pred[node - 1].length > i) {
         top = top + 1;
         if (top == stack.length) {
@@ -2102,6 +2104,7 @@ function getIdentifyData(enterNodes, enterLinks) {
     return resultarr;
   }
   let linkarr = [];
+  console.log(selectnodes);
   for (let i = 0; i < selectnodes.length; i++) {
     for (let j = i + 1; j < selectnodes.length; j++) {
       let linksarr = arrSlice(
@@ -2128,6 +2131,8 @@ function getIdentifyData(enterNodes, enterLinks) {
     nodes: selectnodes,
     links: selectlinks,
   };
+  console.log(selectlinks);
+  console.log(links);
   return sendData;
 }
 
@@ -2164,7 +2169,7 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
   let identifyData = {};
 
   if (isAll) {
-    console.log(nodes, links);
+    // console.log(nodes, links);
     // 获取社区的核心资产-----------------------------------------------------------------
     identifyData = getIdentifyData(nodes, links);
     identifyData["links"] = new Set(
@@ -2743,7 +2748,9 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
     while (top >= 0) {
       let node = ori.indexOf(String(stack[top][0])) + 1;
       let i = stack[top][1];
-      if (node == source) resultarr.push(getPathArray(stack.slice(0, top + 1)));
+      let nodeval = stack[top][0];
+      if (nodeval == source)
+        resultarr.push(getPathArray(stack.slice(0, top + 1)));
       if (pred[node - 1].length > i) {
         top = top + 1;
         if (top == stack.length) {
@@ -2770,7 +2777,7 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
       links: nodeslinksarr[1],
     });
   }
-  console.log(linkarr);
+  // console.log(linkarr);
   res.send(linkarr);
   res.end();
 });
