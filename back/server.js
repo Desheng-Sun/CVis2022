@@ -2461,7 +2461,7 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
 app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
   let startnodes = req.body.startNode;
   let endnodes = req.body.endNode;
-  console.log(startnodes, endnodes);
+  console.log(groupInfo, startnodes, endnodes);
   let edges = groupInfo["links"];
   let nodes = groupInfo["nodes"];
   let G = new jsnx.Graph();

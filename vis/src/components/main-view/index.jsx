@@ -406,20 +406,18 @@ export default function MainView({ w, h }) {
 
   // 请求数据并更新图像
   useEffect(() => {
-    if (dataParam === "") {
-      // 初始化的时候
-      setData({ nodes: [], links: [] });
-    } else if (dataParam.nodes.length === 0) {
-      // 传过来的是空数据，就直接清空主图中的数据
+    if (dataParam === "") {    // 初始化的时候
+      setData({ nodes: [], links: [] }); 
+    } else if (dataParam.nodes.length === 0) {    // 传过来的是空数据，就直接清空主图中的数据
       setData({ nodes: [], links: [] });
       setIsSubmit(false)
       setShowCoreAble(false)
       setDifChartInput({nodes: [-1], links:[]})
-    } else {
-      // 不是初始化的时候获取当前图的数据
+    } else {         
       let nodes = []
       let links = []
-      if(cy){
+
+      if(cy){    // 不是初始化的时候获取当前图的数据
         cy.nodes().forEach((ele) => {
           nodes.push(ele.json().data)
         })
@@ -427,7 +425,8 @@ export default function MainView({ w, h }) {
           links.push(ele.json().data)
         })
       }
-      getMainChartSds({dataParam:dataParam, nodes: nodes, links: links}).then((res) => {
+      // getMainChartSds({dataParam:dataParam, nodes: nodes, links: links}).then((res) => {
+        getMainChartSds(dataParam).then((res) => {
         // console.log('从skeleton传递过来的参数', dataParam, nodes, links, res);
         // console.log({dataParam:dataParam, nodes: nodes, links: links});
         setData(res);
@@ -435,6 +434,8 @@ export default function MainView({ w, h }) {
       });
     }
   }, [dataParam]);
+
+
   // 处理节点的搜索事件
   useEffect(() => {
     if (!dataFirst) {
@@ -453,7 +454,6 @@ export default function MainView({ w, h }) {
 
     if (data.nodes.length === 0) return;
 
-    console.log(data);
     var nodes, links;
     if(!isSubmit){   // 不是提交完成之后的数据
       nodes = data.nodes.map((d) => ({ data: { ...d } }));
@@ -479,13 +479,13 @@ export default function MainView({ w, h }) {
         style: stylesJson,
       });
       var defaults = {
-        container: false, // html dom element
-        viewLiveFramerate: 0, // set false to update graph pan only on drag end; set 0 to do it instantly; set a number (frames per second) to update not more than N times per second
-        thumbnailEventFramerate: 30, // max thumbnail's updates per second triggered by graph updates
-        thumbnailLiveFramerate: false, // max thumbnail's updates per second. Set false to disable
-        dblClickDelay: 200, // milliseconds
-        removeCustomContainer: false, // destroy the container specified by user on plugin destroy
-        // rerenderDelay: 100, // ms to throttle rerender updates to the panzoom for performance
+        container: false, 
+        viewLiveFramerate: 0, 
+        thumbnailEventFramerate: 30,
+        thumbnailLiveFramerate: false, 
+        dblClickDelay: 200,
+        removeCustomContainer: false, 
+        // rerenderDelay: 100, 
       };
       cy.navigator(defaults);
 
@@ -500,7 +500,7 @@ export default function MainView({ w, h }) {
         stackSizeLimit: undefined,
       };
       ur = cy.undoRedo(urOption);
-      // ///////////////////////////////////////// 键盘、鼠标事件///////////////////////////////////
+
       document.addEventListener("keydown", function (e) {
         if (e.which === 46) {
           // 按删除键
@@ -765,25 +765,6 @@ export default function MainView({ w, h }) {
     cy.remove(collection);
   }
 
-  // 图片的下载功能
-  function onExportChart() {
-    let blob = cy.png({
-      output: "blob",
-      bg: "transparent",
-      full: true,
-      scale: 4,
-      quality: 1,
-    });
-    let aLink = document.createElement("a");
-    let evt = document.createEvent("HTMLEvents");
-    evt.initEvent("click", true, true);
-    aLink.download = `${new Date().getTime()}.png`;
-    aLink.href = URL.createObjectURL(blob);
-    aLink.dispatchEvent(evt);
-    aLink.click();
-    // document.body.removeChild(aLink);
-  }
-
   // 过滤对应的回车和按钮提交事件
   function onFilterDetails(e) {
     setFilterType(e);
@@ -805,10 +786,7 @@ export default function MainView({ w, h }) {
     setNodeDistance(value);
   }
   function filter(inputValue, path) {
-    return path.some(
-      (option) =>
-        option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1
-    );
+    return path.some((option) => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
   }
   function onUndoOut() {
     setUndoOut(true);

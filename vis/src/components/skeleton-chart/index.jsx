@@ -54,37 +54,34 @@ export default function SkeletonChart({ w, h }) {
   // 监听用户选择的节点, 传递给主图
   useEffect(() => {
     if (!selectedNodeFirst) {
-      // let returnRes = { nodes: [], links: [] };
-      // for (let i in linkedByIndex) {
-      //   let source = i.split(",")[0];
-      //   let target = i.split(",")[1];
-      //   if (selectedNode.includes(parseInt(source)) && selectedNode.includes(parseInt(target)) ) {
-      //     returnRes["links"].push({linksNumId: [parseInt(source), parseInt(target)]});
-      //   }
-      // }
-      // for (let j of selectedNode) {
-      //   returnRes["nodes"].push({ numId: j });
-      // }
-
-      // PubSub.publish("skeletonSelect", returnRes);
-
       let returnRes = { nodes: [], links: [] };
       for (let i in linkedByIndex) {
         let source = i.split(",")[0];
         let target = i.split(",")[1];
-        // 源节点是以前的，目标节点是现在的； 源节点是现在的，目标节点是以前的；源节点和目标节点都是现在的
-        if ((selectedNodeAll.includes(parseInt(source)) && selectedNode.includes(parseInt(target))) || (selectedNodeAll.includes(parseInt(target)) && selectedNode.includes(parseInt(source)))|| (selectedNode.includes(parseInt(source)) && selectedNode.includes(parseInt(target)))) {
+        if (selectedNode.includes(parseInt(source)) && selectedNode.includes(parseInt(target)) ) {
           returnRes["links"].push({linksNumId: [parseInt(source), parseInt(target)]});
         }
       }
-      for (let j of selectedNode) {  // 每次新选择的节点
+      for (let j of selectedNode) {
         returnRes["nodes"].push({ numId: j });
       }
-
-      setSelectedNodeAll((selectedNodeAll) => Array.from(new Set([...selectedNodeAll, ...selectedNode]))); // 选择的所有节点
-
-      // console.log(selectedNodeAll, selectedNode, returnRes);
       PubSub.publish("skeletonSelect", returnRes);
+
+      // let returnRes = { nodes: [], links: [] };
+      // for (let i in linkedByIndex) {
+      //   let source = i.split(",")[0];
+      //   let target = i.split(",")[1];
+      //   // 源节点是以前的，目标节点是现在的； 源节点是现在的，目标节点是以前的；源节点和目标节点都是现在的
+      //   if ((selectedNodeAll.includes(parseInt(source)) && selectedNode.includes(parseInt(target))) || (selectedNodeAll.includes(parseInt(target)) && selectedNode.includes(parseInt(source)))|| (selectedNode.includes(parseInt(source)) && selectedNode.includes(parseInt(target)))) {
+      //     returnRes["links"].push({linksNumId: [parseInt(source), parseInt(target)]});
+      //   }
+      // }
+      // for (let j of selectedNode) {  // 每次新选择的节点
+      //   returnRes["nodes"].push({ numId: j });
+      // }
+
+      // setSelectedNodeAll((selectedNodeAll) => Array.from(new Set([...selectedNodeAll, ...selectedNode]))); // 选择的所有节点
+      // PubSub.publish("skeletonSelect", returnRes);
 
     }
     setSelectedNodeFirst(false);
@@ -115,6 +112,7 @@ export default function SkeletonChart({ w, h }) {
   useEffect(() => {
     drawChart();
   }, [nodes, links]);
+
   // 监听从冰柱图传来的参数
   PubSub.unsubscribe("icicleSelect");
   PubSub.subscribe("icicleSelect", (msg, ic) => {
@@ -560,10 +558,10 @@ export default function SkeletonChart({ w, h }) {
             return d.numId;
           });
         // 方式一： 将原本的点与新加入的点都放进去
-        // setSelectedNode((selectedNode) => Array.from(new Set([...selectedNode, ...numIdArr]))); 
+        setSelectedNode((selectedNode) => Array.from(new Set([...selectedNode, ...numIdArr]))); 
         
         // 方式二：每次只加入最新选择的数据点
-        setSelectedNode((selectedNode) => [...numIdArr])   // 重新设置这一次选择的结果
+        // setSelectedNode((selectedNode) => [...numIdArr])   // 重新设置这一次选择的结果
       }
     };
 
