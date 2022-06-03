@@ -1,5 +1,6 @@
 import { get, post } from "./http.js";
 
+
 export function helloworld() {
   return get("/helloworld");
 }
@@ -20,6 +21,7 @@ export function getDetailListData() {
   // TODO
   return get("/getDetailListData");
 }
+
 
 //孙德晟判断代码是否正确的接口
 

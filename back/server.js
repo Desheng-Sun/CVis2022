@@ -11,8 +11,8 @@ const bodyParser = require("body-parser");
 const jsonParser = bodyParser.json();
 const urlencodedParser = bodyParser.urlencoded({ extended: true });
 
-app.use(bodyParser.json({ limit: "10mb" }));
-app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
+app.use(bodyParser.json({ limit: "100mb" }));
+app.use(bodyParser.urlencoded({ limit: "100mb", extended: true }));
 
 /**
  * 设置跨域请求
@@ -44,7 +44,7 @@ const nowPath = path.join(__dirname, "data/");
 // 获取节点的相关信息
 let nodeInfoJ = fs.readFileSync(
   nowPath +
-    "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv",
+  "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv",
   "utf8"
 );
 nodeInfoJ = nodeInfoJ.split("\n");
@@ -640,14 +640,39 @@ app.post("/getSkeletonChartDataSds", jsonParser, (req, res, next) => {
 
 // 主图所需要的数据
 app.post("/getMainChartSds", jsonParser, (req, res, next) => {
-  const links = req.body.linksInfo["links"];
-  const nodes = req.body.linksInfo["nodes"];
+  const existLinks = req.body.linksInfo["links"];
+  const existNodes = req.body.linksInfo["nodes"];
+  const links = req.body.linksInfo["dataParam"]["links"];
+  const nodes = req.body.linksInfo["dataParam"]["nodes"];
   links.sort((a, b) => a["linksNumId"][0] - b["linksNumId"][0]);
 
   let nowJSource = 0;
   let nowData = [];
-  let nodesNumId = {};
-  let linksList = {};
+  // 获取所有的独立节点
+  let existNodeList = {}
+  // 获取所有的合并节点
+  let existNodeChildren = {}
+  for (let i of existNodes) {
+    existNodeList[i["numId"]] = i
+    if (i.hasOwnProperty("children")) {
+      for (let j of i["children"]) {
+        existNodeChildren[j["numId"].toString] = i["numId"]
+      }
+    }
+  }
+  // 获取所有的独立链路
+  let existLinkList = {}
+  // 获取所有的合并链路
+  let existLinkChildren = {}
+  for (let i of existLinks) {
+    existLinkList[i["linksNumId"].toString()] = i
+    if (i.hasOwnProperty("children")) {
+      for (let j of i["children"]) {
+        existLinkChildren[j["linksNumId"].toString] = i["linksNumId"]
+      }
+    }
+  }
+
 
   // 读取ICLinks中的所有节点和Links
   for (let i of links) {
@@ -662,22 +687,51 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
     for (let j of nowData) {
       if (j["end"][0] == i["linksNumId"][1]) {
         for (let k of j["nodes"]) {
-          if (!nodesNumId.hasOwnProperty(k[0])) {
-            nodesNumId[k[0]] = [];
+          // 当前独立节点是否包含此节点
+          if (!existNodeList.hasOwnProperty(k[0])) {
+            // 判断当前节点是否在合并节点内
+            if (existNodeChildren.hasOwnProperty(k[0])) {
+              existNodeList[existNodeChildren[k[0]]]["children"] =
+                existNodeList[existNodeChildren[k[0]]]["children"]
+                  .filter(e => e["numId"] != k[0])
+            }
+            // 为当前节点创建单独的数组
+            let nowNodeInfo = nodeNumIdInfo[parseInt(k[0]) - 1]
+            existNodeList[k[0]] = {
+              numId: parseInt(nowNodeInfo[0]),
+              id: nowNodeInfo[1],
+              name: nowNodeInfo[2],
+              type: nowNodeInfo[3],
+              industry: nowNodeInfo[4],
+              InICLinks: [[i["linksNumId"][0], i["linksNumId"][1]].toString()]
+            };
           }
-          nodesNumId[k[0]].push(
-            [i["linksNumId"][0], i["linksNumId"][1]].toString()
-          );
+          else {
+            existNodeList[k[0]]["InICLinks"].push([i["linksNumId"][0], i["linksNumId"][1]].toString())
+          }
         }
 
         //只存储链路的类型、Source和Target
         for (let k of j["links"]) {
-          if (!linksList.hasOwnProperty([k[0], k[1], k[2]].toString())) {
-            linksList[[k[0], k[1], k[2]].toString()] = [];
+          // 判断当前链路是否已经存在
+          if (!existLinkList.hasOwnProperty([k[1], k[2]].toString())) {
+            // 判断当前链路是否在合并链路内
+            if (existLinkChildren.hasOwnProperty([k[1], k[2]].toString())) {
+              existLinkList[existLinkChildren[[k[1], k[2]].toString()]]["children"] =
+                existLinkList[existLinkChildren[[k[1], k[2]].toString()]]["children"]
+                  .filter(e => e["linksNumId"] != [parseInt(k[1]), parseInt(k[2])])
+            }
+            existLinkList[[k[1], k[2]].toString()] = {
+              relation: k[0],
+              source: nodeNumIdInfo[parseInt(k[1]) - 1][1],
+              target: nodeNumIdInfo[parseInt(k[2]) - 1][1],
+              linksNumId: [parseInt(k[1]), parseInt(k[2])],
+              InICLinks: [[i["linksNumId"][0], i["linksNumId"][1]].toString()],
+            }
           }
-          linksList[[k[0], k[1], k[2]].toString()].push(
-            [i["linksNumId"][0], i["linksNumId"][1]].toString()
-          );
+          else {
+            existLinkList[[k[1], k[2]].toString()]["InICLinks"].push([i["linksNumId"][0], i["linksNumId"][1]].toString())
+          }
         }
         break;
       }
@@ -696,32 +750,59 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
     );
     nowData = JSON.parse(fs.readFileSync(filedata, "utf-8"));
     for (j of nowData["nodes"]) {
-      if (!nodesNumId.hasOwnProperty(j[0])) {
-        nodesNumId[j[0]] = [];
+      if (!existNodeList.hasOwnProperty(j[0])) {
+        // 判断当前节点是否在合并节点内
+        if (existLinkChildren.hasOwnProperty(j[0])) {
+          existNodeList[existLinkChildren[j[0]]]["children"] =
+            existNodeList[existLinkChildren[j[0]]]["children"]
+              .filter(e => e["numId"] != k[0])
+        }
+        let nowNodeInfo = nodeNumIdInfo[parseInt(j[0]) - 1]
+        existNodeList[j[0]] = {
+          numId: parseInt(nowNodeInfo[0]),
+          id: nowNodeInfo[1],
+          name: nowNodeInfo[2],
+          type: nowNodeInfo[3],
+          industry: nowNodeInfo[4],
+          InICLinks: [[i["numId"]].toString()]
+        };
       }
-      nodesNumId[j[0]].push([i["numId"]].toString());
+      else {
+        existNodeList[j[0]]["InICLinks"].push([i["numId"]].toString())
+      }
     }
+
     for (j of nowData["links"]) {
-      if (!linksList.hasOwnProperty([j[0], j[1], j[2]].toString())) {
-        linksList[[j[0], j[1], j[2]].toString()] = [];
+      if (!existLinkList.hasOwnProperty([j[1], j[2]].toString())) {
+        // 判断当前节点是否在合并链路内
+        if (existLinkChildren.hasOwnProperty([j[1], j[2]].toString())) {
+          existLinkList[existLinkChildren[[j[1], j[2]].toString()]]["children"] =
+            existLinkList[existLinkChildren[[j[1], j[2]].toString()]]["children"]
+              .filter(e => e["linksNumId"] != [parseInt(j[1]), parseInt(j[2])])
+        }
+        existLinkList[[j[1], j[2]].toString()] = {
+          relation: j[0],
+          source: nodeNumIdInfo[parseInt(j[1]) - 1][1],
+          target: nodeNumIdInfo[parseInt(j[2]) - 1][1],
+          linksNumId: [parseInt(j[1]), parseInt(j[2])],
+          InICLinks: [[i["numId"]].toString()]
+        }
       }
-      linksList[[j[0], j[1], j[2]].toString()].push([i["numId"]].toString());
+      else {
+        existLinkList[[j[1], j[2]].toString()]["InICLinks"].push([i["numId"]].toString());
+      }
     }
-    // }
   }
 
   //针对每一个在ICLinks中的IC节点进行循环
   for (let i of nodes) {
     // 如果当前节点在IC链路中
     if (ICScreen[0].indexOf(i["numId"]) > -1) {
-      if (!nodesNumId.hasOwnProperty(i["numId"])) {
-        nodesNumId[i["numId"]] = [];
-      }
       let nowNodeNodeInfo = {};
       let nowNodeLinksInfo = {};
       // 获取当前IC节点直接关联的所有节点，并删除已经在链路中的相关节点
       let nowNodeNeighbor = ICNeighbor[i["numId"]].filter((e) => {
-        return !nodesNumId.hasOwnProperty(e[0]);
+        return !existNodeList.hasOwnProperty(e[0]);
       });
       // 针对这些节点进行分类
       for (let j of nowNodeNeighbor) {
@@ -745,6 +826,7 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
               source: nodeNumIdInfo[parseInt(j[1][1]) - 1][1],
               target: nodeNumIdInfo[parseInt(j[1][2]) - 1][1],
               linksNumId: [parseInt(j[1][1]), parseInt(j[1][2])],
+              InICLinks: [i["numId"].toString()],
               childrenNum: 0,
               children: [],
             };
@@ -769,55 +851,134 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
         }
         // 如果不是Domain类型，则直接存储该节点和对应的链路
         else {
-          if (!nodesNumId.hasOwnProperty(j[0])) {
-            nodesNumId[j[0]] = [];
+          if (!existNodeList.hasOwnProperty(j[0])) {
+            existNodeList[j[0]] = {
+              numId: parseInt(nowNodeInfo[0]),
+              id: nowNodeInfo[1],
+              name: nowNodeInfo[2],
+              type: nowNodeInfo[3],
+              industry: nowNodeInfo[4],
+              InICLinks: [[i["numId"]].toString()]
+            };
           }
-          nodesNumId[j[0]].push([i["numId"]].toString());
+          else {
+            existNodeList[j[0]]["InICLinks"].push([i["numId"]].toString())
+          }
 
-          if (
-            !linksList.hasOwnProperty([j[1][0], j[1][1], j[1][2]].toString())
-          ) {
-            linksList[[j[1][0], j[1][1], j[1][2]].toString()] = [];
+          if (!existLinkList.hasOwnProperty([j[1][1], j[1][2]].toString())) {
+            existLinkList[[j[1][1], j[1][2]].toString()] = {
+              relation: j[1][0],
+              source: nodeNumIdInfo[parseInt(j[1][1]) - 1][1],
+              target: nodeNumIdInfo[parseInt(j[1][2]) - 1][1],
+              linksNumId: [parseInt(j[1][1]), parseInt(j[1][2])],
+              InICLinks: [[i["numId"]].toString()]
+            }
           }
-          linksList[[j[1][0], j[1][1], j[1][2]].toString()].push([
-            i["numId"].toString(),
-          ]);
+          else {
+            existLinkList[[j[1][1], j[1][2]].toString()]["InICLinks"].push([i["numId"]].toString());
+          }
         }
       }
       for (let j in nowNodeNodeInfo) {
-        nowNodes.push(nowNodeNodeInfo[j]);
+        if (nowNodeNodeInfo[j]["children"].length == 1) {
+          nowNodes.push({
+            numId: nowNodeNodeInfo[j]["numId"],
+            id: nowNodeNodeInfo[j]["id"],
+            name: nowNodeNodeInfo[j]["name"],
+            type: nowNodeNodeInfo[j]["type"],
+            industry: nowNodeNodeInfo[j]["industry"],
+            InICLinks: nowNodeNodeInfo[j]["InICLinks"],
+          })
+        }
+        else {
+          nowNodes.push(nowNodeNodeInfo[j]);
+        }
       }
       for (let j in nowNodeLinksInfo) {
-        nowLinks.push(nowNodeLinksInfo[j]);
+        if (nowNodeLinksInfo[j]["children"].length == 1) {
+          nowLinks.push({
+            relation: nowNodeLinksInfo[j]["relation"],
+            source: nowNodeLinksInfo[j]["source"],
+            target: nowNodeLinksInfo[j]["target"],
+            linksNumId: nowNodeLinksInfo[j]["linksNumId"],
+            InICLinks: nowNodeLinksInfo[j]["InICLinks"],
+          })
+        }
+        else {
+          nowLinks.push(nowNodeLinksInfo[j]);
+        }
       }
     }
   }
 
   //针对所有的节点进行存储
-  for (let i in nodesNumId) {
-    let nowNodeInfo = nodeNumIdInfo[parseInt(i) - 1];
-    nowNodes.push({
-      numId: parseInt(nowNodeInfo[0]),
-      id: nowNodeInfo[1],
-      name: nowNodeInfo[2],
-      type: nowNodeInfo[3],
-      industry: nowNodeInfo[4],
-      InICLinks: nodesNumId[i],
-    });
+  for (let i in existNodeList) {
+    let j = existNodeList[i]
+    if (j.hasOwnProperty("children")) {
+      if (j["children"].length == 0) {
+        continue
+      }
+      else if (j["children"].length == 1) {
+        nowNodes.push({
+          numId: j["children"][0]["numId"],
+          id: j["children"][0]["id"],
+          name: j["children"][0]["name"],
+          type: j["children"][0]["type"],
+          industry: j["industry"],
+          InICLinks: j["InICLinks"],
+        })
+      }
+      else {
+        nowNodes.push({
+          numId: j["children"][0]["numId"],
+          id: j["children"][0]["id"],
+          name: j["children"][0]["name"],
+          type: j["children"][0]["type"],
+          industry: j["industry"],
+          InICLinks: j["InICLinks"],
+          children: j["children"],
+          childrenNum: j["children"].length
+        })
+
+      }
+    }
+    else{
+      nowNodes.push(j)
+    }
   }
 
   //针对所有的链路进行存储
-  for (let i in linksList) {
-    i = i.split(",");
-    nowLinks.push({
-      relation: i[0],
-      source: nodeNumIdInfo[parseInt(i[1]) - 1][1],
-      target: nodeNumIdInfo[parseInt(i[2]) - 1][1],
-      linksNumId: [parseInt(i[1]), parseInt(i[2])],
-      InICLinks: linksList[i],
-    });
+  for (let i in existLinkList) {
+    let j = existLinkList[i]
+    if (j.hasOwnProperty("children")) {
+      if (j["children"].length == 0) {
+        continue
+      }
+      else if (j["children"].length == 1) {
+        nowLinks.push({
+          relation: j["children"][0]["relation"],
+          source: j["children"][0]["source"],
+          target: j["children"][0]["target"],
+          linksNumId: j["children"][0]["linksNumId"],
+          InICLinks: j["InICLinks"],
+        })
+      }
+      else {
+        nowLinks.push({
+          relation: j["children"][0]["relation"],
+          source: j["children"][0]["source"],
+          target: j["children"][0]["target"],
+          linksNumId: j["children"][0]["linksNumId"],
+          InICLinks: j["InICLinks"],
+          children: j["children"],
+          childrenNum: j["children"].length
+        })
+      }
+    }
+    else{
+      nowLinks.push(j)
+    }
   }
-
   nowNodes.sort((a, b) => {
     return a["numId"] - b["numId"];
   });
