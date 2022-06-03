@@ -9,20 +9,6 @@ export default function ConclusionText() {
   PubSub.unsubscribe('fromMainToConclusion')
   PubSub.subscribe('fromMainToConclusion',function(msg, text){
     setConclusionData(text)
-    // setConclusionData({
-    //   clue: text.clue,
-    //   clueAll: text.clueAll,
-    //   group_type: text.group_type,
-    //   groupscope: text.groupscope,
-    //   industry_type: [...text.industry_type],
-    //   link_type: [...text.link_type],
-    //   links_num: [...text.links_num],
-    //   node_all_link: text.node_all_link,
-    //   node_num: [...text.node_num],
-    //   node_type: [...text.node_type],
-    //   num_all_node: text.num_all_node,
-    //   num_industry: text.num_industry
-    // })
   })
   
   let colorListNode = [

@@ -2470,9 +2470,11 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
     Domain: "#2978b4",
     IP: "#33a02c",
     Cert: "#ff756a",
-    Whois: "#f67f02",
-    IPC: "#7fc97f",
+    IP_C: "#7fc97f",
     ASN: "#f9bf6f",
+    Whois_Name: '#f67f02',
+    Whois_Phone: '#f67f02',
+    Whois_Email: '#f67f02',
   };
   function arrSlice(arr) {
     let hashout = {};
