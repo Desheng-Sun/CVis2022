@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Select, Button, Form } from "antd";
-import { getInitialSds } from "../../apis/api";
+import { getInitialSds,getClearData } from "../../apis/api";
 import PubSub from "pubsub-js";
 
 const { Option } = Select;
@@ -164,6 +164,7 @@ export default function SearchBar() {
       numId: -1,
       Id: '',
     });
+    getClearData()
   };
   return (
     <div style={{ paddingTop: "15px" }}>
