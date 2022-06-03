@@ -11,6 +11,7 @@ import { getSkeletonChartDataSds } from "../../apis/api";
 const d3Lasso = lasso;
 var linkedByIndex = {};
 var combinationOrderSet = new Set();
+let prevSelectedAll = [];  // 记录上一次选择的结果
 export default function SkeletonChart({ w, h }) {
   const [svgWidth, setSvgWidth] = useState(w);
   const [svgHeight, setSvgHeight] = useState(h);
@@ -18,6 +19,7 @@ export default function SkeletonChart({ w, h }) {
   const [links, setLinks] = useState([]);
   const [nodes, setNodes] = useState([]);
   const [selectedNode, setSelectedNode] = useState([]);
+  const [selectedNodeAll, setSelectedNodeAll] = useState([]);
   const [selectedNodeFirst, setSelectedNodeFirst] = useState(true);
   const [currIc, setCurrIc] = useState(undefined); // 当前已选择的ic
 
@@ -52,23 +54,38 @@ export default function SkeletonChart({ w, h }) {
   // 监听用户选择的节点, 传递给主图
   useEffect(() => {
     if (!selectedNodeFirst) {
+      // let returnRes = { nodes: [], links: [] };
+      // for (let i in linkedByIndex) {
+      //   let source = i.split(",")[0];
+      //   let target = i.split(",")[1];
+      //   if (selectedNode.includes(parseInt(source)) && selectedNode.includes(parseInt(target)) ) {
+      //     returnRes["links"].push({linksNumId: [parseInt(source), parseInt(target)]});
+      //   }
+      // }
+      // for (let j of selectedNode) {
+      //   returnRes["nodes"].push({ numId: j });
+      // }
+
+      // PubSub.publish("skeletonSelect", returnRes);
+
       let returnRes = { nodes: [], links: [] };
       for (let i in linkedByIndex) {
         let source = i.split(",")[0];
         let target = i.split(",")[1];
-        if (
-          selectedNode.includes(parseInt(source)) &&
-          selectedNode.includes(parseInt(target))
-        ) {
-          returnRes["links"].push({
-            linksNumId: [parseInt(source), parseInt(target)],
-          });
+        // 源节点是以前的，目标节点是现在的； 源节点是现在的，目标节点是以前的；源节点和目标节点都是现在的
+        if ((selectedNodeAll.includes(parseInt(source)) && selectedNode.includes(parseInt(target))) || (selectedNodeAll.includes(parseInt(target)) && selectedNode.includes(parseInt(source)))|| (selectedNode.includes(parseInt(source)) && selectedNode.includes(parseInt(target)))) {
+          returnRes["links"].push({linksNumId: [parseInt(source), parseInt(target)]});
         }
       }
-      for (let j of selectedNode) {
+      for (let j of selectedNode) {  // 每次新选择的节点
         returnRes["nodes"].push({ numId: j });
       }
+
+      setSelectedNodeAll((selectedNodeAll) => Array.from(new Set([...selectedNodeAll, ...selectedNode]))); // 选择的所有节点
+
+      // console.log(selectedNodeAll, selectedNode, returnRes);
       PubSub.publish("skeletonSelect", returnRes);
+
     }
     setSelectedNodeFirst(false);
   }, [selectedNode]);
@@ -267,11 +284,7 @@ export default function SkeletonChart({ w, h }) {
             .attr("fill", (d) => {
               if (first_flag) {
                 for (let indus in d.ICIndustry) {
-                  if (
-                    combinationOrder.indexOf(
-                      d.ICIndustry[indus]["industry"]
-                    ) === i
-                  ) {
+                  if (combinationOrder.indexOf(d.ICIndustry[indus]["industry"]) === i) {
                     // 当前产业与当前弧对应的产业一致
                     let currIndu = d.ICIndustry[indus]["industry"]; // 当前产业集合，然后获取当前产业集合包含的子产业对应的径向索引
                     currIndustryIndex = currIndu
@@ -537,6 +550,7 @@ export default function SkeletonChart({ w, h }) {
       // 获取选中的数据对应的numId
       var groupIdArr = lasso.selectedItems()._groups[0].map((d) => d.__data__);
 
+      // 框选：增加数据点
       if (groupIdArr.length !== 0) {
         let numIdArr = nodes
           .filter((d) => {
@@ -545,9 +559,11 @@ export default function SkeletonChart({ w, h }) {
           .map((d) => {
             return d.numId;
           });
-        setSelectedNode((selectedNode) =>
-          Array.from(new Set([...selectedNode, ...numIdArr]))
-        );
+        // 方式一： 将原本的点与新加入的点都放进去
+        // setSelectedNode((selectedNode) => Array.from(new Set([...selectedNode, ...numIdArr]))); 
+        
+        // 方式二：每次只加入最新选择的数据点
+        setSelectedNode((selectedNode) => [...numIdArr])   // 重新设置这一次选择的结果
       }
     };
 
