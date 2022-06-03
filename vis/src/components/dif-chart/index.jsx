@@ -55,7 +55,7 @@ export default function DifChart({ w, h }) {
 
     if(data[0].length === 0) return 
 
-    console.log(data);
+    
     var diffTooltip = d3
       .select("#diff-all-chart")
       .append("div")

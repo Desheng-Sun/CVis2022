@@ -46,8 +46,6 @@ var layoutOptionDict = {
     avoidOverlap: true,
     springLength: 10,
     mass: 7,
-    hideEdgesOnViewport: true,
-    textureOnViewport: true,
     // animateFilter: function (node, i) {
     //   return true;
     // }, // 决定是否节点的位置应该被渲染
@@ -413,6 +411,9 @@ export default function MainView({ w, h }) {
       setIsSubmit(false)
       setShowCoreAble(false)
       setDifChartInput({nodes: [-1], links:[]})
+      if(cy){
+        cy.elements().remove()  // 清楚图的数据
+      }
     } else {         
       let nodes = []
       let links = []
@@ -425,10 +426,10 @@ export default function MainView({ w, h }) {
           links.push(ele.json().data)
         })
       }
-      // getMainChartSds({dataParam:dataParam, nodes: nodes, links: links}).then((res) => {
-        getMainChartSds(dataParam).then((res) => {
-        // console.log('从skeleton传递过来的参数', dataParam, nodes, links, res);
-        // console.log({dataParam:dataParam, nodes: nodes, links: links});
+      
+        getMainChartSds({dataParam:dataParam, nodes: nodes, links: links}).then((res) => {
+        console.log('从skeleton传递过来的参数', dataParam, nodes, links, res);
+        // console.log('主图的数据', res);
         
         setData(res);
         setDifChartInput(res);
@@ -479,6 +480,8 @@ export default function MainView({ w, h }) {
         },
         boxSelectionEnabled: true,
         style: stylesJson,
+        hideEdgesOnViewport: true,
+        textureOnViewport: true,
       });
       var defaults = {
         container: false, 

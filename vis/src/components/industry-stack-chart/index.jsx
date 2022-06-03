@@ -202,7 +202,6 @@ export default function IndustryStackChart({ w, h }) {
           // 按下Ctrl键 + click 取消选择
           setSelectedNodeNumId("reset-" + d.id); // 取消在主图中高亮当前数据点
         } else {
-          console.log(d);
           setSelectedNodeNumId("set-" + d.id); // 在主图中高亮当前数据点
         }
       })
