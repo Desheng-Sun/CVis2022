@@ -430,6 +430,7 @@ export default function MainView({ w, h }) {
       getMainChartSds({dataParam:dataParam, nodes: nodes, links: links}).then((res) => {
         // console.log('从skeleton传递过来的参数', dataParam, nodes, links, res);
         // console.log({dataParam:dataParam, nodes: nodes, links: links});
+        
         setData(res);
         setDifChartInput(res);
       });
@@ -439,6 +440,7 @@ export default function MainView({ w, h }) {
   useEffect(() => {
     if (!dataFirst) {
       drawChart();
+      console.log(data);
       dragElement(document.getElementById("main-legend"));
       setStyleCheck(false);
     }
