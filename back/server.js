@@ -1825,7 +1825,6 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
 // });
 
 // 获取社区的核心资产和关键链路
-
 function getIdentifyData(enterNodes, enterLinks) {
   // 获取输入的节点信息
   let nodes = [];
@@ -1926,7 +1925,6 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
   const initialLinks = req.body.nodesLinksInfo["links"];
   const initialNodes = req.body.nodesLinksInfo["nodes"];
   const isAll = req.body.nodesLinksInfo["isAll"];
-  console.log(isAll);
   let links = [];
   let nodes = [];
   for (let i of initialLinks) {
@@ -2411,7 +2409,6 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
     // 获取其涉及的黑灰产的内容
     for (let i of industryType) {
       i = i.split("");
-      console.log(i);
       for (let j of i) {
         industry_type.push(industryTypeAll[j]);
       }
@@ -2461,7 +2458,6 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
 app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
   let startnodes = req.body.startNode;
   let endnodes = req.body.endNode;
-  console.log(startnodes, endnodes);
   let edges = groupInfo["links"];
   let nodes = groupInfo["nodes"];
   let G = new jsnx.Graph();
