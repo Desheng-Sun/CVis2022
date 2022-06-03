@@ -36,7 +36,7 @@ cytoscape.use(fcose);
 const { Option } = Select;
 const { Search } = Input;
 
-var cy, layoutOption, stylesJson, layout;
+var cy, layoutOption, stylesJson, layout, originData; 
 var ur, urOption, graphData; // 保留点和边的初状态
 var layoutOptionDict = {
   euler: {
@@ -187,6 +187,7 @@ export default function MainView({ w, h }) {
         graphData = res.getDetialListSds  // 保存图的完整数据
         // 更新主图的数据就不再对数据进行变化了
         setData(res.getDetialListSds)
+        
       });
     }
   }, [resData]);
@@ -428,7 +429,7 @@ export default function MainView({ w, h }) {
       }
       
         getMainChartSds({dataParam:dataParam, nodes: nodes, links: links}).then((res) => {
-        console.log('从skeleton传递过来的参数', dataParam, nodes, links, res);
+        // console.log('从skeleton传递过来的参数', dataParam, nodes, links, res);
         // console.log('主图的数据', res);
         
         setData(res);
@@ -442,7 +443,8 @@ export default function MainView({ w, h }) {
   useEffect(() => {
     if (!dataFirst) {
       drawChart();
-      console.log(data);
+      // console.log('主图的数据', data);
+      originData = data;   // 全局变量的形式保存原始的数据
       dragElement(document.getElementById("main-legend"));
       setStyleCheck(false);
     }
@@ -822,21 +824,23 @@ export default function MainView({ w, h }) {
 
   // 将数据传给diff chart
   function getDataForDifChart() {
-    let currICNodes = cy.nodes().filter((ele, index) => {
-      ele.removeClass('start_end')  // 更新图中的数据之后移除相应的样式
+    let currICNodes = cy.nodes().filter((ele, index) => {  // 获取当前图中有的IC节点
+      ele.removeClass('start_end') 
       ele.removeClass('InIClink')
       return ele.data("type") === "IP" || ele.data("type") === "Cert";
     });
-    currICNodes = currICNodes.map((item, index) => {
+    currICNodes = currICNodes.map((item, index) => {    // 获取当前图中IC节点的 numId
       return item.data("numId");
     });
 
     let graphnodes, graphlinks;
     graphnodes = cy.nodes().map(function (ele, i) {
-      let inICLinks = data.nodes.filter((item, index) => {
+      // let inICLinks = data.nodes.filter((item, index) => {  // 获取原始数据中的与当前图中相对应的节点
+        let inICLinks = originData.nodes.filter((item, index) => {  // 获取原始数据中的与当前图中相对应的节点
         return item["id"] === ele.data("id");
       });
-      console.log(inICLinks);
+
+      console.log(originData);  // 这里的data有时候获取不到最新的
 
       inICLinks = inICLinks[0]["InICLinks"];
 
