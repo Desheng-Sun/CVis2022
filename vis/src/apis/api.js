@@ -76,9 +76,14 @@ export function getGroupAllInfoSds(nodesLinksInfo) {
 
 // 获取关键链路信息的相关数据
 export function getCrutialpathData() {
-  return post("/getCrutialpathData");
+  return post("/getCrutialpathData", {
+    
+  });
 }
 
+export function getClearData() {
+  return post("/getClearData");
+}
 
 // export function getIcClueDataSds(numId, type) {
 //   return post("/getIcClueDataSds", {

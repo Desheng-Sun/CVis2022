@@ -2434,7 +2434,6 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
       num_industry: industry_type.length,
       group_type: grouptype,
     };
-    console.log(getFinalDataSds)
   }
 
   let sendData;
@@ -2457,7 +2456,7 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
   res.send(sendData);
   res.end();
 });
-
+ 
 // 输入起点终点，返回关键链路接口
 app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
   let startnodes = [1, 2];
