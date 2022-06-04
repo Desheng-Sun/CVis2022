@@ -2681,103 +2681,108 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
   let G = new jsnx.Graph();
   G.addEdgesFrom(edges);
   let colors = {
-    Domain: "#2978b4",
-    IP: "#33a02c",
-    Cert: "#ff756a",
-    IP_C: "#7fc97f",
-    ASN: "#f9bf6f",
-    Whois_Name: "#f67f02",
-    Whois_Phone: "#f67f02",
-    Whois_Email: "#f67f02",
+      Domain: "#2978b4",
+      IP: "#33a02c",
+      Cert: "#ff756a",
+      IP_C: "#7fc97f",
+      ASN: "#f9bf6f",
+      Whois_Name: "#f67f02",
+      Whois_Phone: "#f67f02",
+      Whois_Email: "#f67f02",
   };
   function arrSlice(arr) {
-    let hashout = {};
-    let hashin = {};
-    let resarr = [];
-    let reslinksarr = [];
-    let resnodesarr = [];
-    for (let i = 0; i < arr.length; i++) {
-      for (let j = 0; j < arr[i].length - 1; j++) {
-        if (arr[i][j] in hashout) hashout[arr[i][j]] += 1;
-        else hashout[arr[i][j]] = 1;
-        if (arr[i][j + 1] in hashin) hashin[arr[i][j + 1]] += 1;
-        else hashin[arr[i][j + 1]] = 1;
-        reslinksarr.push({ source: arr[i][j], target: arr[i][j + 1] });
-        resnodesarr.push({
-          name: arr[i][j],
-          depth: j,
-          itemStyle: { color: colors[nodes[arr[i][j]]] },
-        });
+      let hashout = {};
+      let hashin = {};
+      let resarr = [];
+      let reslinksarr = [];
+      let resnodesarr = [];
+      for (let i = 0; i < arr.length; i++) {
+          for (let j = 0; j < arr[i].length - 1; j++) {
+              if (arr[i][j] in hashout) hashout[arr[i][j]] += 1;
+              else hashout[arr[i][j]] = 1;
+              if (arr[i][j + 1] in hashin) hashin[arr[i][j + 1]] += 1;
+              else hashin[arr[i][j + 1]] = 1;
+              reslinksarr.push({ source: arr[i][j], target: arr[i][j + 1] });
+              resnodesarr.push({
+                  name: arr[i][j],
+                  depth: j,
+                  itemStyle: { color: colors[nodes[arr[i][j]].type] },
+              });
+              console.log(nodes[arr[i][j]])
+          }
+          resnodesarr.push({
+              name: arr[i][arr[i].length-1],
+              depth: arr[i].length-1,
+              itemStyle: { color: colors[nodes[arr[i][arr[i].length-1]].type] },
+          })
       }
-    }
-    for (let i = 0; i < reslinksarr.length; i++) {
-      let hin =
-        hashin[String(reslinksarr[i]["target"])] == undefined
-          ? 0
-          : hashin[String(reslinksarr[i]["target"])];
-      let hout =
-        hashout[String(reslinksarr[i]["target"])] == undefined
-          ? 0
-          : hashout[String(reslinksarr[i]["target"])];
-      reslinksarr[i]["value"] = Math.max(hin, hout);
-    }
-    const removeDuplicateObj = (arr) => {
-      let obj = {};
-      arr = arr.reduce((newArr, next) => {
-        obj[next.name] ? "" : (obj[next.name] = true && newArr.push(next));
-        return newArr;
-      }, []);
-      return arr;
-    };
-    resarr.push(removeDuplicateObj(resnodesarr), reslinksarr);
-    return resarr;
+      for (let i = 0; i < reslinksarr.length; i++) {
+          let hin =
+              hashin[String(reslinksarr[i]["target"])] == undefined
+                  ? 0
+                  : hashin[String(reslinksarr[i]["target"])];
+          let hout =
+              hashout[String(reslinksarr[i]["target"])] == undefined
+                  ? 0
+                  : hashout[String(reslinksarr[i]["target"])];
+          reslinksarr[i]["value"] = Math.max(hin, hout);
+      }
+      const removeDuplicateObj = (arr) => {
+          let obj = {};
+          arr = arr.reduce((newArr, next) => {
+              obj[next.name] ? "" : (obj[next.name] = true && newArr.push(next));
+              return newArr;
+          }, []);
+          return arr;
+      };
+      resarr.push(removeDuplicateObj(resnodesarr), reslinksarr);
+      return resarr;
   }
   function getPathArray(stack) {
-    let arr = [];
-    for (let i = stack.length - 1; i >= 0; i--) {
-      arr.push(stack[i][0]);
-    }
-    return arr;
+      let arr = [];
+      for (let i = stack.length - 1; i >= 0; i--) {
+          arr.push(stack[i][0]);
+      }
+      return arr;
   }
   function getAllShortestPath(G, source, target) {
-    let stack = [[target, 0]];
-    let top = 0;
-    let ori = Object.keys(jsnx.predecessor(G, source)._numberValues);
-    let pred = Object.values(jsnx.predecessor(G, source)._numberValues);
-    let resultarr = [];
-    while (top >= 0) {
-      let node = ori.indexOf(String(stack[top][0])) + 1;
-      let i = stack[top][1];
-      let nodeval = stack[top][0];
-      if (nodeval == source)
-        resultarr.push(getPathArray(stack.slice(0, top + 1)));
-      if (pred[node - 1].length > i) {
-        top = top + 1;
-        if (top == stack.length) {
-          stack.push([pred[node - 1][i], 0]);
-        } else {
-          stack[top] = [pred[node - 1][i], 0];
-        }
-      } else {
-        if (top != 0) stack[top - 1][1] += 1;
-        top = top - 1;
+      let stack = [[target, 0]];
+      let top = 0;
+      let ori = Object.keys(jsnx.predecessor(G, source)._numberValues);
+      let pred = Object.values(jsnx.predecessor(G, source)._numberValues);
+      let resultarr = [];
+      while (top >= 0) {
+          let node = ori.indexOf(String(stack[top][0])) + 1;
+          let i = stack[top][1];
+          let nodeval = stack[top][0];
+          if (nodeval == source)
+              resultarr.push(getPathArray(stack.slice(0, top + 1)));
+          if (pred[node - 1].length > i) {
+              top = top + 1;
+              if (top == stack.length) {
+                  stack.push([pred[node - 1][i], 0]);
+              } else {
+                  stack[top] = [pred[node - 1][i], 0];
+              }
+          } else {
+              if (top != 0) stack[top - 1][1] += 1;
+              top = top - 1;
+          }
       }
-    }
-    return resultarr;
+      return resultarr;
   }
   let linkarr = [];
   for (let i = 0; i < startnodes.length; i++) {
-    let nodeslinksarr = arrSlice(
-      getAllShortestPath(G, startnodes[i], endnodes[i])
-    );
-    linkarr.push({
-      start: startnodes[i],
-      end: endnodes[i],
-      nodes: nodeslinksarr[0],
-      links: nodeslinksarr[1],
-    });
+      let nodeslinksarr = arrSlice(
+          getAllShortestPath(G, startnodes[i], endnodes[i])
+      );
+      linkarr.push({
+          start: startnodes[i],
+          end: endnodes[i],
+          nodes: nodeslinksarr[0],
+          links: nodeslinksarr[1],
+      });
   }
-  // console.log(linkarr);
   res.send(linkarr);
   res.end();
 });
