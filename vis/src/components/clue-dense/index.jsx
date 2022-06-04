@@ -43,8 +43,6 @@ export default function ClueDense({ w, h }) {
 
   function drawClueDense() {
     // // 删除div下canvas 重新绘制
-    // document.getElementById("clue-dense-chart-shape").innerHTML = "";
-    // document.getElementById("clue-dense-chart-mouse").innerHTML = "";
     document.getElementById("clue-dense-chart-shape").remove();
     document.getElementById("clue-dense-chart-mouse").remove();
     let canvas = document.createElement("canvas");
@@ -52,10 +50,6 @@ export default function ClueDense({ w, h }) {
 
     let canvas_mouse = document.createElement("canvas");
     canvas_mouse.id = "clue-dense-chart-mouse";
-
-    // canvas_mouse.style.position = "absolute";
-    // canvas_mouse.style.left = 6;
-    // canvas_mouse.style.top = 5;
 
     document.getElementById("clue-dense-chart").appendChild(canvas);
     document.getElementById("clue-dense-chart").appendChild(canvas_mouse);
@@ -137,28 +131,102 @@ export default function ClueDense({ w, h }) {
     ctx_mouse.globalAlpha = 1;
 
     let currdata_for_sort = [...currdata];
+    let sortedData = currdata_for_sort.sort(
+      (a, b) => a[currDataType] - b[currDataType]
+    );
+
+    let colorList = [
+      "#369fe4",
+      "#56cbf9",
+      "#97d1f4",
+      "#a0dcf0",
+      "#ade2f4",
+      "#bae8f8",
+      "#caeffb",
+      "#caf0f8",
+      "#fecf81",
+      // "#fba45f",
+      "#f9844a",
+    ];
 
     let colorScale;
-
-    if (currDataType !== "rateIn") {
-      let sortedData = currdata_for_sort.sort(
-        (a, b) => a[currDataType] - b[currDataType]
-      );
-      let topNIndex = parseInt(currdata.length * 0.9); // 取前90%的数据作为区间分割点
-
+    if (currNodeType === "IP" && currDataType === "numConnectedDomain") {
       colorScale = d3
-        .scaleSequential()
+        .scaleThreshold()
         .domain([
           d3.min(currdata, (d) => d[currDataType]),
-          sortedData[topNIndex][currDataType],
+          5,
+          10,
+          20,
+          30,
+          50,
+          65,
+          80,
+          100,
           d3.max(currdata, (d) => d[currDataType]),
         ])
-        .range(["#fdf1e5", "#e57b3a", "#993c19"]);
-    } else {
+        .range(colorList);
+    } else if (currNodeType === "IP" && currDataType === "numDomainWithIn") {
       colorScale = d3
-        .scaleSequential()
-        .domain(d3.extent(currdata, (d) => d[currDataType]))
-        .range(["#fdf1e5", "#993c19"]);
+        .scaleThreshold()
+        .domain([
+          d3.min(currdata, (d) => d[currDataType]),
+          3,
+          6,
+          10,
+          15,
+          20,
+          25,
+          30,
+          40,
+          d3.max(currdata, (d) => d[currDataType]),
+        ])
+        .range(colorList);
+    } else if (
+      currNodeType === "Cert" &&
+      currDataType === "numConnectedDomain"
+    ) {
+      colorScale = d3
+        .scaleThreshold()
+        .domain([
+          d3.min(currdata, (d) => d[currDataType]),
+          2,
+          3,
+          4,
+          6,
+          8,
+          10,
+          20,
+          30,
+          d3.max(currdata, (d) => d[currDataType]),
+        ])
+        .range(colorList);
+    } else if (currNodeType === "Cert" && currDataType === "numDomainWithIn") {
+      colorScale = d3
+        .scaleThreshold()
+        .domain([
+          d3.min(currdata, (d) => d[currDataType]),
+          1,
+          2,
+          3,
+          5,
+          8,
+          10,
+          20,
+          30,
+          d3.max(currdata, (d) => d[currDataType]),
+        ])
+        .range(colorList);
+    } else if (currNodeType === "IP" && currDataType === "rateIn") {
+      colorScale = d3
+        .scaleThreshold()
+        .domain([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 0.9, 1])
+        .range(colorList);
+    } else if (currNodeType === "Cert" && currDataType === "rateIn") {
+      colorScale = d3
+        .scaleThreshold()
+        .domain([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 0.98, 1])
+        .range(colorList);
     }
 
     for (let d in currdata) {
