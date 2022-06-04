@@ -65,37 +65,37 @@ export default function DifChart({ w, h }) {
 
     let chartHeight = svgHeight * 0.75;
     let colorList = [
-      "#4281a4",
-      "#c44536",
-      "#9c89b8",
-      "#d88c9a",
-      "#F9D923",
-      "#99582a",
-      "#B1BCE6",
+      // "#4281a4",
+      // "#9c89b8",
+      // "#B1BCE6",
       "#125B50",
-      "#E4AEC5",
-      "#7E8A97",
-      "#00917C",
+      // "#00917C",
       "#6ECB63",
+      "#7E8A97",
+      // "#c44536",
+      "#d88c9a",
+      "#E4AEC5",
     ];
     let industryColorDict = {
-      A: "#26BAEE",
-      B: "#d264b6",
-      C: "#6A67CE",
-      D: "#3BACB6",
-      E: "#FF4949",
-      F: "#F47645",
-      G: "#9C0F48",
-      H: "#F9D923",
-      I: "#548c2f",
+      A: "#fba5fc",
+      B: "#9744ee",
+      C: "#55018b",
+      D: "#d88c9a",
+      E: "#e14b93",
+      F: "#2045e3",
+      G: "#4d7dbd",
+      H: "#74c2ce",
+      I: "#5d6274",
     };
 
     ///////////////////////////////// 左侧绘制所有产业数量统计图
     let industryMinMax = {};
+    let complexColorIndex = 0;
     for (let i = 0; i < data[0].length; i++) {
       // 将每种产业映射到不同的颜色
       if (!industryColorDict.hasOwnProperty(data[0][i].industry)) {
-        industryColorDict[data[0][i].industry] = colorList[parseInt(i / 2)];
+        industryColorDict[data[0][i].industry] = colorList[complexColorIndex];
+        complexColorIndex += 1;
       }
       // 统计每张产业中的最大值和最小值
       if (industryMinMax.hasOwnProperty(data[0][i].industry)) {

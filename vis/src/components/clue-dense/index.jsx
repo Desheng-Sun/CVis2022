@@ -10,7 +10,6 @@ const nodeType = ["IP", "Cert"];
 const dataType = ["numConnectedDomain", "numDomainWithIn", "rateIn"];
 const dataTypeForShow = ["#D", "#DarkD", "ratio"];
 
-
 let prevIndex = -1; // 记录鼠标上一个坐标位置对应的数据index
 export default function ClueDense({ w, h }) {
   const [data, setData] = useState({ IP: [], Cert: [] });
@@ -43,6 +42,24 @@ export default function ClueDense({ w, h }) {
   }, [data, currNodeType, currDataType]);
 
   function drawClueDense() {
+    // // 删除div下canvas 重新绘制
+    // document.getElementById("clue-dense-chart-shape").innerHTML = "";
+    // document.getElementById("clue-dense-chart-mouse").innerHTML = "";
+    document.getElementById("clue-dense-chart-shape").remove();
+    document.getElementById("clue-dense-chart-mouse").remove();
+    let canvas = document.createElement("canvas");
+    canvas.id = "clue-dense-chart-shape";
+
+    let canvas_mouse = document.createElement("canvas");
+    canvas_mouse.id = "clue-dense-chart-mouse";
+
+    // canvas_mouse.style.position = "absolute";
+    // canvas_mouse.style.left = 6;
+    // canvas_mouse.style.top = 5;
+
+    document.getElementById("clue-dense-chart").appendChild(canvas);
+    document.getElementById("clue-dense-chart").appendChild(canvas_mouse);
+
     const hdlMouseMove = function (event) {
       event.stopPropagation();
       let { x, y } = getMousePosition(event, canvas);
@@ -87,7 +104,7 @@ export default function ClueDense({ w, h }) {
     };
 
     const dimensions = {
-      width: svgWidth*0.98,
+      width: svgWidth * 0.98,
       height: svgHeight * 0.99,
       margin: {
         top: 20,
@@ -108,12 +125,12 @@ export default function ClueDense({ w, h }) {
     let oneLine = Math.floor(boundedWidth / squareSize); //需要画多少列 画不下完整一列时，增加列数 列数取floor
     let rows = Math.ceil(currdata.length / oneLine);
 
-    const canvas = document.getElementById("clue-dense-chart-shape");
+    canvas = document.getElementById("clue-dense-chart-shape");
     canvas.height = boundedHeight;
     canvas.width = boundedWidth;
     const ctx = canvas.getContext("2d");
 
-    const canvas_mouse = document.getElementById("clue-dense-chart-mouse");
+    canvas_mouse = document.getElementById("clue-dense-chart-mouse");
     canvas_mouse.height = boundedHeight;
     canvas_mouse.width = boundedWidth;
     const ctx_mouse = canvas_mouse.getContext("2d");

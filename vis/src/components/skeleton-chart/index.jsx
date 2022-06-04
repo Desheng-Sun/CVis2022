@@ -11,7 +11,7 @@ import { getSkeletonChartDataSds } from "../../apis/api";
 const d3Lasso = lasso;
 var linkedByIndex = {};
 var combinationOrderSet = new Set();
-let selectedNodeAll = [];  // 记录上一次选择的结果
+let selectedNodeAll = []; // 记录上一次选择的结果
 export default function SkeletonChart({ w, h }) {
   const [svgWidth, setSvgWidth] = useState(w);
   const [svgHeight, setSvgHeight] = useState(h);
@@ -37,7 +37,6 @@ export default function SkeletonChart({ w, h }) {
     setSvgHeight(h);
   }, [h]);
 
-
   // 监听从冰柱图传来的参数
   PubSub.unsubscribe("icicleSelect");
   PubSub.subscribe("icicleSelect", (msg, ic) => {
@@ -45,10 +44,11 @@ export default function SkeletonChart({ w, h }) {
   });
   useEffect(() => {
     if (typeof currIc !== "undefined") {
-      if (currIc.length === 0) {   // 清空数据
+      if (currIc.length === 0) {
+        // 清空数据
         setData({ nodes: [], links: [] });
         setSelectedNode([]);
-        selectedNodeAll = []
+        selectedNodeAll = [];
         return;
       }
       getSkeletonChartDataSds(currIc).then((res) => {
@@ -79,20 +79,31 @@ export default function SkeletonChart({ w, h }) {
         let source = i.split(",")[0];
         let target = i.split(",")[1];
         // 源节点是以前的，目标节点是现在的； 源节点是现在的，目标节点是以前的；源节点和目标节点都是现在的
-        if ((selectedNodeAll.includes(parseInt(source)) && selectedNode.includes(parseInt(target))) || (selectedNodeAll.includes(parseInt(target)) && selectedNode.includes(parseInt(source)))|| (selectedNode.includes(parseInt(source)) && selectedNode.includes(parseInt(target)))) {
-          returnRes["links"].push({linksNumId: [parseInt(source), parseInt(target)]});
+        if (
+          (selectedNodeAll.includes(parseInt(source)) &&
+            selectedNode.includes(parseInt(target))) ||
+          (selectedNodeAll.includes(parseInt(target)) &&
+            selectedNode.includes(parseInt(source))) ||
+          (selectedNode.includes(parseInt(source)) &&
+            selectedNode.includes(parseInt(target)))
+        ) {
+          returnRes["links"].push({
+            linksNumId: [parseInt(source), parseInt(target)],
+          });
         }
       }
-      for (let j of selectedNode) {  // 每次新选择的节点组成nodes
+      for (let j of selectedNode) {
+        // 每次新选择的节点组成nodes
         returnRes["nodes"].push({ numId: j });
       }
-      selectedNodeAll =  Array.from(new Set([...selectedNodeAll, ...selectedNode])); // 选择的所有节点
+      selectedNodeAll = Array.from(
+        new Set([...selectedNodeAll, ...selectedNode])
+      ); // 选择的所有节点
 
       // setSelectedNodeAll((selectedNodeAll) => Array.from(new Set([...selectedNodeAll, ...selectedNode]))); // 选择的所有节点
       // console.log(selectedNodeAll, returnRes);
-      
-      PubSub.publish("skeletonSelect", returnRes);
 
+      PubSub.publish("skeletonSelect", returnRes);
     }
     setSelectedNodeFirst(false);
   }, [selectedNode]);
@@ -123,8 +134,6 @@ export default function SkeletonChart({ w, h }) {
     drawChart();
   }, [nodes, links]);
 
-
-
   // 绘制结构图
   function drawChart() {
     d3.selectAll("div#skeleton-chart svg").remove();
@@ -133,10 +142,9 @@ export default function SkeletonChart({ w, h }) {
 
     if (nodes.length === 0) return;
 
-
-    let svgToVbScale = nodes.length>300? 1.5: 1
-    let vbWidth = svgWidth*svgToVbScale
-    let vbHeight = svgHeight*svgToVbScale
+    let svgToVbScale = nodes.length > 300 ? 1.5 : 1;
+    let vbWidth = svgWidth * svgToVbScale;
+    let vbHeight = svgHeight * svgToVbScale;
     // 获取边对的关系
     for (let l of links) {
       let source = l["source"];
@@ -162,7 +170,7 @@ export default function SkeletonChart({ w, h }) {
     const svg = d3
       .select("#skeleton-chart")
       .append("svg")
-      .attr("width", svgWidth*0.99)
+      .attr("width", svgWidth * 0.99)
       .attr("height", svgHeight * 0.99)
       .attr("viewBox", [0, 0, vbWidth, vbHeight]);
     var scaleFactor = 1.2, // 值为1表示紧连边缘的点
@@ -175,13 +183,13 @@ export default function SkeletonChart({ w, h }) {
       linkStrength = undefined;
     const wrapper = svg.append("g").attr("transform", `translate(0, 0)`);
     const link = wrapper
-    .append("g")
-    .attr("class", "links")
-    .selectAll("line")
-    .data(links)
-    .join("line")
-    .attr("stroke-width", 1)
-    .attr("stroke", "#ccc");
+      .append("g")
+      .attr("class", "links")
+      .selectAll("line")
+      .data(links)
+      .join("line")
+      .attr("stroke-width", 1)
+      .attr("stroke", "#ccc");
 
     // create groups, links and nodes
     const groups = wrapper.append("g").attr("class", "groups");
@@ -190,16 +198,14 @@ export default function SkeletonChart({ w, h }) {
       {
         title: "取消选择",
         action: function (groupId, event) {
-          d3.select(this)
-            .classed("selected", false)
-            .attr("fill", "white")
-            // .attr("opacity", 0.2);
+          d3.select(this).classed("selected", false).attr("fill", "white");
+          // .attr("opacity", 0.2);
 
           // 获取被取消数据对应的numId
           let numId = nodes
             .filter((d) => d.group === groupId)
             .map((d) => d.numId)[0];
-          selectedNodeAll = selectedNodeAll.filter((d) => d !== numId)   // 从被选择的节点里面清楚这个点
+          selectedNodeAll = selectedNodeAll.filter((d) => d !== numId); // 从被选择的节点里面清楚这个点
 
           // setSelectedNode((selectedNode) =>
           //   selectedNode.filter((d) => d !== numId)
@@ -207,7 +213,6 @@ export default function SkeletonChart({ w, h }) {
         },
       },
     ];
-
 
     const nodeG = wrapper
       .append("g")
@@ -258,15 +263,15 @@ export default function SkeletonChart({ w, h }) {
 
     // 绘制每个节点的内部图
     const industryColor = {
-      0: "#b3efa7",
-      1: "#e4657f",
-      2: "#a17fda",
-      3: "#ff9f6d",
-      4: "#4caead",
-      5: "#64d9d7",
-      6: "#82b461",
-      7: "#fffb96",
-      8: "#87ccff",
+      0: "#fba5fc",
+      1: "#9744ee",
+      2: "#55018b",
+      3: "#d88c9a",
+      4: "#e14b93",
+      5: "#2045e3",
+      6: "#4d7dbd",
+      7: "#74c2ce",
+      8: "#5d6274",
     };
     const arc = d3
       .arc()
@@ -290,7 +295,11 @@ export default function SkeletonChart({ w, h }) {
             .attr("fill", (d) => {
               if (first_flag) {
                 for (let indus in d.ICIndustry) {
-                  if (combinationOrder.indexOf(d.ICIndustry[indus]["industry"]) === i) {
+                  if (
+                    combinationOrder.indexOf(
+                      d.ICIndustry[indus]["industry"]
+                    ) === i
+                  ) {
                     // 当前产业与当前弧对应的产业一致
                     let currIndu = d.ICIndustry[indus]["industry"]; // 当前产业集合，然后获取当前产业集合包含的子产业对应的径向索引
                     currIndustryIndex = currIndu
@@ -312,8 +321,6 @@ export default function SkeletonChart({ w, h }) {
         }
       }
     }
-
-
 
     // 定义simulation
     const simulation = d3
@@ -401,7 +408,7 @@ export default function SkeletonChart({ w, h }) {
         return "white";
       })
       .attr("opacity", 1)
-      .attr("stroke", '#bbb')
+      .attr("stroke", "#bbb")
       .on(
         "contextmenu",
         d3ContextMenu(menu, {
@@ -520,27 +527,22 @@ export default function SkeletonChart({ w, h }) {
     zoomHandler(wrapper);
 
     // ----------------   LASSO STUFF . ----------------
-    function lasso_start(){
-
-    }
+    function lasso_start() {}
 
     var lasso_draw = function () {
-      lasso
-        .possibleItems()
-        .selectAll("path")
-        .attr("fill", "#fe919b")
+      lasso.possibleItems().selectAll("path").attr("fill", "#fe919b");
     };
 
     var lasso_end = function () {
-      lasso.selectedItems().selectAll("path").classed("selected", "selected");  // 被选中的节点添加类
+      lasso.selectedItems().selectAll("path").classed("selected", "selected"); // 被选中的节点添加类
 
       // 保留多次选择的结果
       d3.selectAll(".path_placeholder path")
         .filter(function (d) {
-          return d3.select(this).attr("class") !== "selected";   // 没有被选中的节点恢复原来的颜色
+          return d3.select(this).attr("class") !== "selected"; // 没有被选中的节点恢复原来的颜色
         })
-        .attr("fill", "white")
-        
+        .attr("fill", "white");
+
       // 获取选中的数据对应的numId
       var groupIdArr = lasso.selectedItems()._groups[0].map((d) => d.__data__);
 
@@ -548,16 +550,19 @@ export default function SkeletonChart({ w, h }) {
       if (groupIdArr.length !== 0) {
         let numIdArr = nodes
           .filter((d) => {
-            return groupIdArr.includes(parseInt(d.group)) && !selectedNodeAll.includes(parseInt(d.numId));
+            return (
+              groupIdArr.includes(parseInt(d.group)) &&
+              !selectedNodeAll.includes(parseInt(d.numId))
+            );
           })
           .map((d) => {
             return d.numId;
           });
         // 方式一： 将原本的点与新加入的点都放进去
-        // setSelectedNode((selectedNode) => Array.from(new Set([...selectedNode, ...numIdArr]))); 
-        
+        // setSelectedNode((selectedNode) => Array.from(new Set([...selectedNode, ...numIdArr])));
+
         // 方式二：每次只加入最新选择的数据点
-        setSelectedNode([...numIdArr])   // 重新设置这一次选择的结果
+        setSelectedNode([...numIdArr]); // 重新设置这一次选择的结果
       }
     };
 
