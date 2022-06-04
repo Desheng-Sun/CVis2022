@@ -25,164 +25,235 @@ export default function CrutialPath({ w, h }) {
     });
   });
   
-  // useState(() => {
-  //   let colors = [
-  //     "#2978b4",
-  //     "#33a02c",
-  //     "#ff756a",
-  //     "#f67f02",
-  //     "#f67f02",
-  //     "#f67f02",
-  //     "#7fc97f",
-  //     "#f9bf6f",
-  //   ];
-  //   let res1 = [{
-  //     start:"L1",
-  //     end: 'L4',nodes:[
-  //     { name: "L1", itemStyle: { color: colors[1] }, depth: 0 },
-  //     { name: "L2", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-1", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-2", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-3", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-4", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L4", itemStyle: { color: colors[0] }, depth: 2 },
-  //     { name: "L5", itemStyle: { color: colors[0] }, depth: 2 },
-  //   ], links: [
-  //     { source: "L1", target: "L2", value: 2 },
-  //     { source: "L2", target: "L4", value: 1 },
-  //     { source: "L2", target: "L5", value: 1 },
-  //     { source: "L1", target: "L2-1", value: 1 },
-  //     { source: "L1", target: "L2-2", value: 2 },
-  //     { source: "L2-1", target: "L4", value: 1 },
-  //     { source: "L1", target: "L2-3", value: 1 },
-  //     { source: "L2-3", target: "L4", value: 1 },
-  //     { source: "L1", target: "L2-4", value: 1 },
-  //     { source: "L2-4", target: "L5", value: 1 },
-  //     { source: "L2-2", target: "L5", value: 1 },
-  //     { source: "L2-2", target: "L4", value: 1 },
-  //   ]},{
-  //     start:"L1",
-  //     end: 'L4',nodes:[
-  //     { name: "L1", itemStyle: { color: colors[1] }, depth: 0 },
-  //     { name: "L2", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-1", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-2", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-3", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-4", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L4", itemStyle: { color: colors[0] }, depth: 2 },
-  //     { name: "L5", itemStyle: { color: colors[0] }, depth: 2 },
-  //   ], links: [
-  //     { source: "L1", target: "L2", value: 2 },
-  //     { source: "L2", target: "L4", value: 1 },
-  //     { source: "L2", target: "L5", value: 1 },
-  //     { source: "L1", target: "L2-1", value: 1 },
-  //     { source: "L1", target: "L2-2", value: 2 },
-  //     { source: "L2-1", target: "L4", value: 1 },
-  //     { source: "L1", target: "L2-3", value: 1 },
-  //     { source: "L2-3", target: "L4", value: 1 },
-  //     { source: "L1", target: "L2-4", value: 1 },
-  //     { source: "L2-4", target: "L5", value: 1 },
-  //     { source: "L2-2", target: "L5", value: 1 },
-  //     { source: "L2-2", target: "L4", value: 1 },
-  //   ]},{
-  //     start:"L1",
-  //     end: 'L4',nodes:[
-  //     { name: "L1", itemStyle: { color: colors[1] }, depth: 0 },
-  //     { name: "L2", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-1", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-2", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-3", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-4", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L4", itemStyle: { color: colors[0] }, depth: 2 },
-  //     { name: "L5", itemStyle: { color: colors[0] }, depth: 2 },
-  //   ], links: [
-  //     { source: "L1", target: "L2", value: 2 },
-  //     { source: "L2", target: "L4", value: 1 },
-  //     { source: "L2", target: "L5", value: 1 },
-  //     { source: "L1", target: "L2-1", value: 1 },
-  //     { source: "L1", target: "L2-2", value: 2 },
-  //     { source: "L2-1", target: "L4", value: 1 },
-  //     { source: "L1", target: "L2-3", value: 1 },
-  //     { source: "L2-3", target: "L4", value: 1 },
-  //     { source: "L1", target: "L2-4", value: 1 },
-  //     { source: "L2-4", target: "L5", value: 1 },
-  //     { source: "L2-2", target: "L5", value: 1 },
-  //     { source: "L2-2", target: "L4", value: 1 },
-  //   ]},{
-  //     start:"L1",
-  //     end: 'L4',nodes:[
-  //     { name: "L1", itemStyle: { color: colors[1] }, depth: 0 },
-  //     { name: "L2", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-1", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-2", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-3", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-4", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L4", itemStyle: { color: colors[0] }, depth: 2 },
-  //     { name: "L5", itemStyle: { color: colors[0] }, depth: 2 },
-  //   ], links: [
-  //     { source: "L1", target: "L2", value: 2 },
-  //     { source: "L2", target: "L4", value: 1 },
-  //     { source: "L2", target: "L5", value: 1 },
-  //     { source: "L1", target: "L2-1", value: 1 },
-  //     { source: "L1", target: "L2-2", value: 2 },
-  //     { source: "L2-1", target: "L4", value: 1 },
-  //     { source: "L1", target: "L2-3", value: 1 },
-  //     { source: "L2-3", target: "L4", value: 1 },
-  //     { source: "L1", target: "L2-4", value: 1 },
-  //     { source: "L2-4", target: "L5", value: 1 },
-  //     { source: "L2-2", target: "L5", value: 1 },
-  //     { source: "L2-2", target: "L4", value: 1 },
-  //   ]},{
-  //     start:"L1",
-  //     end: 'L4',nodes:[
-  //     { name: "L1", itemStyle: { color: colors[1] }, depth: 0 },
-  //     { name: "L2", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-1", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-2", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-3", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-4", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L4", itemStyle: { color: colors[0] }, depth: 2 },
-  //     { name: "L5", itemStyle: { color: colors[0] }, depth: 2 },
-  //   ], links: [
-  //     { source: "L1", target: "L2", value: 2 },
-  //     { source: "L2", target: "L4", value: 1 },
-  //     { source: "L2", target: "L5", value: 1 },
-  //     { source: "L1", target: "L2-1", value: 1 },
-  //     { source: "L1", target: "L2-2", value: 2 },
-  //     { source: "L2-1", target: "L4", value: 1 },
-  //     { source: "L1", target: "L2-3", value: 1 },
-  //     { source: "L2-3", target: "L4", value: 1 },
-  //     { source: "L1", target: "L2-4", value: 1 },
-  //     { source: "L2-4", target: "L5", value: 1 },
-  //     { source: "L2-2", target: "L5", value: 1 },
-  //     { source: "L2-2", target: "L4", value: 1 },
-  //   ]},{
-  //     start:"L1",
-  //     end: 'L4',nodes:[
-  //     { name: "L1", itemStyle: { color: colors[1] }, depth: 0 },
-  //     { name: "L2", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-1", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-2", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-3", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L2-4", itemStyle: { color: colors[0] }, depth: 1 },
-  //     { name: "L4", itemStyle: { color: colors[0] }, depth: 2 },
-  //     { name: "L5", itemStyle: { color: colors[0] }, depth: 2 },
-  //   ], links: [
-  //     { source: "L1", target: "L2", value: 2 },
-  //     { source: "L2", target: "L4", value: 1 },
-  //     { source: "L2", target: "L5", value: 1 },
-  //     { source: "L1", target: "L2-1", value: 1 },
-  //     { source: "L1", target: "L2-2", value: 2 },
-  //     { source: "L2-1", target: "L4", value: 1 },
-  //     { source: "L1", target: "L2-3", value: 1 },
-  //     { source: "L2-3", target: "L4", value: 1 },
-  //     { source: "L1", target: "L2-4", value: 1 },
-  //     { source: "L2-4", target: "L5", value: 1 },
-  //     { source: "L2-2", target: "L5", value: 1 },
-  //     { source: "L2-2", target: "L4", value: 1 },
-  //   ]}]
-  //   setData(res1);
-  // }, [])
+  useState(() => {
+    let colors = [
+      "#2978b4",
+      "#33a02c",
+      "#ff756a",
+      "#f67f02",
+      "#f67f02",
+      "#f67f02",
+      "#7fc97f",
+      "#f9bf6f",
+    ];
+    // let res1 = [{
+    //   start:"L1",
+    //   end: 'L4',nodes:[
+    //   { name: "L1", itemStyle: { color: colors[1] }, depth: 0 },
+    //   { name: "L2", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L2-1", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L2-2", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L2-3", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L2-4", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L4", itemStyle: { color: colors[0] }, depth: 2 },
+    //   { name: "L5", itemStyle: { color: colors[0] }, depth: 2 },
+    // ], links: [
+    //   { source: "L1", target: "L2", value: 2 },
+    //   { source: "L2", target: "L4", value: 1 },
+    //   { source: "L2", target: "L5", value: 1 },
+    //   { source: "L1", target: "L2-1", value: 1 },
+    //   { source: "L1", target: "L2-2", value: 2 },
+    //   { source: "L2-1", target: "L4", value: 1 },
+    //   { source: "L1", target: "L2-3", value: 1 },
+    //   { source: "L2-3", target: "L4", value: 1 },
+    //   { source: "L1", target: "L2-4", value: 1 },
+    //   { source: "L2-4", target: "L5", value: 1 },
+    //   { source: "L2-2", target: "L5", value: 1 },
+    //   { source: "L2-2", target: "L4", value: 1 },
+    // ]},{
+    //   start:"L1",
+    //   end: 'L4',nodes:[
+    //   { name: "L1", itemStyle: { color: colors[1] }, depth: 0 },
+    //   { name: "L2", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L2-1", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L2-2", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L2-3", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L2-4", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L4", itemStyle: { color: colors[0] }, depth: 2 },
+    //   { name: "L5", itemStyle: { color: colors[0] }, depth: 2 },
+    // ], links: [
+    //   { source: "L1", target: "L2", value: 2 },
+    //   { source: "L2", target: "L4", value: 1 },
+    //   { source: "L2", target: "L5", value: 1 },
+    //   { source: "L1", target: "L2-1", value: 1 },
+    //   { source: "L1", target: "L2-2", value: 2 },
+    //   { source: "L2-1", target: "L4", value: 1 },
+    //   { source: "L1", target: "L2-3", value: 1 },
+    //   { source: "L2-3", target: "L4", value: 1 },
+    //   { source: "L1", target: "L2-4", value: 1 },
+    //   { source: "L2-4", target: "L5", value: 1 },
+    //   { source: "L2-2", target: "L5", value: 1 },
+    //   { source: "L2-2", target: "L4", value: 1 },
+    // ]},{
+    //   start:"L1",
+    //   end: 'L4',nodes:[
+    //   { name: "L1", itemStyle: { color: colors[1] }, depth: 0 },
+    //   { name: "L2", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L2-1", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L2-2", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L2-3", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L2-4", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L4", itemStyle: { color: colors[0] }, depth: 2 },
+    //   { name: "L5", itemStyle: { color: colors[0] }, depth: 2 },
+    // ], links: [
+    //   { source: "L1", target: "L2", value: 2 },
+    //   { source: "L2", target: "L4", value: 1 },
+    //   { source: "L2", target: "L5", value: 1 },
+    //   { source: "L1", target: "L2-1", value: 1 },
+    //   { source: "L1", target: "L2-2", value: 2 },
+    //   { source: "L2-1", target: "L4", value: 1 },
+    //   { source: "L1", target: "L2-3", value: 1 },
+    //   { source: "L2-3", target: "L4", value: 1 },
+    //   { source: "L1", target: "L2-4", value: 1 },
+    //   { source: "L2-4", target: "L5", value: 1 },
+    //   { source: "L2-2", target: "L5", value: 1 },
+    //   { source: "L2-2", target: "L4", value: 1 },
+    // ]},{
+    //   start:"L1",
+    //   end: 'L4',nodes:[
+    //   { name: "L1", itemStyle: { color: colors[1] }, depth: 0 },
+    //   { name: "L2", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L2-1", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L2-2", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L2-3", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L2-4", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L4", itemStyle: { color: colors[0] }, depth: 2 },
+    //   { name: "L5", itemStyle: { color: colors[0] }, depth: 2 },
+    // ], links: [
+    //   { source: "L1", target: "L2", value: 2 },
+    //   { source: "L2", target: "L4", value: 1 },
+    //   { source: "L2", target: "L5", value: 1 },
+    //   { source: "L1", target: "L2-1", value: 1 },
+    //   { source: "L1", target: "L2-2", value: 2 },
+    //   { source: "L2-1", target: "L4", value: 1 },
+    //   { source: "L1", target: "L2-3", value: 1 },
+    //   { source: "L2-3", target: "L4", value: 1 },
+    //   { source: "L1", target: "L2-4", value: 1 },
+    //   { source: "L2-4", target: "L5", value: 1 },
+    //   { source: "L2-2", target: "L5", value: 1 },
+    //   { source: "L2-2", target: "L4", value: 1 },
+    // ]},{
+    //   start:"L1",
+    //   end: 'L4',nodes:[
+    //   { name: "L1", itemStyle: { color: colors[1] }, depth: 0 },
+    //   { name: "L2", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L2-1", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L2-2", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L2-3", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L2-4", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L4", itemStyle: { color: colors[0] }, depth: 2 },
+    //   { name: "L5", itemStyle: { color: colors[0] }, depth: 2 },
+    // ], links: [
+    //   { source: "L1", target: "L2", value: 2 },
+    //   { source: "L2", target: "L4", value: 1 },
+    //   { source: "L2", target: "L5", value: 1 },
+    //   { source: "L1", target: "L2-1", value: 1 },
+    //   { source: "L1", target: "L2-2", value: 2 },
+    //   { source: "L2-1", target: "L4", value: 1 },
+    //   { source: "L1", target: "L2-3", value: 1 },
+    //   { source: "L2-3", target: "L4", value: 1 },
+    //   { source: "L1", target: "L2-4", value: 1 },
+    //   { source: "L2-4", target: "L5", value: 1 },
+    //   { source: "L2-2", target: "L5", value: 1 },
+    //   { source: "L2-2", target: "L4", value: 1 },
+    // ]},{
+    //   start:"L1",
+    //   end: 'L4',nodes:[
+    //   { name: "L1", itemStyle: { color: colors[1] }, depth: 0 },
+    //   { name: "L2", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L2-1", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L2-2", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L2-3", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L2-4", itemStyle: { color: colors[0] }, depth: 1 },
+    //   { name: "L4", itemStyle: { color: colors[0] }, depth: 2 },
+    //   { name: "L5", itemStyle: { color: colors[0] }, depth: 2 },
+    // ], links: [
+    //   { source: "L1", target: "L2", value: 2 },
+    //   { source: "L2", target: "L4", value: 1 },
+    //   { source: "L2", target: "L5", value: 1 },
+    //   { source: "L1", target: "L2-1", value: 1 },
+    //   { source: "L1", target: "L2-2", value: 2 },
+    //   { source: "L2-1", target: "L4", value: 1 },
+    //   { source: "L1", target: "L2-3", value: 1 },
+    //   { source: "L2-3", target: "L4", value: 1 },
+    //   { source: "L1", target: "L2-4", value: 1 },
+    //   { source: "L2-4", target: "L5", value: 1 },
+    //   { source: "L2-2", target: "L5", value: 1 },
+    //   { source: "L2-2", target: "L4", value: 1 },
+    // ]}]
+
+    let dt = [
+      {
+          "start": "88597",
+          "end": "1941602",
+          "nodes": [
+              {
+                  "name": 88597,
+                  "depth": 0,
+                  "itemStyle": {}
+              },
+              {
+                  "name": 455457,
+                  "depth": 1,
+                  "itemStyle": {}
+              },
+              {
+                  "name": "1941602",
+                  "depth": 2,
+                  "itemStyle": {}
+              },
+              {
+                  "name": 456875,
+                  "depth": 1,
+                  "itemStyle": {}
+              },,
+              {
+                  "name": 457010,
+                  "depth": 1,
+                  "itemStyle": {}
+              },
+              {
+                  "name": 1,
+                  "depth": 1,
+                  "itemStyle": {}
+              }
+          ],
+          "links": [
+              {
+                  "source": "88597",
+                  "target": "455457",
+                  "value": 1
+              },
+              {
+                  "source": "455457",
+                  "target": "1941602",
+                  "value": 1
+              },
+              {
+                  "source": "88597",
+                  "target": "456875",
+                  "value": 1
+              },
+              {
+                  "source": "456875",
+                  "target": "1941602",
+                  "value": 1
+              },
+              {
+                  "source": "88597",
+                  "target": "457010",
+                  "value": 1
+              },
+              {
+                  "source": "457010",
+                  "target": "1941602",
+                  "value": 1
+              }
+          ]
+      }
+  ]
+    // setData(dt);
+  }, [])
 
   useEffect(() => {
     if(data != undefined){

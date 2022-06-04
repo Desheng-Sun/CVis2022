@@ -905,10 +905,10 @@ export default function MainView({ w, h }) {
           selector: "node",
           style: {
             width: function (ele) {
-              return ele.degree() < 30 ? 30 : ele.degree()> 90 ?  90 : ele.degree();
+              return ele.degree() < 30 ? 30 : ele.degree()> 60 ?  60 : ele.degree();
             },
             height: function (ele) {
-              return ele.degree() < 30 ? 30 : ele.degree()> 50 ?  90 : ele.degree();
+              return ele.degree() < 30 ? 30 : ele.degree()> 60 ?  60 : ele.degree();
             },
           },
         };
@@ -926,7 +926,8 @@ export default function MainView({ w, h }) {
               if(ele.json().data.hasOwnProperty('children')){
                 return '3px'
               }
-              return '1px'
+              // return '1px'
+              return '0px'
             },
             "pie-size": "95%",
             "pie-1-background-color": "#26BAEE",
@@ -1049,7 +1050,7 @@ export default function MainView({ w, h }) {
     let nodeType = ["Domain", "IP", "IP_C", "Cert", "Whois", "ASN"];
     let nodeColor = [
       "#fff",
-      "#7fc97f",
+      "#33a02c",
       "#7fc97f",
       "#ff756a",
       "#f67f02",

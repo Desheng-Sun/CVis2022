@@ -2633,11 +2633,11 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
     }
     let clueAll = "";
     for (let i of searchNumId) {
-      clueAll += nodeNumIdInfo[i - 1][2];
+      clueAll += nodeNumIdInfo[parseInt(i) - 1][2];
     }
     getFinalDataSds = {
       groupscope: groupscope,
-      clue: nodeNumIdInfo[startNumId - 1][2],
+      clue: nodeNumIdInfo[parseInt(startNumId) - 1][2],
       clueAll: clueAll,
       num_all_node: numnode,
       node_type: node_type,
@@ -2702,7 +2702,7 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
               else hashout[arr[i][j]] = 1;
               if (arr[i][j + 1] in hashin) hashin[arr[i][j + 1]] += 1;
               else hashin[arr[i][j + 1]] = 1;
-              reslinksarr.push({ source: arr[i][j], target: arr[i][j + 1] });
+              reslinksarr.push({ source: arr[i][j].toString(), target: arr[i][j + 1].toString() });
               resnodesarr.push({
                   name: arr[i][j],
                   depth: j,
@@ -2711,7 +2711,7 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
               console.log(nodes[arr[i][j]])
           }
           resnodesarr.push({
-              name: arr[i][arr[i].length-1],
+              name: arr[i][arr[i].length-1].toString(),
               depth: arr[i].length-1,
               itemStyle: { color: colors[nodes[arr[i][arr[i].length-1]].type] },
           })
@@ -2777,8 +2777,8 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
           getAllShortestPath(G, startnodes[i], endnodes[i])
       );
       linkarr.push({
-          start: startnodes[i],
-          end: endnodes[i],
+          start: startnodes[i].toString(),
+          end: endnodes[i].toString(),
           nodes: nodeslinksarr[0],
           links: nodeslinksarr[1],
       });
