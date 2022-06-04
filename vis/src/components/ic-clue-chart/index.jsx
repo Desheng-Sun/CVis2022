@@ -30,7 +30,6 @@ export default function ICClueChart({ w, h }) {
       return;
     }
     getIcClueData2Sds(clue.numId, clue.Id).then((res) => {
-      console.log(clue.numId, clue.Id, res);
       setData(res);
     });
   });
