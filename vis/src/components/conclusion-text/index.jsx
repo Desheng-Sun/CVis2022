@@ -8,6 +8,7 @@ export default function ConclusionText() {
   // 监听从主图传递过来的数据
   PubSub.unsubscribe('fromMainToConclusion')
   PubSub.subscribe('fromMainToConclusion',function(msg, text){
+    console.log(text);
     setConclusionData(text)
   })
   
@@ -66,7 +67,7 @@ export default function ConclusionText() {
         <li key="conclusion-link">
           包含
           <b>
-            {conclusionData.num_all_link}
+            {conclusionData.node_all_link}
             条边
           </b>
           ，其中

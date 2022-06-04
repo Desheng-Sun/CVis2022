@@ -2633,11 +2633,11 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
     }
     let clueAll = "";
     for (let i of searchNumId) {
-      clueAll += nodeNumIdInfo[i - 1][2];
+      clueAll += nodeNumIdInfo[parseInt(i) - 1][2];
     }
     getFinalDataSds = {
       groupscope: groupscope,
-      clue: nodeNumIdInfo[startNumId - 1][2],
+      clue: nodeNumIdInfo[parseInt(startNumId) - 1][2],
       clueAll: clueAll,
       num_all_node: numnode,
       node_type: node_type,
