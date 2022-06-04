@@ -49,7 +49,7 @@ const nowPath = path.join(__dirname, "data/");
 // 获取节点的相关信息
 let nodeInfoJ = fs.readFileSync(
   nowPath +
-  "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv",
+    "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv",
   "utf8"
 );
 nodeInfoJ = nodeInfoJ.split("\n");
@@ -833,9 +833,7 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
           InICLinks: [[i["numId"]].toString()],
         };
       } else {
-        existNodeList[i["numId"]]["InICLinks"].push(
-          [i["numId"]].toString()
-        );
+        existNodeList[i["numId"]]["InICLinks"].push([i["numId"]].toString());
       }
       // 获取当前IC节点直接关联的所有节点，并删除已经在链路中的相关节点
       let nowNodeNeighbor = ICNeighbor[i["numId"]].filter((e) => {
@@ -2141,8 +2139,8 @@ function getIdentifyData(enterNodes, enterLinks) {
       for (let k = 0; k < linksarr.length; k++) {
         linkarr.push(
           String(Math.min(linksarr[k][0], linksarr[k][1])) +
-          "+" +
-          String(Math.max(linksarr[k][0], linksarr[k][1]))
+            "+" +
+            String(Math.max(linksarr[k][0], linksarr[k][1]))
         );
       }
     }
@@ -2162,10 +2160,9 @@ function getIdentifyData(enterNodes, enterLinks) {
   return sendData;
 }
 
-
 // 获取社区的关键链路
 function getCoreLinks(ICLinks, edges) {
-  let coreLinks = []
+  let coreLinks = [];
   const graph = new Graph();
   // 获取输入的链路信息
   for (let i of edges) {
@@ -2177,15 +2174,14 @@ function getCoreLinks(ICLinks, edges) {
     for (let j of SimplePathsAll) {
       for (let k = 0; k < j.length - 1; k++) {
         if (j[k] > j[k + 1]) {
-          coreLinks.push([j[k + 1], j[k]].toString())
-        }
-        else {
-          coreLinks.push([j[k], j[k + 1]].toString())
+          coreLinks.push([j[k + 1], j[k]].toString());
+        } else {
+          coreLinks.push([j[k], j[k + 1]].toString());
         }
       }
     }
   }
-  return coreLinks
+  return coreLinks;
 }
 
 // 获取该黑灰团伙的所有数据信息
@@ -2219,37 +2215,37 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
 
   let ICNodesIndustry = {};
   let identifyData = {};
-  let coreLinks = []
+  let coreLinks = [];
   if (isAll) {
     // console.log(nodes, links);
     // 获取社区的核心资产-----------------------------------------------------------------
     identifyData = getIdentifyData(nodes, links);
-    let ICNodesCore = new Set()
+    let ICNodesCore = new Set();
     for (let i of identifyData["nodes"]) {
       if (
         nodeNumIdInfo[parseInt(i) - 1][3] == "IP" ||
         nodeNumIdInfo[parseInt(i) - 1][3] == "Cert"
       ) {
         ICNodesIndustry[i] = {};
-        ICNodesCore.add(i)
+        ICNodesCore.add(i);
       }
     }
-    ICNodesCore = Array.from(ICNodesCore)
+    ICNodesCore = Array.from(ICNodesCore);
     ICNodesCore.sort((a, b) => {
-      a - b
-    })
-    let ICLinksCore = []
+      a - b;
+    });
+    let ICLinksCore = [];
     for (let i of ICNodesCore) {
       for (let j of ICLinksInfo[i]) {
         if (j[1] > j[0]) {
           if (ICNodesCore.indexOf(j[1]) > -1) {
-            ICLinksCore.push([j[0], j[1]])
+            ICLinksCore.push([j[0], j[1]]);
           }
         }
       }
     }
-    coreLinks = getCoreLinks(ICLinksCore, links)
-    coreLinks = new Set(coreLinks.map(e => e.toString()))
+    coreLinks = getCoreLinks(ICLinksCore, links);
+    coreLinks = new Set(coreLinks.map((e) => e.toString()));
   }
 
   // 获取节点和链路的长度-----------------------------------------------------------------------
@@ -2739,7 +2735,6 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
   res.end();
 });
 
-
 // 输入起点终点，返回关键链路接口
 app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
   let startnodes = req.body.startNode;
@@ -2843,7 +2838,7 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
       nodes: nodeslinksarr[0],
       links: nodeslinksarr[1],
     });
-    console.log(linkarr[0].links, linkarr[0].nodes);
+    // console.log(linkarr[0].links, linkarr[0].nodes);
   }
   res.send(linkarr);
   res.end();

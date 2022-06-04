@@ -9,7 +9,7 @@ import { NodeIndexOutlined } from "@ant-design/icons";
 export default function IndustryStackChart({ w, h }) {
   const [data, setData] = useState([]);
   const [svgWidth, setSvgWidth] = useState(w);
-  const [svgHeight, setSvgHeight] = useState("26.29vh");
+  const [svgHeight, setSvgHeight] = useState("19.92vh");
   const [dataParam, setDataParam] = useState([]);
 
   // 传递给其他组件的数据
