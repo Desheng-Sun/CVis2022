@@ -299,7 +299,7 @@ export default function CrutialPath({ w, h }) {
       let title = {
         text: data[i].start + '-' + data[i].end,
         // left: 'center',
-        left:'3%',
+        left:'5%',
         top:  data.length === 1 ? '2%' : i*Math.floor(90/data.length) + 2 +'%' ,
         textAlign: 'center',
         textStyle:{
