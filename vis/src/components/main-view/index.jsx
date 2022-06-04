@@ -181,7 +181,6 @@ export default function MainView({ w, h }) {
         links: resData.links,
         isAll: true,
       }).then((res) => {
-        console.log(res);
         PubSub.publish("combinedNodeTableDt", [
           res.getDetialListSds,
           res.getBulletChartDataSds,
@@ -677,6 +676,24 @@ export default function MainView({ w, h }) {
               document.body.removeChild(temp_input);
             },
           },
+          {
+            id: "copy-name",
+            content: "复制name",
+            tooltipText: "复制name",
+            selector: "node",
+            onClickFunction: function (e) {
+              let currName = e.target.json().data["name"];
+              document.execCommand("Copy", true, currName);
+              const temp_input = document.createElement("input");
+              document.body.appendChild(temp_input);
+              temp_input.setAttribute("value", currName);
+              temp_input.select();
+              if (document.execCommand("copy")) {
+                document.execCommand("copy");
+              }
+              document.body.removeChild(temp_input);
+            },
+          },
         ],
       };
       cy.contextMenus(menuOptions);
@@ -1120,7 +1137,8 @@ export default function MainView({ w, h }) {
       .append("svg")
       .attr("width", "115px")
       .attr("height", "280px");
-    let nodeType = ["Domain", "IP", "IP_C", "Cert", "Whois", "ASN"];
+    // let nodeType = ["Domain", "IP", "IP_C", "Cert", "Whois", "ASN"];
+    let nodeType = ["IP", "IP_C", "Cert", "Whois", "ASN"];
     let nodeColor = [
       "#fff",
       "#33a02c",
@@ -1168,7 +1186,7 @@ export default function MainView({ w, h }) {
     let nodeTypeWrapper = legendSvg
       .append("g")
       .attr("transform", "translate(5, 0)")
-      .attr("class", "node-tyle-wrapper");
+      .attr("class", "node-style-wrapper");
     nodeTypeWrapper
       .append("text")
       .text("节点类型")
@@ -1183,29 +1201,65 @@ export default function MainView({ w, h }) {
         "transform",
         (d, i) =>
           "translate(" +
-          `${(i % 2) * 60 + 10}` +
+          `${((i + 1) % 2) * 60 + 10}` +
           "," +
-          `${Math.floor(i / 2) * 20 + 40}` +
+          `${Math.floor((i + 1)  / 2) * 20 + 40}` +
           ")"
       );
+    // nodeTypeG
+    //   .append("circle")
+    //   .attr("cx", 0)
+    //   .attr("cy", 0)
+    //   .attr("r", "6px")
+    //   .attr("stroke", (d, i) => {
+    //     if (i === 0) return "red";
+    //   })
+    //   .style("stroke-dasharray", (d, i) => {
+    //     if (i === 0) return "2, 2";
+    //   })
+    //   .attr("fill", (d, i) => nodeColor[i]);
+
     nodeTypeG
+      .append("rect")
+      .attr("x", -6)
+      .attr("y", -6)
+      .attr("height", "12px")
+      .attr("width", "12px")
+      .attr("fill", (d, i) => nodeColor[i + 1]);
+
+
+    let domainG = nodeTypeWrapper.append('g')
+      .attr("transform", "translate(10, 40)")
+    domainG.append("circle")
+      .attr("cx", 0)
+      .attr("cy", 0)
+      .attr("r", "6px")
+      .attr("stroke", "#aaa")
+      .style("stroke-dasharray", "2, 2")
+      .attr("fill", nodeColor[0]);
+      domainG.append("text")
+      .text('Domain')
+      .attr("x", 10)
+      .attr("y", 3)
+      .attr("font-size", "10px");
+
+    nodeTypeWrapper.append('g')
+      .attr("transform", "translate(10, 40)")
       .append("circle")
       .attr("cx", 0)
       .attr("cy", 0)
       .attr("r", "6px")
-      .attr("stroke", (d, i) => {
-        if (i === 0) return "red";
-      })
-      .style("stroke-dasharray", (d, i) => {
-        if (i === 0) return "2, 2";
-      })
-      .attr("fill", (d, i) => nodeColor[i]);
+      .attr("stroke", "#aaa")
+      .style("stroke-dasharray", "2, 2")
+      .attr("fill", nodeColor[0]);
+
     nodeTypeG
       .append("text")
       .text((d) => d)
       .attr("x", 10)
       .attr("y", 3)
       .attr("font-size", "10px");
+
     // 添加边类型的图例
     let edgeTypeWrapper = legendSvg
       .append("g")

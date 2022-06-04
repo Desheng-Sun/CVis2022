@@ -19,7 +19,7 @@
 }
 
 #difference-chart {
-  height: 27.2vh;
+  height: 33.56vh;
 }
 .legend-text {
   fill: #fff;
@@ -69,8 +69,8 @@
   z-index: 999;
 }
 
-.leftText{
-  font-size:8px;
-  fill:black;
+.leftText {
+  font-size: 8px;
+  fill: black;
   font-weight: bold;
 }

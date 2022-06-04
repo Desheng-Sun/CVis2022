@@ -242,7 +242,12 @@ export default function IndustryStackChart({ w, h }) {
       .data((d) => d.industry)
       .join("tspan")
       .attr("x", 50)
-      .attr("y", (d, i) => `${i * 1.5 - 2}em`)
+      .attr("y", (d, i) => {
+        if(d.industryt.length >= 5){
+          return `${i * 1.5 - 1}em`
+        }
+        return `${i * 1.5 - 2}em`
+      })
       .attr("font-weight", "bold")
       .attr("stroke", "none")
       .attr("font-size", "10px")

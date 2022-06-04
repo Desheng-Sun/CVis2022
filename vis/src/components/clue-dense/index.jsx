@@ -11,6 +11,18 @@ const dataType = ["numConnectedDomain", "numDomainWithIn", "rateIn"];
 const dataTypeForShow = ["#D", "#DarkD", "ratio"];
 
 let prevIndex = -1; // 记录鼠标上一个坐标位置对应的数据index
+let colorList = [
+  "#369fe4",
+  "#56cbf9",
+  "#97d1f4",
+  "#a0dcf0",
+  "#ade2f4",
+  "#bae8f8",
+  "#caeffb",
+  "#caf0f8",
+  "#fecf81",
+  "#f9844a",
+];
 export default function ClueDense({ w, h }) {
   const [data, setData] = useState({ IP: [], Cert: [] });
   const [currNodeType, setCurrNodeType] = useState(nodeType[0]);
@@ -30,6 +42,7 @@ export default function ClueDense({ w, h }) {
   }, [h]);
 
   useEffect(() => {
+    drawLegend();
     getClueDenseDataSds().then((res) => {
       setData(res);
     });
@@ -43,8 +56,6 @@ export default function ClueDense({ w, h }) {
 
   function drawClueDense() {
     // // 删除div下canvas 重新绘制
-    // document.getElementById("clue-dense-chart-shape").innerHTML = "";
-    // document.getElementById("clue-dense-chart-mouse").innerHTML = "";
     document.getElementById("clue-dense-chart-shape").remove();
     document.getElementById("clue-dense-chart-mouse").remove();
     let canvas = document.createElement("canvas");
@@ -52,10 +63,6 @@ export default function ClueDense({ w, h }) {
 
     let canvas_mouse = document.createElement("canvas");
     canvas_mouse.id = "clue-dense-chart-mouse";
-
-    // canvas_mouse.style.position = "absolute";
-    // canvas_mouse.style.left = 6;
-    // canvas_mouse.style.top = 5;
 
     document.getElementById("clue-dense-chart").appendChild(canvas);
     document.getElementById("clue-dense-chart").appendChild(canvas_mouse);
@@ -136,29 +143,84 @@ export default function ClueDense({ w, h }) {
     const ctx_mouse = canvas_mouse.getContext("2d");
     ctx_mouse.globalAlpha = 1;
 
-    let currdata_for_sort = [...currdata];
-
     let colorScale;
-
-    if (currDataType !== "rateIn") {
-      let sortedData = currdata_for_sort.sort(
-        (a, b) => a[currDataType] - b[currDataType]
-      );
-      let topNIndex = parseInt(currdata.length * 0.9); // 取前90%的数据作为区间分割点
-
+    if (currNodeType === "IP" && currDataType === "numConnectedDomain") {
       colorScale = d3
-        .scaleSequential()
+        .scaleThreshold()
         .domain([
           d3.min(currdata, (d) => d[currDataType]),
-          sortedData[topNIndex][currDataType],
+          5,
+          10,
+          20,
+          30,
+          50,
+          65,
+          80,
+          100,
           d3.max(currdata, (d) => d[currDataType]),
         ])
-        .range(["#fdf1e5", "#e57b3a", "#993c19"]);
-    } else {
+        .range(colorList);
+    } else if (currNodeType === "IP" && currDataType === "numDomainWithIn") {
       colorScale = d3
-        .scaleSequential()
-        .domain(d3.extent(currdata, (d) => d[currDataType]))
-        .range(["#fdf1e5", "#993c19"]);
+        .scaleThreshold()
+        .domain([
+          d3.min(currdata, (d) => d[currDataType]),
+          3,
+          6,
+          10,
+          15,
+          20,
+          25,
+          30,
+          40,
+          d3.max(currdata, (d) => d[currDataType]),
+        ])
+        .range(colorList);
+    } else if (
+      currNodeType === "Cert" &&
+      currDataType === "numConnectedDomain"
+    ) {
+      colorScale = d3
+        .scaleThreshold()
+        .domain([
+          d3.min(currdata, (d) => d[currDataType]),
+          2,
+          3,
+          4,
+          6,
+          8,
+          10,
+          20,
+          30,
+          d3.max(currdata, (d) => d[currDataType]),
+        ])
+        .range(colorList);
+    } else if (currNodeType === "Cert" && currDataType === "numDomainWithIn") {
+      colorScale = d3
+        .scaleThreshold()
+        .domain([
+          d3.min(currdata, (d) => d[currDataType]),
+          1,
+          2,
+          3,
+          5,
+          8,
+          10,
+          20,
+          30,
+          d3.max(currdata, (d) => d[currDataType]),
+        ])
+        .range(colorList);
+    } else if (currNodeType === "IP" && currDataType === "rateIn") {
+      colorScale = d3
+        .scaleThreshold()
+        .domain([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 0.9, 1])
+        .range(colorList);
+    } else if (currNodeType === "Cert" && currDataType === "rateIn") {
+      colorScale = d3
+        .scaleThreshold()
+        .domain([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 0.98, 1])
+        .range(colorList);
     }
 
     for (let d in currdata) {
@@ -186,6 +248,40 @@ export default function ClueDense({ w, h }) {
 
     canvas_mouse.addEventListener("mousemove", hdlMouseMove, false);
     canvas_mouse.addEventListener("click", hdlClick, false);
+  }
+
+  function drawLegend() {
+    d3.selectAll("div#clue-dense-legend svg").remove();
+    const svg = d3
+      .select("div#clue-dense-legend")
+      .append("svg")
+      .attr("height", 20)
+      .attr("width", 150);
+
+    const rects = svg.append("g");
+    rects
+      .selectAll("rect")
+      .data(colorList)
+      .join("rect")
+      .attr("width", parseInt(150 / colorList.length))
+      .attr("height", 20)
+      .attr("x", (_, i) => parseInt(150 / colorList.length) * i)
+      .attr("y", 0)
+      .attr("fill", (d) => d);
+
+    const text = svg.append("g");
+    text
+      .selectAll("text")
+      .data(["少", "多"])
+      .join("text")
+      .text((d) => d)
+      .attr("x", (_, i) => {
+        if (i === 0) return 1;
+        else return 136;
+      })
+      .attr("y", 15)
+      .attr("font-size", 12)
+      .attr("fill", "#fff");
   }
 
   function onNodeTypeChange(e) {
@@ -231,6 +327,7 @@ export default function ClueDense({ w, h }) {
           </Radio.Group>
         </div>
         <div id="clue-dense-control-info"></div>
+        <div id="clue-dense-legend"></div>
       </div>
       <div
         id="clue-dense-chart"

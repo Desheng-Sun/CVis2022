@@ -4,20 +4,17 @@
 }
 
 #main-container {
-  display: flex;
-  flex-direction: column;
   text-align: start;
 }
 
 #main-chart {
   width: 100%;
   /* flex: 29; */
-  height: 890px;
+  height: 798px;
 }
 
 #main-chart-control {
-  width: 100%;
-  flex: 1;
+  height: 78px;
   font-weight: bold;
   font-family: sans-serif;
   font-size: 15px;
@@ -37,7 +34,7 @@
   background: white !important;
   height: 10vh !important;
   width: 6vw !important;
-  margin-bottom: 17%;
+  margin-bottom: 21%;
   margin-right: 34%;
 }
 
