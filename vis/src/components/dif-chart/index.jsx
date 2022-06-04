@@ -56,36 +56,34 @@ export default function DifChart({ w, h }) {
 
     if (data[0].length === 0) return;
 
-    console.log("diffChart", data);
-
     var diffTooltip = d3
       .select("#diff-all-chart")
       .append("div")
       .attr("class", "diff-tooltip");
 
-    let chartHeight = svgHeight * 0.75;
+    let chartHeight = svgHeight * 0.8;
     let colorList = [
-      // "#4281a4",
-      // "#9c89b8",
-      // "#B1BCE6",
+      "#4281a4",
+      "#9c89b8",
       "#125B50",
-      // "#00917C",
-      "#6ECB63",
+      // "#6ECB63",
       "#7E8A97",
-      // "#c44536",
+      "#c44536",
       "#d88c9a",
+      "#B1BCE6",
+      "#00917C",
       "#E4AEC5",
     ];
     let industryColorDict = {
-      A: "#fba5fc",
-      B: "#9744ee",
-      C: "#55018b",
-      D: "#d88c9a",
-      E: "#e14b93",
-      F: "#2045e3",
-      G: "#4d7dbd",
-      H: "#74c2ce",
-      I: "#5d6274",
+      A: "#ff9f6d",
+      B: "#d88c9a",
+      C: "#a17fda",
+      D: "#c3e6a1",
+      E: "#4caead",
+      F: "#64d9d7",
+      G: "#82b461",
+      H: "#fffb96",
+      I: "#87ccff",
     };
 
     ///////////////////////////////// 左侧绘制所有产业数量统计图
