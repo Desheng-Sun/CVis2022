@@ -55,7 +55,7 @@ export default Kapsule({
         state.needsReparse = true;
       },
     },
-    label: { default: (d) => d.id.slice(0, 9) + "..." },
+    label: { default: (d) => d.id.slice(0, 20) + "..." },
     size: {
       default: "value",
       onChange: function (_, state) {

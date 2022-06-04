@@ -195,21 +195,60 @@ export default function SkeletonChart({ w, h }) {
     const groups = wrapper.append("g").attr("class", "groups");
     // 节点的右键事件
     const menu = [
-      {
-        title: "取消选择",
-        action: function (groupId, event) {
-          d3.select(this).classed("selected", false).attr("fill", "white");
-          // .attr("opacity", 0.2);
+      // {
+      //   title: "取消选择",
+      //   action: function (groupId, event) {
+      //     d3.select(this).classed("selected", false).attr("fill", "white");
+      //     // .attr("opacity", 0.2);
 
-          // 获取被取消数据对应的numId
+      //     // 获取被取消数据对应的numId
+      //     let numId = nodes
+      //       .filter((d) => d.group === groupId)
+      //       .map((d) => d.numId)[0];
+      //     selectedNodeAll = selectedNodeAll.filter((d) => d !== numId); // 从被选择的节点里面清楚这个点
+
+      //     // setSelectedNode((selectedNode) =>
+      //     //   selectedNode.filter((d) => d !== numId)
+      //     // );
+      //   },
+      // },
+      {
+        title: "复制id",
+        action: function (groupId, event) {
+          // 数据对应的numId
           let numId = nodes
             .filter((d) => d.group === groupId)
-            .map((d) => d.numId)[0];
-          selectedNodeAll = selectedNodeAll.filter((d) => d !== numId); // 从被选择的节点里面清楚这个点
-
-          // setSelectedNode((selectedNode) =>
-          //   selectedNode.filter((d) => d !== numId)
-          // );
+            .map((d) => d.id)[0];
+          
+          document.execCommand("Copy", true, numId);
+          const temp_input = document.createElement("input");
+          document.body.appendChild(temp_input);
+          temp_input.setAttribute("value", numId);
+          temp_input.select();
+          if (document.execCommand("copy")) {
+            document.execCommand("copy");
+          }
+          document.body.removeChild(temp_input);
+        },
+      },
+      {
+        title: "复制name",
+        action: function (groupId, event) {
+          // 获取节点对应的name
+          let numName = nodes
+            .filter((d) => d.group === groupId)
+            .map((d) => d.name)[0];
+          
+          document.execCommand("Copy", true, numName);
+          const temp_input = document.createElement("input");
+          document.body.appendChild(temp_input);
+          temp_input.setAttribute("value", numName);
+          temp_input.select();
+          if (document.execCommand("copy")) {
+            document.execCommand("copy");
+          }
+          document.body.removeChild(temp_input);
+          
         },
       },
     ];
