@@ -2104,7 +2104,7 @@ function getIdentifyData(enterNodes, enterLinks) {
     return resultarr;
   }
   let linkarr = [];
-  console.log(selectnodes);
+  // console.log(selectnodes);
   for (let i = 0; i < selectnodes.length; i++) {
     for (let j = i + 1; j < selectnodes.length; j++) {
       let linksarr = arrSlice(
@@ -2131,8 +2131,8 @@ function getIdentifyData(enterNodes, enterLinks) {
     nodes: selectnodes,
     links: selectlinks,
   };
-  console.log(selectlinks);
-  console.log(links);
+  // console.log(selectlinks);
+  // console.log(links);
   return sendData;
 }
 
@@ -2775,7 +2775,7 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
       nodes: nodeslinksarr[0],
       links: nodeslinksarr[1],
     });
-    console.log(linkarr[0].links, linkarr[0].nodes);
+    // console.log(linkarr[0].links, linkarr[0].nodes);
   }
   res.send(linkarr);
   res.end();

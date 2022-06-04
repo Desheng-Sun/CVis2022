@@ -158,7 +158,7 @@
 
 #asset {
   width: 100%;
-  flex: 6.4;
+  flex: 5;
   /* background-color: rgb(220, 213, 226); */
   /* padding-top: 4px; */
   /* padding-bottom: 4px; */
@@ -166,7 +166,7 @@
 
 #keypath {
   width: 100%;
-  flex: 3.6;
+  flex: 5;
   /* background-color: rgb(220, 213, 226); */
   /* padding-top: 4px; */
   /* padding-bottom: 4px; */
