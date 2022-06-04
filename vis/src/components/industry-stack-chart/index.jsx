@@ -243,7 +243,7 @@ export default function IndustryStackChart({ w, h }) {
       .join("tspan")
       .attr("x", 50)
       .attr("y", (d, i) => {
-        if (d.industryt.length >= 5) {
+        if (d.industry.length >= 5) {
           return `${i * 1.5 - 1}em`;
         }
         return `${i * 1.5 - 2}em`;

@@ -2109,7 +2109,7 @@ function getIdentifyData(enterNodes, enterLinks) {
     }
     return arr;
   }
-  function getAllShortestPath(G, source, target) {
+  function getAllShortestPath2(G, source, target) {
     let stack = [[target, 0]];
     let top = 0;
     let ori = Object.keys(jsnx.predecessor(G, source)._numberValues);
@@ -2139,7 +2139,7 @@ function getIdentifyData(enterNodes, enterLinks) {
   for (let i = 0; i < selectnodes.length; i++) {
     for (let j = i + 1; j < selectnodes.length; j++) {
       let linksarr = arrSlice(
-        getAllShortestPath(G, selectnodes[i], selectnodes[j])
+        getAllShortestPath2(G, selectnodes[i], selectnodes[j])
       );
       for (let k = 0; k < linksarr.length; k++) {
         linkarr.push(
