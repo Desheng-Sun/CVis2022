@@ -90,7 +90,7 @@ export default function IndustryStackChart({ w, h }) {
     const BColorScale = d3
       .scaleLinear()
       .domain([0, max])
-      .range(["#fff", "#e4657f"]);
+      .range(["#fff", "#d88c9a"]);
     const CColorScale = d3
       .scaleLinear()
       .domain([0, max])
@@ -243,10 +243,10 @@ export default function IndustryStackChart({ w, h }) {
       .join("tspan")
       .attr("x", 50)
       .attr("y", (d, i) => {
-        if(d.industryt.length >= 5){
-          return `${i * 1.5 - 1}em`
+        if (d.industryt.length >= 5) {
+          return `${i * 1.5 - 1}em`;
         }
-        return `${i * 1.5 - 2}em`
+        return `${i * 1.5 - 2}em`;
       })
       .attr("font-weight", "bold")
       .attr("stroke", "none")

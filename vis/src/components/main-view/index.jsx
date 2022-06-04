@@ -1016,7 +1016,7 @@ export default function MainView({ w, h }) {
               return "0px";
             },
             "pie-size": "95%",
-            "pie-1-background-color": "#fba5fc",
+            "pie-1-background-color": "#ff9f6d",
             "pie-1-background-size": function (ele, curIndustry = "A") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
@@ -1025,7 +1025,7 @@ export default function MainView({ w, h }) {
                 return cellPie.toString();
               return "0";
             },
-            "pie-2-background-color": "#9744ee",
+            "pie-2-background-color": "#d88c9a",
             "pie-2-background-size": function (ele, curIndustry = "B") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
@@ -1034,7 +1034,7 @@ export default function MainView({ w, h }) {
                 return cellPie.toString();
               return "0";
             },
-            "pie-3-background-color": "#55018b",
+            "pie-3-background-color": "#a17fda",
             "pie-3-background-size": function (ele, curIndustry = "C") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
@@ -1043,7 +1043,7 @@ export default function MainView({ w, h }) {
                 return cellPie.toString();
               return "0";
             },
-            "pie-4-background-color": "#d88c9a",
+            "pie-4-background-color": "#c3e6a1",
             "pie-4-background-size": function (ele, curIndustry = "D") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
@@ -1052,7 +1052,7 @@ export default function MainView({ w, h }) {
                 return cellPie.toString();
               return "0";
             },
-            "pie-5-background-color": "#e14b93",
+            "pie-5-background-color": "#4caead",
             "pie-5-background-size": function (ele, curIndustry = "E") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
@@ -1061,7 +1061,7 @@ export default function MainView({ w, h }) {
                 return cellPie.toString();
               return "0";
             },
-            "pie-6-background-color": "#2045e3",
+            "pie-6-background-color": "#64d9d7",
             "pie-6-background-size": function (ele, curIndustry = "F") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
@@ -1070,7 +1070,7 @@ export default function MainView({ w, h }) {
                 return cellPie.toString();
               return "0";
             },
-            "pie-7-background-color": "#4d7dbd",
+            "pie-7-background-color": "#82b461",
             "pie-7-background-size": function (ele, curIndustry = "G") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
@@ -1079,7 +1079,7 @@ export default function MainView({ w, h }) {
                 return cellPie.toString();
               return "0";
             },
-            "pie-8-background-color": "#74c2ce",
+            "pie-8-background-color": "#fffb96",
             "pie-8-background-size": function (ele, curIndustry = "H") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
@@ -1088,7 +1088,7 @@ export default function MainView({ w, h }) {
                 return cellPie.toString();
               return "0";
             },
-            "pie-9-background-color": "#5d6274",
+            "pie-9-background-color": "#87ccff",
             "pie-9-background-size": function (ele, curIndustry = "I") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
@@ -1167,15 +1167,25 @@ export default function MainView({ w, h }) {
     ];
     let industryType = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
     let industryColor = {
-      A: "#fba5fc",
-      B: "#9744ee",
-      C: "#55018b",
-      D: "#d88c9a",
-      E: "#e14b93",
-      F: "#2045e3",
-      G: "#4d7dbd",
-      H: "#74c2ce",
-      I: "#5d6274",
+      // A: "#fba5fc",
+      // B: "#9744ee",
+      // C: "#55018b",
+      // D: "#d88c9a",
+      // E: "#e14b93",
+      // F: "#2045e3",
+      // G: "#4d7dbd",
+      // H: "#74c2ce",
+      // I: "#5d6274",
+
+      A: "#ff9f6d",
+      B: "#d88c9a",
+      C: "#a17fda",
+      D: "#c3e6a1",
+      E: "#4caead",
+      F: "#64d9d7",
+      G: "#82b461",
+      H: "#fffb96",
+      I: "#87ccff",
     };
 
     // 添加节点类型的图例
@@ -1199,7 +1209,7 @@ export default function MainView({ w, h }) {
           "translate(" +
           `${((i + 1) % 2) * 60 + 10}` +
           "," +
-          `${Math.floor((i + 1)  / 2) * 20 + 40}` +
+          `${Math.floor((i + 1) / 2) * 20 + 40}` +
           ")"
       );
     // nodeTypeG
@@ -1223,23 +1233,26 @@ export default function MainView({ w, h }) {
       .attr("width", "12px")
       .attr("fill", (d, i) => nodeColor[i + 1]);
 
-
-    let domainG = nodeTypeWrapper.append('g')
-      .attr("transform", "translate(10, 40)")
-    domainG.append("circle")
+    let domainG = nodeTypeWrapper
+      .append("g")
+      .attr("transform", "translate(10, 40)");
+    domainG
+      .append("circle")
       .attr("cx", 0)
       .attr("cy", 0)
       .attr("r", "6px")
       .attr("stroke", "#aaa")
       .style("stroke-dasharray", "2, 2")
       .attr("fill", nodeColor[0]);
-      domainG.append("text")
-      .text('Domain')
+    domainG
+      .append("text")
+      .text("Domain")
       .attr("x", 10)
       .attr("y", 3)
       .attr("font-size", "10px");
 
-    nodeTypeWrapper.append('g')
+    nodeTypeWrapper
+      .append("g")
       .attr("transform", "translate(10, 40)")
       .append("circle")
       .attr("cx", 0)

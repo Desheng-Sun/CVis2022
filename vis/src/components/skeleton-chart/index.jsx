@@ -219,7 +219,7 @@ export default function SkeletonChart({ w, h }) {
           let numId = nodes
             .filter((d) => d.group === groupId)
             .map((d) => d.id)[0];
-          
+
           document.execCommand("Copy", true, numId);
           const temp_input = document.createElement("input");
           document.body.appendChild(temp_input);
@@ -238,7 +238,7 @@ export default function SkeletonChart({ w, h }) {
           let numName = nodes
             .filter((d) => d.group === groupId)
             .map((d) => d.name)[0];
-          
+
           document.execCommand("Copy", true, numName);
           const temp_input = document.createElement("input");
           document.body.appendChild(temp_input);
@@ -248,7 +248,6 @@ export default function SkeletonChart({ w, h }) {
             document.execCommand("copy");
           }
           document.body.removeChild(temp_input);
-          
         },
       },
     ];
@@ -302,15 +301,15 @@ export default function SkeletonChart({ w, h }) {
 
     // 绘制每个节点的内部图
     const industryColor = {
-      0: "#fba5fc",
-      1: "#9744ee",
-      2: "#55018b",
-      3: "#d88c9a",
-      4: "#e14b93",
-      5: "#2045e3",
-      6: "#4d7dbd",
-      7: "#74c2ce",
-      8: "#5d6274",
+      0: "#ff9f6d",
+      1: "#d88c9a",
+      2: "#a17fda",
+      3: "#c3e6a1",
+      4: "#4caead",
+      5: "#64d9d7",
+      6: "#82b461",
+      7: "#fffb96",
+      8: "#87ccff",
     };
     const arc = d3
       .arc()
