@@ -70,7 +70,7 @@ export default function Layout() {
     setMainChartWidth(
       document.getElementById("mainmap").getBoundingClientRect().width
     );
-    setMainChartHeight(968);
+    setMainChartHeight(875);
     setIndustryStackChartWidth(
       document.getElementById("asset").getBoundingClientRect().width
     );

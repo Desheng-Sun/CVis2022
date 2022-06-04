@@ -11,6 +11,18 @@ const dataType = ["numConnectedDomain", "numDomainWithIn", "rateIn"];
 const dataTypeForShow = ["#D", "#DarkD", "ratio"];
 
 let prevIndex = -1; // 记录鼠标上一个坐标位置对应的数据index
+let colorList = [
+  "#369fe4",
+  "#56cbf9",
+  "#97d1f4",
+  "#a0dcf0",
+  "#ade2f4",
+  "#bae8f8",
+  "#caeffb",
+  "#caf0f8",
+  "#fecf81",
+  "#f9844a",
+];
 export default function ClueDense({ w, h }) {
   const [data, setData] = useState({ IP: [], Cert: [] });
   const [currNodeType, setCurrNodeType] = useState(nodeType[0]);
@@ -30,6 +42,7 @@ export default function ClueDense({ w, h }) {
   }, [h]);
 
   useEffect(() => {
+    drawLegend();
     getClueDenseDataSds().then((res) => {
       setData(res);
     });
@@ -129,25 +142,6 @@ export default function ClueDense({ w, h }) {
     canvas_mouse.width = boundedWidth;
     const ctx_mouse = canvas_mouse.getContext("2d");
     ctx_mouse.globalAlpha = 1;
-
-    let currdata_for_sort = [...currdata];
-    let sortedData = currdata_for_sort.sort(
-      (a, b) => a[currDataType] - b[currDataType]
-    );
-
-    let colorList = [
-      "#369fe4",
-      "#56cbf9",
-      "#97d1f4",
-      "#a0dcf0",
-      "#ade2f4",
-      "#bae8f8",
-      "#caeffb",
-      "#caf0f8",
-      "#fecf81",
-      // "#fba45f",
-      "#f9844a",
-    ];
 
     let colorScale;
     if (currNodeType === "IP" && currDataType === "numConnectedDomain") {
@@ -256,6 +250,40 @@ export default function ClueDense({ w, h }) {
     canvas_mouse.addEventListener("click", hdlClick, false);
   }
 
+  function drawLegend() {
+    d3.selectAll("div#clue-dense-legend svg").remove();
+    const svg = d3
+      .select("div#clue-dense-legend")
+      .append("svg")
+      .attr("height", 20)
+      .attr("width", 150);
+
+    const rects = svg.append("g");
+    rects
+      .selectAll("rect")
+      .data(colorList)
+      .join("rect")
+      .attr("width", parseInt(150 / colorList.length))
+      .attr("height", 20)
+      .attr("x", (_, i) => parseInt(150 / colorList.length) * i)
+      .attr("y", 0)
+      .attr("fill", (d) => d);
+
+    const text = svg.append("g");
+    text
+      .selectAll("text")
+      .data(["少", "多"])
+      .join("text")
+      .text((d) => d)
+      .attr("x", (_, i) => {
+        if (i === 0) return 1;
+        else return 136;
+      })
+      .attr("y", 15)
+      .attr("font-size", 12)
+      .attr("fill", "#fff");
+  }
+
   function onNodeTypeChange(e) {
     setCurrNodeType(e.target.value);
   }
@@ -299,6 +327,7 @@ export default function ClueDense({ w, h }) {
           </Radio.Group>
         </div>
         <div id="clue-dense-control-info"></div>
+        <div id="clue-dense-legend"></div>
       </div>
       <div
         id="clue-dense-chart"

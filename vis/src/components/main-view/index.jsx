@@ -181,7 +181,6 @@ export default function MainView({ w, h }) {
         links: resData.links,
         isAll: true,
       }).then((res) => {
-        console.log(res);
         PubSub.publish("combinedNodeTableDt", [
           res.getDetialListSds,
           res.getBulletChartDataSds,
