@@ -49,7 +49,7 @@ const nowPath = path.join(__dirname, "data/");
 // 获取节点的相关信息
 let nodeInfoJ = fs.readFileSync(
   nowPath +
-    "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv",
+  "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv",
   "utf8"
 );
 nodeInfoJ = nodeInfoJ.split("\n");
@@ -57,9 +57,9 @@ let nodeNumIdInfo = [];
 for (let i of nodeInfoJ) {
   nodeNumIdInfo.push(i.split(",").map((e) => e.replace("\r", "")));
 }
-for(let i in nodeNumIdInfo){
-  if(nodeNumIdInfo[i][5] != undefined){
-    nodeNumIdInfo[i][2] =  nodeNumIdInfo[i][2] + "," + nodeNumIdInfo[i][3]
+for (let i in nodeNumIdInfo) {
+  if (nodeNumIdInfo[i][5] != undefined) {
+    nodeNumIdInfo[i][2] = nodeNumIdInfo[i][2] + "," + nodeNumIdInfo[i][3]
     nodeNumIdInfo[i][3] = nodeNumIdInfo[i][4]
     nodeNumIdInfo[i][4] = nodeNumIdInfo[i][5]
   }
@@ -2139,8 +2139,8 @@ function getIdentifyData(enterNodes, enterLinks) {
       for (let k = 0; k < linksarr.length; k++) {
         linkarr.push(
           String(Math.min(linksarr[k][0], linksarr[k][1])) +
-            "+" +
-            String(Math.max(linksarr[k][0], linksarr[k][1]))
+          "+" +
+          String(Math.max(linksarr[k][0], linksarr[k][1]))
         );
       }
     }
@@ -2161,23 +2161,22 @@ function getIdentifyData(enterNodes, enterLinks) {
 }
 
 // 获取社区的关键链路
-function getCoreLinks(ICLinks, edges) {
-  let coreLinks = [];
-  const graph = new Graph();
+function getCoreLinks(ICLinks, links) {
+  let coreLinks = new Set();
   // 获取输入的链路信息
-  for (let i of edges) {
-    graph.mergeEdge(i["linksNumId"][0], i["linksNumId"][1]);
-    graph.mergeEdge(i["linksNumId"][1], i["linksNumId"][0]);
-  }
   for (let i of ICLinks) {
+    const graph = new Graph();
+    for (let j of links) {
+      if (j["InICLinks"].indexOf(i.toString()) > -1) {
+        graph.mergeEdge(j["linksNumId"][0], j["linksNumId"][1]);
+        graph.mergeEdge(j["linksNumId"][1], j["linksNumId"][0]);
+      }
+    }
     const SimplePathsAll = allSimplePaths.allSimplePaths(graph, i[0], i[1]);
     for (let j of SimplePathsAll) {
       for (let k = 0; k < j.length - 1; k++) {
-        if (j[k] > j[k + 1]) {
-          coreLinks.push([j[k + 1], j[k]].toString());
-        } else {
-          coreLinks.push([j[k], j[k + 1]].toString());
-        }
+        coreLinks.add([j[k + 1], j[k]].toString());
+        coreLinks.add([j[k], j[k + 1]].toString());
       }
     }
   }
@@ -2196,7 +2195,9 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
     //如果links有children，表明该links为融合连接，获取其内部信息
     if (i.hasOwnProperty("children")) {
       for (let j of i["children"]) {
-        links.push(j);
+        let k = j
+        k["InICLinks"] = i["InICLinks"]
+        links.push(k);
       }
     } else {
       links.push(i);
@@ -2212,10 +2213,22 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
       nodes.push(i);
     }
   }
+  let useStartNumId = startNumId
+  let nowPath = path.join(__dirname, "data/");
+  fs.writeFile(
+    nowPath + "Challenge/" + useStartNumId + ".json",
+    JSON.stringify({ nodes: nodes, links: links }),
+    "utf-8",
+    (err) => {
+      if (err) {
+        console.error(err);
+      }
+    }
+  );
 
   let ICNodesIndustry = {};
   let identifyData = {};
-  let coreLinks = [];
+  let coreLinks = new Set();
   if (isAll) {
     // console.log(nodes, links);
     // 获取社区的核心资产-----------------------------------------------------------------
@@ -2245,7 +2258,6 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
       }
     }
     coreLinks = getCoreLinks(ICLinksCore, links);
-    coreLinks = new Set(coreLinks.map((e) => e.toString()));
   }
 
   // 获取节点和链路的长度-----------------------------------------------------------------------
@@ -2695,12 +2707,14 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
       }
     }
     let clueAll = "";
-    for (let i of searchNumId) {
+    let useSearchNumId = searchNumId
+    console.log(useSearchNumId)
+    for (let i of useSearchNumId) {
       clueAll += nodeNumIdInfo[parseInt(i) - 1][2];
     }
     getFinalDataSds = {
       groupscope: groupscope,
-      clue: nodeNumIdInfo[parseInt(startNumId) - 1][2],
+      clue: nodeNumIdInfo[parseInt(useStartNumId) - 1][2],
       clueAll: clueAll,
       num_all_node: numnode,
       node_type: node_type,
