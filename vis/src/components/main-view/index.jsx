@@ -443,7 +443,6 @@ export default function MainView({ w, h }) {
       let links = [];
 
       if (cy) {
-        // 不是初始化的时候获取当前图的数据
         cy.nodes().forEach((ele) => {
           nodes.push(ele.json().data);
         });
@@ -457,9 +456,6 @@ export default function MainView({ w, h }) {
         nodes: nodes,
         links: links,
       }).then((res) => {
-        // console.log('从skeleton传递过来的参数', dataParam, nodes, links, res);
-        // console.log('主图的数据', res);
-
         setData(res);
         setDifChartInput(res);
       });
@@ -1383,8 +1379,8 @@ export default function MainView({ w, h }) {
 
   // 下载图数据与子图
   function onDownload() {
+    // 下载提交后的子图的数据
     if (graphData != undefined) {
-      console.log("下载了");
       const tNodeHeader = "id,name,type,industry,isCore,";
       var nodeFilter = ["id", "name", "type", "industry", "isCore"];
       const tLinkHeader = "relation,source,target,isCore,";
@@ -1484,7 +1480,57 @@ export default function MainView({ w, h }) {
         null
       );
       a.dispatchEvent(e);
+      return 
     }
+
+    if(data.nodes.length !== 0){
+      // 下载图片
+      if (cy) {
+        let blob = cy.png({
+          output: "blob",
+          bg: "transparent",
+          full: true,
+          scale: 4,
+          quality: 1,
+        });
+        let aLink = document.createElement("a");
+        let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("click", true, true);
+        aLink.download = `${new Date().getTime()}.png`;
+        aLink.href = URL.createObjectURL(blob);
+        aLink.dispatchEvent(evt);
+        aLink.click();
+        document.body.removeChild(aLink);
+      }
+      // 下载整个子图的数据
+      var dataBlob = new Blob([JSON.stringify(graphData)], {
+        type: "text/json",
+      });
+      var e = document.createEvent("MouseEvents");
+      var a = document.createElement("a");
+      a.download = "提交前的图.json";
+      a.href = window.URL.createObjectURL(dataBlob);
+      a.dataset.downloadurl = ["text/json", a.download, a.href].join(":");
+      e.initMouseEvent(
+        "click",
+        true,
+        false,
+        window,
+        0,
+        0,
+        0,
+        0,
+        0,
+        false,
+        false,
+        false,
+        false,
+        0,
+        null
+      );
+      a.dispatchEvent(e);
+    }
+    
   }
 
   return (
@@ -1523,7 +1569,7 @@ export default function MainView({ w, h }) {
             <Button
               type="dashed"
               icon={<UndoOutlined />}
-              style={{ marginLeft: "60px" }}
+              style={{ marginLeft: "70px" }}
               onClick={onUndoOut}
             >
               撤销
