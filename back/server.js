@@ -2693,11 +2693,11 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
     }
     let clueAll = "";
     for (let i of searchNumId) {
-      clueAll += nodeNumIdInfo[i - 1][2];
+      clueAll += nodeNumIdInfo[parseInt(i) - 1][2];
     }
     getFinalDataSds = {
       groupscope: groupscope,
-      clue: nodeNumIdInfo[startNumId - 1][2],
+      clue: nodeNumIdInfo[parseInt(startNumId) - 1][2],
       clueAll: clueAll,
       num_all_node: numnode,
       node_type: node_type,
@@ -2752,35 +2752,34 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
     Whois_Email: "#f67f02",
   };
   function arrSlice(arr) {
-    let hashout = {};
-    let hashin = {};
     let resarr = [];
     let reslinksarr = [];
+    let hash = {};
     let resnodesarr = [];
     for (let i = 0; i < arr.length; i++) {
       for (let j = 0; j < arr[i].length - 1; j++) {
-        if (arr[i][j] in hashout) hashout[arr[i][j]] += 1;
-        else hashout[arr[i][j]] = 1;
-        if (arr[i][j + 1] in hashin) hashin[arr[i][j + 1]] += 1;
-        else hashin[arr[i][j + 1]] = 1;
-        reslinksarr.push({ source: arr[i][j], target: arr[i][j + 1] });
+        let templink = [arr[i][j].toString(), arr[i][j + 1].toString()];
+        hash[templink] = hash[templink] == undefined ? 1 : hash[templink] + 1;
         resnodesarr.push({
-          name: arr[i][j],
+          name: arr[i][j].toString(),
           depth: j,
           itemStyle: { color: colors[nodes[arr[i][j]]] },
         });
       }
+      resnodesarr.push({
+        name: arr[i][arr[i].length - 1].toString(),
+        depth: arr[i].length - 1,
+        itemStyle: { color: colors[nodes[arr[i][arr[i].length - 1]]] },
+      });
     }
-    for (let i = 0; i < reslinksarr.length; i++) {
-      let hin =
-        hashin[String(reslinksarr[i]["target"])] == undefined
-          ? 0
-          : hashin[String(reslinksarr[i]["target"])];
-      let hout =
-        hashout[String(reslinksarr[i]["target"])] == undefined
-          ? 0
-          : hashout[String(reslinksarr[i]["target"])];
-      reslinksarr[i]["value"] = Math.max(hin, hout);
+    hashkeys = Object.keys(hash);
+    hashValues = Object.values(hash);
+    for (let i = 0; i < hashkeys.length; i++) {
+      reslinksarr.push({
+        source: hashkeys[i].split(",")[0],
+        target: hashkeys[i].split(",")[1],
+        value: hashValues[i],
+      });
     }
     const removeDuplicateObj = (arr) => {
       let obj = {};
@@ -2832,13 +2831,13 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
       getAllShortestPath(G, startnodes[i], endnodes[i])
     );
     linkarr.push({
-      start: startnodes[i],
-      end: endnodes[i],
+      start: startnodes[i].toString(),
+      end: endnodes[i].toString(),
       nodes: nodeslinksarr[0],
       links: nodeslinksarr[1],
     });
+    console.log(linkarr[0].links, linkarr[0].nodes);
   }
-  // console.log(linkarr);
   res.send(linkarr);
   res.end();
 });

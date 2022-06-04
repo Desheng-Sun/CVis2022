@@ -6,14 +6,6 @@
     }
   },
   {
-    "selector": "node[type=\"new\"]",
-    "style": {
-      "background-color": "red",
-      "width": 200,
-      "height": 200
-    }
-  },
-  {
     "selector": "node[type=\"Cert\"]",
     "style": {
       "background-color": "#ff756a",
@@ -25,37 +17,43 @@
   {
     "selector": "node[type=\"Whois_Name\"]",
     "style": {
-      "background-color": "#f67f02"
+      "background-color": "#f67f02",
+      "shape": "rectangle"
     }
   },
   {
     "selector": "node[type=\"Whois_Phone\"]",
     "style": {
-      "background-color": "#f67f02"
+      "background-color": "#f67f02",
+      "shape": "rectangle"
     }
   },
   {
     "selector": "node[type=\"Whois_Email\"]",
     "style": {
-      "background-color": "#f67f02"
+      "background-color": "#f67f02",
+      "shape": "rectangle"
     }
   },
   {
     "selector": "node[type=\"IP\"]",
     "style": {
-      "background-color": "#33a02c"
+      "background-color": "#33a02c",
+      "shape": "rectangle"
     }
   },
   {
     "selector": "node[type=\"IP_C\"]",
     "style": {
-      "background-color": "#7fc97f"
+      "background-color": "#7fc97f",
+      "shape": "rectangle"
     }
   },
   {
     "selector": "node[type=\"ASN\"]",
     "style": {
-      "background-color": "#f9bf6f"
+      "background-color": "#f9bf6f",
+      "shape": "rectangle"
     }
   },
   {
