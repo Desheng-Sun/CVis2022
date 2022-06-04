@@ -11,6 +11,9 @@
   "dependencies": {
     "arangojs": "^7.7.0",
     "express": "^4.17.3",
+    "graphology": "^0.24.1",
+    "graphology-shortest-path": "^2.0.1",
+    "graphology-simple-path": "^0.2.0",
     "jsnetworkx": "^0.3.4",
     "python-shell": "^3.0.1"
   }
