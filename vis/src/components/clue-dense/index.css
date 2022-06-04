@@ -14,13 +14,19 @@
   height: 100%;
 }
 #clue-dense-control-info {
-  flex: 5;
+  flex: 2;
   height: 100%;
   font-weight: bold;
   /* font-size: 16px; */
   /* line-height: 16px; */
   text-align: center;
   color: #333;
+}
+#clue-dense-legend {
+  flex: 2;
+  height: 100%;
+  /* background-color: brown; */
+  margin-top: 2px;
 }
 
 canvas#clue-dense-chart-mouse {
