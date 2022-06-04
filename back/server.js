@@ -2851,8 +2851,8 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
       getAllShortestPath(G, startnodes[i], endnodes[i])
     );
     linkarr.push({
-      start: startnodes[i].toString(),
-      end: endnodes[i].toString(),
+      start: nodesid[startnodes[i].toString()].slice(0,11)+'...',
+      end: nodesid[endnodes[i].toString()].slice(0,11)+'...',
       nodes: nodeslinksarr[0],
       links: nodeslinksarr[1],
     });
