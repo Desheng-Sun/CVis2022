@@ -57,6 +57,13 @@ let nodeNumIdInfo = [];
 for (let i of nodeInfoJ) {
   nodeNumIdInfo.push(i.split(",").map((e) => e.replace("\r", "")));
 }
+for(let i in nodeNumIdInfo){
+  if(nodeNumIdInfo[i][5] != undefined){
+    nodeNumIdInfo[i][2] =  nodeNumIdInfo[i][2] + "," + nodeNumIdInfo[i][3]
+    nodeNumIdInfo[i][3] = nodeNumIdInfo[i][4]
+    nodeNumIdInfo[i][4] = nodeNumIdInfo[i][5]
+  }
+}
 nodeNumIdInfo = nodeNumIdInfo.splice(1, nodeNumIdInfo.length - 2);
 
 // 获取IC节点的黑灰产信息
