@@ -561,12 +561,14 @@ app.post("/getIcClueData2Sds", jsonParser, (req, res, next) => {
   let nowPath = path.join(__dirname, "data/");
   let sendData;
 
-  // 获取搜索的初始节点
-  if (startNumId == 0) {
-    startNumId = req.body.numId;
+  if(req.body.numId != undefined){
+    // 获取搜索的初始节点
+    // 获取搜索过的节点
+    if (startNumId == 0) {
+      startNumId = req.body.numId;
+    }
+    searchNumId.push(req.body.numId);
   }
-  // 获取搜索过的节点
-  searchNumId.push(req.body.numId);
 
   if (!fs.existsSync(filedata)) {
     if (req.body.type == "IP" || req.body.type == "Cert") {
@@ -2217,8 +2219,9 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
     }
   }
   let useStartNumId = startNumId
+  console.log(useStartNumId)
   let nowPath = path.join(__dirname, "data/");
-  fs.writeFile(
+  fs.writeFileSync(
     nowPath + "Challenge/" + useStartNumId + ".json",
     JSON.stringify({ nodes: nodes, links: links }),
     "utf-8",
@@ -2710,9 +2713,7 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
       }
     }
     let clueAll = "";
-    let useSearchNumId = searchNumId
-    console.log(useSearchNumId)
-    for (let i of useSearchNumId) {
+    for (let i of searchNumId) {
       clueAll += nodeNumIdInfo[parseInt(i) - 1][2];
     }
     getFinalDataSds = {
