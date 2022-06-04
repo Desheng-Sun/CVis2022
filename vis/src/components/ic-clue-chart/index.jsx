@@ -30,6 +30,7 @@ export default function ICClueChart({ w, h }) {
       return;
     }
     getIcClueData2Sds(clue.numId, clue.Id).then((res) => {
+      console.log(clue.numId, clue.Id, res);
       setData(res);
     });
   });
@@ -90,13 +91,16 @@ export default function ICClueChart({ w, h }) {
     // 修改绘图的方式，如果只有一个，则占满整个画布，如果有多个，则使用滑动条？？？
     for (let i = 0; i < data.length; i++) {
       let skipNum = data[i].skipNum + 1;
-      let curSvgHeight = svgHeight * 0.97
-      if(data.length !== 1 && data[i].children.length<=5) curSvgHeight = svgHeight*0.2
-      else if(data.length !== 1 && data[i].children.length<=10) curSvgHeight = svgHeight*0.5
-      else if(data.length !== 1 && data[i].children.length<=20) curSvgHeight = svgHeight*0.6
+      let curSvgHeight = svgHeight * 0.97;
+      if (data.length !== 1 && data[i].children.length <= 5)
+        curSvgHeight = svgHeight * 0.2;
+      else if (data.length !== 1 && data[i].children.length <= 10)
+        curSvgHeight = svgHeight * 0.5;
+      else if (data.length !== 1 && data[i].children.length <= 20)
+        curSvgHeight = svgHeight * 0.6;
       icicleChart = Icicle()
         .orientation("lr")
-        .width((svgWidth*0.95 / 3) * skipNum + 10)
+        .width(((svgWidth * 0.95) / 3) * skipNum + 10)
         // .height(svgHeight * 0.97 / (data.length + 1))
         .height(curSvgHeight)
         .data(data[i])

@@ -36,7 +36,7 @@ cytoscape.use(fcose);
 const { Option } = Select;
 const { Search } = Input;
 
-var cy, layoutOption, stylesJson, layout, originData; 
+var cy, layoutOption, stylesJson, layout, originData;
 var ur, urOption, graphData; // 保留点和边的初状态
 var layoutOptionDict = {
   euler: {
@@ -122,10 +122,9 @@ export default function MainView({ w, h }) {
   const [data, setData] = useState({ nodes: [], links: [] });
   const [dataFirst, setDataFirst] = useState(true);
   const [dataParam, setDataParam] = useState("");
-  const [isSubmit, setIsSubmit] = useState(false);  // 判断是否提交了团体数据
-  const [showCore, setShowCore] = useState(false);  // 是否展示核心资产与关键路径，未提交之前是默认不可以选择的
-  const [showCoreAble, setShowCoreAble] = useState(false);  // 是否可选展示核心资产与关键路径，未提交之前是默认不可以选择的
-
+  const [isSubmit, setIsSubmit] = useState(false); // 判断是否提交了团体数据
+  const [showCore, setShowCore] = useState(false); // 是否展示核心资产与关键路径，未提交之前是默认不可以选择的
+  const [showCoreAble, setShowCoreAble] = useState(false); // 是否可选展示核心资产与关键路径，未提交之前是默认不可以选择的
 
   // 给其他组件的数据
   const [resData, setResData] = useState({ nodes: [], links: [] }); // 右侧表格和子弹图的确定的团伙子图
@@ -177,17 +176,26 @@ export default function MainView({ w, h }) {
   // 当确定了团伙的时候对团伙数据进行统计分析，并获取团伙中的关键路径和核心资产
   useEffect(() => {
     if (resData.nodes.length !== 0) {
-      getGroupAllInfoSds({nodes: resData.nodes, links: resData.links, isAll: true}).then((res) => {
+      getGroupAllInfoSds({
+        nodes: resData.nodes,
+        links: resData.links,
+        isAll: true,
+      }).then((res) => {
         console.log(res);
-        PubSub.publish("combinedNodeTableDt", [res.getDetialListSds, res.getBulletChartDataSds]); // 分别向节点表和边表传递数据
-        PubSub.publish("combinedLinkTableDt", [res.getDetialListSds, res.getBulletChartDataSds]);
+        PubSub.publish("combinedNodeTableDt", [
+          res.getDetialListSds,
+          res.getBulletChartDataSds,
+        ]); // 分别向节点表和边表传递数据
+        PubSub.publish("combinedLinkTableDt", [
+          res.getDetialListSds,
+          res.getBulletChartDataSds,
+        ]);
         PubSub.publish("industryStackDt", res.getIdentifyICNodesSds); // 将选中的数据传给stack组件
-        PubSub.publish("fromMainToInfoList", res.getInfoListSds)   // 向info-list传递数据
-        PubSub.publish('fromMainToConclusion', res.getFinalDataSds)
-        graphData = res.getDetialListSds  // 保存图的完整数据
+        PubSub.publish("fromMainToInfoList", res.getInfoListSds); // 向info-list传递数据
+        PubSub.publish("fromMainToConclusion", res.getFinalDataSds);
+        graphData = res.getDetialListSds; // 保存图的完整数据
         // 更新主图的数据就不再对数据进行变化了
-        setData(res.getDetialListSds)
-        
+        setData(res.getDetialListSds);
       });
     }
   }, [resData]);
@@ -195,12 +203,21 @@ export default function MainView({ w, h }) {
   // 对选择的数据在右侧表格和核心资产图中进行统计分析
   useEffect(() => {
     if (statistics.nodes.length !== 0) {
-      getGroupAllInfoSds({nodes: statistics.nodes, links: statistics.links, isAll: false}).then((res) => {
-        PubSub.publish("combinedNodeTableDt", [res.getDetialListSds, res.getBulletChartDataSds]); // 分别向节点表和边表传递数据
-        PubSub.publish("combinedLinkTableDt", [res.getDetialListSds, res.getBulletChartDataSds]);
+      getGroupAllInfoSds({
+        nodes: statistics.nodes,
+        links: statistics.links,
+        isAll: false,
+      }).then((res) => {
+        PubSub.publish("combinedNodeTableDt", [
+          res.getDetialListSds,
+          res.getBulletChartDataSds,
+        ]); // 分别向节点表和边表传递数据
+        PubSub.publish("combinedLinkTableDt", [
+          res.getDetialListSds,
+          res.getBulletChartDataSds,
+        ]);
         PubSub.publish("industryStackDt", res.getIdentifyICNodesSds); // 将选中的数据传给stack组件
       });
-
     }
   }, [statistics]);
 
@@ -246,32 +263,36 @@ export default function MainView({ w, h }) {
     if (cy) {
       cy.nodes().removeClass("InIClink");
       cy.nodes().removeClass("start_end");
-      cy.edges().removeClass('InIClink')
+      cy.edges().removeClass("InIClink");
 
       let arr = ICLink.split(",");
       let reverseICLink = arr[1] + "," + arr[0];
       if (ICLink !== "") {
-        let innerNode = []
+        let innerNode = [];
         cy.nodes().forEach((ele) => {
           if (ICLink.indexOf(ele.data("numId").toString()) !== -1) {
             // 表明是起点和终点
             ele.addClass("start_end");
-            innerNode.push(ele.data('id'))
+            innerNode.push(ele.data("id"));
           } else if (
             ele.data("InICLinks").includes(ICLink) ||
             ele.data("InICLinks").includes(reverseICLink)
           ) {
             ele.addClass("InIClink");
-            innerNode.push(ele.data('id'))
+            innerNode.push(ele.data("id"));
           }
         });
 
-        if(innerNode.length !== 0){   // 高亮路径上的边
+        if (innerNode.length !== 0) {
+          // 高亮路径上的边
           cy.edges().forEach((ele) => {
-            if(innerNode.includes(ele.data('source')) && innerNode.includes(ele.data('target'))){
-              ele.addClass('InIClink')
+            if (
+              innerNode.includes(ele.data("source")) &&
+              innerNode.includes(ele.data("target"))
+            ) {
+              ele.addClass("InIClink");
             }
-          })
+          });
         }
       }
     }
@@ -307,27 +328,28 @@ export default function MainView({ w, h }) {
 
   // 应用核心资产和关键路径的样式
   useEffect(() => {
-    if(showCore){
-      if(cy){
-        cy.nodes().forEach((ele) =>{
-          if(ele.data('isCore') === true){
-            ele.addClass('isCore')
+    if (showCore) {
+      if (cy) {
+        cy.nodes().forEach((ele) => {
+          if (ele.data("isCore") === true) {
+            ele.addClass("isCore");
           }
-        })
+        });
         cy.edges().forEach((ele) => {
-          if(ele.data('isCore') === true){
-            ele.addClass('isCore')
+          if (ele.data("isCore") === true) {
+            ele.addClass("isCore");
           }
-        })
+        });
       }
     }
 
-    if(showCoreAble && !showCore){
-      if(cy){
+    if (showCoreAble && !showCore) {
+      if (cy) {
         cy.nodes().removeClass("isCore");
-        cy.edges().removeClass("isCore");}
+        cy.edges().removeClass("isCore");
+      }
     }
-  }, [showCore])
+  }, [showCore]);
 
   // 是否添加箭头
   useEffect(() => {
@@ -400,51 +422,57 @@ export default function MainView({ w, h }) {
   // 接收skeleton图过来的参数是否变化
   PubSub.unsubscribe("skeletonSelect");
   PubSub.subscribe("skeletonSelect", (msg, nodeLink) => {
-    setDataParam(nodeLink);  
+    setDataParam(nodeLink);
   });
 
   // 请求数据并更新图像
   useEffect(() => {
-    if (dataParam === "") {    // 初始化的时候
-      setData({ nodes: [], links: [] }); 
-    } else if (dataParam.nodes.length === 0) {    // 传过来的是空数据，就直接清空主图中的数据
+    if (dataParam === "") {
+      // 初始化的时候
       setData({ nodes: [], links: [] });
-      setIsSubmit(false)
-      setShowCoreAble(false)
-      setDifChartInput({nodes: [-1], links:[]})
-      if(cy){
-        cy.elements().remove()  // 清楚图的数据
+    } else if (dataParam.nodes.length === 0) {
+      // 传过来的是空数据，就直接清空主图中的数据
+      setData({ nodes: [], links: [] });
+      setIsSubmit(false);
+      setShowCoreAble(false);
+      setDifChartInput({ nodes: [-1], links: [] });
+      if (cy) {
+        cy.elements().remove(); // 清楚图的数据
       }
-    } else {         
-      let nodes = []
-      let links = []
+    } else {
+      let nodes = [];
+      let links = [];
 
-      if(cy){    // 不是初始化的时候获取当前图的数据
+      if (cy) {
+        // 不是初始化的时候获取当前图的数据
         cy.nodes().forEach((ele) => {
-          nodes.push(ele.json().data)
-        })
+          nodes.push(ele.json().data);
+        });
         cy.edges().forEach((ele) => {
-          links.push(ele.json().data)
-        })
+          links.push(ele.json().data);
+        });
       }
-      
-        getMainChartSds({dataParam:dataParam, nodes: nodes, links: links}).then((res) => {
+
+      getMainChartSds({
+        dataParam: dataParam,
+        nodes: nodes,
+        links: links,
+      }).then((res) => {
         // console.log('从skeleton传递过来的参数', dataParam, nodes, links, res);
         // console.log('主图的数据', res);
-        
+
         setData(res);
         setDifChartInput(res);
       });
     }
   }, [dataParam]);
 
-
   // 处理节点的搜索事件
   useEffect(() => {
     if (!dataFirst) {
       drawChart();
       // console.log('主图的数据', data);
-      originData = data;   // 全局变量的形式保存原始的数据
+      originData = data; // 全局变量的形式保存原始的数据
       dragElement(document.getElementById("main-legend"));
       setStyleCheck(false);
     }
@@ -455,16 +483,26 @@ export default function MainView({ w, h }) {
   function drawChart() {
     d3.selectAll("#main-chart div").remove();
     d3.selectAll("#main-container .mainToolTip").remove();
-    d3.selectAll('.cytoscape-navigator').remove()
+    d3.selectAll(".cytoscape-navigator").remove();
 
     if (data.nodes.length === 0) return;
 
     var nodes, links;
-    if(!isSubmit){   // 不是提交完成之后的数据
+    if (!isSubmit) {
+      // 不是提交完成之后的数据
       nodes = data.nodes.map((d) => ({ data: { ...d } }));
       links = data.links.map((d) => ({ data: { ...d } }));
-    }else{
-      nodes = data.nodes.map((d) => ({data:{'id': d.id, 'industry': d.industry, 'name': d.name,'isCore': d.isCore, 'numId': d.numId, 'type': d.type}}))
+    } else {
+      nodes = data.nodes.map((d) => ({
+        data: {
+          id: d.id,
+          industry: d.industry,
+          name: d.name,
+          isCore: d.isCore,
+          numId: d.numId,
+          type: d.type,
+        },
+      }));
       links = data.links.map((d) => ({ data: { ...d } }));
     }
 
@@ -486,13 +524,13 @@ export default function MainView({ w, h }) {
         textureOnViewport: true,
       });
       var defaults = {
-        container: false, 
-        viewLiveFramerate: 0, 
+        container: false,
+        viewLiveFramerate: 0,
         thumbnailEventFramerate: 30,
-        thumbnailLiveFramerate: false, 
+        thumbnailLiveFramerate: false,
         dblClickDelay: 200,
-        removeCustomContainer: false, 
-        // rerenderDelay: 100, 
+        removeCustomContainer: false,
+        // rerenderDelay: 100,
       };
       cy.navigator(defaults);
 
@@ -540,11 +578,11 @@ export default function MainView({ w, h }) {
         cy.elements()
           .difference(neigh.outgoers().union(neigh.incomers()))
           .not(neigh)
-          .addClass("semitransp");  // 提高非选中的点和其邻居节点的透明度
+          .addClass("semitransp"); // 提高非选中的点和其邻居节点的透明度
 
         // 增加tooltip
         let htmlText;
-        if (curNOdeData.type === "Domain"){
+        if (curNOdeData.type === "Domain") {
           htmlText =
             "<b>" +
             "id: " +
@@ -560,8 +598,7 @@ export default function MainView({ w, h }) {
             "industry: " +
             "</b>" +
             curNOdeData.industry;
-        }
-        else{
+        } else {
           htmlText =
             "<b>" +
             "id: " +
@@ -580,7 +617,7 @@ export default function MainView({ w, h }) {
           .html(htmlText);
       });
       cy.on("mouseout", "node", function (e) {
-        cy.elements().removeClass("semitransp");  // 将所有元素的透明度还原
+        cy.elements().removeClass("semitransp"); // 将所有元素的透明度还原
         maintoolTip.style("visibility", "hidden");
       });
 
@@ -738,6 +775,28 @@ export default function MainView({ w, h }) {
     },
   ];
 
+  // 筛选产业类别
+  function onSearchIndustry(value) {
+    let searchedIndustry = value.replaceAll(" ", "").toUpperCase();
+    if (cy) {
+      if (searchedIndustry !== "") {
+        cy.nodes().forEach((ele) => {
+          if (ele.data("industry").trim() === searchedIndustry) {
+            ele.select();
+            ele.style("border-width", "3px");
+          }
+        });
+      } else {
+        cy.nodes().forEach((ele) => {
+          ele.unselect();
+          if (!ele.json().data.hasOwnProperty("children")) {
+            ele.style("border-width", "0px");
+          }
+        });
+      }
+    }
+  }
+
   // 添加节点
   function onAddNode() {
     let newNode = [
@@ -793,7 +852,10 @@ export default function MainView({ w, h }) {
     setNodeDistance(value);
   }
   function filter(inputValue, path) {
-    return path.some((option) => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
+    return path.some(
+      (option) =>
+        option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1
+    );
   }
   function onUndoOut() {
     setUndoOut(true);
@@ -817,30 +879,33 @@ export default function MainView({ w, h }) {
     links = cy.edges().map(function (ele, i) {
       return ele.json().data;
     });
-    setIsSubmit(true)   // 确定提交
-    setShowCoreAble(true)  // 提交之后可以应用核心资产和关键路径的样式
+    setIsSubmit(true); // 确定提交
+    setShowCoreAble(true); // 提交之后可以应用核心资产和关键路径的样式
     setResData({ nodes: [...nodes], links: [...links] });
   }
 
   // 将数据传给diff chart
   function getDataForDifChart() {
-    let currICNodes = cy.nodes().filter((ele, index) => {  // 获取当前图中有的IC节点
-      ele.removeClass('start_end') 
-      ele.removeClass('InIClink')
+    let currICNodes = cy.nodes().filter((ele, index) => {
+      // 获取当前图中有的IC节点
+      ele.removeClass("start_end");
+      ele.removeClass("InIClink");
       return ele.data("type") === "IP" || ele.data("type") === "Cert";
     });
-    currICNodes = currICNodes.map((item, index) => {    // 获取当前图中IC节点的 numId
+    currICNodes = currICNodes.map((item, index) => {
+      // 获取当前图中IC节点的 numId
       return item.data("numId");
     });
 
     let graphnodes, graphlinks;
     graphnodes = cy.nodes().map(function (ele, i) {
       // let inICLinks = data.nodes.filter((item, index) => {  // 获取原始数据中的与当前图中相对应的节点
-        let inICLinks = originData.nodes.filter((item, index) => {  // 获取原始数据中的与当前图中相对应的节点
+      let inICLinks = originData.nodes.filter((item, index) => {
+        // 获取原始数据中的与当前图中相对应的节点
         return item["id"] === ele.data("id");
       });
 
-      console.log(originData);  // 这里的data有时候获取不到最新的
+      console.log(originData); // 这里的data有时候获取不到最新的
 
       inICLinks = inICLinks[0]["InICLinks"];
 
@@ -882,7 +947,7 @@ export default function MainView({ w, h }) {
       return ele.json().data;
     });
     graphlinks = cy.edges().map(function (ele, i) {
-      ele.removeClass('InIClink')
+      ele.removeClass("InIClink");
       return ele.json().data;
     });
 
@@ -905,86 +970,94 @@ export default function MainView({ w, h }) {
           selector: "node",
           style: {
             width: function (ele) {
-              return ele.degree() < 30 ? 30 : ele.degree()> 60 ?  60 : ele.degree();
+              return ele.degree() < 30
+                ? 30
+                : ele.degree() > 60
+                ? 60
+                : ele.degree();
             },
             height: function (ele) {
-              return ele.degree() < 30 ? 30 : ele.degree()> 60 ?  60 : ele.degree();
+              return ele.degree() < 30
+                ? 30
+                : ele.degree() > 60
+                ? 60
+                : ele.degree();
             },
           },
         };
         let domainNodeStyle = {
           selector: 'node[type="Domain"]',
           style: {
-            "border-style": function(ele){
-              if(ele.json().data.hasOwnProperty('children')){
-                return 'double'
+            "border-style": function (ele) {
+              if (ele.json().data.hasOwnProperty("children")) {
+                return "double";
               }
-              return 'solid'
+              return "solid";
             },
-            
-            "border-width": function(ele){
-              if(ele.json().data.hasOwnProperty('children')){
-                return '3px'
+
+            "border-width": function (ele) {
+              if (ele.json().data.hasOwnProperty("children")) {
+                return "3px";
               }
               // return '1px'
-              return '0px'
+              return "0px";
             },
             "pie-size": "95%",
-            "pie-1-background-color": "#26BAEE",
+            "pie-1-background-color": "#fba5fc",
             "pie-1-background-size": function (ele, curIndustry = "A") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
-              let cellPie = Math.floor(100 / curIndustryArr.length); 
+              let cellPie = Math.floor(100 / curIndustryArr.length);
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
             },
-            "pie-2-background-color": "#d264b6",
+            "pie-2-background-color": "#9744ee",
             "pie-2-background-size": function (ele, curIndustry = "B") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
-              let cellPie = Math.floor(100 / curIndustryArr.length); 
+              let cellPie = Math.floor(100 / curIndustryArr.length);
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
             },
-            "pie-3-background-color": "#6A67CE",
+            "pie-3-background-color": "#55018b",
             "pie-3-background-size": function (ele, curIndustry = "C") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
-              let cellPie = Math.floor(100 / curIndustryArr.length); 
+              let cellPie = Math.floor(100 / curIndustryArr.length);
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
             },
-            "pie-4-background-color": "#3BACB6",
+            "pie-4-background-color": "#d88c9a",
             "pie-4-background-size": function (ele, curIndustry = "D") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
-              let cellPie = Math.floor(100 / curIndustryArr.length); 
+              let cellPie = Math.floor(100 / curIndustryArr.length);
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
             },
-            "pie-5-background-color": "#FF4949",
+            "pie-5-background-color": "#e14b93",
             "pie-5-background-size": function (ele, curIndustry = "E") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
-              let cellPie = Math.floor(100 / curIndustryArr.length); 
+              let cellPie = Math.floor(100 / curIndustryArr.length);
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
             },
-            "pie-6-background-color": "#F47645",
+            "pie-6-background-color": "#2045e3",
             "pie-6-background-size": function (ele, curIndustry = "F") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
-              let cellPie = Math.floor(100 / curIndustryArr.length); 
+              let cellPie = Math.floor(100 / curIndustryArr.length);
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
             },
-            "pie-7-background-color": "#9C0F48",
+            "pie-7-background-color": "#4d7dbd",
             "pie-7-background-size": function (ele, curIndustry = "G") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
@@ -993,7 +1066,7 @@ export default function MainView({ w, h }) {
                 return cellPie.toString();
               return "0";
             },
-            "pie-8-background-color": "#F9D923",
+            "pie-8-background-color": "#74c2ce",
             "pie-8-background-size": function (ele, curIndustry = "H") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
@@ -1002,11 +1075,11 @@ export default function MainView({ w, h }) {
                 return cellPie.toString();
               return "0";
             },
-            "pie-9-background-color": "#548c2f",
+            "pie-9-background-color": "#5d6274",
             "pie-9-background-size": function (ele, curIndustry = "I") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
-              let cellPie = Math.floor(100 / curIndustryArr.length); 
+              let cellPie = Math.floor(100 / curIndustryArr.length);
               if (curIndustryArr.includes(curIndustry))
                 return cellPie.toString();
               return "0";
@@ -1015,21 +1088,21 @@ export default function MainView({ w, h }) {
         };
 
         // 如果是提交之后的应用样式，则需要把关键路径和核心资产表示出来
-        if(isSubmit){
+        if (isSubmit) {
           let coreNode = {
-            selector: 'node',
-            style:{
+            selector: "node",
+            style: {
               "border-color": "#ad0c1b",
-              "border-width": "3px"
-            }
-          }
+              "border-width": "3px",
+            },
+          };
           let coreLink = {
-            selector: 'edge',
-            style:{
+            selector: "edge",
+            style: {
               "line-color": "#ad0c1b",
-              "opacity": "1"
-            }
-          }
+              opacity: "1",
+            },
+          };
         }
         styleDetailsJson.push(newStyleArr);
         styleDetailsJson.push(domainNodeStyle);
@@ -1080,17 +1153,17 @@ export default function MainView({ w, h }) {
     ];
     let industryType = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
     let industryColor = {
-      'A':'#26BAEE', 
-      'B':'#d264b6',
-      'C':'#6A67CE',
-      'D':'#3BACB6',
-      'E':'#FF4949',
-      'F':'#F47645',
-      'G':'#9C0F48',
-      'H':'#F9D923',
-      'I':'#548c2f',
-    }
-    
+      A: "#fba5fc",
+      B: "#9744ee",
+      C: "#55018b",
+      D: "#d88c9a",
+      E: "#e14b93",
+      F: "#2045e3",
+      G: "#4d7dbd",
+      H: "#74c2ce",
+      I: "#5d6274",
+    };
+
     // 添加节点类型的图例
     let nodeTypeWrapper = legendSvg
       .append("g")
@@ -1247,16 +1320,17 @@ export default function MainView({ w, h }) {
     }
   }
   // 应用核心资产与关键路径的样式
-  function applyCoreStyle(e){
-    if(showCoreAble){  // 如果可以设置显示样式
-      setShowCore(e.target.checked)
+  function applyCoreStyle(e) {
+    if (showCoreAble) {
+      // 如果可以设置显示样式
+      setShowCore(e.target.checked);
     }
   }
 
   // 下载图数据与子图
-  function onDownload(){
-    if(graphData != undefined){
-      console.log('下载了');
+  function onDownload() {
+    if (graphData != undefined) {
+      console.log("下载了");
       const tNodeHeader = "id,name,type,industry,isCore,";
       var nodeFilter = ["id", "name", "type", "industry", "isCore"];
       const tLinkHeader = "relation,source,target,isCore,";
@@ -1269,10 +1343,10 @@ export default function MainView({ w, h }) {
           let value = item[key];
           if (key === "industry") {
             let valueArr;
-            if(value === '  '){
-              valueArr = "[]"
-            }else{
-            valueArr = '"[' + value.split("").toString() + ']"';
+            if (value === "  ") {
+              valueArr = "[]";
+            } else {
+              valueArr = '"[' + value.split("").toString() + ']"';
             }
             nodeCsvString += valueArr + ",";
           } else {
@@ -1282,7 +1356,8 @@ export default function MainView({ w, h }) {
         nodeCsvString += "\r\n";
       });
       nodeCsvString =
-        "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(nodeCsvString);
+        "data:text/csv;charset=utf-8,\ufeff" +
+        encodeURIComponent(nodeCsvString);
       let nodeLink = document.createElement("a");
       nodeLink.href = nodeCsvString;
       nodeLink.download = "节点.csv";
@@ -1290,7 +1365,7 @@ export default function MainView({ w, h }) {
       nodeLink.click();
       document.body.removeChild(nodeLink);
 
-    // 保存边的信息
+      // 保存边的信息
       let linkCsvString = tLinkHeader;
       linkCsvString += "\r\n";
       graphData.links.forEach((item) => {
@@ -1301,7 +1376,8 @@ export default function MainView({ w, h }) {
         linkCsvString += "\r\n";
       });
       linkCsvString =
-        "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(linkCsvString);
+        "data:text/csv;charset=utf-8,\ufeff" +
+        encodeURIComponent(linkCsvString);
       let linkLink = document.createElement("a");
       linkLink.href = linkCsvString;
       linkLink.download = "边.csv";
@@ -1310,7 +1386,7 @@ export default function MainView({ w, h }) {
       document.body.removeChild(linkLink);
 
       // 下载图片
-      if(cy){
+      if (cy) {
         let blob = cy.png({
           output: "blob",
           bg: "transparent",
@@ -1327,6 +1403,33 @@ export default function MainView({ w, h }) {
         aLink.click();
         document.body.removeChild(aLink);
       }
+      // 下载整个子图的数据
+      var dataBlob = new Blob([JSON.stringify(graphData)], {
+        type: "text/json",
+      });
+      var e = document.createEvent("MouseEvents");
+      var a = document.createElement("a");
+      a.download = "graph.json";
+      a.href = window.URL.createObjectURL(dataBlob);
+      a.dataset.downloadurl = ["text/json", a.download, a.href].join(":");
+      e.initMouseEvent(
+        "click",
+        true,
+        false,
+        window,
+        0,
+        0,
+        0,
+        0,
+        0,
+        false,
+        false,
+        false,
+        false,
+        0,
+        null
+      );
+      a.dispatchEvent(e);
     }
   }
 
@@ -1357,16 +1460,12 @@ export default function MainView({ w, h }) {
             />
           </div>
           <div id="main-data-filter" style={{ paddingLeft: "10px" }}>
-            过滤&nbsp;&nbsp;&nbsp;
-            <Cascader
-              options={options}
-              onChange={onFilterDetails}
-              placeholder="Please select"
-              showSearch={{ filter }}
+            产业搜索&nbsp;&nbsp;&nbsp;
+            <Search
+              onSearch={onSearchIndustry}
+              placeholder="产业类型"
+              style={{ width: 220 }}
             />
-            <Button type="primary" onClick={onFilter}>
-              执行
-            </Button>
             <Button
               type="dashed"
               icon={<UndoOutlined />}
@@ -1404,8 +1503,7 @@ export default function MainView({ w, h }) {
               icon={<DownloadOutlined />}
               style={{ marginLeft: "5px" }}
               onClick={onDownload}
-            >
-            </Button>
+            ></Button>
           </div>
         </div>
         <div
@@ -1473,7 +1571,12 @@ export default function MainView({ w, h }) {
           <Checkbox checked={styleCheck} onChange={applyStyle}>
             样式
           </Checkbox>
-          <Checkbox checked={showCore} onChange={applyCoreStyle} disable = {showCoreAble} id = "coreCheckBox"> 
+          <Checkbox
+            checked={showCore}
+            onChange={applyCoreStyle}
+            disable={showCoreAble}
+            id="coreCheckBox"
+          >
             核心资产与关键路径
           </Checkbox>
         </div>

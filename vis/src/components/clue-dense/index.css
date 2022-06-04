@@ -22,3 +22,9 @@
   text-align: center;
   color: #333;
 }
+
+canvas#clue-dense-chart-mouse {
+  position: absolute;
+  left: 6px;
+  top: 5px;
+}

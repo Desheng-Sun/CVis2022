@@ -2016,8 +2016,10 @@ function getIdentifyData(enterNodes, enterLinks) {
   // 获取输入的节点信息
   let nodes = [];
   let groupInfoNodes = {};
+  let groupInfoNodesId = {};
   for (let i of enterNodes) {
     groupInfoNodes[i["numId"]] = i["type"];
+    groupInfoNodesId[i["numId"]] = i["id"]
     nodes.push({
       numId: i["numId"],
       type: i["type"],
@@ -2032,6 +2034,7 @@ function getIdentifyData(enterNodes, enterLinks) {
   groupInfo = {
     nodes: groupInfoNodes,
     links: links,
+    nodesid:groupInfoNodesId
   };
 
   let s_1 = 0.00000001;
@@ -2755,6 +2758,7 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
   let endnodes = req.body.endNode;
   let edges = groupInfo["links"];
   let nodes = groupInfo["nodes"];
+  let nodesid=groupInfo["nodesid"]
   let G = new jsnx.Graph();
   G.addEdgesFrom(edges);
   let colors = {
@@ -2777,13 +2781,13 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
         let templink = [arr[i][j].toString(), arr[i][j + 1].toString()];
         hash[templink] = hash[templink] == undefined ? 1 : hash[templink] + 1;
         resnodesarr.push({
-          name: arr[i][j].toString(),
+          name: nodesid[arr[i][j].toString()].slice(0,11)+'...',
           depth: j,
           itemStyle: { color: colors[nodes[arr[i][j]]] },
         });
       }
       resnodesarr.push({
-        name: arr[i][arr[i].length - 1].toString(),
+        name: nodesid[arr[i][arr[i].length - 1].toString()].slice(0,11)+'...',
         depth: arr[i].length - 1,
         itemStyle: { color: colors[nodes[arr[i][arr[i].length - 1]]] },
       });
@@ -2792,8 +2796,8 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
     hashValues = Object.values(hash);
     for (let i = 0; i < hashkeys.length; i++) {
       reslinksarr.push({
-        source: hashkeys[i].split(",")[0],
-        target: hashkeys[i].split(",")[1],
+        source: nodesid[hashkeys[i].split(",")[0]].slice(0,11)+'...',
+        target: nodesid[hashkeys[i].split(",")[1]].slice(0,11)+'...',
         value: hashValues[i],
       });
     }
@@ -2852,6 +2856,7 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
       nodes: nodeslinksarr[0],
       links: nodeslinksarr[1],
     });
+    console.log(linkarr[0].nodes,linkarr[0].links)
     // console.log(linkarr[0].links, linkarr[0].nodes);
   }
   res.send(linkarr);
