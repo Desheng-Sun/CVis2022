@@ -1729,7 +1729,7 @@ export default function MainView({ w, h }) {
             disable={showCoreAble}
             id="coreCheckBox"
           >
-            核心资产与关键路径
+            核心资产与关键链路
           </Checkbox>
         </div>
       </div>
