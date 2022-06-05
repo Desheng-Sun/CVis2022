@@ -13,7 +13,6 @@ export default function BulletChart({ w, h, divname, dataparam }) {
   const [svgWidth, setSvgWidth] = useState(w);
   const [svgHeight, setSvgHeight] = useState(h);
 
-
   // 随系统缩放修改画布大小
   useEffect(() => {
     setSvgWidth(w);
@@ -23,7 +22,7 @@ export default function BulletChart({ w, h, divname, dataparam }) {
   }, [h]);
 
   useEffect(() => {
-    if(dataparam.length == 0) return 
+    if (dataparam.length == 0) return;
     if (divname === "combine-table-bc-node") {
       let nodeDt = dataparam[1]; // nodes
       // 计算数据中measures和markers共同的最大、最小值 用于画图比例尺映射
@@ -54,7 +53,6 @@ export default function BulletChart({ w, h, divname, dataparam }) {
     }
   }, [dataparam]);
 
-
   useEffect(() => {
     const dimensions = {
       width: svgWidth,
@@ -78,7 +76,7 @@ export default function BulletChart({ w, h, divname, dataparam }) {
       .select(`#${divname}`)
       .append("svg")
       .attr("width", dimensions.width)
-      .attr("height", dimensions.height)
+      .attr("height", dimensions.height * 0.99)
       .attr("viewBox", [0, 0, dimensions.width, dimensions.height])
       .style("max-width", "100%")
       .style("background", "#fff");
@@ -116,7 +114,8 @@ export default function BulletChart({ w, h, divname, dataparam }) {
       .attr(
         "transform",
         (d, i) =>
-          `translate(${(boundedWidth / data.length) * (i + 0.3)},${boundedHeight + 0.2 * dimensions.margin.bottom
+          `translate(${(boundedWidth / data.length) * (i + 0.3)},${
+            boundedHeight + 0.2 * dimensions.margin.bottom
           }) rotate(45)`
       )
       .text((d) => d.title);

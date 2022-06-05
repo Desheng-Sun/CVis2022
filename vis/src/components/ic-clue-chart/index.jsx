@@ -132,6 +132,7 @@ export default function ICClueChart({ w, h }) {
           <Button
             type="primary"
             size="small"
+            style={{ marginTop: "2px" }}
             onClick={btnGetSelectedIcicleNode}
           >
             提交

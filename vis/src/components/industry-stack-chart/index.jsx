@@ -6,10 +6,12 @@ import "./index.css";
 import { Button } from "antd";
 import { NodeIndexOutlined } from "@ant-design/icons";
 // import { getIdentifyICNodesSds } from "../../apis/api";
+
+let start, end;
 export default function IndustryStackChart({ w, h }) {
   const [data, setData] = useState([]);
   const [svgWidth, setSvgWidth] = useState(w);
-  const [svgHeight, setSvgHeight] = useState("19.92vh");
+  const [svgHeight, setSvgHeight] = useState("19.42vh");
   const [dataParam, setDataParam] = useState([]);
 
   // 传递给其他组件的数据
@@ -28,9 +30,55 @@ export default function IndustryStackChart({ w, h }) {
     setData(coreNodedt);
   });
 
-  // useEffect(() => {
-  //     setData(dataParam);
-  //   }, [dataParam]);
+  useEffect(() => {
+    let dt = [
+      {
+        id: "IP_4bfe4402e77b2c2acd07579c8598b30fe00d8481dcaad3153438b6a90c58e675",
+        numId: 83355,
+        industry: [
+          {
+            industry: "A",
+            number: 2,
+          },
+          {
+            industry: "  ",
+            number: 90,
+          },
+          {
+            industry: "B",
+            number: 4,
+          },
+          {
+            industry: "AB",
+            number: 2,
+          },
+        ],
+      },
+      {
+        id: "IP_cdc3e657f06744281ec6144710dd12db519bcfe6f6d3d91c39d321f0fbcebde5",
+        numId: 387772,
+        industry: [
+          {
+            industry: "A",
+            number: 2,
+          },
+          {
+            industry: "  ",
+            number: 90,
+          },
+          {
+            industry: "B",
+            number: 4,
+          },
+          {
+            industry: "AB",
+            number: 2,
+          },
+        ],
+      },
+    ];
+    setData(dt);
+  }, []);
 
   useEffect(() => {
     if (selectedNodeNumId !== "") {
@@ -47,32 +95,40 @@ export default function IndustryStackChart({ w, h }) {
   }, [svgWidth, data]);
 
   function drawChart() {
-    if (data.length === 0) return;
-
+    // 清空元素内容
     d3.select("#industry-stack-chart svg").remove();
     d3.select("#industry-stack-chart .stackToolTip").remove();
+    // d3.select("#path-button button").remove();
+    d3.select("#core-list-title svg").remove();
+    document.getElementById("core-list").innerHTML = "";
+
+    if (data.length === 0) return;
+
     var combinationOrderSet = new Set();
     var innerCirlceColor = { IP: "#33a02c", Cert: "#ff756a" };
-
 
     // 获取所有的资产组合和种类
     // let AMin=0, AMax=0, BMin=0, BMax=0, CMin=0, CMax=0, DMin=0, DMax=0, EMin=0, EMax=0, FMin=0, FMax=0, GMin=0, GMax=0, HMIn=0 ,HMax=0, IMin=0, IMax=0;
     let min = 0,
-      max = 0;
+      max = 0,
+      IC_index = 0,
+      index_numId = {};
     for (let d of data) {
+      index_numId[d.numId] = IC_index;
       for (let j in d.industry) {
-        if(d.industry[j]["industry"].replaceAll(' ', '') !== ''){  // 直接只记录黑灰产的最值
+        if (d.industry[j]["industry"].replaceAll(" ", "") !== "") {
+          // 直接只记录黑灰产的最值
           min = Math.min(min, d.industry[j]["number"]);
           max = Math.max(max, d.industry[j]["number"]);
         }
         combinationOrderSet.add(d.industry[j]["industry"]);
       }
+      IC_index += 1;
     }
     let combinationOrder = [...combinationOrderSet].sort();
     let industryType = [
       ...new Set([...combinationOrder.toString().replaceAll(",", "")]),
     ].sort(); // 包含的所有产业类型
-    console.log(industryType, combinationOrder);
 
     const AColorScale = d3
       .scaleLinear()
@@ -129,7 +185,9 @@ export default function IndustryStackChart({ w, h }) {
     let gWidth = (svgWidth * 0.9) / levelNumber;
     const arc = d3
       .arc()
-      .innerRadius((i, j) => circleR + ((gHeight - 5) / industryType.length) * j)
+      .innerRadius(
+        (i, j) => circleR + ((gHeight - 5) / industryType.length) * j
+      )
       .outerRadius(
         (i, j) => circleR + ((gHeight - 5) / industryType.length) * (j + 1)
       )
@@ -157,8 +215,9 @@ export default function IndustryStackChart({ w, h }) {
     const menu = [
       {
         title: "资产起点",
-        action: function (d, event, index) {
+        action: function (d) {
           d3.select(this).select("rect").attr("stroke", "green");
+          start = index_numId[d.numId];
           setToPath((toPath) => ({
             startNode: [...toPath.startNode, d.numId],
             endNode: [...toPath.endNode],
@@ -167,12 +226,22 @@ export default function IndustryStackChart({ w, h }) {
       },
       {
         title: "资产终点",
-        action: function (d, event, index) {
+        action: function (d, event) {
+          end = index_numId[d.numId];
           d3.select(this).select("rect").attr("stroke", "red");
           setToPath((toPath) => ({
             startNode: [...toPath.startNode],
             endNode: [...toPath.endNode, d.numId],
           }));
+
+          // 向列表里面添加数据
+          let list = document.getElementById("core-list");
+          let text = start.toString() + "->" + end.toString();
+          let linkText = document.createTextNode(text);
+          let br = document.createElement("br");
+          list.appendChild(linkText);
+          list.appendChild(br);
+          list.style.fontWeight = "bold";
         },
       },
     ];
@@ -212,12 +281,12 @@ export default function IndustryStackChart({ w, h }) {
       .attr("rx", 6)
       .attr("ry", 6)
       .attr("x", -63)
-      .attr("y", -59)
+      .attr("y", -57)
       .attr("class", "bgRect")
       .attr("fill", "transparent")
-      .attr("stroke", "none")
+      .attr("stroke", "#ccc")
       .attr("width", (gHeight + circleR * 2) * 2 + 2)
-      .attr("height", (gHeight + circleR * 2) * 2 + 2)
+      .attr("height", (gHeight + circleR * 2) * 2 - 5)
       .on("click", function (event, d) {
         if (event.ctrlKey) {
           // 按下Ctrl键 + click 取消选择
@@ -232,23 +301,33 @@ export default function IndustryStackChart({ w, h }) {
       .selectAll("tspan")
       .data((d) => d.industry)
       .join("tspan")
-      .attr("x", 50)
+      .attr("x", 60)
       .attr("y", (d, i) => {
-        if (d.industry.length >= 5) {
-          return `${i * 1.5 - 5}em`;
-        }
-        return `${i * 1.5 - 2}em`;
+        return `${i * 1.5 - 2.5}em`;
       })
       .attr("font-weight", "bold")
       .attr("stroke", "none")
-      .attr("font-size", "12px")
+      .attr("font-size", (d, i) => {
+        if (d.industry.length >= 4) {
+          return "10px";
+        }
+        return "12px";
+      })
       .attr("font", "10px segoe ui")
       .style("user-select", "none")
       // .attr("fill", (d, i) => industryColor[i])
-      .attr("fill", '#1e1e1e')
+      .attr("fill", "#1e1e1e")
       .text((d) => {
         return "#" + d.industry + ": " + d.number;
       });
+
+    // 添加序号
+    g.append("text")
+      .text((d, i) => "NO." + i)
+      .attr("x", 70)
+      .attr("y", -40)
+      .attr("font-size", "12px")
+      .attr("color", "#1e1e1e");
 
     g.append("circle")
       .attr("r", circleR)
@@ -307,7 +386,7 @@ export default function IndustryStackChart({ w, h }) {
                   d.industry[indu]["number"]
                 );
               }
-              return "#bbb";
+              return "#ddd";
             })
             .attr("stroke", () => {
               return "none";
@@ -333,6 +412,34 @@ export default function IndustryStackChart({ w, h }) {
         }
       }
     }
+
+    // 添加右侧的内容
+    let listTitleSvg = d3
+      .select("#core-list-title")
+      .append("svg")
+      .attr("width", "80%")
+      .attr("height", "100%");
+
+    let listG = listTitleSvg
+      .selectAll("g")
+      .data(["起点", "终点"])
+      .join("g")
+      .attr("transform", (d, index) => `translate(${index * 30 + 5}, 5)`);
+    listG
+      .append("rect")
+      .attr("x", 5)
+      .attr("y", 5)
+      .attr("width", 20)
+      .attr("height", 20)
+      .attr("fill", "transparent")
+      .attr("stroke", (d, i) => (i === 0 ? "green" : "red"))
+      .attr("stroke-width", "2px");
+    listG
+      .append("text")
+      .text((d) => d[0])
+      .attr("font-size", "12px")
+      .attr("x", (d, index) => 9)
+      .attr("y", 20);
   }
 
   function onClearSelection() {
@@ -351,17 +458,21 @@ export default function IndustryStackChart({ w, h }) {
     <div id="industry-stack" style={{ width: "100%", height: svgHeight }}>
       <div id="industry-stack-chart" style={{ height: svgHeight }}></div>
       <div id="stackControl" style={{ height: svgHeight }}>
-        <Button onClick={onClearSelection} type="dashed" size="small">
-          清空
-        </Button>
-        <Button
-          onClick={onSubmitToPath}
-          type="dashed"
-          size="small"
-          // icon={<NodeIndexOutlined />}
-        >
-          链路
-        </Button>
+        <div id="path-button" style={{ height: "18%" }}>
+          <Button onClick={onClearSelection} type="dashed" size="small">
+            清空
+          </Button>
+          <Button
+            onClick={onSubmitToPath}
+            type="dashed"
+            size="small"
+            // icon={<NodeIndexOutlined />}
+          >
+            链路
+          </Button>
+        </div>
+        <div id="core-list-title" style={{ height: "12%" }}></div>{" "}
+        <div id="core-list" style={{ height: "62%" }}></div>
       </div>
     </div>
   );

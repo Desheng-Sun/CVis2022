@@ -4,22 +4,21 @@ import PubSub from "pubsub-js";
 
 import "antd/dist/antd.css";
 import { useEffect, useState } from "react";
-import './index.css'
-
+import "./index.css";
 
 export default function InfoList() {
   const [data, setData] = useState([]);
-  const [dataParam, setDataParam] = useState(undefined)
+  const [dataParam, setDataParam] = useState(undefined);
 
   useEffect(() => {
-    if(dataParam == undefined) return 
+    if (dataParam == undefined) return;
     setData([dataParam]);
   }, [dataParam]);
 
-  PubSub.unsubscribe("fromMainToInfoList")
-  PubSub.subscribe("fromMainToInfoList", function(msg, infoDt){
-    setDataParam(infoDt)
-  })
+  PubSub.unsubscribe("fromMainToInfoList");
+  PubSub.subscribe("fromMainToInfoList", function (msg, infoDt) {
+    setDataParam(infoDt);
+  });
 
   const colorList = [
     "#f9b4ae",
@@ -72,7 +71,7 @@ export default function InfoList() {
   ];
 
   return (
-    <div id="infolist" style={{ width: "100%", height: "6.29vh" }}>
+    <div id="infolist" style={{ width: "100%", height: "5.79vh" }}>
       <Table
         dataSource={data}
         columns={columns}

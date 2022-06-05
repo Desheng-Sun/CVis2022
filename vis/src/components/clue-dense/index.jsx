@@ -333,7 +333,7 @@ export default function ClueDense({ w, h }) {
         id="clue-dense-chart"
         style={{
           width: "100%",
-          height: "94%",
+          height: "94.5%",
           position: "relative",
           padding: "5px ",
         }}

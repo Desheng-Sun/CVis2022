@@ -5,7 +5,7 @@ import PubSub from "pubsub-js";
 
 import "./index.css";
 export default function CrutialPath({ w, h }) {
-  const [canvasHeight, setCanvasHeight] = useState("19.92vh");
+  const [canvasHeight, setCanvasHeight] = useState("19.42vh");
   const [data, setData] = useState(undefined);
   /**
    * 在核心资产视图中 选择的起点核心资产与终点核心资产 作为参数请求数据，

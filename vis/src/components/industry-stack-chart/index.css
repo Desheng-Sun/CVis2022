@@ -31,3 +31,7 @@
   background: "white";
   overflow-x: hidden;
 }
+
+#core-list {
+  overflow-y: auto;
+}
