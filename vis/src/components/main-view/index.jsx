@@ -457,7 +457,7 @@ export default function MainView({ w, h }) {
         nodes: nodes,
         links: links,
       }).then((res) => {
-        console.log(res)
+        console.log(res);
         setData(res);
         setDifChartInput(res);
       });
@@ -1538,51 +1538,55 @@ export default function MainView({ w, h }) {
     if (data.nodes.length !== 0) {
       // 下载图片
       if (cy) {
-        let blob = cy.png({
-          output: "blob",
-          bg: "transparent",
-          full: true,
-          scale: 4,
-          // quality: 1,
-        });
-        let aLink = document.createElement("a");
-        let evt = document.createEvent("HTMLEvents");
-        evt.initEvent("click", true, true);
-        aLink.download = `${new Date().getTime()}.png`;
-        aLink.href = URL.createObjectURL(blob);
-        aLink.dispatchEvent(evt);
+        // let blob = cy.png({
+        //   output: "blob",
+        //   bg: "transparent",
+        //   full: true,
+        //   scale: 4,
+        //   maxWidth: 15000,
+        //   maxHeight: 15000,
+        //   // quality: 1,
+        // });
+        // let aLink = document.createElement("a");
+        // let evt = document.createEvent("HTMLEvents");
+        // evt.initEvent("click", true, true);
+        // aLink.download = `${new Date().getTime()}.png`;
+        // aLink.href = URL.createObjectURL(blob);
+        // aLink.dispatchEvent(evt);
         // document.body.appendChild(aLink);
-        aLink.click();
-        document.body.removeChild(aLink);
+        // aLink.click();
+        // document.body.removeChild(aLink);
       }
-      // 下载整个子图的数据
-      var dataBlob = new Blob([JSON.stringify(data)], {
-        type: "text/json",
-      });
       console.log(data);
-      var e = document.createEvent("MouseEvents");
-      var a = document.createElement("a");
-      a.download = "提交前的图.json";
-      a.href = window.URL.createObjectURL(dataBlob);
-      a.dataset.downloadurl = ["text/json", a.download, a.href].join(":");
-      e.initMouseEvent(
-        "click",
-        true,
-        false,
-        window,
-        0,
-        0,
-        0,
-        0,
-        0,
-        false,
-        false,
-        false,
-        false,
-        0,
-        null
-      );
-      a.dispatchEvent(e);
+
+      // 下载整个子图的数据
+      // var dataBlob = new Blob([JSON.stringify(data)], {
+      //   type: "text/json",
+      // });
+
+      // var e = document.createEvent("MouseEvents");
+      // var a = document.createElement("a");
+      // a.download = "提交前的图.json";
+      // a.href = window.URL.createObjectURL(dataBlob);
+      // a.dataset.downloadurl = ["text/json", a.download, a.href].join(":");
+      // e.initMouseEvent(
+      //   "click",
+      //   true,
+      //   false,
+      //   window,
+      //   0,
+      //   0,
+      //   0,
+      //   0,
+      //   0,
+      //   false,
+      //   false,
+      //   false,
+      //   false,
+      //   0,
+      //   null
+      // );
+      // a.dispatchEvent(e);
     }
   }
 

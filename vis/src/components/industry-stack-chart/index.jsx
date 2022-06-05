@@ -30,136 +30,136 @@ export default function IndustryStackChart({ w, h }) {
     setData(coreNodedt);
   });
 
-  useEffect(() => {
-    let dt = [
-      {
-        id: "IP_40ddb3ae090e2241eba46d1cb972727ae071d4d1e9492867a22ef5dae0036197",
-        numId: 82811,
-        industry: [
-          {
-            industry: "  ",
-            number: 91,
-          },
-          {
-            industry: "A",
-            number: 122,
-          },
-          {
-            industry: "AB",
-            number: 120,
-          },
-          {
-            industry: "B",
-            number: 114,
-          },
-        ],
-      },
-      {
-        id: "IP_40ee275b710d85051853573a5744b80989c6b5ed11a0ec578ca25aabdd352103",
-        numId: 367648,
-        industry: [
-          {
-            industry: "  ",
-            number: 94,
-          },
-          {
-            industry: "A",
-            number: 113,
-          },
-          {
-            industry: "B",
-            number: 112,
-          },
-        ],
-      },
-      {
-        id: "IP_7b80fc61abc49771fe7f37d3dae62a5815269b09d080f69c5c666f281ad95a73",
-        numId: 367663,
-        industry: [
-          {
-            industry: "  ",
-            number: 94,
-          },
-          {
-            industry: "A",
-            number: 113,
-          },
-          {
-            industry: "B",
-            number: 121,
-          },
-        ],
-      },
-      {
-        id: "IP_1b4d13e7661598f7609c250a3c7cd7a359dbf65915295a5376362671c19d3e4b",
-        numId: 371918,
-        industry: [
-          {
-            industry: "  ",
-            number: 72,
-          },
-          {
-            industry: "B",
-            number: 114,
-          },
-          {
-            industry: "A",
-            number: 111,
-          },
-          {
-            industry: "C",
-            number: 110,
-          },
-        ],
-      },
-      {
-        id: "IP_abb798b374d28b3fb5411cc2b568a55400fd74111d2ebe1c47ed99d2ff79ec24",
-        numId: 371928,
-        industry: [
-          {
-            industry: "  ",
-            number: 71,
-          },
-          {
-            industry: "B",
-            number: 114,
-          },
-          {
-            industry: "A",
-            number: 110,
-          },
-          {
-            industry: "G",
-            number: 212,
-          },
-          {
-            industry: "C",
-            number: 112,
-          },
-        ],
-      },
-      {
-        id: "IP_7d45aa042c08938921a4677ac235e8306e9b91edd135b75dbb9717ab84f12754",
-        numId: 373656,
-        industry: [
-          {
-            industry: "  ",
-            number: 89,
-          },
-          {
-            industry: "A",
-            number: 19,
-          },
-          {
-            industry: "B",
-            number: 11,
-          },
-        ],
-      },
-    ];
+  // useEffect(() => {
+  //   let dt = [
+  //     {
+  //       id: "IP_40ddb3ae090e2241eba46d1cb972727ae071d4d1e9492867a22ef5dae0036197",
+  //       numId: 82811,
+  //       industry: [
+  //         {
+  //           industry: "  ",
+  //           number: 91,
+  //         },
+  //         {
+  //           industry: "A",
+  //           number: 122,
+  //         },
+  //         {
+  //           industry: "AB",
+  //           number: 120,
+  //         },
+  //         {
+  //           industry: "B",
+  //           number: 114,
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       id: "IP_40ee275b710d85051853573a5744b80989c6b5ed11a0ec578ca25aabdd352103",
+  //       numId: 367648,
+  //       industry: [
+  //         {
+  //           industry: "  ",
+  //           number: 94,
+  //         },
+  //         {
+  //           industry: "A",
+  //           number: 113,
+  //         },
+  //         {
+  //           industry: "B",
+  //           number: 112,
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       id: "IP_7b80fc61abc49771fe7f37d3dae62a5815269b09d080f69c5c666f281ad95a73",
+  //       numId: 367663,
+  //       industry: [
+  //         {
+  //           industry: "  ",
+  //           number: 94,
+  //         },
+  //         {
+  //           industry: "A",
+  //           number: 113,
+  //         },
+  //         {
+  //           industry: "B",
+  //           number: 121,
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       id: "IP_1b4d13e7661598f7609c250a3c7cd7a359dbf65915295a5376362671c19d3e4b",
+  //       numId: 371918,
+  //       industry: [
+  //         {
+  //           industry: "  ",
+  //           number: 72,
+  //         },
+  //         {
+  //           industry: "B",
+  //           number: 114,
+  //         },
+  //         {
+  //           industry: "A",
+  //           number: 111,
+  //         },
+  //         {
+  //           industry: "C",
+  //           number: 110,
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       id: "IP_abb798b374d28b3fb5411cc2b568a55400fd74111d2ebe1c47ed99d2ff79ec24",
+  //       numId: 371928,
+  //       industry: [
+  //         {
+  //           industry: "  ",
+  //           number: 71,
+  //         },
+  //         {
+  //           industry: "B",
+  //           number: 114,
+  //         },
+  //         {
+  //           industry: "A",
+  //           number: 110,
+  //         },
+  //         {
+  //           industry: "G",
+  //           number: 212,
+  //         },
+  //         {
+  //           industry: "C",
+  //           number: 112,
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       id: "IP_7d45aa042c08938921a4677ac235e8306e9b91edd135b75dbb9717ab84f12754",
+  //       numId: 373656,
+  //       industry: [
+  //         {
+  //           industry: "  ",
+  //           number: 89,
+  //         },
+  //         {
+  //           industry: "A",
+  //           number: 19,
+  //         },
+  //         {
+  //           industry: "B",
+  //           number: 11,
+  //         },
+  //       ],
+  //     },
+  //   ];
 
-    setData(dt);
-  }, []);
+  // setData(dt);
+  // }, []);
 
   useEffect(() => {
     if (selectedNodeNumId !== "") {
@@ -325,6 +325,13 @@ export default function IndustryStackChart({ w, h }) {
           list.appendChild(linkText);
           list.appendChild(br);
           list.style.fontWeight = "bold";
+
+          if (list.scrollHeight > list.clientHeight) {
+            // 出现scroll之后会出现位置偏移的问题，所以出现scroll之后更改元素的位置
+            list.style.left = "3px";
+          } else {
+            list.style.left = "-7px";
+          }
         },
       },
     ];
@@ -542,7 +549,10 @@ export default function IndustryStackChart({ w, h }) {
     <div id="industry-stack" style={{ width: "100%", height: svgHeight }}>
       <div id="industry-stack-chart" style={{ height: svgHeight }}></div>
       <div id="stackControl" style={{ height: svgHeight }}>
-        <div id="path-button" style={{ height: "18%" }}>
+        <div
+          id="path-button"
+          style={{ height: "18%", left: "-10px", position: "relative" }}
+        >
           <Button onClick={onClearSelection} type="dashed" size="small">
             清空
           </Button>
@@ -550,31 +560,19 @@ export default function IndustryStackChart({ w, h }) {
             链路
           </Button>
         </div>
-        <div id="core-list-title" style={{ height: "12%" }}></div>{" "}
-        <div id="core-list" style={{ height: "62%" }}>
-          11
-          <br />
-          11
-          <br />
-          11
-          <br />
-          11
-          <br />
-          11
-          <br />
-          11
-          <br />
-          11
-          <br />
-          11
-          <br />
-          11
-          <br />
-          11
-          <br />
-          11
-          <br />
-        </div>
+        <div
+          id="core-list-title"
+          style={{ height: "12%", textAlign: "left" }}
+        ></div>
+        <div
+          id="core-list"
+          style={{
+            width: "100%",
+            height: "62%",
+            left: "-7px",
+            position: "relative",
+          }}
+        ></div>
       </div>
     </div>
   );
