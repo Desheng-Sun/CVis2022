@@ -658,6 +658,7 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
   const existNodes = req.body.linksInfo["nodes"];
   const links = req.body.linksInfo["dataParam"]["links"];
   const nodes = req.body.linksInfo["dataParam"]["nodes"];
+  console.log(links)
   links.sort((a, b) => a["linksNumId"][0] - b["linksNumId"][0]);
 
   let nowJSource = 0;
@@ -689,6 +690,9 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
 
   // 读取ICLinks中的所有节点和Links
   for (let i of links) {
+    // if(i["linksNumId"][0] != 3115 && i["linksNumId"][1] != 3115){
+    //   continue
+    // }
     let useSource = i["linksNumId"][0].toString()
     if(useSource == "523"){
       if(i["linksNumId"][1] <= 63369){
@@ -711,6 +715,9 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
     }
     for (let j of nowData) {
       if (j["end"][0] == i["linksNumId"][1]) {
+        if(j["industryNum"] == 0){
+          continue
+        }
         for (let k of j["nodes"]) {
           // 当前独立节点是否包含此节点
           if (!existNodeList.hasOwnProperty(k[0])) {
@@ -1027,6 +1034,8 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
     return a["linksNumId"][0] - b["linksNumId"][0];
   });
 
+  console.log(nowNodes.length)
+  console.log(nowLinks.length)
   let sendData = {
     nodes: nowNodes,
     links: nowLinks,
@@ -2294,24 +2303,28 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
   }
 
   // 获取industry数据，并删除空产业------------------------------------------------
-  let industryType = new Set();
+  let industryType = [];
   for (let i of nodes) {
     if (i["industry"] == "  ") {
       continue;
     }
-    industryType.add(i["industry"]);
+    industryType.push(i["industry"]);
   }
   let grouptype = "单一型";
-  if (industryType.size > 1) {
+  industryTypeSet = Array.from(new Set(industryType));
+  if (industryTypeSet.size > 1) {
     grouptype = "复合型";
   }
-  industryType = Array.from(industryType);
+  for(let i in industryTypeSet){
+    industryTypeSet[i] = industryTypeSet[i] + "(" + industryType.filter(e => e == industryTypeSet[i]).length +")"
+  }
+  industryType = Array.from(new Set(industryType));
   // 获取社区的初步信息
   let getInfoListSds = {
     numnode: numnode,
     numlink: numlink,
     groupscope: groupscope,
-    industrytype: industryType,
+    industrytype: industryTypeSet,
     grouptype: grouptype,
   };
 
