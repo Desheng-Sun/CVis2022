@@ -140,7 +140,7 @@ export default function DetailList({ w, h, divname, dataparam }) {
       // 下载事件
       nodeTable.addEventListener("contextmenu", (event) => {
         event.preventDefault();
-        downloadRes('node');
+        downloadRes("node");
       });
     } else if (divname === "combine-table-dl-link") {
       g.append(() => {
@@ -185,7 +185,7 @@ export default function DetailList({ w, h, divname, dataparam }) {
         // 下载表格数据
         linkTable.addEventListener("contextmenu", (event) => {
           event.preventDefault();
-          downloadRes('link');
+          downloadRes("link");
         });
       });
     }
@@ -208,7 +208,7 @@ export default function DetailList({ w, h, divname, dataparam }) {
     const tLinkHeader = "relation,source,target,isCore,";
     var linkFilter = ["relation", "source", "target", "isCore"];
     // 保存节点信息
-    if (type === 'node') {
+    if (type === "node") {
       let nodeCsvString = tNodeHeader;
       nodeCsvString += "\r\n";
       nodeData.forEach((item) => {
@@ -216,10 +216,10 @@ export default function DetailList({ w, h, divname, dataparam }) {
           let value = item[key];
           if (key === "industry") {
             let valueArr;
-            if(value === '  '){
-              valueArr = "[]"
-            }else{
-            valueArr = '"[' + value.split("").toString() + ']"';
+            if (value === "  ") {
+              valueArr = "[]";
+            } else {
+              valueArr = '"[' + value.split("").toString() + ']"';
             }
             nodeCsvString += valueArr + ",";
           } else {
@@ -229,7 +229,8 @@ export default function DetailList({ w, h, divname, dataparam }) {
         nodeCsvString += "\r\n";
       });
       nodeCsvString =
-        "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(nodeCsvString);
+        "data:text/csv;charset=utf-8,\ufeff" +
+        encodeURIComponent(nodeCsvString);
       let nodeLink = document.createElement("a");
       nodeLink.href = nodeCsvString;
       nodeLink.download = "节点.csv";
@@ -239,7 +240,7 @@ export default function DetailList({ w, h, divname, dataparam }) {
     }
 
     // 保存边的信息
-    else if (type === 'link') {
+    else if (type === "link") {
       let linkCsvString = tLinkHeader;
       linkCsvString += "\r\n";
       linkData.forEach((item) => {
@@ -250,7 +251,8 @@ export default function DetailList({ w, h, divname, dataparam }) {
         linkCsvString += "\r\n";
       });
       linkCsvString =
-        "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(linkCsvString);
+        "data:text/csv;charset=utf-8,\ufeff" +
+        encodeURIComponent(linkCsvString);
       let linkLink = document.createElement("a");
       linkLink.href = linkCsvString;
       linkLink.download = "边.csv";

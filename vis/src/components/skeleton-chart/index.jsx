@@ -52,7 +52,6 @@ export default function SkeletonChart({ w, h }) {
         return;
       }
       getSkeletonChartDataSds(currIc).then((res) => {
-        // console.log('currIc', currIc);
         setData(res);
       });
     }
