@@ -689,13 +689,25 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
 
   // 读取ICLinks中的所有节点和Links
   for (let i of links) {
-    if (i["linksNumId"][0] != nowJSource) {
+    let useSource = i["linksNumId"][0].toString()
+    if(useSource == "523"){
+      if(i["linksNumId"][1] <= 63369){
+        useSource = "523_1"
+      }
+      else if(i["linksNumId"][1] <= 66832){
+        useSource = "523_2"
+      }
+      if(i["linksNumId"][1] <= 1288338){
+        useSource = "523_3"
+      }
+    }
+    if (useSource != nowJSource) {
       let filedata = path.join(
         __dirname,
-        "data/ICScreenLinks/" + i["linksNumId"][0] + ".json"
+        "data/ICScreenLinks/" + useSource + ".json"
       );
       nowData = JSON.parse(fs.readFileSync(filedata, "utf-8"));
-      nowJSource = i["linksNumId"][0];
+      nowJSource = useSource;
     }
     for (let j of nowData) {
       if (j["end"][0] == i["linksNumId"][1]) {
@@ -2212,14 +2224,15 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
     //如果nodes有children，表明该nodes为融合连接，获取其内部信息
     if (i.hasOwnProperty("children")) {
       for (let j of i["children"]) {
-        nodes.push(j);
+        let k = j
+        k["InICLinks"] = i["InICLinks"]
+        nodes.push(k);
       }
     } else {
       nodes.push(i);
     }
   }
   let useStartNumId = startNumId
-  console.log(useStartNumId)
   let nowPath = path.join(__dirname, "data/");
   fs.writeFileSync(
     nowPath + "Challenge/" + useStartNumId + ".json",
@@ -2263,7 +2276,7 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
         }
       }
     }
-    coreLinks = getCoreLinks(ICLinksCore, links);
+    // coreLinks = getCoreLinks(ICLinksCore, links);
   }
 
   // 获取节点和链路的长度-----------------------------------------------------------------------
