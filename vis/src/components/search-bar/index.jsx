@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Select, Button, Form } from "antd";
-import { getInitialSds,getClearData } from "../../apis/api";
+import { getInitialSds, getClearData } from "../../apis/api";
 import PubSub from "pubsub-js";
 
 const { Option } = Select;
@@ -127,7 +127,7 @@ export default function SearchBar() {
   };
 
   const changeId = (value, index) => {
-    console.log(selectContent)
+    console.log(selectContent);
     setSelectNumId(selectContent[0][index.key]);
     if (value) {
       setSelectId(value);
@@ -136,14 +136,14 @@ export default function SearchBar() {
     }
   };
   const searchId = (value) => {
-    console.log(selectContent)
+    console.log(selectContent);
     if (value) {
       setSelectId(value);
     }
   };
 
   const onSearchData = () => {
-    console.log(selectNumId, selectType)
+    console.log(selectNumId, selectType);
     PubSub.publish("getClueFromDense", {
       numId: selectNumId,
       Id: selectType,
@@ -157,14 +157,13 @@ export default function SearchBar() {
     setSelectIndustry(undefined);
   };
 
-
   // 清除丑丑图、skeleton图的数据
   const onclearAll = () => {
     PubSub.publish("getClueFromDense", {
       numId: -1,
-      Id: '',
+      Id: "",
     });
-    getClearData()
+    getClearData();
   };
   return (
     <div style={{ paddingTop: "15px" }}>
@@ -172,7 +171,7 @@ export default function SearchBar() {
         <Select
           allowClear
           showArrow
-          placeholder="type"
+          placeholder="类型"
           onChange={changeType}
           onSearch={searchType}
           showSearch
@@ -188,7 +187,7 @@ export default function SearchBar() {
         <Select
           allowClear
           showArrow
-          placeholder="industry"
+          placeholder="产业"
           onChange={changeIndustry}
           onSearch={searchIndustry}
           showSearch

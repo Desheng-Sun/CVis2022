@@ -42,7 +42,6 @@ export default function Layout() {
     // setCountsBarHeight(
     //   document.getElementById("statistic").getBoundingClientRect().height
     // );
-
     setDifChartWidth(
       document.getElementById("deleterelation").getBoundingClientRect().width
     );
@@ -70,7 +69,7 @@ export default function Layout() {
     setMainChartWidth(
       document.getElementById("mainmap").getBoundingClientRect().width
     );
-    setMainChartHeight(875);
+    setMainChartHeight(870);
     setIndustryStackChartWidth(
       document.getElementById("asset").getBoundingClientRect().width
     );

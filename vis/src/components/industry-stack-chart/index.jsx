@@ -9,7 +9,7 @@ import { NodeIndexOutlined } from "@ant-design/icons";
 export default function IndustryStackChart({ w, h }) {
   const [data, setData] = useState([]);
   const [svgWidth, setSvgWidth] = useState(w);
-  const [svgHeight, setSvgHeight] = useState("19.92vh");
+  const [svgHeight, setSvgHeight] = useState("19.42vh");
   const [dataParam, setDataParam] = useState([]);
 
   // 传递给其他组件的数据
@@ -54,14 +54,14 @@ export default function IndustryStackChart({ w, h }) {
     var combinationOrderSet = new Set();
     var innerCirlceColor = { IP: "#33a02c", Cert: "#ff756a" };
 
-
     // 获取所有的资产组合和种类
     // let AMin=0, AMax=0, BMin=0, BMax=0, CMin=0, CMax=0, DMin=0, DMax=0, EMin=0, EMax=0, FMin=0, FMax=0, GMin=0, GMax=0, HMIn=0 ,HMax=0, IMin=0, IMax=0;
     let min = 0,
       max = 0;
     for (let d of data) {
       for (let j in d.industry) {
-        if(d.industry[j]["industry"].replaceAll(' ', '') !== ''){  // 直接只记录黑灰产的最值
+        if (d.industry[j]["industry"].replaceAll(" ", "") !== "") {
+          // 直接只记录黑灰产的最值
           min = Math.min(min, d.industry[j]["number"]);
           max = Math.max(max, d.industry[j]["number"]);
         }
@@ -129,7 +129,9 @@ export default function IndustryStackChart({ w, h }) {
     let gWidth = (svgWidth * 0.9) / levelNumber;
     const arc = d3
       .arc()
-      .innerRadius((i, j) => circleR + ((gHeight - 5) / industryType.length) * j)
+      .innerRadius(
+        (i, j) => circleR + ((gHeight - 5) / industryType.length) * j
+      )
       .outerRadius(
         (i, j) => circleR + ((gHeight - 5) / industryType.length) * (j + 1)
       )
@@ -245,7 +247,7 @@ export default function IndustryStackChart({ w, h }) {
       .attr("font", "10px segoe ui")
       .style("user-select", "none")
       // .attr("fill", (d, i) => industryColor[i])
-      .attr("fill", '#1e1e1e')
+      .attr("fill", "#1e1e1e")
       .text((d) => {
         return "#" + d.industry + ": " + d.number;
       });

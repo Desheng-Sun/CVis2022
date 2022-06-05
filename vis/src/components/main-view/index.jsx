@@ -181,7 +181,6 @@ export default function MainView({ w, h }) {
         links: resData.links,
         isAll: true,
       }).then((res) => {
-
         console.log(res);
         PubSub.publish("combinedNodeTableDt", [
           res.getDetialListSds,
@@ -464,7 +463,6 @@ export default function MainView({ w, h }) {
     }
   }, [dataParam]);
 
- 
   useEffect(() => {
     if (!dataFirst) {
       drawChart();
@@ -794,15 +792,14 @@ export default function MainView({ w, h }) {
     let searchedIndustry = value.replaceAll(" ", "").toUpperCase();
     if (cy) {
       if (searchedIndustry !== "") {
-        if(searchedIndustry === '#'){
+        if (searchedIndustry === "#") {
           cy.nodes().forEach((ele) => {
             if (ele.data("industry").replaceAll(" ", "") === "") {
               ele.select();
               ele.style("border-width", "3px");
             }
           });
-        }
-        else{
+        } else {
           cy.nodes().forEach((ele) => {
             if (ele.data("industry").trim() === searchedIndustry) {
               ele.select();
@@ -928,7 +925,6 @@ export default function MainView({ w, h }) {
         // 获取原始数据中的与当前图中相对应的节点
         return item["id"] === ele.data("id");
       });
-
 
       inICLinks = inICLinks[0]["InICLinks"];
 
@@ -1355,33 +1351,35 @@ export default function MainView({ w, h }) {
       .attr("font-size", "10px")
       .attr("text-align", "center");
 
-      // 添加产业类型名称的图例
-      let start = 0
-      for(let i in industryName){
-        industryTypeWrapper.append('g')
-        .attr("transform", function(){
-          if(start === 6){
-            return "translate(" + `${5}` + ',' +  `${3 * 16 + 75}` + ")"
-          }else if(start === 7){
-            return "translate(" + `${5}` + ',' +  `${4 * 16 + 75}` + ")"
-          }else if(start === 8){
-            return "translate(" + `${5}` + ',' +  `${5 * 16 + 75}` + ")"
-          }else{
-            return "translate(" + `${(start % 2) * 60 + 5}` + ',' +  `${Math.floor(start / 2) * 16 + 75}` + ")"
+    // 添加产业类型名称的图例
+    let start = 0;
+    for (let i in industryName) {
+      industryTypeWrapper
+        .append("g")
+        .attr("transform", function () {
+          if (start === 6) {
+            return "translate(" + `${5}` + "," + `${3 * 16 + 75}` + ")";
+          } else if (start === 7) {
+            return "translate(" + `${5}` + "," + `${4 * 16 + 75}` + ")";
+          } else if (start === 8) {
+            return "translate(" + `${5}` + "," + `${5 * 16 + 75}` + ")";
+          } else {
+            return (
+              "translate(" +
+              `${(start % 2) * 60 + 5}` +
+              "," +
+              `${Math.floor(start / 2) * 16 + 75}` +
+              ")"
+            );
           }
         })
-        .append('text')
-        .text(i + ': ' + industryName[i])
-        .attr('font-size', '12px')
-        .attr('font-family', 'monospace')
+        .append("text")
+        .text(i + ": " + industryName[i])
+        .attr("font-size", "12px")
+        .attr("font-family", "monospace");
 
-        start += 1
-      }
-
-
-
-
-
+      start += 1;
+    }
   }
   function onCollapse() {
     d3.select("#main-legend-content").style("display", "none");
@@ -1532,11 +1530,11 @@ export default function MainView({ w, h }) {
         null
       );
       a.dispatchEvent(e);
-      return 
+      return;
     }
 
     // 下载提交之前的数据
-    if(data.nodes.length !== 0){
+    if (data.nodes.length !== 0) {
       // 下载图片
       if (cy) {
         let blob = cy.png({
@@ -1585,13 +1583,12 @@ export default function MainView({ w, h }) {
       );
       a.dispatchEvent(e);
     }
-    
   }
 
   return (
     <div
       id="main-container"
-      style={{ width: svgWidth, height: svgHeight, background: "#fff" }}
+      style={{ width: "100%", height: svgHeight, background: "#fff" }}
     >
       <div id="main-chart-control">
         <div
