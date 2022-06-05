@@ -194,7 +194,7 @@ export default function MainView({ w, h }) {
         PubSub.publish("industryStackDt", res.getIdentifyICNodesSds); // 将选中的数据传给stack组件
         PubSub.publish("fromMainToInfoList", res.getInfoListSds); // 向info-list传递数据
         PubSub.publish("fromMainToConclusion", res.getFinalDataSds);
-        graphData = res.getDetialListSds; // 保存图的完整数据
+        graphData = res.getDetialListSds; // 保存提交后的图的完整数据
         // 更新主图的数据就不再对数据进行变化了
         setData(res.getDetialListSds);
       });
@@ -464,11 +464,10 @@ export default function MainView({ w, h }) {
     }
   }, [dataParam]);
 
-  // 处理节点的搜索事件
+ 
   useEffect(() => {
     if (!dataFirst) {
       drawChart();
-      // console.log('主图的数据', data);
       originData = data; // 全局变量的形式保存原始的数据
       dragElement(document.getElementById("main-legend"));
       setStyleCheck(false);
@@ -920,7 +919,6 @@ export default function MainView({ w, h }) {
         return item["id"] === ele.data("id");
       });
 
-      console.log(originData); // 这里的data有时候获取不到最新的
 
       inICLinks = inICLinks[0]["InICLinks"];
 
@@ -1133,8 +1131,8 @@ export default function MainView({ w, h }) {
     let legendSvg = d3
       .select("#main-legend-content")
       .append("svg")
-      .attr("width", "115px")
-      .attr("height", "280px");
+      .attr("width", "120px")
+      .attr("height", "380px");
     // let nodeType = ["Domain", "IP", "IP_C", "Cert", "Whois", "ASN"];
     let nodeType = ["IP", "IP_C", "Cert", "Whois", "ASN"];
     let nodeColor = [
@@ -1190,6 +1188,18 @@ export default function MainView({ w, h }) {
       I: "#87ccff",
     };
 
+    let industryName = {
+      A: "涉黄",
+      B: "涉赌",
+      C: "诈骗",
+      D: "涉毒",
+      E: "涉枪",
+      F: "黑客",
+      G: "非法交易平台",
+      H: "非法支付平台",
+      I: "其他",
+    };
+
     // 添加节点类型的图例
     let nodeTypeWrapper = legendSvg
       .append("g")
@@ -1209,23 +1219,11 @@ export default function MainView({ w, h }) {
         "transform",
         (d, i) =>
           "translate(" +
-          `${((i + 1) % 2) * 60 + 10}` +
+          `${((i + 1) % 2) * 68 + 10}` +
           "," +
           `${Math.floor((i + 1) / 2) * 20 + 40}` +
           ")"
       );
-    // nodeTypeG
-    //   .append("circle")
-    //   .attr("cx", 0)
-    //   .attr("cy", 0)
-    //   .attr("r", "6px")
-    //   .attr("stroke", (d, i) => {
-    //     if (i === 0) return "red";
-    //   })
-    //   .style("stroke-dasharray", (d, i) => {
-    //     if (i === 0) return "2, 2";
-    //   })
-    //   .attr("fill", (d, i) => nodeColor[i]);
 
     nodeTypeG
       .append("rect")
@@ -1274,7 +1272,7 @@ export default function MainView({ w, h }) {
     // 添加边类型的图例
     let edgeTypeWrapper = legendSvg
       .append("g")
-      .attr("transform", "translate(5, 90)")
+      .attr("transform", "translate(8, 90)")
       .attr("class", "edge-type-wrapper");
     edgeTypeWrapper
       .append("text")
@@ -1307,7 +1305,7 @@ export default function MainView({ w, h }) {
     edgeTypeG
       .append("text")
       .text((d) => d)
-      .attr("x", 42)
+      .attr("x", 45)
       .attr("dy", 8)
       .attr("font-size", "11px");
 
@@ -1346,6 +1344,34 @@ export default function MainView({ w, h }) {
       .attr("y", 35)
       .attr("font-size", "10px")
       .attr("text-align", "center");
+
+      // 添加产业类型名称的图例
+      let start = 0
+      for(let i in industryName){
+        industryTypeWrapper.append('g')
+        .attr("transform", function(){
+          if(start === 6){
+            return "translate(" + `${5}` + ',' +  `${3 * 16 + 75}` + ")"
+          }else if(start === 7){
+            return "translate(" + `${5}` + ',' +  `${4 * 16 + 75}` + ")"
+          }else if(start === 8){
+            return "translate(" + `${5}` + ',' +  `${5 * 16 + 75}` + ")"
+          }else{
+            return "translate(" + `${(start % 2) * 60 + 5}` + ',' +  `${Math.floor(start / 2) * 16 + 75}` + ")"
+          }
+        })
+        .append('text')
+        .text(i + ': ' + industryName[i])
+        .attr('font-size', '12px')
+        .attr('font-family', 'monospace')
+
+        start += 1
+      }
+
+
+
+
+
   }
   function onCollapse() {
     d3.select("#main-legend-content").style("display", "none");
@@ -1465,6 +1491,7 @@ export default function MainView({ w, h }) {
         aLink.download = `${new Date().getTime()}.png`;
         aLink.href = URL.createObjectURL(blob);
         aLink.dispatchEvent(evt);
+        document.body.appendChild(aLink);
         aLink.click();
         document.body.removeChild(aLink);
       }
@@ -1498,6 +1525,7 @@ export default function MainView({ w, h }) {
       return 
     }
 
+    // 下载提交之前的数据
     if(data.nodes.length !== 0){
       // 下载图片
       if (cy) {
@@ -1514,13 +1542,15 @@ export default function MainView({ w, h }) {
         aLink.download = `${new Date().getTime()}.png`;
         aLink.href = URL.createObjectURL(blob);
         aLink.dispatchEvent(evt);
+        document.body.appendChild(aLink);
         aLink.click();
         document.body.removeChild(aLink);
       }
       // 下载整个子图的数据
-      var dataBlob = new Blob([JSON.stringify(graphData)], {
+      var dataBlob = new Blob([JSON.stringify(data)], {
         type: "text/json",
       });
+      console.log(data);
       var e = document.createEvent("MouseEvents");
       var a = document.createElement("a");
       a.download = "提交前的图.json";

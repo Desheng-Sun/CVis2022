@@ -266,12 +266,11 @@ export default function SkeletonChart({ w, h }) {
           .on("end", dragended)
       )
       .on("mouseover", function (event, d) {
-        // console.log(d);
         let htmlStr =
           "<b>" +
           "name: " +
           "</b>" +
-          d.name +
+          d.id +
           "<br>" +
           "<b>" +
           "industry: " +
@@ -290,7 +289,7 @@ export default function SkeletonChart({ w, h }) {
         skeletonToolTip.style("visibility", "hidden");
       });
 
-    var innerCirlceColor = { IP: "#ffd006", Cert: "#67bbd7" };
+    var innerCirlceColor = { IP: "#33a02c", Cert: "#ff756a" };
     nodeG
       .append("circle")
       .attr("r", 2)
@@ -301,15 +300,15 @@ export default function SkeletonChart({ w, h }) {
 
     // 绘制每个节点的内部图
     const industryColor = {
-      0: "#ff9f6d",
-      1: "#d88c9a",
-      2: "#a17fda",
-      3: "#c3e6a1",
-      4: "#4caead",
-      5: "#64d9d7",
-      6: "#82b461",
-      7: "#fffb96",
-      8: "#87ccff",
+      A: "#ff9f6d",
+      B: "#d88c9a",
+      C: "#a17fda",
+      D: "#c3e6a1",
+      E: "#4caead",
+      F: "#64d9d7",
+      G: "#82b461",
+      H: "#fffb96",
+      I: "#87ccff",
     };
     const arc = d3
       .arc()
@@ -352,7 +351,7 @@ export default function SkeletonChart({ w, h }) {
                 currIndustryIndex.length !== 0 &&
                 currIndustryIndex.indexOf(j) !== -1
               ) {
-                return industryColor[j];
+                return industryColor[industryType[j]];
               }
               return "#eee";
             });
