@@ -794,12 +794,22 @@ export default function MainView({ w, h }) {
     let searchedIndustry = value.replaceAll(" ", "").toUpperCase();
     if (cy) {
       if (searchedIndustry !== "") {
-        cy.nodes().forEach((ele) => {
-          if (ele.data("industry").trim() === searchedIndustry) {
-            ele.select();
-            ele.style("border-width", "3px");
-          }
-        });
+        if(searchedIndustry === '#'){
+          cy.nodes().forEach((ele) => {
+            if (ele.data("industry").replaceAll(" ", "") === "") {
+              ele.select();
+              ele.style("border-width", "3px");
+            }
+          });
+        }
+        else{
+          cy.nodes().forEach((ele) => {
+            if (ele.data("industry").trim() === searchedIndustry) {
+              ele.select();
+              ele.style("border-width", "3px");
+            }
+          });
+        }
       } else {
         cy.nodes().forEach((ele) => {
           ele.unselect();
