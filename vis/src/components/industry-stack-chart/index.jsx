@@ -53,18 +53,7 @@ export default function IndustryStackChart({ w, h }) {
     d3.select("#industry-stack-chart .stackToolTip").remove();
     var combinationOrderSet = new Set();
     var innerCirlceColor = { IP: "#33a02c", Cert: "#ff756a" };
-    // 映射产业类型
-    const industryColor = {
-      0: "#c3e6a1",
-      1: "#e4657f",
-      2: "#a17fda",
-      3: "#ff9f6d",
-      4: "#4caead",
-      5: "#64d9d7",
-      6: "#82b461",
-      7: "#fffb96",
-      8: "#87ccff",
-    };
+
 
     // 获取所有的资产组合和种类
     // let AMin=0, AMax=0, BMin=0, BMax=0, CMin=0, CMax=0, DMin=0, DMax=0, EMin=0, EMax=0, FMin=0, FMax=0, GMin=0, GMax=0, HMIn=0 ,HMax=0, IMin=0, IMax=0;
@@ -72,8 +61,10 @@ export default function IndustryStackChart({ w, h }) {
       max = 0;
     for (let d of data) {
       for (let j in d.industry) {
-        min = Math.min(min, d.industry[j]["number"]);
-        max = Math.max(max, d.industry[j]["number"]);
+        if(d.industry[j]["industry"].replaceAll(' ', '') !== ''){  // 直接只记录黑灰产的最值
+          min = Math.min(min, d.industry[j]["number"]);
+          max = Math.max(max, d.industry[j]["number"]);
+        }
         combinationOrderSet.add(d.industry[j]["industry"]);
       }
     }
@@ -86,11 +77,11 @@ export default function IndustryStackChart({ w, h }) {
     const AColorScale = d3
       .scaleLinear()
       .domain([0, max])
-      .range(["#fff", "#c3e6a1"]);
+      .range(["#fff", "#ff9f6d"]);
     const BColorScale = d3
       .scaleLinear()
       .domain([0, max])
-      .range(["#fff", "#e4657f"]);
+      .range(["#fff", "#d88c9a"]);
     const CColorScale = d3
       .scaleLinear()
       .domain([0, max])
@@ -98,7 +89,7 @@ export default function IndustryStackChart({ w, h }) {
     const DColorScale = d3
       .scaleLinear()
       .domain([0, max])
-      .range(["#fff", "#ff9f6d"]);
+      .range(["#fff", "#c3e6a1"]);
     const EColorScale = d3
       .scaleLinear()
       .domain([0, max])
@@ -120,7 +111,7 @@ export default function IndustryStackChart({ w, h }) {
       .domain([0, max])
       .range(["#fff", "#87ccff"]);
 
-    const industryColoeScale = {
+    const industryColorScale = {
       A: AColorScale,
       B: BColorScale,
       C: CColorScale,
@@ -138,9 +129,9 @@ export default function IndustryStackChart({ w, h }) {
     let gWidth = (svgWidth * 0.9) / levelNumber;
     const arc = d3
       .arc()
-      .innerRadius((i, j) => circleR + (gHeight / industryType.length) * j)
+      .innerRadius((i, j) => circleR + ((gHeight - 5) / industryType.length) * j)
       .outerRadius(
-        (i, j) => circleR + (gHeight / industryType.length) * (j + 1)
+        (i, j) => circleR + ((gHeight - 5) / industryType.length) * (j + 1)
       )
       .startAngle((i) => ((2 * Math.PI) / combinationOrder.length) * i - 2)
       .endAngle((i) => ((2 * Math.PI) / combinationOrder.length) * (i + 1) - 2)
@@ -243,17 +234,18 @@ export default function IndustryStackChart({ w, h }) {
       .join("tspan")
       .attr("x", 50)
       .attr("y", (d, i) => {
-        if(d.industryt.length >= 5){
-          return `${i * 1.5 - 1}em`
+        if (d.industry.length >= 5) {
+          return `${i * 1.5 - 5}em`;
         }
-        return `${i * 1.5 - 2}em`
+        return `${i * 1.5 - 2}em`;
       })
       .attr("font-weight", "bold")
       .attr("stroke", "none")
-      .attr("font-size", "10px")
+      .attr("font-size", "12px")
       .attr("font", "10px segoe ui")
       .style("user-select", "none")
-      .attr("fill", (d, i) => industryColor[i])
+      // .attr("fill", (d, i) => industryColor[i])
+      .attr("fill", '#1e1e1e')
       .text((d) => {
         return "#" + d.industry + ": " + d.number;
       });
@@ -309,9 +301,9 @@ export default function IndustryStackChart({ w, h }) {
               ) {
                 // return industryColor[j];
                 if (industryType[j].replaceAll(" ", "") === "") {
-                  return "green";
+                  return "#369fe4";
                 }
-                return industryColoeScale[industryType[j]](
+                return industryColorScale[industryType[j]](
                   d.industry[indu]["number"]
                 );
               }
@@ -366,9 +358,9 @@ export default function IndustryStackChart({ w, h }) {
           onClick={onSubmitToPath}
           type="dashed"
           size="small"
-          icon={<NodeIndexOutlined />}
+          // icon={<NodeIndexOutlined />}
         >
-          路径
+          链路
         </Button>
       </div>
     </div>

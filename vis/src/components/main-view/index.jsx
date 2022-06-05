@@ -181,6 +181,8 @@ export default function MainView({ w, h }) {
         links: resData.links,
         isAll: true,
       }).then((res) => {
+
+        console.log(res);
         PubSub.publish("combinedNodeTableDt", [
           res.getDetialListSds,
           res.getBulletChartDataSds,
@@ -192,7 +194,7 @@ export default function MainView({ w, h }) {
         PubSub.publish("industryStackDt", res.getIdentifyICNodesSds); // 将选中的数据传给stack组件
         PubSub.publish("fromMainToInfoList", res.getInfoListSds); // 向info-list传递数据
         PubSub.publish("fromMainToConclusion", res.getFinalDataSds);
-        graphData = res.getDetialListSds; // 保存图的完整数据
+        graphData = res.getDetialListSds; // 保存提交后的图的完整数据
         // 更新主图的数据就不再对数据进行变化了
         setData(res.getDetialListSds);
       });
@@ -443,7 +445,6 @@ export default function MainView({ w, h }) {
       let links = [];
 
       if (cy) {
-        // 不是初始化的时候获取当前图的数据
         cy.nodes().forEach((ele) => {
           nodes.push(ele.json().data);
         });
@@ -457,20 +458,16 @@ export default function MainView({ w, h }) {
         nodes: nodes,
         links: links,
       }).then((res) => {
-        // console.log('从skeleton传递过来的参数', dataParam, nodes, links, res);
-        // console.log('主图的数据', res);
-
         setData(res);
         setDifChartInput(res);
       });
     }
   }, [dataParam]);
 
-  // 处理节点的搜索事件
+ 
   useEffect(() => {
     if (!dataFirst) {
       drawChart();
-      // console.log('主图的数据', data);
       originData = data; // 全局变量的形式保存原始的数据
       dragElement(document.getElementById("main-legend"));
       setStyleCheck(false);
@@ -797,12 +794,22 @@ export default function MainView({ w, h }) {
     let searchedIndustry = value.replaceAll(" ", "").toUpperCase();
     if (cy) {
       if (searchedIndustry !== "") {
-        cy.nodes().forEach((ele) => {
-          if (ele.data("industry").trim() === searchedIndustry) {
-            ele.select();
-            ele.style("border-width", "3px");
-          }
-        });
+        if(searchedIndustry === '#'){
+          cy.nodes().forEach((ele) => {
+            if (ele.data("industry").replaceAll(" ", "") === "") {
+              ele.select();
+              ele.style("border-width", "3px");
+            }
+          });
+        }
+        else{
+          cy.nodes().forEach((ele) => {
+            if (ele.data("industry").trim() === searchedIndustry) {
+              ele.select();
+              ele.style("border-width", "3px");
+            }
+          });
+        }
       } else {
         cy.nodes().forEach((ele) => {
           ele.unselect();
@@ -922,7 +929,6 @@ export default function MainView({ w, h }) {
         return item["id"] === ele.data("id");
       });
 
-      console.log(originData); // 这里的data有时候获取不到最新的
 
       inICLinks = inICLinks[0]["InICLinks"];
 
@@ -1020,7 +1026,7 @@ export default function MainView({ w, h }) {
               return "0px";
             },
             "pie-size": "95%",
-            "pie-1-background-color": "#fba5fc",
+            "pie-1-background-color": "#ff9f6d",
             "pie-1-background-size": function (ele, curIndustry = "A") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
@@ -1029,7 +1035,7 @@ export default function MainView({ w, h }) {
                 return cellPie.toString();
               return "0";
             },
-            "pie-2-background-color": "#9744ee",
+            "pie-2-background-color": "#d88c9a",
             "pie-2-background-size": function (ele, curIndustry = "B") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
@@ -1038,7 +1044,7 @@ export default function MainView({ w, h }) {
                 return cellPie.toString();
               return "0";
             },
-            "pie-3-background-color": "#55018b",
+            "pie-3-background-color": "#a17fda",
             "pie-3-background-size": function (ele, curIndustry = "C") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
@@ -1047,7 +1053,7 @@ export default function MainView({ w, h }) {
                 return cellPie.toString();
               return "0";
             },
-            "pie-4-background-color": "#d88c9a",
+            "pie-4-background-color": "#c3e6a1",
             "pie-4-background-size": function (ele, curIndustry = "D") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
@@ -1056,7 +1062,7 @@ export default function MainView({ w, h }) {
                 return cellPie.toString();
               return "0";
             },
-            "pie-5-background-color": "#e14b93",
+            "pie-5-background-color": "#4caead",
             "pie-5-background-size": function (ele, curIndustry = "E") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
@@ -1065,7 +1071,7 @@ export default function MainView({ w, h }) {
                 return cellPie.toString();
               return "0";
             },
-            "pie-6-background-color": "#2045e3",
+            "pie-6-background-color": "#64d9d7",
             "pie-6-background-size": function (ele, curIndustry = "F") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
@@ -1074,7 +1080,7 @@ export default function MainView({ w, h }) {
                 return cellPie.toString();
               return "0";
             },
-            "pie-7-background-color": "#4d7dbd",
+            "pie-7-background-color": "#82b461",
             "pie-7-background-size": function (ele, curIndustry = "G") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
@@ -1083,7 +1089,7 @@ export default function MainView({ w, h }) {
                 return cellPie.toString();
               return "0";
             },
-            "pie-8-background-color": "#74c2ce",
+            "pie-8-background-color": "#fffb96",
             "pie-8-background-size": function (ele, curIndustry = "H") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
@@ -1092,7 +1098,7 @@ export default function MainView({ w, h }) {
                 return cellPie.toString();
               return "0";
             },
-            "pie-9-background-color": "#5d6274",
+            "pie-9-background-color": "#87ccff",
             "pie-9-background-size": function (ele, curIndustry = "I") {
               if (ele.data("industry").trim() === "") return "0";
               let curIndustryArr = ele.data("industry").trim().split("");
@@ -1135,8 +1141,8 @@ export default function MainView({ w, h }) {
     let legendSvg = d3
       .select("#main-legend-content")
       .append("svg")
-      .attr("width", "115px")
-      .attr("height", "280px");
+      .attr("width", "120px")
+      .attr("height", "380px");
     // let nodeType = ["Domain", "IP", "IP_C", "Cert", "Whois", "ASN"];
     let nodeType = ["IP", "IP_C", "Cert", "Whois", "ASN"];
     let nodeColor = [
@@ -1171,15 +1177,37 @@ export default function MainView({ w, h }) {
     ];
     let industryType = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
     let industryColor = {
-      A: "#fba5fc",
-      B: "#9744ee",
-      C: "#55018b",
-      D: "#d88c9a",
-      E: "#e14b93",
-      F: "#2045e3",
-      G: "#4d7dbd",
-      H: "#74c2ce",
-      I: "#5d6274",
+      // A: "#fba5fc",
+      // B: "#9744ee",
+      // C: "#55018b",
+      // D: "#d88c9a",
+      // E: "#e14b93",
+      // F: "#2045e3",
+      // G: "#4d7dbd",
+      // H: "#74c2ce",
+      // I: "#5d6274",
+
+      A: "#ff9f6d",
+      B: "#d88c9a",
+      C: "#a17fda",
+      D: "#c3e6a1",
+      E: "#4caead",
+      F: "#64d9d7",
+      G: "#82b461",
+      H: "#fffb96",
+      I: "#87ccff",
+    };
+
+    let industryName = {
+      A: "涉黄",
+      B: "涉赌",
+      C: "诈骗",
+      D: "涉毒",
+      E: "涉枪",
+      F: "黑客",
+      G: "非法交易平台",
+      H: "非法支付平台",
+      I: "其他",
     };
 
     // 添加节点类型的图例
@@ -1201,23 +1229,11 @@ export default function MainView({ w, h }) {
         "transform",
         (d, i) =>
           "translate(" +
-          `${((i + 1) % 2) * 60 + 10}` +
+          `${((i + 1) % 2) * 68 + 10}` +
           "," +
-          `${Math.floor((i + 1)  / 2) * 20 + 40}` +
+          `${Math.floor((i + 1) / 2) * 20 + 40}` +
           ")"
       );
-    // nodeTypeG
-    //   .append("circle")
-    //   .attr("cx", 0)
-    //   .attr("cy", 0)
-    //   .attr("r", "6px")
-    //   .attr("stroke", (d, i) => {
-    //     if (i === 0) return "red";
-    //   })
-    //   .style("stroke-dasharray", (d, i) => {
-    //     if (i === 0) return "2, 2";
-    //   })
-    //   .attr("fill", (d, i) => nodeColor[i]);
 
     nodeTypeG
       .append("rect")
@@ -1227,23 +1243,26 @@ export default function MainView({ w, h }) {
       .attr("width", "12px")
       .attr("fill", (d, i) => nodeColor[i + 1]);
 
-
-    let domainG = nodeTypeWrapper.append('g')
-      .attr("transform", "translate(10, 40)")
-    domainG.append("circle")
+    let domainG = nodeTypeWrapper
+      .append("g")
+      .attr("transform", "translate(10, 40)");
+    domainG
+      .append("circle")
       .attr("cx", 0)
       .attr("cy", 0)
       .attr("r", "6px")
       .attr("stroke", "#aaa")
       .style("stroke-dasharray", "2, 2")
       .attr("fill", nodeColor[0]);
-      domainG.append("text")
-      .text('Domain')
+    domainG
+      .append("text")
+      .text("Domain")
       .attr("x", 10)
       .attr("y", 3)
       .attr("font-size", "10px");
 
-    nodeTypeWrapper.append('g')
+    nodeTypeWrapper
+      .append("g")
       .attr("transform", "translate(10, 40)")
       .append("circle")
       .attr("cx", 0)
@@ -1263,7 +1282,7 @@ export default function MainView({ w, h }) {
     // 添加边类型的图例
     let edgeTypeWrapper = legendSvg
       .append("g")
-      .attr("transform", "translate(5, 90)")
+      .attr("transform", "translate(8, 90)")
       .attr("class", "edge-type-wrapper");
     edgeTypeWrapper
       .append("text")
@@ -1296,7 +1315,7 @@ export default function MainView({ w, h }) {
     edgeTypeG
       .append("text")
       .text((d) => d)
-      .attr("x", 42)
+      .attr("x", 45)
       .attr("dy", 8)
       .attr("font-size", "11px");
 
@@ -1335,6 +1354,34 @@ export default function MainView({ w, h }) {
       .attr("y", 35)
       .attr("font-size", "10px")
       .attr("text-align", "center");
+
+      // 添加产业类型名称的图例
+      let start = 0
+      for(let i in industryName){
+        industryTypeWrapper.append('g')
+        .attr("transform", function(){
+          if(start === 6){
+            return "translate(" + `${5}` + ',' +  `${3 * 16 + 75}` + ")"
+          }else if(start === 7){
+            return "translate(" + `${5}` + ',' +  `${4 * 16 + 75}` + ")"
+          }else if(start === 8){
+            return "translate(" + `${5}` + ',' +  `${5 * 16 + 75}` + ")"
+          }else{
+            return "translate(" + `${(start % 2) * 60 + 5}` + ',' +  `${Math.floor(start / 2) * 16 + 75}` + ")"
+          }
+        })
+        .append('text')
+        .text(i + ': ' + industryName[i])
+        .attr('font-size', '12px')
+        .attr('font-family', 'monospace')
+
+        start += 1
+      }
+
+
+
+
+
   }
   function onCollapse() {
     d3.select("#main-legend-content").style("display", "none");
@@ -1383,8 +1430,8 @@ export default function MainView({ w, h }) {
 
   // 下载图数据与子图
   function onDownload() {
+    // 下载提交后的子图的数据
     if (graphData != undefined) {
-      console.log("下载了");
       const tNodeHeader = "id,name,type,industry,isCore,";
       var nodeFilter = ["id", "name", "type", "industry", "isCore"];
       const tLinkHeader = "relation,source,target,isCore,";
@@ -1454,6 +1501,7 @@ export default function MainView({ w, h }) {
         aLink.download = `${new Date().getTime()}.png`;
         aLink.href = URL.createObjectURL(blob);
         aLink.dispatchEvent(evt);
+        document.body.appendChild(aLink);
         aLink.click();
         document.body.removeChild(aLink);
       }
@@ -1484,7 +1532,60 @@ export default function MainView({ w, h }) {
         null
       );
       a.dispatchEvent(e);
+      return 
     }
+
+    // 下载提交之前的数据
+    if(data.nodes.length !== 0){
+      // 下载图片
+      if (cy) {
+        let blob = cy.png({
+          output: "blob",
+          bg: "transparent",
+          full: true,
+          scale: 4,
+          quality: 1,
+        });
+        let aLink = document.createElement("a");
+        let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("click", true, true);
+        aLink.download = `${new Date().getTime()}.png`;
+        aLink.href = URL.createObjectURL(blob);
+        aLink.dispatchEvent(evt);
+        document.body.appendChild(aLink);
+        aLink.click();
+        document.body.removeChild(aLink);
+      }
+      // 下载整个子图的数据
+      var dataBlob = new Blob([JSON.stringify(data)], {
+        type: "text/json",
+      });
+      console.log(data);
+      var e = document.createEvent("MouseEvents");
+      var a = document.createElement("a");
+      a.download = "提交前的图.json";
+      a.href = window.URL.createObjectURL(dataBlob);
+      a.dataset.downloadurl = ["text/json", a.download, a.href].join(":");
+      e.initMouseEvent(
+        "click",
+        true,
+        false,
+        window,
+        0,
+        0,
+        0,
+        0,
+        0,
+        false,
+        false,
+        false,
+        false,
+        0,
+        null
+      );
+      a.dispatchEvent(e);
+    }
+    
   }
 
   return (
@@ -1523,7 +1624,7 @@ export default function MainView({ w, h }) {
             <Button
               type="dashed"
               icon={<UndoOutlined />}
-              style={{ marginLeft: "60px" }}
+              style={{ marginLeft: "70px" }}
               onClick={onUndoOut}
             >
               撤销

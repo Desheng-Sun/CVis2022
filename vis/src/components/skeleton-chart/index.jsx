@@ -219,7 +219,7 @@ export default function SkeletonChart({ w, h }) {
           let numId = nodes
             .filter((d) => d.group === groupId)
             .map((d) => d.id)[0];
-          
+
           document.execCommand("Copy", true, numId);
           const temp_input = document.createElement("input");
           document.body.appendChild(temp_input);
@@ -238,7 +238,7 @@ export default function SkeletonChart({ w, h }) {
           let numName = nodes
             .filter((d) => d.group === groupId)
             .map((d) => d.name)[0];
-          
+
           document.execCommand("Copy", true, numName);
           const temp_input = document.createElement("input");
           document.body.appendChild(temp_input);
@@ -248,7 +248,6 @@ export default function SkeletonChart({ w, h }) {
             document.execCommand("copy");
           }
           document.body.removeChild(temp_input);
-          
         },
       },
     ];
@@ -267,12 +266,11 @@ export default function SkeletonChart({ w, h }) {
           .on("end", dragended)
       )
       .on("mouseover", function (event, d) {
-        // console.log(d);
         let htmlStr =
           "<b>" +
           "name: " +
           "</b>" +
-          d.name +
+          d.id +
           "<br>" +
           "<b>" +
           "industry: " +
@@ -291,7 +289,7 @@ export default function SkeletonChart({ w, h }) {
         skeletonToolTip.style("visibility", "hidden");
       });
 
-    var innerCirlceColor = { IP: "#ffd006", Cert: "#67bbd7" };
+    var innerCirlceColor = { IP: "#33a02c", Cert: "#ff756a" };
     nodeG
       .append("circle")
       .attr("r", 2)
@@ -302,15 +300,15 @@ export default function SkeletonChart({ w, h }) {
 
     // 绘制每个节点的内部图
     const industryColor = {
-      0: "#fba5fc",
-      1: "#9744ee",
-      2: "#55018b",
-      3: "#d88c9a",
-      4: "#e14b93",
-      5: "#2045e3",
-      6: "#4d7dbd",
-      7: "#74c2ce",
-      8: "#5d6274",
+      A: "#ff9f6d",
+      B: "#d88c9a",
+      C: "#a17fda",
+      D: "#c3e6a1",
+      E: "#4caead",
+      F: "#64d9d7",
+      G: "#82b461",
+      H: "#fffb96",
+      I: "#87ccff",
     };
     const arc = d3
       .arc()
@@ -353,7 +351,7 @@ export default function SkeletonChart({ w, h }) {
                 currIndustryIndex.length !== 0 &&
                 currIndustryIndex.indexOf(j) !== -1
               ) {
-                return industryColor[j];
+                return industryColor[industryType[j]];
               }
               return "#eee";
             });

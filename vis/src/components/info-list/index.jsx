@@ -50,7 +50,7 @@ export default function InfoList() {
       key: "groupscope",
     },
     {
-      title: "产业类型",
+      title: "产业类型与数量",
       dataIndex: "industrytype",
       key: "industrytype",
       render: (tags) => (
