@@ -9,7 +9,6 @@ import PubSub from "pubsub-js";
 
 let nodeColumns = [
   "numId",
-  "name",
   "type",
   "industry",
   "isCore",
@@ -25,6 +24,7 @@ let nodeColumns = [
   "r_cidr",
   "r_asn",
   "id",
+  "name",
 ];
 
 let linkColumns = ["relation", "isCore", "source", "target"];

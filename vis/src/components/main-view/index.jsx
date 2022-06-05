@@ -1596,7 +1596,7 @@ export default function MainView({ w, h }) {
           style={{
             display: "flex",
             flexDirection: "row",
-            background: "#dacfca",
+            background: "#eaeaea",
             paddingTop: "5px",
             paddingLeft: "10px",
             lineHeight: 2.2,
@@ -1663,7 +1663,7 @@ export default function MainView({ w, h }) {
           style={{
             display: "flex",
             flexDirection: "row",
-            background: "#dacfca",
+            background: "#eaeaea",
             paddingTop: "2px",
             paddingLeft: "10px",
             paddingBottom: "5px",
