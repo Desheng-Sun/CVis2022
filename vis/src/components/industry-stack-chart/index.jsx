@@ -33,50 +33,131 @@ export default function IndustryStackChart({ w, h }) {
   useEffect(() => {
     let dt = [
       {
-        id: "IP_4bfe4402e77b2c2acd07579c8598b30fe00d8481dcaad3153438b6a90c58e675",
-        numId: 83355,
+        id: "IP_40ddb3ae090e2241eba46d1cb972727ae071d4d1e9492867a22ef5dae0036197",
+        numId: 82811,
         industry: [
           {
-            industry: "A",
-            number: 2,
-          },
-          {
             industry: "  ",
-            number: 90,
+            number: 91,
           },
           {
-            industry: "B",
-            number: 4,
+            industry: "A",
+            number: 122,
           },
           {
             industry: "AB",
-            number: 2,
+            number: 120,
+          },
+          {
+            industry: "B",
+            number: 114,
           },
         ],
       },
       {
-        id: "IP_cdc3e657f06744281ec6144710dd12db519bcfe6f6d3d91c39d321f0fbcebde5",
-        numId: 387772,
+        id: "IP_40ee275b710d85051853573a5744b80989c6b5ed11a0ec578ca25aabdd352103",
+        numId: 367648,
         industry: [
           {
-            industry: "A",
-            number: 2,
+            industry: "  ",
+            number: 94,
           },
           {
-            industry: "  ",
-            number: 90,
+            industry: "A",
+            number: 113,
           },
           {
             industry: "B",
-            number: 4,
+            number: 112,
+          },
+        ],
+      },
+      {
+        id: "IP_7b80fc61abc49771fe7f37d3dae62a5815269b09d080f69c5c666f281ad95a73",
+        numId: 367663,
+        industry: [
+          {
+            industry: "  ",
+            number: 94,
           },
           {
-            industry: "AB",
-            number: 2,
+            industry: "A",
+            number: 113,
+          },
+          {
+            industry: "B",
+            number: 121,
+          },
+        ],
+      },
+      {
+        id: "IP_1b4d13e7661598f7609c250a3c7cd7a359dbf65915295a5376362671c19d3e4b",
+        numId: 371918,
+        industry: [
+          {
+            industry: "  ",
+            number: 72,
+          },
+          {
+            industry: "B",
+            number: 114,
+          },
+          {
+            industry: "A",
+            number: 111,
+          },
+          {
+            industry: "C",
+            number: 110,
+          },
+        ],
+      },
+      {
+        id: "IP_abb798b374d28b3fb5411cc2b568a55400fd74111d2ebe1c47ed99d2ff79ec24",
+        numId: 371928,
+        industry: [
+          {
+            industry: "  ",
+            number: 71,
+          },
+          {
+            industry: "B",
+            number: 114,
+          },
+          {
+            industry: "A",
+            number: 110,
+          },
+          {
+            industry: "G",
+            number: 212,
+          },
+          {
+            industry: "C",
+            number: 112,
+          },
+        ],
+      },
+      {
+        id: "IP_7d45aa042c08938921a4677ac235e8306e9b91edd135b75dbb9717ab84f12754",
+        numId: 373656,
+        industry: [
+          {
+            industry: "  ",
+            number: 89,
+          },
+          {
+            industry: "A",
+            number: 19,
+          },
+          {
+            industry: "B",
+            number: 11,
           },
         ],
       },
     ];
+
     setData(dt);
   }, []);
 
@@ -130,6 +211,8 @@ export default function IndustryStackChart({ w, h }) {
       ...new Set([...combinationOrder.toString().replaceAll(",", "")]),
     ].sort(); // 包含的所有产业类型
 
+    min = 10;
+    max = 150;
     const AColorScale = d3
       .scaleLinear()
       .domain([0, max])
@@ -444,7 +527,8 @@ export default function IndustryStackChart({ w, h }) {
 
   function onClearSelection() {
     d3.selectAll("#industry-stack-chart rect").attr("fill", "transparent");
-    d3.selectAll("#industry-stack-chart rect").attr("stroke", "none");
+    d3.selectAll("#industry-stack-chart rect").attr("stroke", "#ccc");
+    document.getElementById("core-list").innerHTML = "";
     setSelectedNodeNumId("reset-");
     setToPath({ startNode: [], endNode: [] });
     PubSub.publish("assetsToPathDt", { startNode: [], endNode: [] }); // 传递给关键路径组件空数据，用于清空数据
@@ -462,17 +546,35 @@ export default function IndustryStackChart({ w, h }) {
           <Button onClick={onClearSelection} type="dashed" size="small">
             清空
           </Button>
-          <Button
-            onClick={onSubmitToPath}
-            type="dashed"
-            size="small"
-            // icon={<NodeIndexOutlined />}
-          >
+          <Button onClick={onSubmitToPath} type="dashed" size="small">
             链路
           </Button>
         </div>
         <div id="core-list-title" style={{ height: "12%" }}></div>{" "}
-        <div id="core-list" style={{ height: "62%" }}></div>
+        <div id="core-list" style={{ height: "62%" }}>
+          11
+          <br />
+          11
+          <br />
+          11
+          <br />
+          11
+          <br />
+          11
+          <br />
+          11
+          <br />
+          11
+          <br />
+          11
+          <br />
+          11
+          <br />
+          11
+          <br />
+          11
+          <br />
+        </div>
       </div>
     </div>
   );

@@ -1429,109 +1429,109 @@ export default function MainView({ w, h }) {
   // 下载图数据与子图
   function onDownload() {
     // 下载提交后的子图的数据
-    if (graphData != undefined) {
-      const tNodeHeader = "id,name,type,industry,isCore,";
-      var nodeFilter = ["id", "name", "type", "industry", "isCore"];
-      const tLinkHeader = "relation,source,target,isCore,";
-      var linkFilter = ["relation", "source", "target", "isCore"];
-      // 保存节点信息
-      let nodeCsvString = tNodeHeader;
-      nodeCsvString += "\r\n";
-      graphData.nodes.forEach((item) => {
-        nodeFilter.forEach((key) => {
-          let value = item[key];
-          if (key === "industry") {
-            let valueArr;
-            if (value === "  ") {
-              valueArr = "[]";
-            } else {
-              valueArr = '"[' + value.split("").toString() + ']"';
-            }
-            nodeCsvString += valueArr + ",";
-          } else {
-            nodeCsvString += value + ",";
-          }
-        });
-        nodeCsvString += "\r\n";
-      });
-      nodeCsvString =
-        "data:text/csv;charset=utf-8,\ufeff" +
-        encodeURIComponent(nodeCsvString);
-      let nodeLink = document.createElement("a");
-      nodeLink.href = nodeCsvString;
-      nodeLink.download = "节点.csv";
-      document.body.appendChild(nodeLink);
-      nodeLink.click();
-      document.body.removeChild(nodeLink);
+    // if (graphData != undefined) {
+    //   const tNodeHeader = "id,name,type,industry,isCore,";
+    //   var nodeFilter = ["id", "name", "type", "industry", "isCore"];
+    //   const tLinkHeader = "relation,source,target,isCore,";
+    //   var linkFilter = ["relation", "source", "target", "isCore"];
+    //   // 保存节点信息
+    //   let nodeCsvString = tNodeHeader;
+    //   nodeCsvString += "\r\n";
+    //   graphData.nodes.forEach((item) => {
+    //     nodeFilter.forEach((key) => {
+    //       let value = item[key];
+    //       if (key === "industry") {
+    //         let valueArr;
+    //         if (value === "  ") {
+    //           valueArr = "[]";
+    //         } else {
+    //           valueArr = '"[' + value.split("").toString() + ']"';
+    //         }
+    //         nodeCsvString += valueArr + ",";
+    //       } else {
+    //         nodeCsvString += value + ",";
+    //       }
+    //     });
+    //     nodeCsvString += "\r\n";
+    //   });
+    //   nodeCsvString =
+    //     "data:text/csv;charset=utf-8,\ufeff" +
+    //     encodeURIComponent(nodeCsvString);
+    //   let nodeLink = document.createElement("a");
+    //   nodeLink.href = nodeCsvString;
+    //   nodeLink.download = "节点.csv";
+    //   document.body.appendChild(nodeLink);
+    //   nodeLink.click();
+    //   document.body.removeChild(nodeLink);
 
-      // 保存边的信息
-      let linkCsvString = tLinkHeader;
-      linkCsvString += "\r\n";
-      graphData.links.forEach((item) => {
-        linkFilter.forEach((key) => {
-          let value = item[key];
-          linkCsvString += value + ",";
-        });
-        linkCsvString += "\r\n";
-      });
-      linkCsvString =
-        "data:text/csv;charset=utf-8,\ufeff" +
-        encodeURIComponent(linkCsvString);
-      let linkLink = document.createElement("a");
-      linkLink.href = linkCsvString;
-      linkLink.download = "边.csv";
-      document.body.appendChild(linkLink);
-      linkLink.click();
-      document.body.removeChild(linkLink);
+    //   // 保存边的信息
+    //   let linkCsvString = tLinkHeader;
+    //   linkCsvString += "\r\n";
+    //   graphData.links.forEach((item) => {
+    //     linkFilter.forEach((key) => {
+    //       let value = item[key];
+    //       linkCsvString += value + ",";
+    //     });
+    //     linkCsvString += "\r\n";
+    //   });
+    //   linkCsvString =
+    //     "data:text/csv;charset=utf-8,\ufeff" +
+    //     encodeURIComponent(linkCsvString);
+    //   let linkLink = document.createElement("a");
+    //   linkLink.href = linkCsvString;
+    //   linkLink.download = "边.csv";
+    //   document.body.appendChild(linkLink);
+    //   linkLink.click();
+    //   document.body.removeChild(linkLink);
 
-      // 下载图片
-      if (cy) {
-        let blob = cy.png({
-          output: "blob",
-          bg: "transparent",
-          full: true,
-          scale: 4,
-          quality: 1,
-        });
-        let aLink = document.createElement("a");
-        let evt = document.createEvent("HTMLEvents");
-        evt.initEvent("click", true, true);
-        aLink.download = `${new Date().getTime()}.png`;
-        aLink.href = URL.createObjectURL(blob);
-        aLink.dispatchEvent(evt);
-        document.body.appendChild(aLink);
-        aLink.click();
-        document.body.removeChild(aLink);
-      }
-      // 下载整个子图的数据
-      var dataBlob = new Blob([JSON.stringify(graphData)], {
-        type: "text/json",
-      });
-      var e = document.createEvent("MouseEvents");
-      var a = document.createElement("a");
-      a.download = "graph.json";
-      a.href = window.URL.createObjectURL(dataBlob);
-      a.dataset.downloadurl = ["text/json", a.download, a.href].join(":");
-      e.initMouseEvent(
-        "click",
-        true,
-        false,
-        window,
-        0,
-        0,
-        0,
-        0,
-        0,
-        false,
-        false,
-        false,
-        false,
-        0,
-        null
-      );
-      a.dispatchEvent(e);
-      return;
-    }
+    //   // 下载图片
+    //   if (cy) {
+    //     let blob = cy.png({
+    //       output: "blob",
+    //       bg: "transparent",
+    //       full: true,
+    //       scale: 4,
+    //       quality: 1,
+    //     });
+    //     let aLink = document.createElement("a");
+    //     let evt = document.createEvent("HTMLEvents");
+    //     evt.initEvent("click", true, true);
+    //     aLink.download = `${new Date().getTime()}.png`;
+    //     aLink.href = URL.createObjectURL(blob);
+    //     aLink.dispatchEvent(evt);
+    //     document.body.appendChild(aLink);
+    //     aLink.click();
+    //     document.body.removeChild(aLink);
+    //   }
+    //   // 下载整个子图的数据
+    //   var dataBlob = new Blob([JSON.stringify(graphData)], {
+    //     type: "text/json",
+    //   });
+    //   var e = document.createEvent("MouseEvents");
+    //   var a = document.createElement("a");
+    //   a.download = "graph.json";
+    //   a.href = window.URL.createObjectURL(dataBlob);
+    //   a.dataset.downloadurl = ["text/json", a.download, a.href].join(":");
+    //   e.initMouseEvent(
+    //     "click",
+    //     true,
+    //     false,
+    //     window,
+    //     0,
+    //     0,
+    //     0,
+    //     0,
+    //     0,
+    //     false,
+    //     false,
+    //     false,
+    //     false,
+    //     0,
+    //     null
+    //   );
+    //   a.dispatchEvent(e);
+    //   return;
+    // }
 
     // 下载提交之前的数据
     if (data.nodes.length !== 0) {
@@ -1542,7 +1542,7 @@ export default function MainView({ w, h }) {
           bg: "transparent",
           full: true,
           scale: 4,
-          quality: 1,
+          // quality: 1,
         });
         let aLink = document.createElement("a");
         let evt = document.createEvent("HTMLEvents");
@@ -1550,7 +1550,7 @@ export default function MainView({ w, h }) {
         aLink.download = `${new Date().getTime()}.png`;
         aLink.href = URL.createObjectURL(blob);
         aLink.dispatchEvent(evt);
-        document.body.appendChild(aLink);
+        // document.body.appendChild(aLink);
         aLink.click();
         document.body.removeChild(aLink);
       }
