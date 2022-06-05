@@ -457,6 +457,7 @@ export default function MainView({ w, h }) {
         nodes: nodes,
         links: links,
       }).then((res) => {
+        console.log(res)
         setData(res);
         setDifChartInput(res);
       });
