@@ -715,9 +715,9 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
     }
     for (let j of nowData) {
       if (j["end"][0] == i["linksNumId"][1]) {
-        if(j["industryNum"] == 0){
-          continue
-        }
+        // if(j["industryNum"] == 0){
+        //   continue
+        // }
         for (let k of j["nodes"]) {
           // 当前独立节点是否包含此节点
           if (!existNodeList.hasOwnProperty(k[0])) {
@@ -2291,8 +2291,8 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
   // 获取节点和链路的长度-----------------------------------------------------------------------
   numnode = nodes.length;
   numlink = links.length;
-
-  if (numnode < 300) {
+  let groupscope = ""
+  if (numnode < 400) {
     groupscope = "小";
   } else if (numnode < 800) {
     groupscope = "中";
@@ -2311,7 +2311,7 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
     industryType.push(i["industry"]);
   }
   let grouptype = "单一型";
-  industryTypeSet = Array.from(new Set(industryType));
+  let industryTypeSet = Array.from(new Set(industryType));
   if (industryTypeSet.size > 1) {
     grouptype = "复合型";
   }
