@@ -120,6 +120,8 @@ export default function MainView({ w, h }) {
   const [fromTableLink, setFromTableLink] = useState([]);
   const [fromIndustryStackNode, setFromIndustryStackNode] = useState("");
   const [data, setData] = useState({ nodes: [], links: [] });
+  const [nodeNumber, setNodeNumber] = useState(0)
+  const [linkNumber, setLinkNumber] = useState(0)
   const [dataFirst, setDataFirst] = useState(true);
   const [dataParam, setDataParam] = useState("");
   const [isSubmit, setIsSubmit] = useState(false); // 判断是否提交了团体数据
@@ -199,29 +201,44 @@ export default function MainView({ w, h }) {
       });
     }
 
-
-    // Promise.all([
-    //   fetch("./data/group1/BulletChartData.json").then(function (res) {
-    //     return res.json();
-    //   }),
-    //   fetch("./data/group1/CoreLinks.json").then(function (res) {
-    //     return res.json();
-    //   }),
-    //   fetch("./data/group1/DetialList.json").then(function (res) {
-    //     return res.json();
-    //   }),
-    //   fetch("./data/group1/FinalData.json").then(function (res) {
-    //     return res.json();
-    //   }),
-    //   fetch("./data/group1/IdentifyICNodes.json").then(function (res) {
-    //     return res.json();
-    //   }),
-    //   fetch("./data/group1/InfoList.json").then(function (res) {
-    //     return res.json();
-    //   }),
-    // ]).then(function(wholeData){
-    //   console.log(wholeData);
-    // })
+    if(isSubmit === true){
+      Promise.all([
+        fetch("./data/group1/BulletChartData.json").then(function (res) {
+          return res.json();
+        }),
+        fetch("./data/group1/DetialList.json").then(function (res) {
+          console.log(res);
+          return res.json();
+        }),
+        fetch("./data/group1/MainChartData.json").then(function (res) {
+          return res.json();
+        }),
+        fetch("./data/group1/FinalData.json").then(function (res) {
+          return res.json();
+        }),
+        fetch("./data/group1/IdentifyICNodes.json").then(function (res) {
+          return res.json();
+        }),
+        fetch("./data/group1/InfoList.json").then(function (res) {
+          return res.json();
+        }),
+      ]).then(function(wholeData){
+        console.log(wholeData);
+        PubSub.publish("combinedNodeTableDt", [
+          wholeData[1],
+          wholeData[0],
+        ]); 
+        PubSub.publish("combinedLinkTableDt", [
+          wholeData[1],
+          wholeData[0],
+        ]);
+        PubSub.publish("industryStackDt",wholeData[4]);
+        PubSub.publish("fromMainToInfoList", wholeData[5]); 
+        PubSub.publish("fromMainToConclusion", wholeData[3]);
+        graphData = wholeData[2]; 
+        setData(wholeData[2]);
+      })
+    }
 
   }, [resData]);
 
@@ -330,6 +347,8 @@ export default function MainView({ w, h }) {
       ur.undo();
 
       getDataForDifChart();
+      
+      getNodeLinkNumber()  // 获取节点数和边数
     }
     setUndoOut(false);
   }, [undoOut]);
@@ -339,6 +358,7 @@ export default function MainView({ w, h }) {
     if (redoIn) {
       ur.redo();
       getDataForDifChart();
+      getNodeLinkNumber()  // 获取节点数和边数
     }
     setRedoIn(false);
   }, [redoIn]);
@@ -348,6 +368,7 @@ export default function MainView({ w, h }) {
     if (rollback) {
       ur.undoAll();
       getDataForDifChart();
+      getNodeLinkNumber()  // 获取节点数和边数
     }
     setRollback(false);
   }, [rollback]);
@@ -555,6 +576,9 @@ export default function MainView({ w, h }) {
       };
       cy.navigator(defaults);
 
+
+      getNodeLinkNumber()  // 获取节点数和边数
+
       layoutOption = layoutOptionDict[chartLayout];
       layout = cy.layout(layoutOption);
       layout.run();
@@ -574,15 +598,18 @@ export default function MainView({ w, h }) {
           if (selecteds.length > 0) {
             ur.do("remove", selecteds);
             getDataForDifChart();
+            getNodeLinkNumber()  // 获取节点数和边数
           }
         }
         if (e.ctrlKey && e.target.nodeName === "BODY")
           if (e.which === 90) {
             ur.undo();
             getDataForDifChart();
+            getNodeLinkNumber()  // 获取节点数和边数
           } else if (e.which === 89) {
             ur.redo();
             getDataForDifChart();
+            getNodeLinkNumber()  // 获取节点数和边数
           }
       });
 
@@ -722,97 +749,6 @@ export default function MainView({ w, h }) {
     });
   }
 
-  // 绘制控制面板
-  const options = [
-    {
-      value: "node",
-      label: "node",
-      children: [
-        {
-          value: "Domain",
-          label: "Domain",
-        },
-        {
-          value: "IP",
-          label: "IP",
-        },
-        {
-          value: "Cert",
-          label: "Cert",
-        },
-        {
-          value: "Whois_Name",
-          label: "Whois_Name",
-        },
-        {
-          value: "Whois_Phone",
-          label: "Whois_Phone",
-        },
-        {
-          value: "Whois_Email",
-          label: "Whois_Email",
-        },
-        {
-          value: "IP_C",
-          label: "IP_C",
-        },
-        {
-          value: "ASN",
-          label: "ASN",
-        },
-      ],
-    },
-    {
-      value: "edge",
-      label: "edge",
-      children: [
-        {
-          value: "r_cert",
-          label: "r_cert",
-        },
-        {
-          value: "r_subdomain",
-          label: "r_subdomain",
-        },
-        {
-          value: "r_request_jump",
-          label: "r_request_jump",
-        },
-        {
-          value: "r_dns_a",
-          label: "r_dns_a",
-        },
-        {
-          value: "r_whois_name",
-          label: "r_whois_name",
-        },
-        {
-          value: "r_whois_email",
-          label: "r_whois_email",
-        },
-        {
-          value: "r_whois_phone",
-          label: "r_whois_phone",
-        },
-        {
-          value: "r_cert_chain",
-          label: "r_cert_chain",
-        },
-        {
-          value: "r_cname",
-          label: "r_cname",
-        },
-        {
-          value: "r_asn",
-          label: "r_asn",
-        },
-        {
-          value: "r_cidr",
-          label: "r_cidr",
-        },
-      ],
-    },
-  ];
 
   // 筛选产业类别
   function onSearchIndustry(value) {
@@ -917,6 +853,12 @@ export default function MainView({ w, h }) {
             : ele.degree() > 60
             ? 60*value
             : ele.degree()*value
+        },
+        'border-width': function(ele){
+          if(ele.hasClass('isCore') === true){
+            return 3*value/2 + 'px'
+          }
+          return 0
         }
       })
 
@@ -950,6 +892,8 @@ export default function MainView({ w, h }) {
 
   // 获取确定当前为一个子图并在右侧展示子图的数据
   function onSubmitRes() {
+    setIsSubmit(true); // 确定提交
+    setShowCoreAble(true); // 提交之后可以应用核心资产和关键路径的样式
     if(cy){
       let nodes, links;
       nodes = cy.nodes().map(function (ele, i) {
@@ -1638,6 +1582,23 @@ export default function MainView({ w, h }) {
     }
   }
 
+  function getNodeLinkNumber(){
+    if(cy){
+      let nodeNum = 0, linkNum;
+      cy.nodes().forEach(ele => {
+        if(!ele.json().data.hasOwnProperty('children')){   // 没有子节点
+          nodeNum += 1
+        }else{
+          nodeNum += ele.json().data.children.length
+        }
+      })
+      linkNum = cy.edges().length
+
+      setNodeNumber(nodeNum)
+      setLinkNumber(linkNum)
+    }
+  }
+  
   return (
     <div
       id="main-container"
@@ -1672,8 +1633,8 @@ export default function MainView({ w, h }) {
               style={{ width: 120 }}
             />
             <Tag color="#87d068" 
-              style={{ marginLeft: "50px", fontSize: '14px', lineHeight: 2, width: 70, paddingLeft: 0, textAlign: 'center', fontFamily: 'monospace' }}>点#  {data.nodes.length}</Tag>
-            <Tag color="#2db7f5"  style={{ fontSize: '14px', lineHeight: 2, width: 70, paddingLeft: 0, textAlign: 'center', fontFamily: 'monospace'  }}>边#  {data.links.length}</Tag>
+              style={{ marginLeft: "50px", fontSize: '14px', lineHeight: 2, width: 70, paddingLeft: 0, textAlign: 'center', fontFamily: 'monospace' }}>点#  {nodeNumber}</Tag>
+            <Tag color="#2db7f5"  style={{ fontSize: '14px', lineHeight: 2, width: 70, paddingLeft: 0, textAlign: 'center', fontFamily: 'monospace'  }}>边#  {linkNumber}</Tag>
 
             <Button
               type="dashed"
