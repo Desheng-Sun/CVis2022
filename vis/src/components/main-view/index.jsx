@@ -457,7 +457,7 @@ export default function MainView({ w, h }) {
         nodes: nodes,
         links: links,
       }).then((res) => {
-        console.log(res)
+        console.log(res);
         setData(res);
         setDifChartInput(res);
       });
@@ -872,6 +872,36 @@ export default function MainView({ w, h }) {
   }
   function onChangeNodeDistance(value) {
     setNodeDistance(value);
+  }
+  function onChangeNodeSize(value){
+    if(cy){
+      cy.style()
+      .selector('node')
+      .style({
+        width: function (ele) {
+          return ele.degree() < 30
+            ? 30*value
+            : ele.degree() > 60
+            ? 60*value
+            : ele.degree()*value
+        },
+        height: function (ele) {
+          return ele.degree() < 30
+            ? 30*value
+            : ele.degree() > 60
+            ? 60*value
+            : ele.degree()*value
+        }
+      })
+      
+      cy.style()
+      .selector('edge')
+      .style({
+        width: 3*value/2,
+      })
+      .update()
+
+    }
   }
   function filter(inputValue, path) {
     return path.some(
@@ -1542,8 +1572,10 @@ export default function MainView({ w, h }) {
           output: "blob",
           bg: "transparent",
           full: true,
-          scale: 4,
-          quality: 1,
+          scale: 1,
+          maxWidth: 15000,
+          maxHeight: 15000,
+          // quality: 1,
         });
         let aLink = document.createElement("a");
         let evt = document.createEvent("HTMLEvents");
@@ -1555,11 +1587,12 @@ export default function MainView({ w, h }) {
         aLink.click();
         document.body.removeChild(aLink);
       }
+      console.log(data);
+
       // 下载整个子图的数据
       var dataBlob = new Blob([JSON.stringify(data)], {
         type: "text/json",
       });
-      console.log(data);
       var e = document.createEvent("MouseEvents");
       var a = document.createElement("a");
       a.download = "提交前的图.json";
@@ -1568,19 +1601,7 @@ export default function MainView({ w, h }) {
       e.initMouseEvent(
         "click",
         true,
-        false,
-        window,
-        0,
-        0,
-        0,
-        0,
-        0,
-        false,
-        false,
-        false,
-        false,
-        0,
-        null
+        true,
       );
       a.dispatchEvent(e);
     }
@@ -1597,7 +1618,7 @@ export default function MainView({ w, h }) {
           style={{
             display: "flex",
             flexDirection: "row",
-            background: "#dacfca",
+            background: "#eaeaea",
             paddingTop: "5px",
             paddingLeft: "10px",
             lineHeight: 2.2,
@@ -1664,7 +1685,7 @@ export default function MainView({ w, h }) {
           style={{
             display: "flex",
             flexDirection: "row",
-            background: "#dacfca",
+            background: "#eaeaea",
             paddingTop: "2px",
             paddingLeft: "10px",
             paddingBottom: "5px",
@@ -1676,7 +1697,7 @@ export default function MainView({ w, h }) {
             布&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;局&nbsp;&nbsp;&nbsp;
             <Select
               value={chartLayout}
-              style={{ width: 120 }}
+              style={{ width: 80 }}
               onChange={onChangeLayout}
             >
               <Option value="euler">euler</Option>
@@ -1689,15 +1710,15 @@ export default function MainView({ w, h }) {
           <div
             id="node-distance"
             style={{
-              paddingLeft: "30px",
+              paddingLeft: "10px",
               display: "flex",
               alignItems: "center",
             }}
           >
-            节点距离
+            节点距离&nbsp;
             <Slider
               min={1}
-              max={20}
+              max={200}
               value={nodeDistance}
               onChange={onChangeNodeDistance}
               style={{ width: 120 }}
@@ -1706,18 +1727,34 @@ export default function MainView({ w, h }) {
           <div
             id="edge-length"
             style={{
-              paddingLeft: "30px",
+              paddingLeft: "20px",
               display: "flex",
               alignItems: "center",
             }}
           >
-            边长度
+            边长&nbsp;
             <Slider
               min={1}
-              max={50}
+              max={200}
               value={edgeLength}
               onChange={onChangeEdgeLength}
               style={{ width: 120 }}
+            />
+          </div>
+          <div
+            id="node-size"
+            style={{
+              paddingLeft: "20px",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            节点大小&nbsp;
+            <Slider
+              min={1}
+              max={20}
+              onChange={onChangeNodeSize}
+              style={{ width: 80 }}
             />
           </div>
           <Checkbox onChange={addArrow}>箭头</Checkbox>

@@ -103,24 +103,24 @@ export default function Layout() {
             <ClueDense w={cluedenseWidth} h={cluedenseHeight} />
           </div>
           <div id="filteric">
-            <ChartHeader chartName={"冰柱图"} />
+            <ChartHeader chartName={"IP | Cert 跳转图"} />
             <ICClueChart w={icClueChartWidth} h={icClueChartHeight} />
           </div>
         </div>
         <div id="iright">
           <div id="container-mainmap">
             <div id="mainmap">
-              <ChartHeader chartName={"黑灰产网络资产图"} />
+              <ChartHeader chartName={"黑灰产网络资产子图"} />
               <MainView w={mainChartWidth} h={mainChartHeight} />
             </div>
           </div>
           <div id="container-filter">
             <div id="nodelinkic">
-              <ChartHeader chartName={"IP <——> Cert"} />
+              <ChartHeader chartName={"IP-Cert链路图"} />
               <SkeletonChart w={skeletonChartWidth} h={skeletonChartHeight} />
             </div>
             <div id="deleterelation">
-              <ChartHeader chartName={"差异视图"} />
+              <ChartHeader chartName={"黑灰产业对比图"} />
               <DifChart w={difChartWidth} h={difChartHeight} />
             </div>
           </div>

@@ -65,13 +65,13 @@
   {
     "selector": "edge[relation=\"r_subdomain\"]",
     "style": {
-      "line-color": "#2978b4"
+      "line-color": "#34B3F1"
     }
   },
   {
     "selector": "edge[relation=\"r_request_jump\"]",
     "style": {
-      "line-color": "#1e38a1"
+      "line-color": "#242F9B"
     }
   },
   {

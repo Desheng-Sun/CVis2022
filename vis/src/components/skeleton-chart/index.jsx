@@ -52,7 +52,6 @@ export default function SkeletonChart({ w, h }) {
         return;
       }
       getSkeletonChartDataSds(currIc).then((res) => {
-        // console.log('currIc', currIc);
         setData(res);
       });
     }
@@ -142,7 +141,7 @@ export default function SkeletonChart({ w, h }) {
 
     if (nodes.length === 0) return;
 
-    let svgToVbScale = nodes.length > 300 ? 1.5 : 1;
+    let svgToVbScale = nodes.length < 300 ? 1 :  nodes.length < 500? 1.5: 2;
     let vbWidth = svgWidth * svgToVbScale;
     let vbHeight = svgHeight * svgToVbScale;
     // 获取边对的关系
@@ -195,23 +194,23 @@ export default function SkeletonChart({ w, h }) {
     const groups = wrapper.append("g").attr("class", "groups");
     // 节点的右键事件
     const menu = [
-      // {
-      //   title: "取消选择",
-      //   action: function (groupId, event) {
-      //     d3.select(this).classed("selected", false).attr("fill", "white");
-      //     // .attr("opacity", 0.2);
+      {
+        title: "取消选择",
+        action: function (groupId, event) {
+          d3.select(this).classed("selected", false).attr("fill", "white");
+          // .attr("opacity", 0.2);
 
-      //     // 获取被取消数据对应的numId
-      //     let numId = nodes
-      //       .filter((d) => d.group === groupId)
-      //       .map((d) => d.numId)[0];
-      //     selectedNodeAll = selectedNodeAll.filter((d) => d !== numId); // 从被选择的节点里面清楚这个点
+          // 获取被取消数据对应的numId
+          let numId = nodes
+            .filter((d) => d.group === groupId)
+            .map((d) => d.numId)[0];
+          selectedNodeAll = selectedNodeAll.filter((d) => d !== numId); // 从被选择的节点里面清楚这个点
 
-      //     // setSelectedNode((selectedNode) =>
-      //     //   selectedNode.filter((d) => d !== numId)
-      //     // );
-      //   },
-      // },
+          // setSelectedNode((selectedNode) =>
+          //   selectedNode.filter((d) => d !== numId)
+          // );
+        },
+      },
       {
         title: "复制id",
         action: function (groupId, event) {
@@ -372,7 +371,6 @@ export default function SkeletonChart({ w, h }) {
           .links(links)
           .id((d) => d.id)
           .strength(linkStrength)
-        // .iterations(100)
       );
     } else {
       simulation.force(
@@ -382,7 +380,7 @@ export default function SkeletonChart({ w, h }) {
           .links(links)
           .id((d) => d.id)
           .strength(0.1)
-        // .iterations(100)
+
       );
     }
 
