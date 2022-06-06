@@ -902,8 +902,8 @@ export default function MainView({ w, h }) {
       links = cy.edges().map(function (ele, i) {
         return ele.json().data;
       });
-      setIsSubmit(true); // 确定提交
-      setShowCoreAble(true); // 提交之后可以应用核心资产和关键路径的样式
+      // setIsSubmit(true); // 确定提交
+      // setShowCoreAble(true); // 提交之后可以应用核心资产和关键路径的样式
       setResData({ nodes: [...nodes], links: [...links] });
     }
     else{
@@ -934,7 +934,10 @@ export default function MainView({ w, h }) {
 
       inICLinks = inICLinks[0]["InICLinks"];
 
+      
       let inICLinksAfterDelete = []; // 删除后的ICLinks
+      console.log(inICLinks);
+      if(inICLinks == undefined) return
 
       inICLinks.forEach((item, index) => {
         let l = item.split(",");
