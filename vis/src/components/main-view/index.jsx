@@ -893,7 +893,7 @@ export default function MainView({ w, h }) {
             : ele.degree()*value
         }
       })
-      
+
       cy.style()
       .selector('edge')
       .style({
@@ -1193,12 +1193,12 @@ export default function MainView({ w, h }) {
     ];
     let edgeColor = [
       "#ff756a",
-      "#2978b4",
-      "#1e38a1",
+      "#34B3F1",
+      "#242F9B",
       "#33a02c",
       "#f67f02",
       "#f9b4ae",
-      "#a6cee3",
+      "#BAABDA",
       "#f9bf6f",
       "#7fc97f",
     ];

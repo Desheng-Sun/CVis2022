@@ -2,7 +2,7 @@
   {
     "selector": "edge",
     "style": {
-      "opacity": 0.6
+      "opacity": 0.8
     }
   },
   {
@@ -101,7 +101,7 @@
   {
     "selector": "edge[relation=\"r_cname\"]",
     "style": {
-      "line-color": "#a6cee3"
+      "line-color": "#BAABDA"
     }
   },
   {

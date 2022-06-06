@@ -317,7 +317,7 @@ export default function DifChart({ w, h }) {
     let diffLegendSvg = d3
       .select("#diff-legend")
       .append("svg")
-      .attr("width", svgWidth)
+      .attr("width", svgWidth*0.95)
       .attr("height", "25px");
     diffLegendSvg
       .append("g")
@@ -327,20 +327,20 @@ export default function DifChart({ w, h }) {
       .join("rect")
       .attr("fill", (d) => industryColorDict[d])
       .attr("x", (d, i) => {
-        return ((svgWidth - 10) / industrySet.length) * i;
+        return ((svgWidth*0.95 - 5) / industrySet.length) * i;
       })
       .attr("y", 2)
       .attr("height", 20)
-      .attr("width", (svgWidth - 10) / industrySet.length);
+      .attr("width", (svgWidth*0.95 - 5) / industrySet.length);
     diffLegendSvg
       .append("g")
       .selectAll("text")
       .data(industrySet)
       .join("text")
       .attr("class", "legend-text")
-      .attr("width", (svgWidth - 10) / industrySet.length)
+      .attr("width", (svgWidth*0.95 - 5) / industrySet.length)
       .attr("x", (d, i) => {
-        return ((svgWidth - 10) / industrySet.length) * (i + 0.5);
+        return ((svgWidth*0.95 - 5) / industrySet.length) * (i + 0.5);
       })
       .attr("y", 15)
       .text((d) => {
@@ -352,7 +352,7 @@ export default function DifChart({ w, h }) {
     <div id="difference-chart">
       <div
         id="diff-legend"
-        style={{ width: "100%", height: "5%", paddingLeft: "5px" }}
+        style={{ width: "100%", height: "5%", paddingLeft: "2px" }}
       ></div>
       <div id="diff-all-chart" style={{ width: "100%", height: "95%" }}>
         <div id="all-industry" style={{ width: "10%", height: "100%" }}></div>
