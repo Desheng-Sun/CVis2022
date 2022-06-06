@@ -2053,6 +2053,19 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
       nodes.push(i);
     }
   }
+  fs.writeFileSync(
+    nowPath + "Challenge/" + startNumId + ".json",
+    JSON.stringify({
+      nodes: nodes,
+      links: links
+    }),
+    "utf-8",
+    (err) => {
+      if (err) {
+        console.error(err);
+      }
+    }
+  );
   console.log(1)
   const getInfoListData = getInfoListSds(nodes, links)
   console.log(2)
@@ -2090,6 +2103,9 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
     coreICNodes.sort((a, b) => a - b)
     let coreICLinks = []
     for (let i of coreICNodes) {
+      if (!ICLinksInfo.hasOwnProperty(i)) {
+        continue
+      }
       for (let j of ICLinksInfo[i]) {
         if (j[1] > j[0]) {
           if (coreICNodes.indexOf(j[1]) > -1) {
