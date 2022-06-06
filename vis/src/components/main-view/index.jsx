@@ -873,6 +873,36 @@ export default function MainView({ w, h }) {
   function onChangeNodeDistance(value) {
     setNodeDistance(value);
   }
+  function onChangeNodeSize(value){
+    if(cy){
+      cy.style()
+      .selector('node')
+      .style({
+        width: function (ele) {
+          return ele.degree() < 30
+            ? 30*value
+            : ele.degree() > 60
+            ? 60*value
+            : ele.degree()*value
+        },
+        height: function (ele) {
+          return ele.degree() < 30
+            ? 30*value
+            : ele.degree() > 60
+            ? 60*value
+            : ele.degree()*value
+        }
+      })
+      
+      cy.style()
+      .selector('edge')
+      .style({
+        width: 3*value/2,
+      })
+      .update()
+
+    }
+  }
   function filter(inputValue, path) {
     return path.some(
       (option) =>
@@ -1430,163 +1460,150 @@ export default function MainView({ w, h }) {
   // 下载图数据与子图
   function onDownload() {
     // 下载提交后的子图的数据
-    // if (graphData != undefined) {
-    //   const tNodeHeader = "id,name,type,industry,isCore,";
-    //   var nodeFilter = ["id", "name", "type", "industry", "isCore"];
-    //   const tLinkHeader = "relation,source,target,isCore,";
-    //   var linkFilter = ["relation", "source", "target", "isCore"];
-    //   // 保存节点信息
-    //   let nodeCsvString = tNodeHeader;
-    //   nodeCsvString += "\r\n";
-    //   graphData.nodes.forEach((item) => {
-    //     nodeFilter.forEach((key) => {
-    //       let value = item[key];
-    //       if (key === "industry") {
-    //         let valueArr;
-    //         if (value === "  ") {
-    //           valueArr = "[]";
-    //         } else {
-    //           valueArr = '"[' + value.split("").toString() + ']"';
-    //         }
-    //         nodeCsvString += valueArr + ",";
-    //       } else {
-    //         nodeCsvString += value + ",";
-    //       }
-    //     });
-    //     nodeCsvString += "\r\n";
-    //   });
-    //   nodeCsvString =
-    //     "data:text/csv;charset=utf-8,\ufeff" +
-    //     encodeURIComponent(nodeCsvString);
-    //   let nodeLink = document.createElement("a");
-    //   nodeLink.href = nodeCsvString;
-    //   nodeLink.download = "节点.csv";
-    //   document.body.appendChild(nodeLink);
-    //   nodeLink.click();
-    //   document.body.removeChild(nodeLink);
+    if (graphData != undefined) {
+      const tNodeHeader = "id,name,type,industry,isCore,";
+      var nodeFilter = ["id", "name", "type", "industry", "isCore"];
+      const tLinkHeader = "relation,source,target,isCore,";
+      var linkFilter = ["relation", "source", "target", "isCore"];
+      // 保存节点信息
+      let nodeCsvString = tNodeHeader;
+      nodeCsvString += "\r\n";
+      graphData.nodes.forEach((item) => {
+        nodeFilter.forEach((key) => {
+          let value = item[key];
+          if (key === "industry") {
+            let valueArr;
+            if (value === "  ") {
+              valueArr = "[]";
+            } else {
+              valueArr = '"[' + value.split("").toString() + ']"';
+            }
+            nodeCsvString += valueArr + ",";
+          } else {
+            nodeCsvString += value + ",";
+          }
+        });
+        nodeCsvString += "\r\n";
+      });
+      nodeCsvString =
+        "data:text/csv;charset=utf-8,\ufeff" +
+        encodeURIComponent(nodeCsvString);
+      let nodeLink = document.createElement("a");
+      nodeLink.href = nodeCsvString;
+      nodeLink.download = "节点.csv";
+      document.body.appendChild(nodeLink);
+      nodeLink.click();
+      document.body.removeChild(nodeLink);
 
-    //   // 保存边的信息
-    //   let linkCsvString = tLinkHeader;
-    //   linkCsvString += "\r\n";
-    //   graphData.links.forEach((item) => {
-    //     linkFilter.forEach((key) => {
-    //       let value = item[key];
-    //       linkCsvString += value + ",";
-    //     });
-    //     linkCsvString += "\r\n";
-    //   });
-    //   linkCsvString =
-    //     "data:text/csv;charset=utf-8,\ufeff" +
-    //     encodeURIComponent(linkCsvString);
-    //   let linkLink = document.createElement("a");
-    //   linkLink.href = linkCsvString;
-    //   linkLink.download = "边.csv";
-    //   document.body.appendChild(linkLink);
-    //   linkLink.click();
-    //   document.body.removeChild(linkLink);
+      // 保存边的信息
+      let linkCsvString = tLinkHeader;
+      linkCsvString += "\r\n";
+      graphData.links.forEach((item) => {
+        linkFilter.forEach((key) => {
+          let value = item[key];
+          linkCsvString += value + ",";
+        });
+        linkCsvString += "\r\n";
+      });
+      linkCsvString =
+        "data:text/csv;charset=utf-8,\ufeff" +
+        encodeURIComponent(linkCsvString);
+      let linkLink = document.createElement("a");
+      linkLink.href = linkCsvString;
+      linkLink.download = "边.csv";
+      document.body.appendChild(linkLink);
+      linkLink.click();
+      document.body.removeChild(linkLink);
 
-    //   // 下载图片
-    //   if (cy) {
-    //     let blob = cy.png({
-    //       output: "blob",
-    //       bg: "transparent",
-    //       full: true,
-    //       scale: 4,
-    //       quality: 1,
-    //     });
-    //     let aLink = document.createElement("a");
-    //     let evt = document.createEvent("HTMLEvents");
-    //     evt.initEvent("click", true, true);
-    //     aLink.download = `${new Date().getTime()}.png`;
-    //     aLink.href = URL.createObjectURL(blob);
-    //     aLink.dispatchEvent(evt);
-    //     document.body.appendChild(aLink);
-    //     aLink.click();
-    //     document.body.removeChild(aLink);
-    //   }
-    //   // 下载整个子图的数据
-    //   var dataBlob = new Blob([JSON.stringify(graphData)], {
-    //     type: "text/json",
-    //   });
-    //   var e = document.createEvent("MouseEvents");
-    //   var a = document.createElement("a");
-    //   a.download = "graph.json";
-    //   a.href = window.URL.createObjectURL(dataBlob);
-    //   a.dataset.downloadurl = ["text/json", a.download, a.href].join(":");
-    //   e.initMouseEvent(
-    //     "click",
-    //     true,
-    //     false,
-    //     window,
-    //     0,
-    //     0,
-    //     0,
-    //     0,
-    //     0,
-    //     false,
-    //     false,
-    //     false,
-    //     false,
-    //     0,
-    //     null
-    //   );
-    //   a.dispatchEvent(e);
-    //   return;
-    // }
+      // 下载图片
+      if (cy) {
+        let blob = cy.png({
+          output: "blob",
+          bg: "transparent",
+          full: true,
+          scale: 4,
+          quality: 1,
+        });
+        let aLink = document.createElement("a");
+        let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("click", true, true);
+        aLink.download = `${new Date().getTime()}.png`;
+        aLink.href = URL.createObjectURL(blob);
+        aLink.dispatchEvent(evt);
+        document.body.appendChild(aLink);
+        aLink.click();
+        document.body.removeChild(aLink);
+      }
+      // 下载整个子图的数据
+      var dataBlob = new Blob([JSON.stringify(graphData)], {
+        type: "text/json",
+      });
+      var e = document.createEvent("MouseEvents");
+      var a = document.createElement("a");
+      a.download = "graph.json";
+      a.href = window.URL.createObjectURL(dataBlob);
+      a.dataset.downloadurl = ["text/json", a.download, a.href].join(":");
+      e.initMouseEvent(
+        "click",
+        true,
+        false,
+        window,
+        0,
+        0,
+        0,
+        0,
+        0,
+        false,
+        false,
+        false,
+        false,
+        0,
+        null
+      );
+      a.dispatchEvent(e);
+      return;
+    }
 
     // 下载提交之前的数据
     if (data.nodes.length !== 0) {
       // 下载图片
       if (cy) {
-        // let blob = cy.png({
-        //   output: "blob",
-        //   bg: "transparent",
-        //   full: true,
-        //   scale: 4,
-        //   maxWidth: 15000,
-        //   maxHeight: 15000,
-        //   // quality: 1,
-        // });
-        // let aLink = document.createElement("a");
-        // let evt = document.createEvent("HTMLEvents");
-        // evt.initEvent("click", true, true);
-        // aLink.download = `${new Date().getTime()}.png`;
-        // aLink.href = URL.createObjectURL(blob);
-        // aLink.dispatchEvent(evt);
-        // document.body.appendChild(aLink);
-        // aLink.click();
-        // document.body.removeChild(aLink);
+        let blob = cy.png({
+          output: "blob",
+          bg: "transparent",
+          full: true,
+          scale: 1,
+          maxWidth: 15000,
+          maxHeight: 15000,
+          // quality: 1,
+        });
+        let aLink = document.createElement("a");
+        let evt = document.createEvent("HTMLEvents");
+        evt.initEvent("click", true, true);
+        aLink.download = `${new Date().getTime()}.png`;
+        aLink.href = URL.createObjectURL(blob);
+        aLink.dispatchEvent(evt);
+        document.body.appendChild(aLink);
+        aLink.click();
+        document.body.removeChild(aLink);
       }
       console.log(data);
 
       // 下载整个子图的数据
-      // var dataBlob = new Blob([JSON.stringify(data)], {
-      //   type: "text/json",
-      // });
-
-      // var e = document.createEvent("MouseEvents");
-      // var a = document.createElement("a");
-      // a.download = "提交前的图.json";
-      // a.href = window.URL.createObjectURL(dataBlob);
-      // a.dataset.downloadurl = ["text/json", a.download, a.href].join(":");
-      // e.initMouseEvent(
-      //   "click",
-      //   true,
-      //   false,
-      //   window,
-      //   0,
-      //   0,
-      //   0,
-      //   0,
-      //   0,
-      //   false,
-      //   false,
-      //   false,
-      //   false,
-      //   0,
-      //   null
-      // );
-      // a.dispatchEvent(e);
+      var dataBlob = new Blob([JSON.stringify(data)], {
+        type: "text/json",
+      });
+      var e = document.createEvent("MouseEvents");
+      var a = document.createElement("a");
+      a.download = "提交前的图.json";
+      a.href = window.URL.createObjectURL(dataBlob);
+      a.dataset.downloadurl = ["text/json", a.download, a.href].join(":");
+      e.initMouseEvent(
+        "click",
+        true,
+        true,
+      );
+      a.dispatchEvent(e);
     }
   }
 
@@ -1680,7 +1697,7 @@ export default function MainView({ w, h }) {
             布&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;局&nbsp;&nbsp;&nbsp;
             <Select
               value={chartLayout}
-              style={{ width: 120 }}
+              style={{ width: 80 }}
               onChange={onChangeLayout}
             >
               <Option value="euler">euler</Option>
@@ -1693,15 +1710,15 @@ export default function MainView({ w, h }) {
           <div
             id="node-distance"
             style={{
-              paddingLeft: "30px",
+              paddingLeft: "10px",
               display: "flex",
               alignItems: "center",
             }}
           >
-            节点距离
+            节点距离&nbsp;
             <Slider
               min={1}
-              max={20}
+              max={200}
               value={nodeDistance}
               onChange={onChangeNodeDistance}
               style={{ width: 120 }}
@@ -1710,18 +1727,34 @@ export default function MainView({ w, h }) {
           <div
             id="edge-length"
             style={{
-              paddingLeft: "30px",
+              paddingLeft: "20px",
               display: "flex",
               alignItems: "center",
             }}
           >
-            边长度
+            边长&nbsp;
             <Slider
               min={1}
-              max={50}
+              max={200}
               value={edgeLength}
               onChange={onChangeEdgeLength}
               style={{ width: 120 }}
+            />
+          </div>
+          <div
+            id="node-size"
+            style={{
+              paddingLeft: "20px",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            节点大小&nbsp;
+            <Slider
+              min={1}
+              max={20}
+              onChange={onChangeNodeSize}
+              style={{ width: 80 }}
             />
           </div>
           <Checkbox onChange={addArrow}>箭头</Checkbox>

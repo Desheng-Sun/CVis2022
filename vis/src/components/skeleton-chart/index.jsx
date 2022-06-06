@@ -141,7 +141,7 @@ export default function SkeletonChart({ w, h }) {
 
     if (nodes.length === 0) return;
 
-    let svgToVbScale = nodes.length > 300 ? 1.5 : 1;
+    let svgToVbScale = nodes.length < 300 ? 1 :  nodes.length < 500? 1.5: 2;
     let vbWidth = svgWidth * svgToVbScale;
     let vbHeight = svgHeight * svgToVbScale;
     // 获取边对的关系
@@ -371,7 +371,6 @@ export default function SkeletonChart({ w, h }) {
           .links(links)
           .id((d) => d.id)
           .strength(linkStrength)
-        // .iterations(100)
       );
     } else {
       simulation.force(
@@ -381,7 +380,7 @@ export default function SkeletonChart({ w, h }) {
           .links(links)
           .id((d) => d.id)
           .strength(0.1)
-        // .iterations(100)
+
       );
     }
 
