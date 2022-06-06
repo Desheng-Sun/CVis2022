@@ -242,6 +242,7 @@ export default function MainView({ w, h }) {
           res.getBulletChartDataSds,
         ]);
         PubSub.publish("industryStackDt", res.getIdentifyICNodesSds); // 将选中的数据传给stack组件
+        PubSub.publish("fromMainToInfoList", res.getInfoListSds); // 向info-list传递数据
       });
     }
   }, [statistics]);
