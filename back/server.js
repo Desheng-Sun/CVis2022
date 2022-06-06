@@ -2071,6 +2071,7 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
         coreICNodesIndustry[i] = {}
       }
     }
+    coreICNodes = Array.from(coreICNodes)
   }
   else {
     console.log(3)
