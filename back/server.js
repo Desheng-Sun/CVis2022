@@ -1705,34 +1705,34 @@ function getIdentifySds(enterNodes, enterLinks) {
 function getCoreLinks(ICLinks) {
   let coreLinks = new Set();
   for (let i of ICLinks) {
-      const graph = new Graph();
-      const linkInfoJ = fs.readFileSync(nowPath + "ICScreenLinks/" + i[0] + ".json", "utf8");
-      const linkInfo = JSON.parse(linkInfoJ);
-      for (let j of linkInfo) {
-          if (j["end"][0] == i[1]) {
-              for (let k of j["links"]) {
-                  graph.mergeEdge(k[1], k[2]);
-                  graph.mergeEdge(k[2], k[1]);
-              }
-          }
+    const graph = new Graph();
+    const linkInfoJ = fs.readFileSync(nowPath + "ICScreenLinks/" + i[0] + ".json", "utf8");
+    const linkInfo = JSON.parse(linkInfoJ);
+    for (let j of linkInfo) {
+      if (j["end"][0] == i[1]) {
+        for (let k of j["links"]) {
+          graph.mergeEdge(k[1], k[2]);
+          graph.mergeEdge(k[2], k[1]);
+        }
       }
-      const SimplePathsAll = allSimplePaths.allSimplePaths(graph, i[0], i[1]);
-      for (let j of SimplePathsAll) {
-          for (let k = 0; k < j.length - 1; k++) {
-              coreLinks.add([j[k + 1], j[k]].toString());
-              coreLinks.add([j[k], j[k + 1]].toString());
-          }
+    }
+    const SimplePathsAll = allSimplePaths.allSimplePaths(graph, i[0], i[1]);
+    for (let j of SimplePathsAll) {
+      for (let k = 0; k < j.length - 1; k++) {
+        coreLinks.add([j[k + 1], j[k]].toString());
+        coreLinks.add([j[k], j[k + 1]].toString());
       }
+    }
   }
   fs.writeFileSync(
-      nowPath + "CoreLinks.json",
-      JSON.stringify(Array.from(coreLinks)),
-      "utf-8",
-      (err) => {
-          if (err) {
-              console.error(err);
-          }
+    nowPath + "CoreLinks.json",
+    JSON.stringify(Array.from(coreLinks)),
+    "utf-8",
+    (err) => {
+      if (err) {
+        console.error(err);
       }
+    }
   );
   return coreLinks
 }
@@ -1741,76 +1741,76 @@ function getCoreLinks(ICLinks) {
 function getDetialListSds(nodes, links, coreNodes, coreLinks) {
   let nodesInfo = {};
   for (let i of nodes) {
-      let isCore = false
-      if (coreNodes.indexOf(i["numId"]) > -1) {
-          isCore = true
-      }
-      nodesInfo[i["numId"]] = {
-          numId: i["numId"],
-          id: i["id"],
-          name: i["name"],
-          type: i["type"],
-          industry: i["industry"],
-          isCore: isCore,
-          LinksInfo: [],
-      };
+    let isCore = false
+    if (coreNodes.indexOf(i["numId"]) > -1) {
+      isCore = true
+    }
+    nodesInfo[i["numId"]] = {
+      numId: i["numId"],
+      id: i["id"],
+      name: i["name"],
+      type: i["type"],
+      industry: i["industry"],
+      isCore: isCore,
+      LinksInfo: [],
+    };
   }
   for (let i of links) {
-      nodesInfo[i["linksNumId"][0]]["LinksInfo"].push(i["relation"]);
-      nodesInfo[i["linksNumId"][1]]["LinksInfo"].push(i["relation"]);
+    nodesInfo[i["linksNumId"][0]]["LinksInfo"].push(i["relation"]);
+    nodesInfo[i["linksNumId"][1]]["LinksInfo"].push(i["relation"]);
   }
   const LinksSet = [
-      "r_cert",
-      "r_subdomain",
-      "r_request_jump",
-      "r_dns_a",
-      "r_whois_name",
-      "r_whois_email",
-      "r_whois_phone",
-      "r_cert_chain",
-      "r_cname",
-      "r_asn",
-      "r_cidr",
+    "r_cert",
+    "r_subdomain",
+    "r_request_jump",
+    "r_dns_a",
+    "r_whois_name",
+    "r_whois_email",
+    "r_whois_phone",
+    "r_cert_chain",
+    "r_cname",
+    "r_asn",
+    "r_cidr",
   ];
   for (let i in nodesInfo) {
-      for (let j of LinksSet) {
-          nodesInfo[i][j] = nodesInfo[i]["LinksInfo"].filter((e) => {
-              return e == j;
-          }).length;
-      }
+    for (let j of LinksSet) {
+      nodesInfo[i][j] = nodesInfo[i]["LinksInfo"].filter((e) => {
+        return e == j;
+      }).length;
+    }
   }
   let nowNodes = [];
   for (let i in nodesInfo) {
-      delete nodesInfo[i]["LinksInfo"];
-      nowNodes.push(nodesInfo[i]);
+    delete nodesInfo[i]["LinksInfo"];
+    nowNodes.push(nodesInfo[i]);
   }
   let nowLinks = [];
   for (let i of links) {
-      let isCore = false
-      if (coreLinks.indexOf(i["linksNumId"].toString()) > -1) {
-          isCore = true
-      }
-      nowLinks.push({
-          relation: i["relation"],
-          source: i["source"],
-          target: i["target"],
-          linksNumId: i["linksNumId"],
-          isCore: isCore,
-      });
+    let isCore = false
+    if (coreLinks.indexOf(i["linksNumId"].toString()) > -1) {
+      isCore = true
+    }
+    nowLinks.push({
+      relation: i["relation"],
+      source: i["source"],
+      target: i["target"],
+      linksNumId: i["linksNumId"],
+      isCore: isCore,
+    });
   }
   let sendData = {
-      nodes: nowNodes,
-      links: nowLinks,
+    nodes: nowNodes,
+    links: nowLinks,
   };
   fs.writeFileSync(
-      nowPath + "DetialList.json",
-      JSON.stringify(sendData),
-      "utf-8",
-      (err) => {
-          if (err) {
-              console.error(err);
-          }
+    nowPath + "DetialList.json",
+    JSON.stringify(sendData),
+    "utf-8",
+    (err) => {
+      if (err) {
+        console.error(err);
       }
+    }
   );
   return sendData
 }
@@ -1818,14 +1818,14 @@ function getDetialListSds(nodes, links, coreNodes, coreLinks) {
 // 获取社区的核心资产相关节点的信息
 function getICNodesIndustrySds(coreICNodesIndustry, links) {
   for (let i of links) {
-      let targetNumId = i["linksNumId"][1];
-      if (coreICNodesIndustry.hasOwnProperty(targetNumId)) {
-          let nowICIndustry = nodeNumIdInfo[parseInt(i["linksNumId"][0]) - 1][4];
-          if (!coreICNodesIndustry[targetNumId].hasOwnProperty(nowICIndustry)) {
-              coreICNodesIndustry[targetNumId][nowICIndustry] = 0;
-          }
-          coreICNodesIndustry[targetNumId][nowICIndustry] += 1;
+    let targetNumId = i["linksNumId"][1];
+    if (coreICNodesIndustry.hasOwnProperty(targetNumId)) {
+      let nowICIndustry = nodeNumIdInfo[parseInt(i["linksNumId"][0]) - 1][4];
+      if (!coreICNodesIndustry[targetNumId].hasOwnProperty(nowICIndustry)) {
+        coreICNodesIndustry[targetNumId][nowICIndustry] = 0;
       }
+      coreICNodesIndustry[targetNumId][nowICIndustry] += 1;
+    }
   }
   let sendData = [];
   for (let i in coreICNodesIndustry) {
@@ -1852,63 +1852,63 @@ function getFinalDataSds(nodes, links) {
   num_all_node = nodes.length;
   // 节点的类型，8个
   let node_type = [
-      "Domain",
-      "IP",
-      "Cert",
-      "Whois_Name",
-      "Whois_Phone",
-      "Whois_Email",
-      "IP_C",
-      "ASN",
+    "Domain",
+    "IP",
+    "Cert",
+    "Whois_Name",
+    "Whois_Phone",
+    "Whois_Email",
+    "IP_C",
+    "ASN",
   ];
   let node_num = [];
   // 获取每个类型的节点的数量
   for (let i of node_type) {
-      node_num.push(
-          nodes.filter((e) => {
-              return e["type"] == i;
-          }).length
-      );
+    node_num.push(
+      nodes.filter((e) => {
+        return e["type"] == i;
+      }).length
+    );
   }
   let node_all_link = 0;
   node_all_link = links.length;
   //链路的类型
   let link_type = [
-      "r_request_jump",
-      "r_subdomain",
-      "r_cname",
-      "r_dns_a",
-      "r_cidr",
-      "r_cert",
-      "r_cert_chain",
-      "r_whois_name",
-      "r_whois_phone",
-      "r_whois_email",
-      "r_asn",
+    "r_request_jump",
+    "r_subdomain",
+    "r_cname",
+    "r_dns_a",
+    "r_cidr",
+    "r_cert",
+    "r_cert_chain",
+    "r_whois_name",
+    "r_whois_phone",
+    "r_whois_email",
+    "r_asn",
   ];
   let links_num = [];
   //获取每个类型的链路的数据
   for (let i of link_type) {
-      links_num.push(
-          links.filter((e) => {
-              return e["relation"] == i;
-          }).length
-      );
+    links_num.push(
+      links.filter((e) => {
+        return e["relation"] == i;
+      }).length
+    );
   }
 
   let groupscope = "";
   if (num_all_node < 300) {
-      groupscope = "小";
+    groupscope = "小";
   } else if (num_all_node < 800) {
-      groupscope = "中";
+    groupscope = "中";
   } else if (num_all_node < 3000) {
-      groupscope = "大";
+    groupscope = "大";
   } else {
-      groupscope = "超大";
+    groupscope = "超大";
   }
 
   let coreList = ""
-  for(let i of searchNumId){
+  for (let i of searchNumId) {
     coreList += nodeNumIdInfo[parseInt(i) - 1][2] + ", "
   }
   coreList.slice(0, coreList.length - 2)
@@ -1916,107 +1916,107 @@ function getFinalDataSds(nodes, links) {
   let industrytype = new Set();
   let group_type = "单一型";
   let industryTypeAll = {
-      A: "涉黄",
-      B: "涉赌",
-      C: "诈骗",
-      D: "涉毒",
-      E: "涉枪",
-      F: "黑客",
-      G: "非法交易平台",
-      H: "非法支付平台",
-      I: "其他",
+    A: "涉黄",
+    B: "涉赌",
+    C: "诈骗",
+    D: "涉毒",
+    E: "涉枪",
+    F: "黑客",
+    G: "非法交易平台",
+    H: "非法支付平台",
+    I: "其他",
   };
   let industry_type = [];
   // 获取涉及的黑灰产的类型
   for (let i of nodes) {
-      let a = i["industry"].split("");
-      for (let j of a) {
-          industrytype.add(j);
-      }
+    let a = i["industry"].split("");
+    for (let j of a) {
+      industrytype.add(j);
+    }
   }
   if (industrytype.has(" ")) {
-      industrytype.delete(" ");
+    industrytype.delete(" ");
   }
 
   if (industrytype.size > 1) {
-      group_type = "复合型";
+    group_type = "复合型";
   }
   // 获取其涉及的黑灰产的内容
   for (let i of industrytype) {
-      industry_type.push(industryTypeAll[i]);
+    industry_type.push(industryTypeAll[i]);
   }
-  
+
   let sendData = {
-      groupscope: groupscope,
-      clue: [],
-      num_all_node: num_all_node,
-      node_type: node_type,
-      node_num: node_num,
-      node_all_link: node_all_link,
-      link_type: link_type,
-      links_num: links_num,
-      industry_type: industry_type,
-      num_industry: industry_type.length,
-      group_type: group_type,
+    groupscope: groupscope,
+    clue: [],
+    num_all_node: num_all_node,
+    node_type: node_type,
+    node_num: node_num,
+    node_all_link: node_all_link,
+    link_type: link_type,
+    links_num: links_num,
+    industry_type: industry_type,
+    num_industry: industry_type.length,
+    group_type: group_type,
   };
   return sendData
 
 }
 
 // 获取主图的信息
-function getMainChart(nodes, links){
+function getMainChart(nodes, links) {
   let nowNodes = []
   let nowlinks = links
-  const industryColor  = {
-      A: "#ff9f6d",
-      B: "#d88c9a",
-      C: "#a17fda",
-      D: "#c3e6a1",
-      E: "#4caead",
-      F: "#64d9d7",
-      G: "#82b461",
-      H: "#fffb96",
-      I: "#87ccff",
+  const industryColor = {
+    A: "#ff9f6d",
+    B: "#d88c9a",
+    C: "#a17fda",
+    D: "#c3e6a1",
+    E: "#4caead",
+    F: "#64d9d7",
+    G: "#82b461",
+    H: "#fffb96",
+    I: "#87ccff",
   }
-  for(let i of nodes){
-      nowNodes.push({
-          numId: i["numId"],
-          id :i["id"],
-          name: i["name"],
-          type : i["type"],
-          industry: i["industry"],
-          isCore: i["isCore"],
-          style: {
-              "border-style": "solid",
-          }
-      })
-      if(i["industry"] == "  "){
-          continue
+  for (let i of nodes) {
+    nowNodes.push({
+      numId: i["numId"],
+      id: i["id"],
+      name: i["name"],
+      type: i["type"],
+      industry: i["industry"],
+      isCore: i["isCore"],
+      style: {
+        "border-style": "solid",
       }
-      let nowIndustry = i["industry"].split("")
-      let num = 0
-      let pieSize = (Math.floor(100/nowIndustry.length)).toString()
-      for(let j of nowIndustry){
-          num += 1
-          let colorKey = "pie-" + num +"-background-color"
-          let sizeKey = "pie-" + num +"-background-size"
-          nowNodes[nowNodes.length - 1]["style"][colorKey] = industryColor[j]
-          nowNodes[nowNodes.length - 1]["style"][sizeKey] = pieSize
-      }
+    })
+    if (i["industry"] == "  ") {
+      continue
+    }
+    let nowIndustry = i["industry"].split("")
+    let num = 0
+    let pieSize = (Math.floor(100 / nowIndustry.length)).toString()
+    for (let j of nowIndustry) {
+      num += 1
+      let colorKey = "pie-" + num + "-background-color"
+      let sizeKey = "pie-" + num + "-background-size"
+      nowNodes[nowNodes.length - 1]["style"][colorKey] = industryColor[j]
+      nowNodes[nowNodes.length - 1]["style"][sizeKey] = pieSize
+    }
   }
   sendData = {
-      nodes: nowNodes,
-      links : nowlinks
+    nodes: nowNodes,
+    links: nowlinks
   }
   fs.writeFileSync(
-      nowPath + "MainChartData.json",
-      JSON.stringify(sendData),
-      "utf-8",
-      (err) => {
-          if (err) {
-              console.error(err);
-          }
+    nowPath + "MainChartData.json",
+    JSON.stringify(sendData),
+    "utf-8",
+    (err) => {
+      if (err) {
+        console.error(err);
       }
+    }
   );
   return sendData
 }
@@ -2053,8 +2053,10 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
       nodes.push(i);
     }
   }
+  console.log(1)
   const getInfoListData = getInfoListSds(nodes, links)
-  const getBulletChartData  = getBulletChartDataSds(links)
+  console.log(2)
+  const getBulletChartData = getBulletChartDataSds(links)
   let coreNodes = []
   let coreICNodes = new Set()
   let coreICNodesIndustry = {}
@@ -2071,6 +2073,7 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
     }
   }
   else {
+    console.log(3)
     coreNodes = getIdentifySds(nodes, links)
     for (let i of coreNodes["nodes"]) {
       if (
@@ -2094,31 +2097,37 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
         }
       }
     }
+    console.log(4)
     coreLinks = Array.from(getCoreLinks(coreICLinks, links))
   }
-
+  console.log(5)
   const DetialListData = getDetialListSds(nodes, links, coreICNodes, coreLinks)
-  const ICNodesIndustryData = getICNodesIndustrySds(coreICNodesIndustry,links)
+
+  console.log(6)
+  const ICNodesIndustryData = getICNodesIndustrySds(coreICNodesIndustry, links)
 
   let sendData
-  if(isAll){
+  if (isAll) {
+
+    console.log(7)
     const finalData = getFinalDataSds(nodes, links)
+    console.log(8)
     const MainChartData = getMainChart(DetialListData["nodes"], DetialListData["links"])
     sendData = {
-      getInfoListSds:getInfoListData,
-      getBulletChartDataSds:getBulletChartData,
-      getDetialListSds:DetialListData,
-      getIdentifyICNodesSds:ICNodesIndustryData,
-      getFinalDataSds:finalData,
-      getMainChartSds:MainChartData
+      getInfoListSds: getInfoListData,
+      getBulletChartDataSds: getBulletChartData,
+      getDetialListSds: DetialListData,
+      getIdentifyICNodesSds: ICNodesIndustryData,
+      getFinalDataSds: finalData,
+      getMainChartSds: MainChartData
     }
   }
-  else{
+  else {
     sendData = {
-      getInfoListSds:getInfoListData,
-      getBulletChartDataSds:getBulletChartData,
-      getDetialListSds:DetialListData,
-      getIdentifyICNodesSds:ICNodesIndustryData,
+      getInfoListSds: getInfoListData,
+      getBulletChartDataSds: getBulletChartData,
+      getDetialListSds: DetialListData,
+      getIdentifyICNodesSds: ICNodesIndustryData,
     }
   }
   res.send(sendData)
