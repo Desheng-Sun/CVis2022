@@ -18,7 +18,7 @@ import {
 import fcose from "cytoscape-fcose";
 import "cytoscape-navigator/cytoscape.js-navigator.css";
 import contextMenus from "cytoscape-context-menus";
-import { Cascader, Select, Input, Slider, Button, Checkbox } from "antd";
+import { Select, Input, Slider, Button, Checkbox, Tag } from "antd";
 import * as d3 from "d3";
 import "./index.css";
 
@@ -176,7 +176,7 @@ export default function MainView({ w, h }) {
   // 当确定了团伙的时候对团伙数据进行统计分析，并获取团伙中的关键路径和核心资产
   useEffect(() => {
     if (resData.nodes.length !== 0) {
-      getGroupAllInfoSds({
+      getGroupAllInfoSds({              //  从后端获取子图的全部数据
         nodes: resData.nodes,
         links: resData.links,
         isAll: true,
@@ -198,6 +198,31 @@ export default function MainView({ w, h }) {
         setData(res.getDetialListSds);
       });
     }
+
+
+    // Promise.all([
+    //   fetch("./data/group1/BulletChartData.json").then(function (res) {
+    //     return res.json();
+    //   }),
+    //   fetch("./data/group1/CoreLinks.json").then(function (res) {
+    //     return res.json();
+    //   }),
+    //   fetch("./data/group1/DetialList.json").then(function (res) {
+    //     return res.json();
+    //   }),
+    //   fetch("./data/group1/FinalData.json").then(function (res) {
+    //     return res.json();
+    //   }),
+    //   fetch("./data/group1/IdentifyICNodes.json").then(function (res) {
+    //     return res.json();
+    //   }),
+    //   fetch("./data/group1/InfoList.json").then(function (res) {
+    //     return res.json();
+    //   }),
+    // ]).then(function(wholeData){
+    //   console.log(wholeData);
+    // })
+
   }, [resData]);
 
   // 对选择的数据在右侧表格和核心资产图中进行统计分析
@@ -924,16 +949,21 @@ export default function MainView({ w, h }) {
 
   // 获取确定当前为一个子图并在右侧展示子图的数据
   function onSubmitRes() {
-    let nodes, links;
-    nodes = cy.nodes().map(function (ele, i) {
-      return ele.json().data;
-    });
-    links = cy.edges().map(function (ele, i) {
-      return ele.json().data;
-    });
-    setIsSubmit(true); // 确定提交
-    setShowCoreAble(true); // 提交之后可以应用核心资产和关键路径的样式
-    setResData({ nodes: [...nodes], links: [...links] });
+    if(cy){
+      let nodes, links;
+      nodes = cy.nodes().map(function (ele, i) {
+        return ele.json().data;
+      });
+      links = cy.edges().map(function (ele, i) {
+        return ele.json().data;
+      });
+      setIsSubmit(true); // 确定提交
+      setShowCoreAble(true); // 提交之后可以应用核心资产和关键路径的样式
+      setResData({ nodes: [...nodes], links: [...links] });
+    }
+    else{
+      setResData({ nodes: [], links: [] });
+    }
   }
 
   // 将数据传给diff chart
@@ -1630,7 +1660,7 @@ export default function MainView({ w, h }) {
             <Search
               onSearch={onSearchNode}
               placeholder="输入节点id"
-              style={{ width: 300 }}
+              style={{ width: 200 }}
             />
           </div>
           <div id="main-data-filter" style={{ paddingLeft: "10px" }}>
@@ -1638,12 +1668,16 @@ export default function MainView({ w, h }) {
             <Search
               onSearch={onSearchIndustry}
               placeholder="产业类型"
-              style={{ width: 220 }}
+              style={{ width: 120 }}
             />
+            <Tag color="#87d068" 
+              style={{ marginLeft: "50px", fontSize: '14px', lineHeight: 2, width: 70, paddingLeft: 0, textAlign: 'center', fontFamily: 'monospace' }}>点#  {data.nodes.length}</Tag>
+            <Tag color="#2db7f5"  style={{ fontSize: '14px', lineHeight: 2, width: 70, paddingLeft: 0, textAlign: 'center', fontFamily: 'monospace'  }}>边#  {data.links.length}</Tag>
+
             <Button
               type="dashed"
               icon={<UndoOutlined />}
-              style={{ marginLeft: "70px" }}
+              style={{ marginLeft: "60px" }}
               onClick={onUndoOut}
             >
               撤销
