@@ -1948,7 +1948,7 @@ function getFinalDataSds(nodes, links) {
 
   let sendData = {
     groupscope: groupscope,
-    clue: [],
+    clue: coreList,
     num_all_node: num_all_node,
     node_type: node_type,
     node_num: node_num,
