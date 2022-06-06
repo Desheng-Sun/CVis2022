@@ -659,7 +659,6 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
   const existNodes = req.body.linksInfo["nodes"];
   const links = req.body.linksInfo["dataParam"]["links"];
   const nodes = req.body.linksInfo["dataParam"]["nodes"];
-  console.log(links);
   links.sort((a, b) => a["linksNumId"][0] - b["linksNumId"][0]);
 
   let nowJSource = 0;
@@ -1031,8 +1030,6 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
     return a["linksNumId"][0] - b["linksNumId"][0];
   });
 
-  console.log(nowNodes.length);
-  console.log(nowLinks.length);
   let sendData = {
     nodes: nowNodes,
     links: nowLinks,
@@ -1282,8 +1279,6 @@ app.post("/getDifChartSds", jsonParser, (req, res, next) => {
 });
 
 
-
-
 // 获取统计信息
 function getInfoListSds(nodes, links) {
   // 获取节点和链路的长度
@@ -1357,67 +1352,67 @@ function getBulletChartDataSds(links) {
     //如果为r_cert_chain，则将source作为certAsSource，target作为certAsTarget
     if (i["relation"] == "r_cert_chain") {
       r_cert_chain += 1;
-      certAsSource.add(i[1]);
-      certAsTarget.add(i[2]);
+      certAsSource.add(i["source"]);
+      certAsTarget.add(i["target"]);
     }
     //如果为r_cert，则将source作为domainAsSource
     else if (i["relation"] == "r_cert") {
       r_cert += 1;
-      domainAsSource.add(i[1]);
+      domainAsSource.add(i["source"]);
     }
     //如果为r_whois_name，则将source作为domainAsSource，target作为whoisName
     else if (i["relation"] == "r_whois_name") {
       r_whois_name += 1;
-      domainAsSource.add(i[1]);
-      whoisName.add(i[2]);
+      domainAsSource.add(i["source"]);
+      whoisName.add(i["target"]);
     }
     //如果为r_whois_email，则将source作为domainAsSource，target作为whoisEmail
     else if (i["relation"] == "r_whois_email") {
       r_whois_email += 1;
-      domainAsSource.add(i[1]);
-      whoisEmail.add(i[2]);
+      domainAsSource.add(i["source"]);
+      whoisEmail.add(i["target"]);
     }
     //如果为r_whois_phone，则将source作为domainAsSource，target作为whoisPhone
     else if (i["relation"] == "r_whois_phone") {
       r_whois_phone += 1;
-      domainAsSource.add(i[1]);
-      whoisPhone.add(i[2]);
+      domainAsSource.add(i["source"]);
+      whoisPhone.add(i["target"]);
     }
     //如果为r_cname，则将source作为domainAsSource，target作为domainAsCnameTarget
     else if (i["relation"] == "r_cname") {
       r_cname += 1;
-      domainAsSource.add(i[1]);
-      domainAsCnameTarget.add(i[2]);
+      domainAsSource.add(i["source"]);
+      domainAsCnameTarget.add(i["target"]);
     }
     //如果为r_request_jump，则将source作为domainAsSource，target作为domainAsJumpTarget
     else if (i["relation"] == "r_request_jump") {
       r_request_jump += 1;
-      domainAsSource.add(i[1]);
-      domainAsJumpTarget.add(i[2]);
+      domainAsSource.add(i["source"]);
+      domainAsJumpTarget.add(i["target"]);
     }
     //如果为r_subdomain，则将source作为domainAsSource，target作为domainAsSubTarget
     else if (i["relation"] == "r_subdomain") {
       r_subdomain += 1;
-      domainAsSource.add(i[1]);
-      domainAsSubTarget.add(i[2]);
+      domainAsSource.add(i["source"]);
+      domainAsSubTarget.add(i["target"]);
     }
     //如果为r_dns_a，则将source作为domainAsSource，target作为ip
     else if (i["relation"] == "r_dns_a") {
       r_dns_a += 1;
-      domainAsSource.add(i[1]);
-      ip.add(i[2]);
+      domainAsSource.add(i["source"]);
+      ip.add(i["target"]);
     }
     //如果为r_cidr，则将source作为domainAsSource，target作为ipc
     else if (i["relation"] == "r_cidr") {
       r_cidr += 1;
-      ip.add(i[1]);
-      ipc.add(i[2]);
+      ip.add(i["source"]);
+      ipc.add(i["target"]);
     }
     //如果为r_asn，则将source作为domainAsSource，target作为asn
     else if (i["relation"] == "r_asn") {
       r_asn += 1;
-      ip.add(i[1]);
-      asn.add(i[2]);
+      ip.add(i["source"]);
+      asn.add(i["target"]);
     }
   }
   // 将domainAsSource该为list，并删除所有的domainaAsXxTarget中出现的numId
@@ -2237,7 +2232,6 @@ app.post("/getCrutialpathData", jsonParser, (req, res, next) => {
       nodes: nodeslinksarr[0],
       links: nodeslinksarr[1],
     });
-    console.log(linkarr[0].nodes, linkarr[0].links);
     // console.log(linkarr[0].links, linkarr[0].nodes);
   }
   res.send(linkarr);
