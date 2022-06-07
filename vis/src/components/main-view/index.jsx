@@ -1587,7 +1587,8 @@ export default function MainView({ w, h }) {
 
   function getNodeLinkNumber(){
     if(cy){
-      let nodeNum = 0, linkNum;
+      let nodeNum = 0
+      let linkNum = 0;
       cy.nodes().forEach(ele => {
         if(!ele.json().data.hasOwnProperty('children')){   // 没有子节点
           nodeNum += 1

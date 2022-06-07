@@ -91,6 +91,10 @@ const ICScreen = JSON.parse(ICScreenJ);
 const nodeICLinksJ = fs.readFileSync(nowPath + "nodeICLinks.json", "utf8");
 const nodeICLinks = JSON.parse(nodeICLinksJ);
 
+
+// 获取不是核心资产的IP
+const notCoreJ = fs.readFileSync(nowPath + "notCore.json", "utf8");
+const notCore = JSON.parse(notCoreJ);
 // 记录最初开始的节点
 let startNumId = 0;
 //记录当前搜索的节点
@@ -668,10 +672,10 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
   // 获取所有的合并节点
   let existNodeChildren = {};
   for (let i of existNodes) {
-    existNodeList[i["numId"]] = i;
+    existNodeList[i["numId"].toString()] = i;
     if (i.hasOwnProperty("children")) {
       for (let j of i["children"]) {
-        existNodeChildren[j["numId"].toString] = i["numId"];
+        existNodeChildren[j["numId"].toString()] = i["numId"];
       }
     }
   }
@@ -716,12 +720,12 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
         // }
         for (let k of j["nodes"]) {
           // 当前独立节点是否包含此节点
-          if (!existNodeList.hasOwnProperty(k[0])) {
+          if (!existNodeList.hasOwnProperty(k[0].toString())) {
             // 判断当前节点是否在合并节点内
-            if (existNodeChildren.hasOwnProperty(k[0])) {
-              existNodeList[existNodeChildren[k[0]]]["children"] =
-                existNodeList[existNodeChildren[k[0]]]["children"].filter(
-                  (e) => e["numId"] != k[0]
+            if (existNodeChildren.hasOwnProperty(k[0].toString())) {
+              existNodeList[existNodeChildren[k[0].toString()]]["children"] =
+                existNodeList[existNodeChildren[k[0].toString()]]["children"].filter(
+                  (e) => parseInt(e["numId"]) != parseInt(k[0])
                 );
             }
             // 为当前节点创建单独的数组
@@ -854,7 +858,7 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
       }
       // 获取当前IC节点直接关联的所有节点，并删除已经在链路中的相关节点
       let nowNodeNeighbor = ICNeighbor[i["numId"]].filter((e) => {
-        return !existNodeList.hasOwnProperty(e[0]);
+        return !existNodeList.hasOwnProperty(e[0].toString());
       });
       // 针对这些节点进行分类
       for (let j of nowNodeNeighbor) {
@@ -961,6 +965,7 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
     }
   }
 
+
   //针对所有的节点进行存储
   for (let i in existNodeList) {
     let j = existNodeList[i];
@@ -988,7 +993,8 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
           childrenNum: j["children"].length,
         });
       }
-    } else {
+    }
+    else {
       nowNodes.push(j);
     }
   }
@@ -1029,6 +1035,7 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
   nowLinks.sort((a, b) => {
     return a["linksNumId"][0] - b["linksNumId"][0];
   });
+
 
   let sendData = {
     nodes: nowNodes,
@@ -1724,16 +1731,6 @@ function getCoreLinks(ICLinks) {
       }
     }
   }
-  fs.writeFileSync(
-    nowPath + "CoreLinks.json",
-    JSON.stringify(Array.from(coreLinks)),
-    "utf-8",
-    (err) => {
-      if (err) {
-        console.error(err);
-      }
-    }
-  );
   return coreLinks
 }
 
@@ -1745,6 +1742,12 @@ function getDetialListSds(nodes, links, coreNodes, coreLinks) {
     if (coreNodes.indexOf(i["numId"]) > -1) {
       isCore = true
     }
+    let isDelivery = false
+    if (notCore.indexOf(i["numId"]) > -1) {
+        isDelivery = true
+    }
+    
+    (notCore.indexOf(parseInt(i)) < 0)
     nodesInfo[i["numId"]] = {
       numId: i["numId"],
       id: i["id"],
@@ -1752,6 +1755,7 @@ function getDetialListSds(nodes, links, coreNodes, coreLinks) {
       type: i["type"],
       industry: i["industry"],
       isCore: isCore,
+      isDelivery: isDelivery,
       LinksInfo: [],
     };
   }
@@ -1802,16 +1806,6 @@ function getDetialListSds(nodes, links, coreNodes, coreLinks) {
     nodes: nowNodes,
     links: nowLinks,
   };
-  fs.writeFileSync(
-    nowPath + "DetialList.json",
-    JSON.stringify(sendData),
-    "utf-8",
-    (err) => {
-      if (err) {
-        console.error(err);
-      }
-    }
-  );
   return sendData
 }
 
@@ -1986,6 +1980,7 @@ function getMainChart(nodes, links) {
       type: i["type"],
       industry: i["industry"],
       isCore: i["isCore"],
+      isDelivery: i["isDelivery"],
       style: {
         "border-style": "solid",
       }
@@ -2008,16 +2003,6 @@ function getMainChart(nodes, links) {
     nodes: nowNodes,
     links: nowlinks
   }
-  fs.writeFileSync(
-    nowPath + "MainChartData.json",
-    JSON.stringify(sendData),
-    "utf-8",
-    (err) => {
-      if (err) {
-        console.error(err);
-      }
-    }
-  );
   return sendData
 }
 
@@ -2078,7 +2063,7 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
     for (let i of nodes) {
       if (
         nodeNumIdInfo[parseInt(i["numId"]) - 1][3] == "IP" ||
-        nodeNumIdInfo[parseInt(i["numId"]) - 1][3] == "Cert"
+          nodeNumIdInfo[parseInt(i["numId"]) - 1][3] == "Cert"
       ) {
         coreICNodes.add(i);
         coreICNodesIndustry[i] = {}
@@ -2125,7 +2110,6 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
 
   let sendData
   if (isAll) {
-
     console.log(7)
     const finalData = getFinalDataSds(nodes, links)
     console.log(8)
