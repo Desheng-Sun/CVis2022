@@ -1658,7 +1658,13 @@ export default function MainView({ w, h }) {
           nodeNum += ele.json().data.children.length
         }
       })
-      linkNum = cy.edges().length
+      cy.edges().forEach(ele => {
+        if(!ele.json().data.hasOwnProperty('children')){   // 没有子节点
+          linkNum += 1
+        }else{
+          linkNum += ele.json().data.children.length
+        }
+      })
 
       setNodeNumber(nodeNum)
       setLinkNumber(linkNum)

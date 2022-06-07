@@ -82,38 +82,53 @@ if __name__ == '__main__':
 
 
 
+    # # 打开所有的节点
+    # nodeCsvW = pd.read_csv(
+    #     nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv", header=0)
+    # nodeCsvW = nodeCsvW.values
+    # ICIndustryInfoJ = open(nowPath + "ICIndustryInfo.json", "r", encoding="utf-8")
+    # ICIndustryInfo = json.load(ICIndustryInfoJ)
+    # with open(nowPath + "ICLinksInfo.json", "r", encoding="utf-8") as f:
+    #     ICLinksInfo = json.load(f)
+    #     nowICIndustry = ["A", "B"]
+    #     links = []
+    #     for i in ICLinksInfo["3115"]:
+    #         if(i[4] > 0):
+    #             isLink = True
+    #             for j in ICIndustryInfo[str(i[1])]:
+    #                 if(j[0] not in nowICIndustry):
+    #                     isLink = False
+    #                     break
+    #             if(isLink):
+    #                 # print(nodeCsvW[i[1] - 1][0], nodeCsvW[i[1] - 1][1])
+    #                 links.append(nodeCsvW[i[1] - 1][0])
+    #     with open(nowPath + "ICScreenLinks/3115.json", "r", encoding="utf-8") as f2:
+    #         ICScreenLinks = json.load(f2)
+    #         for i in ICScreenLinks:
+    #             if(i["end"][0] in links):
+    #                 for j in i["links"]:
+    #                     if(j[2] == i["end"][0] and j[3] == 2):
+    #                         print(nodeCsvW[i["end"][0] - 1][0], nodeCsvW[i["end"][0] - 1][1])
+    #                         break
+
+    
     # 打开所有的节点
     nodeCsvW = pd.read_csv(
         nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv", header=0)
     nodeCsvW = nodeCsvW.values
-    ICIndustryInfoJ = open(nowPath + "ICIndustryInfo.json", "r", encoding="utf-8")
-    ICIndustryInfo = json.load(ICIndustryInfoJ)
-    with open(nowPath + "ICLinksInfo.json", "r", encoding="utf-8") as f:
-        ICLinksInfo = json.load(f)
-        nowICIndustry = ["A", "B"]
-        links = []
-        for i in ICLinksInfo["3115"]:
-            if(i[4] > 0):
-                isLink = True
-                for j in ICIndustryInfo[str(i[1])]:
-                    if(j[0] not in nowICIndustry):
-                        isLink = False
-                        break
-                if(isLink):
-                    # print(nodeCsvW[i[1] - 1][0], nodeCsvW[i[1] - 1][1])
-                    links.append(nodeCsvW[i[1] - 1][0])
-        with open(nowPath + "ICScreenLinks/3115.json", "r", encoding="utf-8") as f2:
-            ICScreenLinks = json.load(f2)
-            for i in ICScreenLinks:
-                if(i["end"][0] in links):
-                    for j in i["links"]:
-                        if(j[2] == i["end"][0] and j[3] == 2):
-                            print(nodeCsvW[i["end"][0] - 1][0], nodeCsvW[i["end"][0] - 1][1])
-                            break
-
     
+    ICScreenJ = open(nowPath + "ICScreen.json", "r", encoding="utf-8")
+    ICScreen = json.load(ICScreenJ)
+    IPNum = 0
+    CertNum = 0
+    for i in ICScreen[1]:
+        if(nodeCsvW[i - 1][3] == "IP"):
+            IPNum += 1
+        elif(nodeCsvW[i - 1][3] == "Cert"):
+            CertNum += 1
+    print(IPNum)
+    print(CertNum)
 
-    
 
     
                     
