@@ -23,6 +23,7 @@ export default function BulletChart({ w, h, divname, dataparam }) {
 
   useEffect(() => {
     if (dataparam.length == 0) return;
+    console.log(dataparam);
     if (divname === "combine-table-bc-node") {
       let nodeDt = dataparam[1]; // nodes
       // 计算数据中measures和markers共同的最大、最小值 用于画图比例尺映射

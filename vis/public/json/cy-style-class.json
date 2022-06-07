@@ -2,7 +2,7 @@
   {
     "selector": "node.stackhighlightNode",
     "style": {
-      "border-color": "#f5f440",
+      "border-color": "#0000ff",
       "border-width": "3px"
     }
   },
@@ -18,7 +18,7 @@
   {
     "selector": "node.tablehighlightNode",
     "style": {
-      "border-color": "#f5f440",
+      "border-color": "#0000ff",
       "border-width": "3px"
     }
   },
@@ -54,8 +54,8 @@
   {
     "selector": "node:selected",
     "style": {
-      "border-color": "#ffff00",
-      "border-width": "3px"
+      "border-color": "#0000ff",
+      "border-width": "4px"
     }
   },
   {
@@ -67,14 +67,14 @@
   {
     "selector": "node.InIClink",
     "style": {
-      "border-color": "#ffff00",
+      "border-color": "#0000ff",
       "border-width": "3px"
     }
   },
   {
     "selector": "edge.InIClink",
     "style": {
-      "line-color": "#ffff00",
+      "line-color": "#0000ff",
       "border-width": "3px"
     }
   },

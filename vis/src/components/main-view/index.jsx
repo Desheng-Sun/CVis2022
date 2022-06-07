@@ -100,6 +100,20 @@ var layoutOptionDict = {
     gravity: 0.55,
   },
 };
+
+let edgeColorStyle = {
+  r_cert: "#ff756a",
+  r_subdomain:"#34B3F1",
+  r_request_jump:"#242F9B",
+  r_dns_a:"#33a02c",
+  r_whois_name:"#f67f02",
+  r_whois_phone:"#f67f02",
+  r_whois_email:"#f67f02",
+  r_cert_chain:"#f9b4ae",
+  r_cname:"#BAABDA",
+  r_asn:"#f9bf6f",
+  r_cidr:"#7fc97f"
+};
 export default function MainView({ w, h }) {
   const [svgWidth, setSvgWidth] = useState(w);
   const [svgHeight, setSvgHeight] = useState(h);
@@ -199,6 +213,8 @@ export default function MainView({ w, h }) {
         // 更新主图的数据就不再对数据进行变化了
         setData(res.getDetialListSds);
       });
+
+      return
     }
 
     if(isSubmit === true){
@@ -223,7 +239,6 @@ export default function MainView({ w, h }) {
           return res.json();
         }),
       ]).then(function(wholeData){
-        console.log(wholeData);
         PubSub.publish("combinedNodeTableDt", [
           wholeData[1],
           wholeData[0],
@@ -345,7 +360,6 @@ export default function MainView({ w, h }) {
   useEffect(() => {
     if (undoOut) {
       ur.undo();
-
       getDataForDifChart();
       
       getNodeLinkNumber()  // 获取节点数和边数
@@ -401,7 +415,16 @@ export default function MainView({ w, h }) {
   // 是否添加箭头
   useEffect(() => {
     if (arrowFlag) {
-      cy.edges(":selected").addClass("arrow");
+      // cy.edges(":selected").addClass("arrow");
+      cy.edges().style({
+        "target-arrow-shape": "triangle",
+        "target-arrow-color": function(ele){
+          console.log(ele.data('relation'));
+          return edgeColorStyle[ele.data('relation')]
+        },
+        "curve-style": "straight",
+        "width": 4
+      })
     } else if (cy) {
       cy.edges().removeClass("arrow");
     }
@@ -705,6 +728,39 @@ export default function MainView({ w, h }) {
               let nodes = selection.nodes().map((ele) => ele.json().data);
               let links = selection.edges().map((ele) => ele.json().data);
               setDataStatistics({ nodes: [...nodes], links: [...links] });
+            },
+          },
+          {
+            id: "select-mark",
+            content: "标记",
+            tooltipText: "标记",
+            selector: "node",
+            onClickFunction: function (e) {
+              let currId = e.target.json().data["id"];
+              if(e.target.json().data["type"] !== 'Domain'){
+                cy.getElementById(currId).select()
+              }else{
+                cy.getElementById(currId).style({
+                  'border-width': '3px',
+                  'border-color': '#0000ff'
+                })
+                .update()
+              }
+            },
+          },
+          {
+            id: "select-concel-mark",
+            content: "取消标记",
+            tooltipText: "取消标记",
+            selector: "node",
+            onClickFunction: function (e) {
+              let currId = e.target.json().data["id"];
+              if(e.target.json().data["type"] === 'Domain'){
+                cy.getElementById(currId).style({
+                  'border-width':  '0px'
+                })
+                .update()
+              }
             },
           },
           {
@@ -1022,10 +1078,16 @@ export default function MainView({ w, h }) {
               }
               return "solid";
             },
-
+            // "border-color": function (ele) {
+            //   if (ele.json().data.hasOwnProperty("children")) {
+            //     return "black";
+            //   }
+            //   // return '1px'
+            //   return "#";
+            // },
             "border-width": function (ele) {
               if (ele.json().data.hasOwnProperty("children")) {
-                return "3px";
+                return "5px";
               }
               // return '1px'
               return "0px";
@@ -1169,7 +1231,7 @@ export default function MainView({ w, h }) {
       "asn",
       "cidr",
     ];
-    let edgeColor = [
+    let edgeColor= [
       "#ff756a",
       "#34B3F1",
       "#242F9B",
@@ -1180,6 +1242,7 @@ export default function MainView({ w, h }) {
       "#f9bf6f",
       "#7fc97f",
     ];
+
     let industryType = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
     let industryColor = {
       // A: "#fba5fc",
