@@ -41,7 +41,7 @@ var ur, urOption, graphData; // 保留点和边的初状态
 var layoutOptionDict = {
   euler: {
     name: "euler",
-    fit: true, // whether to fit to viewport
+    fit: false, // whether to fit to viewport
     animate: true, // whether to transition the node positions
     avoidOverlap: true,
     springLength: 10,
@@ -55,7 +55,7 @@ var layoutOptionDict = {
   },
   concentric: {
     name: "concentric",
-    // fit: false, // whether to fit to viewport
+    fit: false, // whether to fit to viewport
     animate: true, // whether to transition the node positions
     avoidOverlap: true,
     minNodeSpace: 1,
@@ -66,7 +66,7 @@ var layoutOptionDict = {
       // the variation of concentric values in each level
       return nodes.maxDegree() / 5;
     },
-    spacingFactor: 0.2,
+    spacingFactor: 0.5,
     animationDuration: 1000, // duration of animation in ms if enabled
   },
   dagre: {
@@ -99,6 +99,20 @@ var layoutOptionDict = {
     edgeElasticity: 0.55,
     gravity: 0.55,
   },
+};
+
+let edgeColorStyle = {
+  r_cert: "#ff756a",
+  r_subdomain:"#34B3F1",
+  r_request_jump:"#242F9B",
+  r_dns_a:"#33a02c",
+  r_whois_name:"#f67f02",
+  r_whois_phone:"#f67f02",
+  r_whois_email:"#f67f02",
+  r_cert_chain:"#f9b4ae",
+  r_cname:"#BAABDA",
+  r_asn:"#f9bf6f",
+  r_cidr:"#7fc97f"
 };
 export default function MainView({ w, h }) {
   const [svgWidth, setSvgWidth] = useState(w);
@@ -183,7 +197,7 @@ export default function MainView({ w, h }) {
         links: resData.links,
         isAll: true,
       }).then((res) => {
-        console.log(res);
+
         PubSub.publish("combinedNodeTableDt", [
           res.getDetialListSds,
           res.getBulletChartDataSds,
@@ -196,45 +210,49 @@ export default function MainView({ w, h }) {
         PubSub.publish("fromMainToInfoList", res.getInfoListSds); // 向info-list传递数据
         PubSub.publish("fromMainToConclusion", res.getFinalDataSds);
         graphData = res.getDetialListSds; // 保存提交后的图的完整数据
+        
         // 更新主图的数据就不再对数据进行变化了
         setData(res.getDetialListSds);
       });
+
+      return
     }
 
     if(isSubmit === true){
       Promise.all([
-        fetch("./data/group1/BulletChartData.json").then(function (res) {
+        fetch("./data/group5/BulletChartData.json").then(function (res) {
           return res.json();
         }),
-        fetch("./data/group1/DetialList.json").then(function (res) {
+        fetch("./data/group5/DetialList.json").then(function (res) {
           console.log(res);
           return res.json();
         }),
-        fetch("./data/group1/MainChartData.json").then(function (res) {
+        fetch("./data/group5/MainChartData.json").then(function (res) {
           return res.json();
         }),
-        fetch("./data/group1/FinalData.json").then(function (res) {
+        fetch("./data/group5/FinalData.json").then(function (res) {
           return res.json();
         }),
-        fetch("./data/group1/IdentifyICNodes.json").then(function (res) {
+        fetch("./data/group5/IdentifyICNodes.json").then(function (res) {
           return res.json();
         }),
-        fetch("./data/group1/InfoList.json").then(function (res) {
+        fetch("./data/group5/InfoList.json").then(function (res) {
           return res.json();
         }),
       ]).then(function(wholeData){
-        console.log(wholeData);
         PubSub.publish("combinedNodeTableDt", [
           wholeData[1],
           wholeData[0],
         ]); 
         PubSub.publish("combinedLinkTableDt", [
           wholeData[1],
-          wholeData[0],
+          wholeData[0], 
         ]);
         PubSub.publish("industryStackDt",wholeData[4]);
         PubSub.publish("fromMainToInfoList", wholeData[5]); 
         PubSub.publish("fromMainToConclusion", wholeData[3]);
+
+        // 主图的数据
         graphData = wholeData[2]; 
         setData(wholeData[2]);
       })
@@ -345,7 +363,6 @@ export default function MainView({ w, h }) {
   useEffect(() => {
     if (undoOut) {
       ur.undo();
-
       getDataForDifChart();
       
       getNodeLinkNumber()  // 获取节点数和边数
@@ -378,8 +395,16 @@ export default function MainView({ w, h }) {
     if (showCore) {
       if (cy) {
         cy.nodes().forEach((ele) => {
-          if (ele.data("isCore") === true) {
+          // if (ele.data("isCore") === true) {
+          //   ele.addClass("isCore");
+          // }
+
+          if (ele.data("isCore") === true && ele.data("isDelivery") === false) {
             ele.addClass("isCore");
+            console.log('core');
+          }else if (ele.data("isCore") === true && ele.data("isDelivery") === true) {   // Domain节点指向的多个IP节点
+            console.log('isDelivery');
+            ele.addClass("isDelivery");
           }
         });
         cy.edges().forEach((ele) => {
@@ -393,6 +418,7 @@ export default function MainView({ w, h }) {
     if (showCoreAble && !showCore) {
       if (cy) {
         cy.nodes().removeClass("isCore");
+        cy.nodes().removeClass("isDelivery");
         cy.edges().removeClass("isCore");
       }
     }
@@ -401,7 +427,17 @@ export default function MainView({ w, h }) {
   // 是否添加箭头
   useEffect(() => {
     if (arrowFlag) {
-      cy.edges(":selected").addClass("arrow");
+      // cy.edges(":selected").addClass("arrow");
+
+
+      cy.edges().style({
+        "target-arrow-shape": "triangle",
+        "target-arrow-color": function(ele){
+          return edgeColorStyle[ele.data('relation')]
+        },
+        "curve-style": "straight",
+        "width": 20
+      })
     } else if (cy) {
       cy.edges().removeClass("arrow");
     }
@@ -541,6 +577,7 @@ export default function MainView({ w, h }) {
           industry: d.industry,
           name: d.name,
           isCore: d.isCore,
+          isDelivery: d.isDelivery,
           numId: d.numId,
           type: d.type,
         },
@@ -708,6 +745,41 @@ export default function MainView({ w, h }) {
             },
           },
           {
+            id: "select-mark",
+            content: "标记",
+            tooltipText: "标记",
+            selector: "node",
+            onClickFunction: function (e) {
+              // let currId = e.target.json().data["id"];
+              // // let linkWidth = cy.getElementById(currId).style('width')
+              // // console.log(linkWidth);
+              // if(e.target.json().data["type"] !== 'Domain'){
+              //   cy.getElementById(currId).select()
+              // }else{
+              //   cy.$(":selected").style({
+              //     'border-width': '3px',
+              //     'border-color': '#0000ff'
+              //   })
+              //   .update()
+              // }
+            },
+          },
+          {
+            id: "select-concel-mark",
+            content: "取消标记",
+            tooltipText: "取消标记",
+            selector: "node",
+            onClickFunction: function (e) {
+              let currId = e.target.json().data["id"];
+              if(e.target.json().data["type"] === 'Domain'){
+                cy.getElementById(currId).style({
+                  'border-width':  '0px'
+                })
+                .update()
+              }
+            },
+          },
+          {
             id: "copy-self",
             content: "复制id",
             tooltipText: "复制id",
@@ -764,9 +836,14 @@ export default function MainView({ w, h }) {
           });
         } else {
           cy.nodes().forEach((ele) => {
-            if (ele.data("industry").trim() === searchedIndustry) {
-              ele.select();
-              ele.style("border-width", "3px");
+            // if (ele.data("industry").trim() === searchedIndustry) {
+            //   // ele.select();
+            //   // ele.style("border-width", "3px");
+            //   ele.remove()
+            // }
+            if (ele.data("industry").trim() !== searchedIndustry) {
+              
+              ur.do("remove", ele);
             }
           });
         }
@@ -843,24 +920,25 @@ export default function MainView({ w, h }) {
         width: function (ele) {
           return ele.degree() < 30
             ? 30*value
-            : ele.degree() > 60
-            ? 60*value
+            : ele.degree() > 100
+            ? 100*value
             : ele.degree()*value
         },
         height: function (ele) {
           return ele.degree() < 30
             ? 30*value
-            : ele.degree() > 60
-            ? 60*value
+            : ele.degree() > 100
+            ? 100*value
             : ele.degree()*value
         },
-        'border-width': function(ele){
-          if(ele.hasClass('isCore') === true){
-            return 3*value/2 + 'px'
-          }
-          return 0
-        }
+        // 'border-width': function(ele){
+        //   if(ele.hasClass('isCore') === true){
+        //     return 3*value/2 + 'px'
+        //   }
+          // return 0
+        // }
       })
+
 
       cy.style()
       .selector('edge')
@@ -868,6 +946,23 @@ export default function MainView({ w, h }) {
         width: 3*value/2,
       })
       .update()
+      // if(arrowFlag){
+      //   cy.edges().style({
+      //     "target-arrow-shape": "triangle",
+      //     "target-arrow-color": function(ele){
+      //       return edgeColorStyle[ele.data('relation')]
+      //     },
+      //     "curve-style": "straight",
+      //     "width": 4*value/2,
+      //   })
+      // }else{
+      //   cy.style()
+      //   .selector('edge')
+      //   .style({
+      //     width: 3*value/2,
+      //   })
+      //   .update()
+      // }
 
     }
   }
@@ -1000,15 +1095,15 @@ export default function MainView({ w, h }) {
             width: function (ele) {
               return ele.degree() < 30
                 ? 30
-                : ele.degree() > 60
-                ? 60
+                : ele.degree() > 100
+                ? 100
                 : ele.degree();
             },
             height: function (ele) {
               return ele.degree() < 30
                 ? 30
-                : ele.degree() > 60
-                ? 60
+                : ele.degree() > 100
+                ? 100
                 : ele.degree();
             },
           },
@@ -1022,10 +1117,16 @@ export default function MainView({ w, h }) {
               }
               return "solid";
             },
-
+            // "border-color": function (ele) {
+            //   if (ele.json().data.hasOwnProperty("children")) {
+            //     return "black";
+            //   }
+            //   // return '1px'
+            //   return "#";
+            // },
             "border-width": function (ele) {
               if (ele.json().data.hasOwnProperty("children")) {
-                return "3px";
+                return "5px";
               }
               // return '1px'
               return "0px";
@@ -1169,7 +1270,7 @@ export default function MainView({ w, h }) {
       "asn",
       "cidr",
     ];
-    let edgeColor = [
+    let edgeColor= [
       "#ff756a",
       "#34B3F1",
       "#242F9B",
@@ -1180,6 +1281,7 @@ export default function MainView({ w, h }) {
       "#f9bf6f",
       "#7fc97f",
     ];
+
     let industryType = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
     let industryColor = {
       // A: "#fba5fc",
@@ -1351,7 +1453,24 @@ export default function MainView({ w, h }) {
       .attr("y", 10)
       .attr("width", 9)
       .attr("height", 15)
-      .attr("fill", (d, i) => industryColor[d]);
+      .attr("fill", (d, i) => industryColor[d])
+      .on('mouseover', function(event, d){
+        // 高亮包含当前产业的节点
+        console.log('2222');
+        if(cy){
+          cy.nodes().forEach((ele) => {
+            if(ele.data('industry').trim('') !== "" && ele.data('industry').trim('').toUpperCase().includes(d)){
+              ele.addClass('stackhighlightNode')
+            }
+          })
+        }
+      })
+      .on('mouseout', function(event, d){
+        // 高亮包含当前产业的节点
+        if(cy){
+          cy.nodes().removeClass('stackhighlightNode')
+        }
+      })
     industryTypeG
       .append("text")
       .text((d) => d)
@@ -1495,12 +1614,15 @@ export default function MainView({ w, h }) {
 
       // 下载图片
       if (cy) {
+
         let blob = cy.png({
           output: "blob",
           bg: "transparent",
           full: true,
-          scale: 4,
-          quality: 1,
+          scale: 1,
+          // quality: 1,
+          maxWidth: 10000,
+          maxHeight: 10000,
         });
         let aLink = document.createElement("a");
         let evt = document.createEvent("HTMLEvents");
@@ -1511,39 +1633,53 @@ export default function MainView({ w, h }) {
         document.body.appendChild(aLink);
         aLink.click();
         document.body.removeChild(aLink);
+
+
+        // // 下载canvas的方式下载： 效果差，还不能显示全部
+        // var canvas = document.getElementsByTagName("canvas")[4]
+        
+        // var anchor = document.createElement("a");
+        // anchor.href = canvas.toDataURL("image/png");
+        // anchor.download = "IMAGE.png";
+        // anchor.click();
+
       }
+
+
+
       // 下载整个子图的数据
-      var dataBlob = new Blob([JSON.stringify(graphData)], {
-        type: "text/json",
-      });
-      var e = document.createEvent("MouseEvents");
-      var a = document.createElement("a");
-      a.download = "graph.json";
-      a.href = window.URL.createObjectURL(dataBlob);
-      a.dataset.downloadurl = ["text/json", a.download, a.href].join(":");
-      e.initMouseEvent(
-        "click",
-        true,
-        false,
-        window,
-        0,
-        0,
-        0,
-        0,
-        0,
-        false,
-        false,
-        false,
-        false,
-        0,
-        null
-      );
-      a.dispatchEvent(e);
+      // var dataBlob = new Blob([JSON.stringify(graphData)], {
+      //   type: "text/json",
+      // });
+      // var e = document.createEvent("MouseEvents");
+      // var a = document.createElement("a");
+      // a.download = "graph.json";
+      // a.href = window.URL.createObjectURL(dataBlob);
+      // a.dataset.downloadurl = ["text/json", a.download, a.href].join(":");
+      // e.initMouseEvent(
+      //   "click",
+      //   true,
+      //   false,
+      //   window,
+      //   0,
+      //   0,
+      //   0,
+      //   0,
+      //   0,
+      //   false,
+      //   false,
+      //   false,
+      //   false,
+      //   0,
+      //   null
+      // );
+      // a.dispatchEvent(e);
       return;
     }
 
     // 下载提交之前的数据
     if (data.nodes.length !== 0) {
+      console.log('执行了这个');
       // 下载图片
       if (cy) {
         let blob = cy.png({
@@ -1587,8 +1723,7 @@ export default function MainView({ w, h }) {
 
   function getNodeLinkNumber(){
     if(cy){
-      let nodeNum = 0
-      let linkNum = 0;
+      let nodeNum = 0, linkNum = 0;
       cy.nodes().forEach(ele => {
         if(!ele.json().data.hasOwnProperty('children')){   // 没有子节点
           nodeNum += 1
