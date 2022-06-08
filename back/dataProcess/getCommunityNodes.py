@@ -1,4 +1,5 @@
 import json
+from numpy import sort
 import pandas as pd
 import re
 from alive_progress import alive_bar
@@ -112,22 +113,90 @@ if __name__ == '__main__':
     #                         break
 
     
-    # 打开所有的节点
-    nodeCsvW = pd.read_csv(
-        nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv", header=0)
-    nodeCsvW = nodeCsvW.values
+    # # 打开所有的节点
+    # nodeCsvW = pd.read_csv(
+    #     nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv", header=0)
+    # nodeCsvW = nodeCsvW.values
     
-    ICScreenJ = open(nowPath + "ICScreen.json", "r", encoding="utf-8")
-    ICScreen = json.load(ICScreenJ)
-    IPNum = 0
-    CertNum = 0
-    for i in ICScreen[1]:
-        if(nodeCsvW[i - 1][3] == "IP"):
-            IPNum += 1
-        elif(nodeCsvW[i - 1][3] == "Cert"):
-            CertNum += 1
-    print(IPNum)
-    print(CertNum)
+    # ICScreenJ = open(nowPath + "ICScreen.json", "r", encoding="utf-8")
+    # ICScreen = json.load(ICScreenJ)
+    # IPNum = 0
+    # CertNum = 0
+    # for i in ICScreen[1]:
+    #     if(nodeCsvW[i - 1][3] == "IP"):
+    #         IPNum += 1
+    #     elif(nodeCsvW[i - 1][3] == "Cert"):
+    #         CertNum += 1
+    # print(IPNum)
+    # print(CertNum)
+
+    # # 打开所有的节点
+    # nodeList = set()
+    
+    # ICScreenJ = open(nowPath + "2.json", "r", encoding="utf-8")
+    # ICScreen = json.load(ICScreenJ)
+    # for i in ICScreen:
+    #     if(ICScreen[i]["numId"] in nodeList):
+    #         print(ICScreen[i]["numId"])
+    #     nodeList.add(ICScreen[i]["numId"])
+    
+    # print(len(list(nodeList)))
+
+    # # 打开所有的节点
+    # nodeCsvW = pd.read_csv(
+    #     nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv", header=0)
+    # nodeCsvW = nodeCsvW.values
+    
+    # # 打开所有的节点
+    # nodeLinksJsonJ = open(nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/nodeLinksJson.json", "r", encoding="utf-8")
+    # nodeLinksJson = json.load(nodeLinksJsonJ)
+    # num = -1
+    # allIP = []
+    # for i in nodeLinksJson:
+    #     num += 1
+    #     r_dns_a_NumId = []
+    #     if(nodeCsvW[num][3] == "IP" or nodeCsvW[num][3] == "Cert"):
+    #         continue
+    #     if(nodeCsvW[num][4] == "  "):
+    #         continue
+    #     for j in i:
+    #         if(j[0] == "r_dns_a"):
+    #             r_dns_a_NumId.append(j[2])
+    #     if(len(r_dns_a_NumId) > 1):
+    #         allIP.extend(r_dns_a_NumId)
+    # allIP = list(set(allIP))
+    # allIP.sort()
+
+    # notCoreJ = open(nowPath + "notCore.json", "w", encoding="utf-8")
+    # json.dump(allIP, notCoreJ, ensure_ascii=False)
+    
+            
+    for i in range(1,6):
+        print(i)
+        groupInfoJ = open("D:/个人相关/可视化大赛/ChinaVIS 2022/Challenge2/Challenge-2." + str(i) + "/main.json", "r", encoding="utf-8")
+        groupInfo = json.load(groupInfoJ)
+        nodes = {}
+        for j in groupInfo["nodes"]:
+            if (str(j["numId"]) in nodes):
+                continue
+            nodes[str(j["numId"])] = j
+        
+        useNodes = []
+        for  j in nodes: 
+            useNodes.append(nodes[j])    
+        groupInfoJ = open("D:/个人相关/可视化大赛/ChinaVIS 2022/Challenge2/Challenge-2." + str(i) + "/main.json", "w", encoding="utf-8")
+        json.dump({
+            "nodes": useNodes,
+            "links": groupInfo["links"]
+        }, groupInfoJ, ensure_ascii=False)
+
+                
+
+
+
+
+
+    
 
 
     
