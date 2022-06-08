@@ -10,7 +10,8 @@
 #main-chart {
   width: 99.5%;
   /* flex: 29; */
-  height: 798px;
+  /* height: 798px; */
+  height: 1298px;
 }
 
 #main-chart-control {
