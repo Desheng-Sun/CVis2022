@@ -1957,7 +1957,7 @@ function getFinalDataSds(nodes, links) {
 
 }
 
-// 获取主图的信息
+// 获取识别完成后的团伙主图的信息
 function getMainChart(nodes, links) {
   let nowNodes = []
   let nowlinks = links

@@ -7,15 +7,14 @@ import ast
 import os
 
 if __name__ == '__main__':
-    
+
     nowPath = os.path.abspath(os.path.dirname(
         os.path.dirname(__file__))) + "/data/"
 
-        
     # # 打开所有的节点
     # nodeCsvW = pd.read_csv(
     #     nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/link.csv", header=0)
-    # nodeCsvW = nodeCsvW.values 
+    # nodeCsvW = nodeCsvW.values
     # num = 0
     # for i in nodeCsvW:
     #     num += 1
@@ -56,7 +55,6 @@ if __name__ == '__main__':
     # print(IPNum)
     # print(CertNum)
 
-
     # print(len(ICScreenLinks))
     # num = 0
     # useICLinks = []
@@ -78,10 +76,6 @@ if __name__ == '__main__':
     #         ICScreenLinksJ3 = open(nowPath + "ICScreenLinks/523_3.json", "w", encoding="utf-8")
     #         json.dump(useICLinks, ICScreenLinksJ3, ensure_ascii=False)
     #         useICLinks = []
-
-
-
-
 
     # # 打开所有的节点
     # nodeCsvW = pd.read_csv(
@@ -112,12 +106,11 @@ if __name__ == '__main__':
     #                         print(nodeCsvW[i["end"][0] - 1][0], nodeCsvW[i["end"][0] - 1][1])
     #                         break
 
-    
     # # 打开所有的节点
     # nodeCsvW = pd.read_csv(
     #     nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv", header=0)
     # nodeCsvW = nodeCsvW.values
-    
+
     # ICScreenJ = open(nowPath + "ICScreen.json", "r", encoding="utf-8")
     # ICScreen = json.load(ICScreenJ)
     # IPNum = 0
@@ -132,21 +125,21 @@ if __name__ == '__main__':
 
     # # 打开所有的节点
     # nodeList = set()
-    
+
     # ICScreenJ = open(nowPath + "2.json", "r", encoding="utf-8")
     # ICScreen = json.load(ICScreenJ)
     # for i in ICScreen:
     #     if(ICScreen[i]["numId"] in nodeList):
     #         print(ICScreen[i]["numId"])
     #     nodeList.add(ICScreen[i]["numId"])
-    
+
     # print(len(list(nodeList)))
 
-    # # 打开所有的节点
-    # nodeCsvW = pd.read_csv(
-    #     nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv", header=0)
-    # nodeCsvW = nodeCsvW.values
-    
+    # 打开所有的节点
+    nodeCsvW = pd.read_csv(
+        nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/NodeNumIdNow.csv", header=0)
+    nodeCsvW = nodeCsvW.values
+
     # # 打开所有的节点
     # nodeLinksJsonJ = open(nowPath + "ChinaVis Data Challenge 2022-mini challenge 1-Dataset/nodeLinksJson.json", "r", encoding="utf-8")
     # nodeLinksJson = json.load(nodeLinksJsonJ)
@@ -156,8 +149,6 @@ if __name__ == '__main__':
     #     num += 1
     #     r_dns_a_NumId = []
     #     if(nodeCsvW[num][3] == "IP" or nodeCsvW[num][3] == "Cert"):
-    #         continue
-    #     if(nodeCsvW[num][4] == "  "):
     #         continue
     #     for j in i:
     #         if(j[0] == "r_dns_a"):
@@ -169,44 +160,44 @@ if __name__ == '__main__':
 
     # notCoreJ = open(nowPath + "notCore.json", "w", encoding="utf-8")
     # json.dump(allIP, notCoreJ, ensure_ascii=False)
-    
-            
-    for i in range(1,6):
-        print(i)
-        groupInfoJ = open("D:/个人相关/可视化大赛/ChinaVIS 2022/Challenge2/Challenge-2." + str(i) + "/main.json", "r", encoding="utf-8")
+
+    AllNodes = {}
+    for i in range(1, 11):
+        # LinksSet = {
+        #     "r_cert": 0,
+        #     "r_subdomain": 0,
+        #     "r_request_jump": 0,
+        #     "r_dns_a": 0,
+        #     "r_whois_name": 0,
+        #     "r_whois_email": 0,
+        #     "r_whois_phone": 0,
+        #     "r_cert_chain": 0,
+        #     "r_cname": 0,
+        #     "r_asn": 0,
+        #     "r_cidr": 0,
+        # }
+        # print(i)
+        groupInfoJ = open("D:/个人相关/可视化大赛/ChinaVIS 2022/Challenge2/Challenge-2." +
+                          str(i) + "/UseData/MainChartData.json", "r", encoding="utf-8")
         groupInfo = json.load(groupInfoJ)
-        nodes = {}
         for j in groupInfo["nodes"]:
-            if (str(j["numId"]) in nodes):
+            if(str(j["numId"]) in AllNodes):
+                AllNodes[str(j["numId"])].append(i)
                 continue
-            nodes[str(j["numId"])] = j
-        
-        useNodes = []
-        for  j in nodes: 
-            useNodes.append(nodes[j])    
-        groupInfoJ = open("D:/个人相关/可视化大赛/ChinaVIS 2022/Challenge2/Challenge-2." + str(i) + "/main.json", "w", encoding="utf-8")
-        json.dump({
-            "nodes": useNodes,
-            "links": groupInfo["links"]
-        }, groupInfoJ, ensure_ascii=False)
+            AllNodes[str(j["numId"])] = [i]
+    for i in AllNodes:
+        if(len(AllNodes[i]) > 1):
+            print(i)
+            print(nodeCsvW[int(i) - 1][3])
+    groupInfoJ = open("D:/个人相关/可视化大赛/ChinaVIS 2022/Challenge2/nodesInfo.json", "w", encoding="utf-8")
+    json.dump(AllNodes, groupInfoJ, ensure_ascii= False)
 
-                
-
-
-
-
-
-    
-
-
-    
+        # for j in groupInfo["links"]:
+        #     if(j["isCore"] == True):
+        #         LinksSet[j["relation"]] += 1
+        # print(LinksSet)
+        # groupInfoJ = open("D:/个人相关/可视化大赛/ChinaVIS 2022/Challenge1/Challenge-1." +
+        #                   str(i) + "/UseData/CoreLinksNum.txt", "w", encoding="utf-8")
+        # groupInfoJ.write(str(LinksSet))
                     
-
-
-
-                    
-
-
-
-
         
