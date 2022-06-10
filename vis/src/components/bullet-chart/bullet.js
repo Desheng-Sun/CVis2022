@@ -80,7 +80,19 @@ export default function bullet() {
         .append("text")
         .attr("class", "numtext")
         .attr("transform", (d, i) => {
-          return `translate(${width * 0.35},${height - w0(d) - 5})`;
+          let x = width * 0.35,  y = height - w0(d) - 5
+          if(d.toString().length === 2){
+            x = 5
+          }else if(d.toString().length === 3){
+            x = 2
+          }else if(d.toString().length === 4){
+            x = 0
+          }
+
+          if(y < 1.4391666666666652){
+            y = 1.4391666666666652
+          }
+          return `translate(${x},${y})`;
         })
         .text((d) => d);
 

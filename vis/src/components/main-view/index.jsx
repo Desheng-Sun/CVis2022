@@ -14,6 +14,7 @@ import {
   CaretUpOutlined,
   DownloadOutlined,
   CaretDownOutlined,
+  EllipsisOutlined,
 } from "@ant-design/icons";
 import fcose from "cytoscape-fcose";
 import "cytoscape-navigator/cytoscape.js-navigator.css";
@@ -41,7 +42,7 @@ var ur, urOption, graphData; // 保留点和边的初状态
 var layoutOptionDict = {
   euler: {
     name: "euler",
-    fit: false, // whether to fit to viewport
+    fit: true, // whether to fit to viewport
     animate: true, // whether to transition the node positions
     avoidOverlap: true,
     springLength: 10,
@@ -103,16 +104,16 @@ var layoutOptionDict = {
 
 let edgeColorStyle = {
   r_cert: "#ff756a",
-  r_subdomain:"#34B3F1",
-  r_request_jump:"#242F9B",
-  r_dns_a:"#33a02c",
-  r_whois_name:"#f67f02",
-  r_whois_phone:"#f67f02",
-  r_whois_email:"#f67f02",
-  r_cert_chain:"#f9b4ae",
-  r_cname:"#BAABDA",
-  r_asn:"#f9bf6f",
-  r_cidr:"#7fc97f"
+  r_subdomain: "#34B3F1",
+  r_request_jump: "#242F9B",
+  r_dns_a: "#33a02c",
+  r_whois_name: "#f67f02",
+  r_whois_phone: "#f67f02",
+  r_whois_email: "#f67f02",
+  r_cert_chain: "#f9b4ae",
+  r_cname: "#BAABDA",
+  r_asn: "#f9bf6f",
+  r_cidr: "#7fc97f"
 };
 export default function MainView({ w, h }) {
   const [svgWidth, setSvgWidth] = useState(w);
@@ -210,7 +211,7 @@ export default function MainView({ w, h }) {
         PubSub.publish("fromMainToInfoList", res.getInfoListSds); // 向info-list传递数据
         PubSub.publish("fromMainToConclusion", res.getFinalDataSds);
         graphData = res.getDetialListSds; // 保存提交后的图的完整数据
-        
+
         // 更新主图的数据就不再对数据进行变化了
         setData(res.getDetialListSds);
       });
@@ -218,42 +219,42 @@ export default function MainView({ w, h }) {
       return
     }
 
-    if(isSubmit === true){
+    if (isSubmit === true) {
       Promise.all([
-        fetch("./data/group5/BulletChartData.json").then(function (res) {
+        fetch("./data/Challenge2/Challenge-2.10/useData//BulletChartData.json").then(function (res) {
           return res.json();
         }),
-        fetch("./data/group5/DetialList.json").then(function (res) {
+        fetch("./data/Challenge2/Challenge-2.10/useData//DetialList.json").then(function (res) {
           console.log(res);
           return res.json();
         }),
-        fetch("./data/group5/MainChartData.json").then(function (res) {
+        fetch("./data/Challenge2/Challenge-2.10/useData//MainChartData.json").then(function (res) {
           return res.json();
         }),
-        fetch("./data/group5/FinalData.json").then(function (res) {
+        fetch("./data/Challenge2/Challenge-2.10/useData//FinalData.json").then(function (res) {
           return res.json();
         }),
-        fetch("./data/group5/IdentifyICNodes.json").then(function (res) {
+        fetch("./data/Challenge2/Challenge-2.10/useData//IdentifyICNodes.json").then(function (res) {
           return res.json();
         }),
-        fetch("./data/group5/InfoList.json").then(function (res) {
+        fetch("./data/Challenge2/Challenge-2.10/useData//InfoList.json").then(function (res) {
           return res.json();
         }),
-      ]).then(function(wholeData){
+      ]).then(function (wholeData) {
         PubSub.publish("combinedNodeTableDt", [
           wholeData[1],
           wholeData[0],
-        ]); 
+        ]);
         PubSub.publish("combinedLinkTableDt", [
           wholeData[1],
-          wholeData[0], 
+          wholeData[0],
         ]);
-        PubSub.publish("industryStackDt",wholeData[4]);
-        PubSub.publish("fromMainToInfoList", wholeData[5]); 
+        PubSub.publish("industryStackDt", wholeData[4]);
+        PubSub.publish("fromMainToInfoList", wholeData[5]);
         PubSub.publish("fromMainToConclusion", wholeData[3]);
 
         // 主图的数据
-        graphData = wholeData[2]; 
+        graphData = wholeData[2];
         setData(wholeData[2]);
       })
     }
@@ -334,11 +335,13 @@ export default function MainView({ w, h }) {
           if (ICLink.indexOf(ele.data("numId").toString()) !== -1) {
             // 表明是起点和终点
             ele.addClass("start_end");
+            ele.select()
             innerNode.push(ele.data("id"));
           } else if (
             ele.data("InICLinks").includes(ICLink) ||
             ele.data("InICLinks").includes(reverseICLink)
           ) {
+            ele.select()
             ele.addClass("InIClink");
             innerNode.push(ele.data("id"));
           }
@@ -351,6 +354,7 @@ export default function MainView({ w, h }) {
               innerNode.includes(ele.data("source")) &&
               innerNode.includes(ele.data("target"))
             ) {
+              ele.select()
               ele.addClass("InIClink");
             }
           });
@@ -364,7 +368,7 @@ export default function MainView({ w, h }) {
     if (undoOut) {
       ur.undo();
       getDataForDifChart();
-      
+
       getNodeLinkNumber()  // 获取节点数和边数
     }
     setUndoOut(false);
@@ -402,7 +406,7 @@ export default function MainView({ w, h }) {
           if (ele.data("isCore") === true && ele.data("isDelivery") === false) {
             ele.addClass("isCore");
             console.log('core');
-          }else if (ele.data("isCore") === true && ele.data("isDelivery") === true) {   // Domain节点指向的多个IP节点
+          } else if (ele.data("isCore") === true && ele.data("isDelivery") === true) {   // Domain节点指向的多个IP节点
             console.log('isDelivery');
             ele.addClass("isDelivery");
           }
@@ -432,7 +436,7 @@ export default function MainView({ w, h }) {
 
       cy.edges().style({
         "target-arrow-shape": "triangle",
-        "target-arrow-color": function(ele){
+        "target-arrow-color": function (ele) {
           return edgeColorStyle[ele.data('relation')]
         },
         "curve-style": "straight",
@@ -771,11 +775,11 @@ export default function MainView({ w, h }) {
             selector: "node",
             onClickFunction: function (e) {
               let currId = e.target.json().data["id"];
-              if(e.target.json().data["type"] === 'Domain'){
+              if (e.target.json().data["type"] === 'Domain') {
                 cy.getElementById(currId).style({
-                  'border-width':  '0px'
+                  'border-width': '0px'
                 })
-                .update()
+                  .update()
               }
             },
           },
@@ -836,15 +840,14 @@ export default function MainView({ w, h }) {
           });
         } else {
           cy.nodes().forEach((ele) => {
-            // if (ele.data("industry").trim() === searchedIndustry) {
-            //   // ele.select();
-            //   // ele.style("border-width", "3px");
-            //   ele.remove()
-            // }
-            if (ele.data("industry").trim() !== searchedIndustry) {
-              
-              ur.do("remove", ele);
+            if (ele.data("industry").trim() === searchedIndustry) {
+              ele.select();
+              ele.style("border-width", "3px")
             }
+            // if (ele.data("industry").trim() !== searchedIndustry) {
+
+            //   ur.do("remove", ele);
+            // }
           });
         }
       } else {
@@ -912,40 +915,40 @@ export default function MainView({ w, h }) {
   function onChangeNodeDistance(value) {
     setNodeDistance(value);
   }
-  function onChangeNodeSize(value){
-    if(cy){
+  function onChangeNodeSize(value) {
+    if (cy) {
       cy.style()
-      .selector('node')
-      .style({
-        width: function (ele) {
-          return ele.degree() < 30
-            ? 30*value
-            : ele.degree() > 100
-            ? 100*value
-            : ele.degree()*value
-        },
-        height: function (ele) {
-          return ele.degree() < 30
-            ? 30*value
-            : ele.degree() > 100
-            ? 100*value
-            : ele.degree()*value
-        },
-        // 'border-width': function(ele){
-        //   if(ele.hasClass('isCore') === true){
-        //     return 3*value/2 + 'px'
-        //   }
+        .selector('node')
+        .style({
+          width: function (ele) {
+            return ele.degree() < 30
+              ? 30 * value
+              : ele.degree() > 100
+                ? 100 * value
+                : ele.degree() * value
+          },
+          height: function (ele) {
+            return ele.degree() < 30
+              ? 30 * value
+              : ele.degree() > 100
+                ? 100 * value
+                : ele.degree() * value
+          },
+          // 'border-width': function(ele){
+          //   if(ele.hasClass('isCore') === true){
+          //     return 3*value/2 + 'px'
+          //   }
           // return 0
-        // }
-      })
+          // }
+        })
 
 
       cy.style()
-      .selector('edge')
-      .style({
-        width: 3*value/2,
-      })
-      .update()
+        .selector('edge')
+        .style({
+          width: 3 * value / 2,
+        })
+        .update()
       // if(arrowFlag){
       //   cy.edges().style({
       //     "target-arrow-shape": "triangle",
@@ -989,7 +992,7 @@ export default function MainView({ w, h }) {
   function onSubmitRes() {
     setIsSubmit(true); // 确定提交
     setShowCoreAble(true); // 提交之后可以应用核心资产和关键路径的样式
-    if(cy){
+    if (cy) {
       let nodes, links;
       nodes = cy.nodes().map(function (ele, i) {
         return ele.json().data;
@@ -1001,7 +1004,7 @@ export default function MainView({ w, h }) {
       // setShowCoreAble(true); // 提交之后可以应用核心资产和关键路径的样式
       setResData({ nodes: [...nodes], links: [...links] });
     }
-    else{
+    else {
       setResData({ nodes: [], links: [] });
     }
   }
@@ -1029,10 +1032,10 @@ export default function MainView({ w, h }) {
 
       inICLinks = inICLinks[0]["InICLinks"];
 
-      
+
       let inICLinksAfterDelete = []; // 删除后的ICLinks
       console.log(inICLinks);
-      if(inICLinks == undefined) return
+      if (inICLinks == undefined) return
 
       inICLinks.forEach((item, index) => {
         let l = item.split(",");
@@ -1096,15 +1099,15 @@ export default function MainView({ w, h }) {
               return ele.degree() < 30
                 ? 30
                 : ele.degree() > 100
-                ? 100
-                : ele.degree();
+                  ? 100
+                  : ele.degree();
             },
             height: function (ele) {
               return ele.degree() < 30
                 ? 30
                 : ele.degree() > 100
-                ? 100
-                : ele.degree();
+                  ? 100
+                  : ele.degree();
             },
           },
         };
@@ -1270,7 +1273,7 @@ export default function MainView({ w, h }) {
       "asn",
       "cidr",
     ];
-    let edgeColor= [
+    let edgeColor = [
       "#ff756a",
       "#34B3F1",
       "#242F9B",
@@ -1454,20 +1457,20 @@ export default function MainView({ w, h }) {
       .attr("width", 9)
       .attr("height", 15)
       .attr("fill", (d, i) => industryColor[d])
-      .on('mouseover', function(event, d){
+      .on('mouseover', function (event, d) {
         // 高亮包含当前产业的节点
         console.log('2222');
-        if(cy){
+        if (cy) {
           cy.nodes().forEach((ele) => {
-            if(ele.data('industry').trim('') !== "" && ele.data('industry').trim('').toUpperCase().includes(d)){
+            if (ele.data('industry').trim('') !== "" && ele.data('industry').trim('').toUpperCase().includes(d)) {
               ele.addClass('stackhighlightNode')
             }
           })
         }
       })
-      .on('mouseout', function(event, d){
+      .on('mouseout', function (event, d) {
         // 高亮包含当前产业的节点
-        if(cy){
+        if (cy) {
           cy.nodes().removeClass('stackhighlightNode')
         }
       })
@@ -1637,7 +1640,7 @@ export default function MainView({ w, h }) {
 
         // // 下载canvas的方式下载： 效果差，还不能显示全部
         // var canvas = document.getElementsByTagName("canvas")[4]
-        
+
         // var anchor = document.createElement("a");
         // anchor.href = canvas.toDataURL("image/png");
         // anchor.download = "IMAGE.png";
@@ -1721,20 +1724,20 @@ export default function MainView({ w, h }) {
     }
   }
 
-  function getNodeLinkNumber(){
-    if(cy){
+  function getNodeLinkNumber() {
+    if (cy) {
       let nodeNum = 0, linkNum = 0;
       cy.nodes().forEach(ele => {
-        if(!ele.json().data.hasOwnProperty('children')){   // 没有子节点
+        if (!ele.json().data.hasOwnProperty('children')) {   // 没有子节点
           nodeNum += 1
-        }else{
+        } else {
           nodeNum += ele.json().data.children.length
         }
       })
       cy.edges().forEach(ele => {
-        if(!ele.json().data.hasOwnProperty('children')){   // 没有子节点
+        if (!ele.json().data.hasOwnProperty('children')) {   // 没有子节点
           linkNum += 1
-        }else{
+        } else {
           linkNum += ele.json().data.children.length
         }
       })
@@ -1743,7 +1746,7 @@ export default function MainView({ w, h }) {
       setLinkNumber(linkNum)
     }
   }
-  
+
   return (
     <div
       id="main-container"
@@ -1758,7 +1761,7 @@ export default function MainView({ w, h }) {
             background: "#eaeaea",
             paddingTop: "5px",
             paddingLeft: "10px",
-            lineHeight: 2.2,
+            lineHeight: 2.3,
           }}
         >
           {/*  控制数据 */}
@@ -1777,9 +1780,9 @@ export default function MainView({ w, h }) {
               placeholder="产业类型"
               style={{ width: 120 }}
             />
-            <Tag color="#87d068" 
+            <Tag color="#87d068"
               style={{ marginLeft: "50px", fontSize: '14px', lineHeight: 2, width: 70, paddingLeft: 0, textAlign: 'center', fontFamily: 'monospace' }}>点#  {nodeNumber}</Tag>
-            <Tag color="#2db7f5"  style={{ fontSize: '14px', lineHeight: 2, width: 70, paddingLeft: 0, textAlign: 'center', fontFamily: 'monospace'  }}>边#  {linkNumber}</Tag>
+            <Tag color="#2db7f5" style={{ fontSize: '14px', lineHeight: 2, width: 70, paddingLeft: 0, textAlign: 'center', fontFamily: 'monospace' }}>边#  {linkNumber}</Tag>
 
             <Button
               type="dashed"
@@ -1830,7 +1833,7 @@ export default function MainView({ w, h }) {
             paddingTop: "2px",
             paddingLeft: "10px",
             paddingBottom: "5px",
-            lineHeight: 2.2,
+            lineHeight: 2.3,
             whiteSpace: "pre",
           }}
         >

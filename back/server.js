@@ -268,40 +268,40 @@ function getIPCertLinksInSkip2(
       pureDomain = Math.max(pureDomain, j[3] - j[4]);
       dirtyDomain = Math.max(dirtyDomain, j[4]);
       skipNum = Math.max(skipNum, 1);
-      // //第二层数据
-      // for (let k of ICLinksInfo[j[1]]) {
-      //   //如果第二层数据和第0层数据相等，则跳过：A-B-A
-      //   if (k[1] == parseInt(nowNodeNumId)) {
-      //     continue;
-      //   }
-      //   nowNodesInfo = nodeNumIdInfo[parseInt(k[1]) - 1];
-      //   isInFirst = false;
-      //   // 如果连接的节点出现在第一层，则表示三个节点互相连接
-      //   if (allNodes1.indexOf(parseInt(k[1])) > -1) {
-      //     isInFirst = true;
-      //   }
-      //   // 添加第二层相关数据
-      //   allLinks["children"][allLinks["children"].length - 1]["children"].push({
-      //     id: nowNodesInfo[1],
-      //     nodesNum: k[2] - 2,
-      //     WhoisName: k[5],
-      //     WhoisEmail: k[6],
-      //     WhoisPhone: k[7],
-      //     pureDomain: k[3] - k[4],
-      //     dirtyDomain: k[4],
-      //     numId: nowNodesInfo[0],
-      //     name: nowNodesInfo[2],
-      //     isInFirst: isInFirst,
-      //     children: [],
-      //     height: 1,
-      //   });
-      //   WhoisName = Math.max(WhoisName, k[5]);
-      //   WhoisEmail = Math.max(WhoisEmail, k[6]);
-      //   WhoisPhone = Math.max(WhoisPhone, k[7]);
-      //   pureDomain = Math.max(pureDomain, k[3] - k[4]);
-      //   dirtyDomain = Math.max(dirtyDomain, k[4]);
-      //   skipNum = Math.max(skipNum, 2);
-      // }
+      //第二层数据
+      for (let k of ICLinksInfo[j[1]]) {
+        //如果第二层数据和第0层数据相等，则跳过：A-B-A
+        if (k[1] == parseInt(nowNodeNumId)) {
+          continue;
+        }
+        nowNodesInfo = nodeNumIdInfo[parseInt(k[1]) - 1];
+        isInFirst = false;
+        // 如果连接的节点出现在第一层，则表示三个节点互相连接
+        if (allNodes1.indexOf(parseInt(k[1])) > -1) {
+          isInFirst = true;
+        }
+        // 添加第二层相关数据
+        allLinks["children"][allLinks["children"].length - 1]["children"].push({
+          id: nowNodesInfo[1],
+          nodesNum: k[2] - 2,
+          WhoisName: k[5],
+          WhoisEmail: k[6],
+          WhoisPhone: k[7],
+          pureDomain: k[3] - k[4],
+          dirtyDomain: k[4],
+          numId: nowNodesInfo[0],
+          name: nowNodesInfo[2],
+          isInFirst: isInFirst,
+          children: [],
+          height: 1,
+        });
+        WhoisName = Math.max(WhoisName, k[5]);
+        WhoisEmail = Math.max(WhoisEmail, k[6]);
+        WhoisPhone = Math.max(WhoisPhone, k[7]);
+        pureDomain = Math.max(pureDomain, k[3] - k[4]);
+        dirtyDomain = Math.max(dirtyDomain, k[4]);
+        skipNum = Math.max(skipNum, 2);
+      }
     }
     allLinks["WhoisNameNum"] = WhoisName;
     allLinks["WhoisPhoneNum"] = WhoisPhone;
@@ -756,7 +756,7 @@ app.post("/getMainChartSds", jsonParser, (req, res, next) => {
               ] = existLinkList[existLinkChildren[[k[1], k[2]].toString()]][
                 "children"
               ].filter(
-                (e) => e["linksNumId"] != [parseInt(k[1]), parseInt(k[2])]
+                (e) => e["linksNumId"].toString != [[k[1], k[2]].toString()]
               );
             }
             existLinkList[[k[1], k[2]].toString()] = {
@@ -2012,31 +2012,52 @@ app.post("/getGroupAllInfoSds", jsonParser, (req, res, next) => {
   const initialLinks = req.body.nodesLinksInfo["links"];
   const initialNodes = req.body.nodesLinksInfo["nodes"];
   const isAll = req.body.nodesLinksInfo["isAll"];
-  let links = [];
-  let nodes = [];
-  for (let i of initialLinks) {
-    //如果links有children，表明该links为融合连接，获取其内部信息
-    if (i.hasOwnProperty("children")) {
-      for (let j of i["children"]) {
-        let k = j;
-        k["InICLinks"] = i["InICLinks"];
-        links.push(k);
-      }
-    } else {
-      links.push(i);
-    }
-  }
+  let allnodes = {};
   for (let i of initialNodes) {
     //如果nodes有children，表明该nodes为融合连接，获取其内部信息
     if (i.hasOwnProperty("children")) {
       for (let j of i["children"]) {
+        if(allnodes.hasOwnProperty(j["numId"].toString())){
+          continue
+        }
         let k = j;
         k["InICLinks"] = i["InICLinks"];
-        nodes.push(k);
+        allnodes[j["numId"].toString()] =k;
       }
     } else {
-      nodes.push(i);
+      if(allnodes.hasOwnProperty(i["numId"].toString())){
+        continue
+      }
+      allnodes[i["numId"].toString()] =i;
     }
+  }
+  let nodes = []
+  for(let i in allnodes){
+    nodes.push(allnodes[i])
+  }
+  let alllinks = {};
+  for (let i of initialLinks) {
+    //如果links有children，表明该links为融合连接，获取其内部信息
+    if (i.hasOwnProperty("children")) {
+      if(alllinks.hasOwnProperty(i["linksNumId"].toString())){
+        continue
+      }
+      for (let j of i["children"]) {
+        let k = j;
+        k["InICLinks"] = i["InICLinks"];
+        alllinks[j["linksNumId"].toString()] = k;
+      }
+    } else {
+      if(alllinks.hasOwnProperty(i["linksNumId"].toString())){
+        continue
+      }
+      alllinks[i["linksNumId"].toString()] = i;
+    }
+  }
+  
+  let links = []
+  for(let i in alllinks){
+    links.push(alllinks[i])
   }
   fs.writeFileSync(
     nowPath + "Challenge/" + startNumId + ".json",

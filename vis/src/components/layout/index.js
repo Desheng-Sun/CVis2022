@@ -16,8 +16,8 @@ import CrutialPath from "../crutial-path";
 import { useEffect, useState } from "react";
 
 export default function Layout() {
-  // const [countsBarWidth, setCountsBarWidth] = useState(0);
-  // const [countsBarHeight, setCountsBarHeight] = useState(0);
+  const [countsBarWidth, setCountsBarWidth] = useState(0);
+  const [countsBarHeight, setCountsBarHeight] = useState(0);
   const [difChartWidth, setDifChartWidth] = useState(0);
   const [difChartHeight, setDifChartHeight] = useState(0);
   const [icClueChartWidth, setIcClueChartWidth] = useState(0);
